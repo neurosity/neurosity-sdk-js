@@ -1,0 +1,45 @@
+{
+  "name": "@neurosity/headwear",
+  "version": "1.0.0",
+  "description": "Neurosity's headwear API client",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "webpack --mode production",
+    "dev": "webpack --mode development",
+    "start": "webpack-dev-server",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neurosity/lib-api-client.git"
+  },
+  "keywords": [
+    "neurosity",
+    "api",
+    "client",
+    "headwear"
+  ],
+  "author": "Alex Castillo",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/neurosity/lib-api-client/issues"
+  },
+  "homepage": "https://github.com/neurosity/lib-api-client#readme",
+  "dependencies": {
+    "firebase": "^4.12.0",
+    "rxjs": "^6.2.1",
+    "socket.io-client": "^2.1.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.1",
+    "eslint": "^4.19.1",
+    "webpack": "^4.4.1",
+    "webpack-cli": "^2.0.13",
+    "webpack-dev-server": "^3.1.1",
+    "webpack-node-externals": "^1.6.0"
+  }
+}
