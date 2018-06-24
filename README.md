@@ -1,6 +1,6 @@
 # Neurosity's headwear API client
 
-Offline/Cloud real-time API library for Neurosity's headwear.
+Wifi + Cloud real-time API library for Neurosity's headwear.
 
 Read full [documentation](https://github.com/neurosity/doc-headwear-api-js)
 
@@ -11,23 +11,70 @@ Read full [documentation](https://github.com/neurosity/doc-headwear-api-js)
 npm install @neurosity/headwear
 ```
 
-## Offline use
+Modes
+
+* Wifi
+* Cloud
+
+## Wifi mode (default)
+
+Utilizes WebSocket client for data transport.
+
 ``` js
-import { Headwear } from “@neurosity/headwear”;
+import Headwear from “@neurosity/headwear”;
 
 const headwear = new Headwear({
-  
+  deviceId: "****"
+});
+```
+Other options:
+
+* `cloud: false`
+* `autoConnect: true`
+
+## Cloud mode
+
+Utilizes Firebase client for data transport.
+
+``` js
+import Headwear from “@neurosity/headwear”;
+
+const headwear = new Headwear({
+  cloud: true,
+  deviceId: "****",
+  apiKey: "************"
 });
 ```
 
-## Cloud use
+## Manually connect
+
 ``` js
-import { Headwear } from “@neurosity/headwear”;
+import Headwear from “@neurosity/headwear”;
 
 const headwear = new Headwear({
-
+  autoConnect: false
 });
+
+await headwear.connect();
 ```
+
+## Clients
+
+Supported clients include
+
+* WebSocket
+* Firebase
+
+Clients should be classes with the following interface.
+
+``` js
+interface BosClient {
+  on(): void;
+  emit(): void;
+  connect(): Promise;
+  disconnect(): Promise;
+}
+``` 
 
 ## Making releases
 
@@ -37,3 +84,19 @@ Please use [semver](https://docs.npmjs.com/misc/semver)
 $ npm version (major|minor|patch)
 $ npm push origin master
 $ npm publish
+```
+
+## TODOs
+
+* Add error handling
+* Test Auth
+* Check for CORS
+* Security audit
+* Code splitting
+  * Firebase should only be loaded if cloud mode is enabled
+  * socket.io-client should only be loaded on wifi mode
+* Full Documentation
+* Document how to get `deviceId`
+* Document how to get `apiKey` for cloud mode
+* Remove `apiKey` from examples
+* Add more examples

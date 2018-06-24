@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Headwear API - Cloud mode</title>
+  </head>
+  <body>
+    <script type="module">
+      import Headwear from "../dist/main.mjs";
+
+      const brain = new Headwear({
+        cloud: true,
+        deviceId: "n1",
+        apiKey: "AIzaSyCZKZQhNzZubIDV2d5B9yGT6WFtDX0E_H0"
+      });
+
+      brain.getInfo().then(info => {
+        console.log("info", info);
+      });
+
+      brain.status().subscribe(status => {
+        console.log("status", status);
+      });
+    </script>
+  </body>
+</html>

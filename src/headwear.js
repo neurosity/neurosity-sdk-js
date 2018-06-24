@@ -1,51 +1,70 @@
-import { defaultConfig } from "./config";
+import { Observable } from "rxjs";
+import BosClient from "./bos";
 
-export class Headwear {
-  cosntructor () {
+const defaultOptions = {
+  cloud: false,
+  autoConnect: true
+};
 
+export default class Headwear extends BosClient {
+  
+  cosntructor (options = {}) {
+    this.options = {
+      ...defaultOptions,
+      ...options
+    };
+    super(this.options);
   }
 
-  connect () {
-
+  async getInfo () {
+    return await {
+      channels: 8,
+      manufacturer: "Neurosity, Inc"
+    };
   }
 
-  disconnect () {
+  of (type, ...payload) {
+    this.emit(`${type}_START`, ...payload);
 
+    return new Observable(observer => {
+      this.on(type, (...data) => {
+        observer.next(...data);
+      });
+      return () => {
+        this.emit(`${type}_STOP`);
+      };
+    });
   }
 
-  getInfo () {
-
+  brainwaves (...args) {
+    return this.of("BRAINWAVES", ...args);
   }
 
-  awareness () {
-
+  awareness (...args) {
+    return this.of("AWARENESS", ...args);
   }
 
-  emotion () {
-
+  emotion (...args) {
+    return this.of("EMOTION", ...args);
   }
 
-  kinesis () {
-
+  kinesis (...args) {
+    return this.of("KINESIS", ...args);
   }
 
-  facialExpression () {
-
+  facialExpression (...args) {
+    return this.of("FACIAL_EXPRESSION", ...args);
   }
 
-  status () {
-
+  status (...args) {
+    return this.of("STATUS", ...args);
   }
 
-  channelAnalysis () {
-
+  channelAnalysis (...args) {
+    return this.of("CHANNEL_ANALYSIS", ...args);
   }
 
-  acceleration () {
-
-  }
-
-  brainwaves () {
-
+  acceleration (...args) {
+    return this.of("ACCELERATION", ...args);
   }
 }

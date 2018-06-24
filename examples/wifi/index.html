@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Headwear API - Wifi mode</title>
+  </head>
+  <body>
+    <script type="module">
+      import Headwear from "../dist/main.mjs";
+
+      const brain = new Headwear({
+        deviceId: "n1"
+      });
+
+      brain.getInfo().then(info => {
+        console.log("info", info);
+      });
+
+      brain.status().subscribe(status => {
+        console.log("status", status);
+      });
+    </script>
+  </body>
+</html>

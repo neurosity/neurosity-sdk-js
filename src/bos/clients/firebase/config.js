@@ -16,6 +16,15 @@ const prodConfig = {
   messagingSenderId: "1018688804220"
 };
 
+export const configProps = [
+  "apiKey",
+  "authDomain",
+  "databaseURL",
+  "projectId",
+  "storageBucket",
+  "messagingSenderId"
+];
+
 export const defaultConfig = process.env.NODE_ENV === "production"
   ? prodConfig
   : devConfig;
