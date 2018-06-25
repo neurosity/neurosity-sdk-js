@@ -2,7 +2,11 @@ import io from "socket.io-client";
 import { defaultConfig } from "./config";
 
 export default class WebSocketClient {
-  constructor(options = {}) {
+
+  options;
+  socket;
+
+  constructor(options) {
     this.options = {
       ...defaultConfig,
       ...options
@@ -14,12 +18,12 @@ export default class WebSocketClient {
     });
   }
 
-  on(...args) {
-    this.socket.on(...args);
+  on(type, callback) {
+    this.socket.on(type, callback);
   }
 
-  emit(...args) {
-    this.socket.emit(...args);
+  emit(type, ...payload) {
+    this.socket.emit(type, payload);
   }
 
   connect() {

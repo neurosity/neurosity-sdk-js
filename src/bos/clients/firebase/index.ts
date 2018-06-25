@@ -1,5 +1,8 @@
-import { apps, database, initializeApp } from "firebase";
+import firebase from "@firebase/app";
+import "@firebase/database";
 import { defaultConfig, configProps } from "./config";
+
+const { apps, initializeApp } = firebase;
 
 export const getFirebaseConfig = (options = {}) =>
   Object.entries({ ...defaultConfig, ...options })
@@ -13,19 +16,17 @@ export const getFirebaseConfig = (options = {}) =>
     );
 
 export const createDeviceStore = deviceId => {
-  const deviceRef = database().ref(`devices/${deviceId}`);
+  const deviceRef = firebase.database().ref(`devices/${deviceId}`);
 
   const set = (namespace, payload) => {
     deviceRef
       .child(namespace)
-      .set(payload)
-      .then(console.log, console.log);
+      .set(payload);
   };
   const update = (namespace, payload) => {
     deviceRef
       .child(namespace)
-      .update(payload)
-      .then(console.log, console.log);
+      .update(payload);
   };
   const on = (namespace, callback) => {
     deviceRef.child(namespace).on("value", snapshot => {
@@ -57,19 +58,24 @@ export const createDeviceStore = deviceId => {
 };
 
 export default class FirebaseClient {
-  constructor(options = {}) {
+
+  deviceStore;
+
+  constructor(options) {
     if (!apps.length) {
-      initializeApp(getFirebaseConfig(options));
+      initializeApp(getFirebaseConfig(options || {}));
     }
     this.deviceStore = createDeviceStore(options.deviceId);
   }
 
-  on(...args) {
-    this.deviceStore.on(...args);
+  on(type, callback) {
+    this.deviceStore.on(`action/${type}`, callback);
   }
 
-  emit(...args) {
-    this.deviceStore.emit(...args);
+  emit(type, ...payload) {
+    this.deviceStore.emit(`action/${type}`, {
+      payload
+    });
   }
 
   connect() {

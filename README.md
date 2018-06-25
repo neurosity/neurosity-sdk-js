@@ -27,10 +27,17 @@ const headwear = new Headwear({
   deviceId: "****"
 });
 ```
-Other options:
 
-* `cloud: false`
-* `autoConnect: true`
+Options:
+
+``` ts
+interface OptionsI {
+  deviceId: string;
+  apiKey: string;
+  cloud: boolean;
+  autoConnect: boolean;
+}
+```
 
 ## Cloud mode
 
@@ -67,7 +74,7 @@ Supported clients include
 
 Clients should be classes with the following interface.
 
-``` js
+``` ts
 interface BosClient {
   on(): void;
   emit(): void;
@@ -100,3 +107,4 @@ $ npm publish
 * Document how to get `apiKey` for cloud mode
 * Remove `apiKey` from examples
 * Add more examples
+* Firebase dependecy is fixed, upgrade after [#880](https://github.com/firebase/firebase-js-sdk/issues/880)
