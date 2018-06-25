@@ -93,6 +93,25 @@ $ npm push origin master
 $ npm publish
 ```
 
+## Examples
+
+### Browser
+
+``` bash
+npm run examples:browser
+```
+
+Builds browser examples and serves examples in the browser with ES modules.
+
+### Node 
+
+* node
+
+``` bash
+node ./examples/node/wifi
+node ./examples/node/cloud
+```
+
 ## TODOs
 
 * Add error handling

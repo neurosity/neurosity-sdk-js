@@ -15,7 +15,7 @@
     "build:browser": "parcel build ./src/index.ts --target browser --out-dir dist/browser --out-file headwear.js",
     "build:electron": "parcel build ./src/index.ts --target electron --out-dir dist/electron",
     "build:examples": "parcel build ./examples/browser/index.html --target browser --out-dir dist/examples && copyfiles -f ./dist/esm/headwear.mjs ./dist/examples",
-    "serve:examples": "lite-server --baseDir=./dist/examples",
+    "examples:browser": "npm run build:examples && lite-server --baseDir=./dist/examples",
     "start": "tsc -w",
     "clean": "del dist",
     "prepublishOnly": "npm run build"
