@@ -4,7 +4,7 @@ import commonjs from "rollup-plugin-commonjs";
 export default {
   input: "dist/esm/index.js",
   output: {
-    file: "dist/esm/bundle.mjs",
+    file: "dist/esm/headwear.mjs",
     format: "es",
     name: "NeurosityHeadwear"
   },
