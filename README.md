@@ -127,3 +127,4 @@ node ./examples/node/cloud
 * Remove `apiKey` from examples
 * Add more examples
 * Firebase dependecy is fixed, upgrade after [#880](https://github.com/firebase/firebase-js-sdk/issues/880)
+* Publish to cdn

@@ -1,7 +1,7 @@
 const { Headwear } = require("../..");
 
 const brain = new Headwear({
-  deviceId: "n1"
+  deviceId: "df7a02157bfa623941d229984525246f"
 });
 
 brain.getInfo().then(info => {

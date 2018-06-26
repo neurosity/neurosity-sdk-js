@@ -24,12 +24,20 @@ export default class BosClient implements IBosClient {
     }
   }
 
-  public on(...args) {
-    this.client.on(...args);
+  public onMetric(metric, calback) {
+    this.client.onMetric(metric, calback);
   }
 
-  public emit(...args) {
-    this.client.emit(...args);
+  public onStatusChange(calback) {
+    this.client.onStatusChange(calback);
+  }
+
+  public subscribe(metric, ...props) {
+    this.client.subscribe(metric, ...props);
+  }
+
+  public unsubscribe(metric) {
+    this.client.unsubscribe(metric);
   }
 
   public async connect(callback?) {

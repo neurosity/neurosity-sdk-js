@@ -1,6 +1,8 @@
 export default interface IBosClient {
-  on(): void;
-  emit(): void;
+  // onMetric(): void;
+  // onStatusChange(): void;
+  // subscribe(): void;
+  // unsubscribe(): void;
   connect(): Promise<any>;
   disconnect(): Promise<any>;
 };

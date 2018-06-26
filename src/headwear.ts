@@ -23,49 +23,53 @@ export class Headwear extends BosClient {
     };
   }
 
-  private of(type, ...payload) {
-    this.emit(`${type}_start`, ...payload);
+  public status() {
+    return new Observable(observer => {
+      this.onStatusChange((...data) => {
+        observer.next(...data);
+      });
+    });
+  }
+
+  private getMetric(metric, ...props) {
+    this.subscribe(metric, ...props);
 
     return new Observable(observer => {
-      this.on(type, (...data) => {
+      this.onMetric(metric, (...data) => {
         observer.next(...data);
       });
       return () => {
-        this.emit(`${type}_stop`);
+        this.unsubscribe(metric);
       };
     });
   }
 
-  public brainwaves(...args) {
-    return this.of("brainwaves", ...args);
+  public brainwaves(...props) {
+    return this.getMetric("brainwaves", ...props);
   }
 
-  public awareness(...args) {
-    return this.of("awareness", ...args);
+  public awareness(...props) {
+    return this.getMetric("awareness", ...props);
   }
 
-  public emotion(...args) {
-    return this.of("emotion", ...args);
+  public emotion(...props) {
+    return this.getMetric("emotion", ...props);
   }
 
-  public kinesis(...args) {
-    return this.of("kinesis", ...args);
+  public kinesis(...props) {
+    return this.getMetric("kinesis", ...props);
   }
 
-  public facialExpression(...args) {
-    return this.of("facialExpression", ...args);
+  public facialExpression(...props) {
+    return this.getMetric("facialExpression", ...props);
   }
 
-  public status(...args) {
-    return this.of("status", ...args);
+  public channelAnalysis(...props) {
+    return this.getMetric("channelAnalysis", ...props);
   }
 
-  public channelAnalysis(...args) {
-    return this.of("channelAnalysis", ...args);
-  }
-
-  public acceleration(...args) {
-    return this.of("acceleration", ...args);
+  public acceleration(...props) {
+    return this.getMetric("acceleration", ...props);
   }
 }
 

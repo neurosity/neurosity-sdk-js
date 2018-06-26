@@ -2,7 +2,6 @@ import io from "socket.io-client";
 import { defaultConfig } from "./config";
 
 export default class WebSocketClient {
-
   options;
   socket;
 
@@ -18,21 +17,29 @@ export default class WebSocketClient {
     });
   }
 
-  on(type, callback) {
-    this.socket.on(type, callback);
+  public onMetric(metric, callback) {
+    this.socket.on(`metric/${metric}`, callback);
   }
 
-  emit(type, ...payload) {
-    this.socket.emit(type, payload);
+  public onStatusChange(callback) {
+    this.socket.on("status", callback);
   }
 
-  connect() {
+  public subscribe(metric, ...props) {
+    this.socket.emit("metric/subscribe", { metric, props });
+  }
+
+  public unsubscribe(metric) {
+    this.socket.emit("metric/unsubscribe", { metric });
+  }
+
+  public connect() {
     if (!this.socket.connected) {
       this.socket.connect();
     }
   }
 
-  disconnect() {
+  public disconnect() {
     if (this.socket.connected) {
       this.socket.disconnect();
     }
