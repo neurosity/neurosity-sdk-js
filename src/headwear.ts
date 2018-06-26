@@ -23,14 +23,6 @@ export class Headwear extends BosClient {
     };
   }
 
-  public status() {
-    return new Observable(observer => {
-      this.onStatusChange((...data) => {
-        observer.next(...data);
-      });
-    });
-  }
-
   private getMetric(metric, ...props) {
     this.subscribe(metric, ...props);
 
@@ -42,6 +34,10 @@ export class Headwear extends BosClient {
         this.unsubscribe(metric);
       };
     });
+  }
+
+  public status(...props) {
+    return this.getMetric("status", ...props);
   }
 
   public brainwaves(...props) {

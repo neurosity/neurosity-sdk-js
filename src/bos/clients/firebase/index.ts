@@ -37,33 +37,31 @@ export const createDeviceStore = (deviceId, clientId) => {
 
   return {
     init: () => {
-      set(`clients/${clientId}`, {
-        metrics: {},
-        subscriptions: {}
-      });
+      set(`metrics/${clientId}`, {});
+      set(`subscriptions/${clientId}`, {});
     },
     onStatus: callback => {
       on("status", callback)
     },
     onMetric: (metric, callback) => {
-      on(`clients/${clientId}/metrics/${metric}`, data => {
+      on(`metrics/${clientId}/${metric}`, data => {
         if (data !== null) {
           callback(data);
         }
       });
     },
     subscribeToMetric: metric => {
-      update(`clients/${clientId}/subscriptions`, {
+      update(`subscriptions/${clientId}`, {
         [metric]: true
       });
     },
     unsubscribFromMetric: metric => {
-      update(`clients/${clientId}/subscriptions`, {
+      update(`subscriptions/${clientId}`, {
         [metric]: false
       });
     },
     unsubscribeAllMetrics: () => {
-      set(`clients/${clientId}/subscriptions`, null);
+      set(`subscriptions/${clientId}`, null);
     }
   };
 };
