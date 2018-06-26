@@ -1,10 +1,10 @@
 export const defaultConfig = {
-  apiKey: "AIzaSyCZKZQhNzZubIDV2d5B9yGT6WFtDX0E_H0",
-  authDomain: "neurosity-trainer.firebaseapp.com",
-  databaseURL: "https://neurosity-trainer.firebaseio.com",
-  projectId: "neurosity-trainer",
-  storageBucket: "neurosity-trainer.appspot.com",
-  messagingSenderId: "1018688804220"
+  apiKey: "AIzaSyB0TkZ83Fj0CIzn8AAmE-Osc92s3ER8hy8",
+  authDomain: "neurosity-device.firebaseapp.com",
+  databaseURL: "https://neurosity-device.firebaseio.com",
+  projectId: "neurosity-device",
+  storageBucket: "neurosity-device.appspot.com",
+  messagingSenderId: "212595049674"
 };
 
 export const configProps = [
