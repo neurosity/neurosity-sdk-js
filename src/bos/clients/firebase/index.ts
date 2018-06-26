@@ -24,62 +24,46 @@ export const createDeviceStore = (deviceId, clientId) => {
   const set = (namespace, payload) => {
     deviceRef.child(namespace).set(payload);
   };
+
   const update = (namespace, payload) => {
     deviceRef.child(namespace).update(payload);
   };
+
   const on = (namespace, callback) => {
     deviceRef.child(namespace).on("value", snapshot => {
       callback(snapshot.val());
     });
   };
 
-  const getCient = clientId => {
-    set(`clients/${clientId}`, {
-      metrics: {},
-      subscriptions: {}
-    });
-
-    return {
-      onMetric: (metric, callback) => {
-        on(`clients/${clientId}/metrics/${metric}`, data => {
-          if (data !== null) {
-            callback(data);
-          }
-        });
-      },
-      subscribe: metric => {
-        update(`clients/${clientId}/subscriptions`, {
-          [metric]: true
-        });
-      },
-      unsubscribe: metric => {
-        update(`clients/${clientId}/subscriptions`, {
-          [metric]: false
-        });
-      },
-      unsubscribeAll: () => {
-        set(`clients/${clientId}/subscriptions`, null);
-      }
-    };
-  };
-
   return {
-    on: on,
-    once: deviceRef.once,
-    update: update,
-    set: set,
-    client: getCient(clientId),
-    setStatus: status => {
-      set("status", status);
+    init: () => {
+      set(`clients/${clientId}`, {
+        metrics: {},
+        subscriptions: {}
+      });
     },
-    updateStatus: status => {
-      update("status", status);
+    onStatus: callback => {
+      on("status", callback)
     },
-    updateInfo: info => {
-      update("info", info);
+    onMetric: (metric, callback) => {
+      on(`clients/${clientId}/metrics/${metric}`, data => {
+        if (data !== null) {
+          callback(data);
+        }
+      });
     },
-    updateData: data => {
-      update("data", data);
+    subscribeToMetric: metric => {
+      update(`clients/${clientId}/subscriptions`, {
+        [metric]: true
+      });
+    },
+    unsubscribFromMetric: metric => {
+      update(`clients/${clientId}/subscriptions`, {
+        [metric]: false
+      });
+    },
+    unsubscribeAllMetrics: () => {
+      set(`clients/${clientId}/subscriptions`, null);
     }
   };
 };
@@ -96,8 +80,9 @@ export default class FirebaseClient {
     if (!apps.length) {
       initializeApp(getFirebaseConfig(options || {}));
     }
-    
+
     this.deviceStore = createDeviceStore(options.deviceId, "client1");
+    this.deviceStore.init();
 
     firebase.auth().signInAnonymously();
     firebase.auth().onAuthStateChanged(user => {
@@ -106,32 +91,27 @@ export default class FirebaseClient {
   }
 
   public onMetric(metric, callback) {
-    this.deviceStore.client.onMetric(metric, callback);
+    this.deviceStore.onMetric(metric, callback);
   }
 
   public onStatusChange(callback) {
-    this.deviceStore.on("status", callback);
+    this.deviceStore.onStatus(callback);
   }
 
   // @TODO: support setting props
   public subscribe(metric, ...props) {
-    this.deviceStore.client.subscribe(metric);
+    this.deviceStore.subscribeToMetric(metric);
   }
 
   public unsubscribe(metric) {
-    this.deviceStore.client.unsubscribe(metric);
+    this.deviceStore.unsubscribFromMetric(metric);
   }
 
   public connect() {
-    this.deviceStore.updateStatus({
-      connected: true
-    });
+    
   }
 
   public disconnect() {
-    this.deviceStore.updateStatus({
-      connected: false
-    });
-    this.deviceStore.client.unsubscribeAll();
+    this.deviceStore.unsubscribeAllMetrics();
   }
 }
