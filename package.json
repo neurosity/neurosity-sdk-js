@@ -2,7 +2,6 @@
   "name": "@neurosity/headwear",
   "version": "0.0.1",
   "description": "Neurosity's headwear API client",
-  "private": true,
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "browser": "dist/browser/headwear.js",
