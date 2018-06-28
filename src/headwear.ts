@@ -41,7 +41,7 @@ export class Headwear extends BosClient {
   }
 
   public brainwaves(...props) {
-    return this.getMetric("brainwaves", ...props);
+    return this.getMetric("sample", ...props);
   }
 
   public awareness(...props) {
