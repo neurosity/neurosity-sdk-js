@@ -10,6 +10,9 @@ const defaultOptions = {
 export class Headwear extends BosClient {
   
   constructor(options?: IOptions) {
+    if (!options.deviceId) {
+      throw new Error("Headwear: deviceId is mandatory");
+    }
     super({
       ...defaultOptions,
       ...options

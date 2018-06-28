@@ -1,11 +1,10 @@
 import firebase from "@firebase/app";
-import "@firebase/database";
 import "@firebase/auth";
 import { defaultConfig, configProps } from "./config";
 
-import IDevice from "./device.i";
+import { createDeviceStore } from "./deviceStore";
 
-const { apps, initializeApp } = firebase;
+const { apps, initializeApp, auth } = firebase;
 
 export const getFirebaseConfig = (options = {}) =>
   Object.entries({ ...defaultConfig, ...options })
@@ -18,54 +17,6 @@ export const getFirebaseConfig = (options = {}) =>
       {}
     );
 
-export const createDeviceStore = (deviceId, clientId) => {
-  const deviceRef = firebase.database().ref(`devices/${deviceId}`);
-
-  const set = (namespace, payload) => {
-    deviceRef.child(namespace).set(payload);
-  };
-
-  const update = (namespace, payload) => {
-    deviceRef.child(namespace).update(payload);
-  };
-
-  const on = (namespace, callback) => {
-    deviceRef.child(namespace).on("value", snapshot => {
-      callback(snapshot.val());
-    });
-  };
-
-  return {
-    init: () => {
-      set(`metrics/${clientId}`, {});
-      set(`subscriptions/${clientId}`, {});
-    },
-    onStatus: callback => {
-      on("status", callback)
-    },
-    onMetric: (metric, callback) => {
-      on(`metrics/${clientId}/${metric}`, data => {
-        if (data !== null) {
-          callback(data);
-        }
-      });
-    },
-    subscribeToMetric: metric => {
-      update(`subscriptions/${clientId}`, {
-        [metric]: true
-      });
-    },
-    unsubscribFromMetric: metric => {
-      update(`subscriptions/${clientId}`, {
-        [metric]: false
-      });
-    },
-    unsubscribeAllMetrics: () => {
-      set(`subscriptions/${clientId}`, null);
-    }
-  };
-};
-
 export default class FirebaseClient {
   user;
   deviceStore;
@@ -74,16 +25,15 @@ export default class FirebaseClient {
     this.init(options);
   }
 
-  private init (options) {
+  private init(options) {
     if (!apps.length) {
       initializeApp(getFirebaseConfig(options || {}));
     }
 
-    this.deviceStore = createDeviceStore(options.deviceId, "client1");
-    this.deviceStore.init();
+    this.deviceStore = createDeviceStore(options.deviceId);
 
-    firebase.auth().signInAnonymously();
-    firebase.auth().onAuthStateChanged(user => {
+    auth().signInAnonymously();
+    auth().onAuthStateChanged(user => {
       this.user = user;
     });
   }
@@ -105,11 +55,7 @@ export default class FirebaseClient {
     this.deviceStore.unsubscribFromMetric(metric);
   }
 
-  public connect() {
-    
-  }
+  public connect() {}
 
-  public disconnect() {
-    this.deviceStore.unsubscribeAllMetrics();
-  }
+  public disconnect() {}
 }
