@@ -21,7 +21,7 @@ Modes
 Utilizes WebSocket client for data transport.
 
 ``` js
-import Headwear from “@neurosity/headwear”;
+import Headwear from "@neurosity/headwear";
 
 const headwear = new Headwear({
   deviceId: "****"
@@ -44,7 +44,7 @@ interface OptionsI {
 Utilizes Firebase client for data transport.
 
 ``` js
-import Headwear from “@neurosity/headwear”;
+import Headwear from "@neurosity/headwear";
 
 const headwear = new Headwear({
   cloud: true,
@@ -56,7 +56,7 @@ const headwear = new Headwear({
 ## Manually connect
 
 ``` js
-import Headwear from “@neurosity/headwear”;
+import Headwear from "@neurosity/headwear";
 
 const headwear = new Headwear({
   autoConnect: false
