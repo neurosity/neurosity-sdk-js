@@ -10,31 +10,28 @@ export interface IDevice {
   metrics: any;
 }
 
+export const createClient = rootRef => {
+  const client = rootRef.child("clients").push();
+
+  // Remove client on disconnect
+  client.onDisconnect().remove();
+
+  return {
+    clientId: client.key,
+    metricsRef: client.child("metrics"),
+    subscriptionsRef: client.child("subscriptions")
+  };
+};
+
 export const createDeviceStore = deviceId => {
   const deviceRef = database().ref(`devices/${deviceId}`);
-
-  const createRef = namespace => {
-    return deviceRef.child(namespace).push();
-  };
-
-  const on = (namespace, callback) => {
-    deviceRef.child(namespace).on("value", snapshot => {
-      callback(snapshot.val());
-    });
-  };
-
-  const getClientRefs = () => ({
-    metricsRef: createRef("metrics"),
-    subscriptionsRef: createRef("subscriptions")
-  });
-
-  const { metricsRef, subscriptionsRef } = getClientRefs();
-
-  subscriptionsRef.onDisconnect().remove();
+  const { metricsRef, subscriptionsRef } = createClient(deviceRef);
 
   return {
     onStatus: callback => {
-      on("status", callback);
+      deviceRef.child("status").on("value", snapshot => {
+        callback(snapshot.val());
+      });
     },
     onMetric: (metric, callback) => {
       metricsRef.child(metric).on("value", snapshot => {
