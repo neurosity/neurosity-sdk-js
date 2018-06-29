@@ -4,10 +4,9 @@ import IBosClient from "./client.i";
 import IOptions from "../options.i";
 
 export default class BosClient implements IBosClient {
-  
   options: IOptions;
   client;
-  
+
   constructor(options?: IOptions) {
     this.options = { ...options };
 
@@ -22,6 +21,10 @@ export default class BosClient implements IBosClient {
     if (this.options.autoConnect) {
       this.connect();
     }
+  }
+
+  public async getInfo() {
+    return await this.client.getInfo();
   }
 
   public onMetric(metric, calback) {

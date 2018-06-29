@@ -10,44 +10,61 @@ export interface IDevice {
   metrics: any;
 }
 
-export const createClient = rootRef => {
-  const client = rootRef.child("clients").push();
-
-  // Remove client on disconnect
-  client.onDisconnect().remove();
-
-  return {
-    clientId: client.key,
-    metricsRef: client.child("metrics"),
-    subscriptionsRef: client.child("subscriptions")
-  };
-};
-
 export const createDeviceStore = deviceId => {
   const deviceRef = database().ref(`devices/${deviceId}`);
-  const { metricsRef, subscriptionsRef } = createClient(deviceRef);
+  const clientId = deviceRef.child("subscriptions").push().key;
+
+  const set = (namespace, payload) => {
+    deviceRef.child(namespace).set(payload);
+  };
+
+  const update = (namespace, payload) => {
+    deviceRef.child(namespace).update(payload);
+  };
+
+  const on = (namespace, callback) => {
+    deviceRef.child(namespace).on("value", snapshot => {
+      callback(snapshot.val());
+    });
+  };
+
+  const once = async namespace => {
+    const snapshot = await deviceRef.child(namespace).once("value");
+    return snapshot.val();
+  };
+
+  // Remove clients on disconnect
+  deviceRef
+    .child(`metrics/${clientId}`)
+    .onDisconnect()
+    .remove();
+
+  deviceRef
+    .child(`subscriptions/${clientId}`)
+    .onDisconnect()
+    .remove();
 
   return {
+    getInfo: async () => {
+      return await once("info");
+    },
     onStatus: callback => {
-      deviceRef.child("status").on("value", snapshot => {
-        callback(snapshot.val());
-      });
+      on("status", callback);
     },
     onMetric: (metric, callback) => {
-      metricsRef.child(metric).on("value", snapshot => {
-        const data = snapshot.val();
+      on(`metrics/${clientId}/${metric}`, data => {
         if (data !== null) {
           callback(data);
         }
       });
     },
     subscribeToMetric: metric => {
-      subscriptionsRef.update({
+      update(`subscriptions/${clientId}`, {
         [metric]: true
       });
     },
     unsubscribFromMetric: metric => {
-      subscriptionsRef.update({
+      update(`subscriptions/${clientId}`, {
         [metric]: false
       });
     }

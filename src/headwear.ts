@@ -19,13 +19,6 @@ export class Headwear extends BosClient {
     });
   }
 
-  public async getInfo() {
-    return await {
-      channels: 8,
-      manufacturer: "Neurosity, Inc"
-    };
-  }
-
   private getMetric(metric, ...props) {
     this.subscribe(metric, ...props);
 

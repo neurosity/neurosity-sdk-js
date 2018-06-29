@@ -38,6 +38,10 @@ export default class FirebaseClient {
     });
   }
 
+  public async getInfo() {
+    return await this.deviceStore.getInfo();
+  }
+
   public onMetric(metric, callback) {
     this.deviceStore.onMetric(metric, callback);
   }

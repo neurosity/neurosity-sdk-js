@@ -19,16 +19,12 @@
         console.log("info", info);
       });
 
-      brain.status().subscribe(status => {
-        console.log("status", status);
-      });
-
       brain.channelAnalysis().subscribe(channelAnalysis => {
         console.log("channelAnalysis", channelAnalysis);
       });
 
-      brain.brainwaves().subscribe(brainwaves => {
-        console.log("brainwaves", brainwaves);
+      brain.acceleration().subscribe(acceleration => {
+        console.log("acceleration", acceleration);
       });
 
     </script>
