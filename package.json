@@ -14,8 +14,8 @@
     "build:esm:bundle": "rollup -c",
     "build:browser": "parcel build ./src/index.ts --target browser --out-dir dist/browser --out-file notion.js",
     "build:electron": "parcel build ./src/index.ts --target electron --out-dir dist/electron",
-    "build:examples": "parcel build ./examples/browser/index.html --target browser --out-dir dist/examples && copyfiles -f ./dist/esm/notion.mjs ./dist/examples",
-    "examples:browser": "npm run build:examples && lite-server --baseDir=./dist/examples",
+    "build:examples": "copyfiles -f ./dist/esm/*.mjs ./dist/browser/*.js ./dist/examples && parcel build ./examples/browser/index.html --target browser --out-dir dist/examples",
+    "examples:browser": "lite-server --baseDir=./dist/examples",
     "start": "tsc -w",
     "clean": "del dist",
     "prepublishOnly": "npm run build"
