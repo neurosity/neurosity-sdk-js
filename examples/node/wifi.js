@@ -8,6 +8,6 @@ notion.getInfo().then(info => {
   console.log("info", info);
 });
 
-notion.status().subscribe(status => {
-  console.log("status", status);
+notion.channelAnalysis().subscribe(channelAnalysis => {
+  console.log("channelAnalysis", channelAnalysis);
 });

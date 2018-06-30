@@ -110,17 +110,17 @@ $ npm publish
 
 ### Browser
 
+Builds browser examples and serves examples in the browser with ES modules.
+
 ``` bash
 npm run examples:browser
 ```
-
-Builds browser examples and serves examples in the browser with ES modules.
+Go to: [http://localhost:3000](http://localhost:3000)
 
 ### Node 
 
 ``` bash
-node ./examples/node/wifi
-node ./examples/node/cloud
+npm run examples:node
 ```
 
 ## TODOs

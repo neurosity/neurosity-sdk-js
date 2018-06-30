@@ -15,7 +15,8 @@
     "build:browser": "parcel build ./src/index.ts --target browser --out-dir dist/browser --out-file notion.js",
     "build:electron": "parcel build ./src/index.ts --target electron --out-dir dist/electron",
     "build:examples": "copyfiles -f ./dist/esm/*.mjs ./dist/browser/*.js ./dist/examples && parcel build ./examples/browser/index.html --target browser --out-dir dist/examples",
-    "examples:browser": "lite-server --baseDir=./dist/examples",
+    "examples:browser": "parcel watch ./examples/browser/index.html -p 3000 --out-dir dist/examples && lite-server --baseDir=./dist/examples",
+    "examples:node": "node ./examples/node",
     "start": "tsc -w",
     "clean": "del dist",
     "prepublishOnly": "npm run build"
@@ -45,7 +46,6 @@
   "dependencies": {
     "@google-cloud/pubsub": "^0.19.0",
     "firebase": "^5.1.0",
-    "parcel-bundler": "^1.9.2",
     "rxjs": "^6.2.1",
     "socket.io-client": "^2.1.1"
   },
@@ -53,7 +53,10 @@
     "@types/node": "^10.3.5",
     "copyfiles": "^2.0.0",
     "del-cli": "^1.1.0",
+    "inquirer": "^6.0.0",
     "lite-server": "^2.3.0",
+    "parcel": "^1.9.3",
+    "parcel-bundler": "^1.9.3",
     "rollup": "^0.61.2",
     "rollup-plugin-commonjs": "^9.1.3",
     "rollup-plugin-node-resolve": "^3.3.0",
