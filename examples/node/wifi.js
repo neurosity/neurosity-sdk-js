@@ -1,13 +1,13 @@
-const { Headwear } = require("../..");
+const { Notion } = require("../..");
 
-const brain = new Headwear({
+const notion = new Notion({
   deviceId: "df7a02157bfa623941d229984525246f"
 });
 
-brain.getInfo().then(info => {
+notion.getInfo().then(info => {
   console.log("info", info);
 });
 
-brain.status().subscribe(status => {
+notion.status().subscribe(status => {
   console.log("status", status);
 });

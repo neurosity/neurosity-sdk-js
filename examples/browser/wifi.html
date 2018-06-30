@@ -2,22 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Headwear API - Wifi mode</title>
+    <title>Notion API - Wifi mode</title>
   </head>
   <body>
     <pre>View source</pre>
     <script type="module">
-      import { Headwear } from "./headwear.mjs";
+      import { Notion } from "./notion.mjs";
 
-      const brain = new Headwear({
+      const notion = new Notion({
         deviceId: "df7a02157bfa623941d229984525246f"
       });
 
-      brain.getInfo().then(info => {
+      notion.getInfo().then(info => {
         console.log("info", info);
       });
 
-      brain.status().subscribe(status => {
+      notion.status().subscribe(status => {
         console.log("status", status);
       });
     </script>

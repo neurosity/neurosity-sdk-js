@@ -7,11 +7,11 @@ const defaultOptions = {
   autoConnect: true
 };
 
-export class Headwear extends BosClient {
+export class Notion extends BosClient {
   
   constructor(options?: IOptions) {
     if (!options.deviceId) {
-      throw new Error("Headwear: deviceId is mandatory");
+      throw new Error("Notion: deviceId is mandatory");
     }
     super({
       ...defaultOptions,
@@ -65,4 +65,4 @@ export class Headwear extends BosClient {
   }
 }
 
-export default Headwear;
+export default Notion;

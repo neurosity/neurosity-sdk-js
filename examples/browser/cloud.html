@@ -2,29 +2,24 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Headwear API - Cloud mode</title>
+    <title>Notion API - Cloud mode</title>
   </head>
   <body>
     <pre>View source</pre>
     <script type="module">
-      import { Headwear } from "./headwear.mjs";
+      import { Notion } from "./notion.mjs";
 
-      const brain = new Headwear({
+      const notion = new Notion({
         cloud: true,
-        deviceId: "df7a02157bfa623941d229984525246f",
-        apiKey: "AIzaSyB0TkZ83Fj0CIzn8AAmE-Osc92s3ER8hy8"
+        deviceId: "df7a02157bfa623941d229984525246f"
       });
 
-      brain.getInfo().then(info => {
+      notion.getInfo().then(info => {
         console.log("info", info);
       });
 
-      brain.channelAnalysis().subscribe(channelAnalysis => {
-        console.log("channelAnalysis", channelAnalysis);
-      });
-
-      brain.acceleration().subscribe(acceleration => {
-        console.log("acceleration", acceleration);
+      notion.acceleration().subscribe(acceleration => {
+        console.log(acceleration);
       });
 
     </script>

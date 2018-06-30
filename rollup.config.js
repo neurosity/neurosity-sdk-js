@@ -4,9 +4,9 @@ import commonjs from "rollup-plugin-commonjs";
 export default {
   input: "dist/esm/index.js",
   output: {
-    file: "dist/esm/headwear.mjs",
+    file: "dist/esm/notion.mjs",
     format: "es",
-    name: "NeurosityHeadwear"
+    name: "Notion"
   },
   plugins: [
     resolve({

@@ -1,10 +1,10 @@
 {
-  "name": "@neurosity/headwear",
+  "name": "@neurosity/notion",
   "version": "0.0.3",
-  "description": "Neurosity's headwear API client",
+  "description": "Notion API Client by Neurosity",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
-  "browser": "dist/browser/headwear.js",
+  "browser": "dist/browser/notion.js",
   "typings": "dist/esm/index.d.ts",
   "scripts": {
     "prebuild": "npm run clean",
@@ -12,9 +12,9 @@
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "build:esm": "tsc -p tsconfig.esm.json && npm run build:esm:bundle",
     "build:esm:bundle": "rollup -c",
-    "build:browser": "parcel build ./src/index.ts --target browser --out-dir dist/browser --out-file headwear.js",
+    "build:browser": "parcel build ./src/index.ts --target browser --out-dir dist/browser --out-file notion.js",
     "build:electron": "parcel build ./src/index.ts --target electron --out-dir dist/electron",
-    "build:examples": "parcel build ./examples/browser/index.html --target browser --out-dir dist/examples && copyfiles -f ./dist/esm/headwear.mjs ./dist/examples",
+    "build:examples": "parcel build ./examples/browser/index.html --target browser --out-dir dist/examples && copyfiles -f ./dist/esm/notion.mjs ./dist/examples",
     "examples:browser": "npm run build:examples && lite-server --baseDir=./dist/examples",
     "start": "tsc -w",
     "clean": "del dist",
@@ -31,7 +31,7 @@
     "neurosity",
     "api",
     "client",
-    "headwear"
+    "notion"
   ],
   "engines": {
     "node": ">=4"

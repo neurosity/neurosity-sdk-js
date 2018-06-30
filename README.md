@@ -1,29 +1,56 @@
-# Neurosity's headwear API client
+# Notion Client API by Neurosity
 
-Wifi + Cloud real-time API library for Neurosity's headwear.
+* Universal JavaScript support: Node/Browser/Electron
+* Wifi/WebSocket/Offline & Cloud/Firebase/Online modes
+* Event-driven multi-client real-time architecture
 
-Read full [documentation](https://github.com/neurosity/doc-headwear-api-js)
+Read full [documentation](https://github.com/neurosity/doc-notion-api-js)
 
 > This is a private (soon to be public) module published on npm. Ensure the npm user has access to the neurosity npm org before installing/publishing.
 
-## Install
+## Getting started
 ```bash
-npm install @neurosity/headwear
+npm install @neurosity/notion
+```
+Then import the module
+
+##### ESM
+``` js
+import { Notion } from "@neurosity/notion";
 ```
 
-Modes
+##### Node
+``` js
+const { Notion } = require("@neurosity/notion");
+```
 
-* Wifi
-* Cloud
+##### Browser
+``` html
+<script type="module">
+  import { Notion } from "./node_modules/esm/notion.mjs";
+</script>
+```
 
-## Wifi mode (default)
+## Examples
+
+### Cloud mode  (default)
+
+Utilizes Firebase client for data transport.
+
+``` js
+const notion = new Notion({
+  cloud: true,
+  deviceId: "****",
+  apiKey: "************"
+});
+```
+
+### Wifi mode
 
 Utilizes WebSocket client for data transport.
 
 ``` js
-import Headwear from "@neurosity/headwear";
-
-const headwear = new Headwear({
+const notion = new Notion({
   deviceId: "****"
 });
 ```
@@ -39,38 +66,23 @@ interface OptionsI {
 }
 ```
 
-## Cloud mode
 
-Utilizes Firebase client for data transport.
-
-``` js
-import Headwear from "@neurosity/headwear";
-
-const headwear = new Headwear({
-  cloud: true,
-  deviceId: "****",
-  apiKey: "************"
-});
-```
-
-## Manually connect
+### Manually connect
 
 ``` js
-import Headwear from "@neurosity/headwear";
-
-const headwear = new Headwear({
+const notion = new Notion({
   autoConnect: false
 });
 
-await headwear.connect();
+await notion.connect();
 ```
 
-## Clients
+### Clients
 
 Supported clients include
 
-* WebSocket
 * Firebase
+* WebSocket
 
 Clients should be classes with the following interface.
 
@@ -83,7 +95,7 @@ interface BosClient {
 }
 ``` 
 
-## Making releases
+## Releases
 
 Please use [semver](https://docs.npmjs.com/misc/semver)
 
@@ -105,8 +117,6 @@ Builds browser examples and serves examples in the browser with ES modules.
 
 ### Node 
 
-* node
-
 ``` bash
 node ./examples/node/wifi
 node ./examples/node/cloud
@@ -126,5 +136,4 @@ node ./examples/node/cloud
 * Document how to get `apiKey` for cloud mode
 * Remove `apiKey` from examples
 * Add more examples
-* Firebase dependecy is fixed, upgrade after [#880](https://github.com/firebase/firebase-js-sdk/issues/880)
 * Publish to cdn
