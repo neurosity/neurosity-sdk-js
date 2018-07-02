@@ -1,14 +1,14 @@
 import { Observable } from "rxjs";
 import BosClient from "./bos/index";
 import IOptions from "./options.i";
+import INotion from "./notion.i";
 
 const defaultOptions = {
   cloud: false,
   autoConnect: true
 };
 
-export class Notion extends BosClient {
-  
+export class Notion extends BosClient implements INotion {
   constructor(options?: IOptions) {
     if (!options.deviceId) {
       throw new Error("Notion: deviceId is mandatory");
@@ -62,6 +62,23 @@ export class Notion extends BosClient {
 
   public acceleration(...props) {
     return this.getMetric("acceleration", ...props);
+  }
+
+  public get training() {
+    return {
+      record: training => {
+        const message = {
+          fit: false,
+          timestamp: Date.now(),
+          ...training
+        };
+        this.actions.dispatch({
+          command: "training",
+          action: "record",
+          message
+        });
+      }
+    };
   }
 }
 

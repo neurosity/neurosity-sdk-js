@@ -1,7 +1,10 @@
 import io from "socket.io-client";
-import { defaultConfig } from "./config";
 
-export default class WebSocketClient {
+import { defaultConfig } from "./config";
+import IClient from "../../client.i";
+import IActions from "../../actions.i";
+
+export default class WebSocketClient implements IClient {
   options;
   socket;
 
@@ -17,29 +20,40 @@ export default class WebSocketClient {
     });
   }
 
+  get actions(): IActions {
+    return {
+      on(callback) {
+
+      },
+      dispatch(action) {
+
+      }
+    };
+  }
+
+  public async getInfo() {
+
+  }
+
   public onMetric(metric, callback) {
     this.socket.on(`metric/${metric}`, callback);
   }
 
-  public onStatusChange(callback) {
-    this.socket.on("status", callback);
-  }
-
-  public subscribe(metric, ...props) {
-    this.socket.emit("metric/subscribe", { metric, props });
+  public subscribe(metric, ...labels) {
+    this.socket.emit("metric/subscribe", { metric, labels });
   }
 
   public unsubscribe(metric) {
     this.socket.emit("metric/unsubscribe", { metric });
   }
 
-  public connect() {
+  public async connect() {
     if (!this.socket.connected) {
       this.socket.connect();
     }
   }
 
-  public disconnect() {
+  public async disconnect() {
     if (this.socket.connected) {
       this.socket.disconnect();
     }

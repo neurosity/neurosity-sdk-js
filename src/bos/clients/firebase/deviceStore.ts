@@ -14,17 +14,27 @@ export const createDeviceStore = deviceId => {
   const deviceRef = database().ref(`devices/${deviceId}`);
   const clientId = deviceRef.child("subscriptions").push().key;
 
+  const namespaces = [
+    "subscriptions",
+    "metrics",
+    "actions"
+  ];
+
   const set = (namespace, payload) => {
     deviceRef.child(namespace).set(payload);
+  };
+
+  const push = (namespace, payload) => {
+    return deviceRef.child(namespace).push(payload);
   };
 
   const update = (namespace, payload) => {
     deviceRef.child(namespace).update(payload);
   };
 
-  const on = (namespace, callback) => {
-    deviceRef.child(namespace).on("value", snapshot => {
-      callback(snapshot.val());
+  const on = (eventType: any = "value", namespace, callback) => {
+    deviceRef.child(namespace).on(eventType, snapshot => {
+      callback(snapshot.val(), snapshot);
     });
   };
 
@@ -33,26 +43,31 @@ export const createDeviceStore = deviceId => {
     return snapshot.val();
   };
 
-  // Remove clients on disconnect
-  deviceRef
-    .child(`metrics/${clientId}`)
-    .onDisconnect()
-    .remove();
-
-  deviceRef
-    .child(`subscriptions/${clientId}`)
-    .onDisconnect()
-    .remove();
+  // Remove each client's namespace on disconnect
+  namespaces.forEach(namespace => {
+    deviceRef
+      .child(`${namespace}/${clientId}`)
+      .onDisconnect()
+      .remove();
+  });
 
   return {
     getInfo: async () => {
       return await once("info");
     },
-    onStatus: callback => {
-      on("status", callback);
+    onAction: callback => {
+      on("child_added", `actions/${clientId}/client`, (action, snapshot) => {
+        if (action !== null) {
+          callback(action);
+          snapshot.remove();
+        }
+      });
+    },
+    dispatchAction: action => {
+      push(`actions/${clientId}/server`, action);
     },
     onMetric: (metric, callback) => {
-      on(`metrics/${clientId}/${metric}`, data => {
+      on("value", `metrics/${clientId}/${metric}`, data => {
         if (data !== null) {
           callback(data);
         }

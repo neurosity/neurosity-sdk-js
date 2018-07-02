@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Notion API - Training example</title>
+  </head>
+  <body>
+    <pre>View source</pre>
+    <script type="module">
+      import { Notion } from "./notion.mjs";
+
+      const notion = new Notion({
+        cloud: true,
+        deviceId: "df7a02157bfa623941d229984525246f"
+      });
+
+      notion.getInfo().then(info => {
+        console.log("info", info);
+      });
+
+      notion.training.record({
+        metric: "kinesis",
+        label: "leftHandPinch",
+        duration: 5000
+      });
+
+    </script>
+  </body>
+</html>

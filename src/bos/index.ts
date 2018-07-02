@@ -1,9 +1,10 @@
 import FirebaseClient from "./clients/firebase/index";
 import WebSocketClient from "./clients/websocket/index";
-import IBosClient from "./client.i";
+import IClient from "./client.i";
+import IActions from "./actions.i";
 import IOptions from "../options.i";
 
-export default class BosClient implements IBosClient {
+export default class BosClient implements IClient {
   options: IOptions;
   client;
 
@@ -23,6 +24,10 @@ export default class BosClient implements IBosClient {
     }
   }
 
+  get actions(): IActions {
+    return this.client.actions;
+  }
+
   public async getInfo() {
     return await this.client.getInfo();
   }
@@ -31,12 +36,8 @@ export default class BosClient implements IBosClient {
     this.client.onMetric(metric, calback);
   }
 
-  public onStatusChange(calback) {
-    this.client.onStatusChange(calback);
-  }
-
-  public subscribe(metric, ...props) {
-    this.client.subscribe(metric, ...props);
+  public subscribe(metric, ...labels) {
+    this.client.subscribe(metric, ...labels);
   }
 
   public unsubscribe(metric) {

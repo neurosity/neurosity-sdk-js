@@ -15,3 +15,14 @@ export const configProps = [
   "storageBucket",
   "messagingSenderId"
 ];
+
+export const getFirebaseConfig = (options = {}) =>
+  Object.entries({ ...defaultConfig, ...options })
+    .filter(([key]) => configProps.includes(key))
+    .reduce(
+      (acc, [key, value]) => ({
+        ...acc,
+        [key]: value
+      }),
+      {}
+    );

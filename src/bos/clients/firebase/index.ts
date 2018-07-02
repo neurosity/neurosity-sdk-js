@@ -1,23 +1,14 @@
 import firebase from "@firebase/app";
 import "@firebase/auth";
-import { defaultConfig, configProps } from "./config";
 
+import { getFirebaseConfig } from "./config";
 import { createDeviceStore } from "./deviceStore";
+import IClient from "../../client.i";
+import IActions from "../../actions.i";
 
 const { apps, initializeApp, auth } = firebase;
 
-export const getFirebaseConfig = (options = {}) =>
-  Object.entries({ ...defaultConfig, ...options })
-    .filter(([key]) => configProps.includes(key))
-    .reduce(
-      (acc, [key, value]) => ({
-        ...acc,
-        [key]: value
-      }),
-      {}
-    );
-
-export default class FirebaseClient {
+export default class FirebaseClient implements IClient {
   user;
   deviceStore;
 
@@ -37,6 +28,17 @@ export default class FirebaseClient {
       this.user = user;
     });
   }
+  
+  get actions(): IActions {
+    return {
+      on: callback => {
+        this.deviceStore.onAction(callback);
+      },
+      dispatch: action => {
+        this.deviceStore.dispatchAction(action);
+      }
+    };
+  }
 
   public async getInfo() {
     return await this.deviceStore.getInfo();
@@ -46,12 +48,8 @@ export default class FirebaseClient {
     this.deviceStore.onMetric(metric, callback);
   }
 
-  public onStatusChange(callback) {
-    this.deviceStore.onStatus(callback);
-  }
-
-  // @TODO: support setting props
-  public subscribe(metric, ...props) {
+  // @TODO: support setting labels
+  public subscribe(metric, ...labels) {
     this.deviceStore.subscribeToMetric(metric);
   }
 
@@ -59,7 +57,7 @@ export default class FirebaseClient {
     this.deviceStore.unsubscribFromMetric(metric);
   }
 
-  public connect() {}
+  public async connect() {}
 
-  public disconnect() {}
+  public async disconnect() {}
 }
