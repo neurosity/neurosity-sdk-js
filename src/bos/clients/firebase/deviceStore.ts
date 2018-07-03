@@ -14,39 +14,39 @@ export const createDeviceStore = deviceId => {
   const deviceRef = database().ref(`devices/${deviceId}`);
   const clientId = deviceRef.child("subscriptions").push().key;
 
-  const namespaces = [
+  const topics = [
     "subscriptions",
     "metrics",
     "actions"
   ];
 
-  const set = (namespace, payload) => {
-    deviceRef.child(namespace).set(payload);
+  const set = (topic, payload) => {
+    deviceRef.child(topic).set(payload);
   };
 
-  const push = (namespace, payload) => {
-    return deviceRef.child(namespace).push(payload);
+  const push = (topic, payload) => {
+    return deviceRef.child(topic).push(payload);
   };
 
-  const update = (namespace, payload) => {
-    deviceRef.child(namespace).update(payload);
+  const update = (topic, payload) => {
+    deviceRef.child(topic).update(payload);
   };
 
-  const on = (eventType: any = "value", namespace, callback) => {
-    deviceRef.child(namespace).on(eventType, snapshot => {
+  const on = (eventType: any = "value", topic, callback) => {
+    deviceRef.child(topic).on(eventType, snapshot => {
       callback(snapshot.val(), snapshot);
     });
   };
 
-  const once = async namespace => {
-    const snapshot = await deviceRef.child(namespace).once("value");
+  const once = async topic => {
+    const snapshot = await deviceRef.child(topic).once("value");
     return snapshot.val();
   };
 
-  // Remove each client's namespace on disconnect
-  namespaces.forEach(namespace => {
+  // Remove each client's topic on disconnect
+  topics.forEach(topic => {
     deviceRef
-      .child(`${namespace}/${clientId}`)
+      .child(`${topic}/${clientId}`)
       .onDisconnect()
       .remove();
   });

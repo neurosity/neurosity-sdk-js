@@ -5,6 +5,7 @@ import { getFirebaseConfig } from "./config";
 import { createDeviceStore } from "./deviceStore";
 import IClient from "../../client.i";
 import IActions from "../../actions.i";
+import IMetrics from "../../metrics.i";
 
 const { apps, initializeApp, auth } = firebase;
 
@@ -28,8 +29,8 @@ export default class FirebaseClient implements IClient {
       this.user = user;
     });
   }
-  
-  get actions(): IActions {
+
+  public get actions(): IActions {
     return {
       on: callback => {
         this.deviceStore.onAction(callback);
@@ -40,24 +41,26 @@ export default class FirebaseClient implements IClient {
     };
   }
 
+  public async connect() {}
+
+  public async disconnect() {}
+
   public async getInfo() {
     return await this.deviceStore.getInfo();
   }
 
-  public onMetric(metric, callback) {
-    this.deviceStore.onMetric(metric, callback);
+  public get metrics(): IMetrics {
+    return {
+      on: (metric, callback) => {
+        this.deviceStore.onMetric(metric, callback);
+      },
+      // @TODO: support setting labels
+      subscribe: (metric, ...labels) => {
+        this.deviceStore.subscribeToMetric(metric);
+      },
+      unsubscribe: metric => {
+        this.deviceStore.unsubscribFromMetric(metric);
+      }
+    };
   }
-
-  // @TODO: support setting labels
-  public subscribe(metric, ...labels) {
-    this.deviceStore.subscribeToMetric(metric);
-  }
-
-  public unsubscribe(metric) {
-    this.deviceStore.unsubscribFromMetric(metric);
-  }
-
-  public async connect() {}
-
-  public async disconnect() {}
 }

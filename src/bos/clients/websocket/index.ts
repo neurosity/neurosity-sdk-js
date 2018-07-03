@@ -3,6 +3,7 @@ import io from "socket.io-client";
 import { defaultConfig } from "./config";
 import IClient from "../../client.i";
 import IActions from "../../actions.i";
+import IMetrics from "../../metrics.i";
 
 export default class WebSocketClient implements IClient {
   options;
@@ -20,31 +21,11 @@ export default class WebSocketClient implements IClient {
     });
   }
 
-  get actions(): IActions {
+  public get actions(): IActions {
     return {
-      on(callback) {
-
-      },
-      dispatch(action) {
-
-      }
+      on(callback) {},
+      dispatch(action) {}
     };
-  }
-
-  public async getInfo() {
-
-  }
-
-  public onMetric(metric, callback) {
-    this.socket.on(`metric/${metric}`, callback);
-  }
-
-  public subscribe(metric, ...labels) {
-    this.socket.emit("metric/subscribe", { metric, labels });
-  }
-
-  public unsubscribe(metric) {
-    this.socket.emit("metric/unsubscribe", { metric });
   }
 
   public async connect() {
@@ -57,5 +38,16 @@ export default class WebSocketClient implements IClient {
     if (this.socket.connected) {
       this.socket.disconnect();
     }
+  }
+
+  public async getInfo() {}
+
+  public get metrics(): IMetrics {
+    return {
+      on: (metric, callback) => {},
+      // @TODO: support setting labels
+      subscribe: (metric, ...labels) => {},
+      unsubscribe: metric => {}
+    };
   }
 }

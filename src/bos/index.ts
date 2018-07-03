@@ -2,6 +2,7 @@ import FirebaseClient from "./clients/firebase/index";
 import WebSocketClient from "./clients/websocket/index";
 import IClient from "./client.i";
 import IActions from "./actions.i";
+import IMetrics from "./metrics.i";
 import IOptions from "../options.i";
 
 export default class BosClient implements IClient {
@@ -23,32 +24,16 @@ export default class BosClient implements IClient {
     }
   }
 
+  get actions(): IActions {
+    return this.client.actions;
+  }
+
   protected get client() {
     return this._client;
   }
 
   protected set client(client) {
     this._client = client;
-  }
-
-  get actions(): IActions {
-    return this.client.actions;
-  }
-
-  public async getInfo() {
-    return await this.client.getInfo();
-  }
-
-  public onMetric(metric, calback) {
-    this.client.onMetric(metric, calback);
-  }
-
-  public subscribe(metric, ...labels) {
-    this.client.subscribe(metric, ...labels);
-  }
-
-  public unsubscribe(metric) {
-    this.client.unsubscribe(metric);
   }
 
   public async connect(callback?) {
@@ -65,5 +50,13 @@ export default class BosClient implements IClient {
       callback();
     }
     await Promise.resolve();
+  }
+
+  public async getInfo() {
+    return await this.client.getInfo();
+  }
+
+  public get metrics(): IMetrics {
+    return this.client.metrics;
   }
 }

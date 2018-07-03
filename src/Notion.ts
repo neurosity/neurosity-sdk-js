@@ -19,49 +19,49 @@ export class Notion extends BosClient implements INotion {
     });
   }
 
-  protected getMetric(metric, ...props) {
-    this.subscribe(metric, ...props);
+  protected getMetric(metric, ...labels) {
+    this.metrics.subscribe(metric, ...labels);
 
     return new Observable(observer => {
-      this.onMetric(metric, (...data) => {
+      this.metrics.on(metric, (...data) => {
         observer.next(...data);
       });
       return () => {
-        this.unsubscribe(metric);
+        this.metrics.unsubscribe(metric);
       };
     });
   }
 
-  public status(...props) {
-    return this.getMetric("status", ...props);
+  public acceleration(...labels) {
+    return this.getMetric("acceleration", ...labels);
   }
 
-  public brainwaves(...props) {
-    return this.getMetric("sample", ...props);
+  public awareness(...labels) {
+    return this.getMetric("awareness", ...labels);
   }
 
-  public awareness(...props) {
-    return this.getMetric("awareness", ...props);
+  public brainwaves(...labels) {
+    return this.getMetric("sample", ...labels);
   }
 
-  public emotion(...props) {
-    return this.getMetric("emotion", ...props);
+  public channelAnalysis(...labels) {
+    return this.getMetric("channelAnalysis", ...labels);
   }
 
-  public kinesis(...props) {
-    return this.getMetric("kinesis", ...props);
+  public emotion(...labels) {
+    return this.getMetric("emotion", ...labels);
   }
 
-  public facialExpression(...props) {
-    return this.getMetric("facialExpression", ...props);
+  public facialExpression(...labels) {
+    return this.getMetric("facialExpression", ...labels);
   }
 
-  public channelAnalysis(...props) {
-    return this.getMetric("channelAnalysis", ...props);
+  public kinesis(...labels) {
+    return this.getMetric("kinesis", ...labels);
   }
 
-  public acceleration(...props) {
-    return this.getMetric("acceleration", ...props);
+  public status(...labels) {
+    return this.getMetric("status", ...labels);
   }
 
   public get training() {
