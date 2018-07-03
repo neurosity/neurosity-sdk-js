@@ -10,16 +10,16 @@ const defaultOptions = {
 
 export class Notion extends ApiClient implements INotion {
   constructor(options?: IOptions) {
-    if (!options.deviceId) {
-      throw new Error("Notion: deviceId is mandatory");
-    }
     super({
       ...defaultOptions,
       ...options
     });
+    if (!options.deviceId) {
+      throw new Error("Notion: deviceId is mandatory");
+    }
   }
 
-  protected getMetric(metric, ...labels) {
+  protected getMetric = (metric, ...labels) => {
     this.metrics.subscribe(metric, ...labels);
 
     return new Observable(observer => {
@@ -30,7 +30,7 @@ export class Notion extends ApiClient implements INotion {
         this.metrics.unsubscribe(metric);
       };
     });
-  }
+  };
 
   public acceleration(...labels) {
     return this.getMetric("acceleration", ...labels);

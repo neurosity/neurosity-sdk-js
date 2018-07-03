@@ -1,9 +1,9 @@
 import io from "socket.io-client";
 
 import { defaultConfig } from "./config";
-import IClient from "../../client.i";
-import IActions from "../../actions.i";
-import IMetrics from "../../metrics.i";
+import IClient from "../client.i";
+import IActions from "../actions.i";
+import IMetrics from "../metrics.i";
 
 export default class WebSocketClient implements IClient {
   options;

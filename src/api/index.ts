@@ -1,5 +1,5 @@
-import FirebaseClient from "./clients/firebase/index";
-import WebSocketClient from "./clients/websocket/index";
+import FirebaseClient from "./firebase/index";
+import WebSocketClient from "./websocket/index";
 import IClient from "./client.i";
 import IActions from "./actions.i";
 import IMetrics from "./metrics.i";
@@ -8,13 +8,13 @@ import IOptions from "../options.i";
 export default class ApiClient implements IClient {
   protected _client: IClient;
 
-  constructor(options?: IOptions) {
+  constructor(options: IOptions) {
     if (options.cloud) {
       this.client = new FirebaseClient(options);
     } else {
       this.client = new WebSocketClient(options);
     }
-
+    
     this.init(options);
   }
 
@@ -24,7 +24,7 @@ export default class ApiClient implements IClient {
     }
   }
 
-  get actions(): IActions {
+  public get actions(): IActions {
     return this.client.actions;
   }
 

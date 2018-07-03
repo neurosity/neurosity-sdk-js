@@ -3,9 +3,9 @@ import "@firebase/auth";
 
 import { getFirebaseConfig } from "./config";
 import { createDeviceStore } from "./deviceStore";
-import IClient from "../../client.i";
-import IActions from "../../actions.i";
-import IMetrics from "../../metrics.i";
+import IClient from "../client.i";
+import IActions from "../actions.i";
+import IMetrics from "../metrics.i";
 
 const { apps, initializeApp, auth } = firebase;
 
