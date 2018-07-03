@@ -1,4 +1,4 @@
-export interface ITrainingValue {
+export interface ITrainingRecording {
   metric: string;
   label: string;
   fit: boolean;
@@ -7,5 +7,5 @@ export interface ITrainingValue {
 }
 
 export default interface ITraining {
-  record(training: ITrainingValue): void;
+  record(training: ITrainingRecording): void;
 }
