@@ -5,6 +5,5 @@ interface IAction {
 }
 
 export default interface IActions {
-  on(callback: (action: IAction) => void): void;
   dispatch(action: IAction): void;
 }

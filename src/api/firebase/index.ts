@@ -32,9 +32,6 @@ export default class FirebaseClient implements IClient {
 
   public get actions(): IActions {
     return {
-      on: callback => {
-        this.deviceStore.onAction(callback);
-      },
       dispatch: action => {
         this.deviceStore.dispatchAction(action);
       }

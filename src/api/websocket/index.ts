@@ -23,7 +23,6 @@ export default class WebSocketClient implements IClient {
 
   public get actions(): IActions {
     return {
-      on(callback) {},
       dispatch(action) {}
     };
   }

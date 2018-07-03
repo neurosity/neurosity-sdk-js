@@ -55,16 +55,11 @@ export const createDeviceStore = deviceId => {
     getInfo: async () => {
       return await once("info");
     },
-    onAction: callback => {
-      on("child_added", `actions/${clientId}/client`, (action, snapshot) => {
-        if (action !== null) {
-          callback(action);
-          snapshot.remove();
-        }
-      });
-    },
     dispatchAction: action => {
-      push(`actions/${clientId}/server`, action);
+      push("actions", {
+        ...action,
+        clientId
+      });
     },
     onMetric: (metric, callback) => {
       on("value", `metrics/${clientId}/${metric}`, data => {
