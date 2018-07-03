@@ -5,23 +5,30 @@ import IActions from "./actions.i";
 import IOptions from "../options.i";
 
 export default class BosClient implements IClient {
-  options: IOptions;
-  client;
+  protected _client: IClient;
 
   constructor(options?: IOptions) {
-    this.options = { ...options };
+    if (options.cloud) {
+      this.client = new FirebaseClient(options);
+    } else {
+      this.client = new WebSocketClient(options);
+    }
 
-    this.client = this.options.cloud
-      ? new FirebaseClient(this.options)
-      : new WebSocketClient(this.options);
-
-    this.init();
+    this.init(options);
   }
 
-  private init() {
-    if (this.options.autoConnect) {
+  private init(options: IOptions) {
+    if (options.autoConnect) {
       this.connect();
     }
+  }
+
+  protected get client() {
+    return this._client;
+  }
+
+  protected set client(client) {
+    this._client = client;
   }
 
   get actions(): IActions {

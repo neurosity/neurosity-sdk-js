@@ -19,7 +19,7 @@ export class Notion extends BosClient implements INotion {
     });
   }
 
-  private getMetric(metric, ...props) {
+  protected getMetric(metric, ...props) {
     this.subscribe(metric, ...props);
 
     return new Observable(observer => {
