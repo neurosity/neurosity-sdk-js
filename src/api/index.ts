@@ -5,7 +5,7 @@ import IActions from "./actions.i";
 import IMetrics from "./metrics.i";
 import IOptions from "../options.i";
 
-export default class BosClient implements IClient {
+export default class ApiClient implements IClient {
   protected _client: IClient;
 
   constructor(options?: IOptions) {

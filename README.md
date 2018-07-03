@@ -59,11 +59,11 @@ const notion = new Notion({
 Options:
 
 ``` ts
-interface OptionsI {
-  deviceId: string;
+interface IOptions {
   apiKey: string;
-  cloud: boolean;
   autoConnect: boolean;
+  cloud: boolean;
+  deviceId: string;
 }
 ```
 
@@ -88,11 +88,12 @@ Supported clients include
 Clients should be classes with the following interface.
 
 ``` ts
-interface BosClient {
-  on(): void;
-  emit(): void;
-  connect(): Promise;
-  disconnect(): Promise;
+export interface IClient {
+  actions: IActions;
+  connect(callback?: Function): Promise<any>;
+  disconnect(callback?: Function): Promise<any>;
+  getInfo(): Promise<any>;
+  metrics: IMetrics;
 }
 ``` 
 

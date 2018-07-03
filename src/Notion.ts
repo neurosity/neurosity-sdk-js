@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import BosClient from "./bos/index";
+import ApiClient from "./api/index";
 import IOptions from "./options.i";
 import INotion from "./notion.i";
 
@@ -8,7 +8,7 @@ const defaultOptions = {
   autoConnect: true
 };
 
-export class Notion extends BosClient implements INotion {
+export class Notion extends ApiClient implements INotion {
   constructor(options?: IOptions) {
     if (!options.deviceId) {
       throw new Error("Notion: deviceId is mandatory");
