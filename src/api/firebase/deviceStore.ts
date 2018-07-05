@@ -10,6 +10,9 @@ export interface IDevice {
   metrics: any;
 }
 
+/**
+ * @hidden
+ */
 export const createDeviceStore = deviceId => {
   const deviceRef = database().ref(`devices/${deviceId}`);
   const clientId = deviceRef.child("subscriptions").push().key;

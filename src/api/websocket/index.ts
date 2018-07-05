@@ -5,6 +5,9 @@ import IClient from "../client.i";
 import IActions from "../actions.i";
 import IMetrics from "../metrics.i";
 
+/**
+ * @hidden
+ */
 export default class WebSocketClient implements IClient {
   options;
   socket;

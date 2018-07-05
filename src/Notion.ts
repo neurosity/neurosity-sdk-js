@@ -8,6 +8,9 @@ const defaultOptions = {
   autoConnect: true
 };
 
+/**
+ * 
+ */
 export class Notion extends ApiClient implements INotion {
   constructor(options?: IOptions) {
     super({
@@ -19,6 +22,9 @@ export class Notion extends ApiClient implements INotion {
     }
   }
 
+  /**
+   * @hidden
+   */
   protected getMetric = (metric, ...labels) => {
     this.metrics.subscribe(metric, ...labels);
 
@@ -32,38 +38,73 @@ export class Notion extends ApiClient implements INotion {
     });
   };
 
+  /**
+   * @param labels  Name of metric properties to filter by
+   * @returns Observable of acceleration metric events
+   */
   public acceleration(...labels) {
     return this.getMetric("acceleration", ...labels);
   }
 
+  /**
+   * @param labels  Name of metric properties to filter by
+   * @returns Observable of awareness metric events
+   */
   public awareness(...labels) {
     return this.getMetric("awareness", ...labels);
   }
 
+  /**
+   * @param labels  Name of metric properties to filter by
+   * @returns Observable of brainwaves metric events
+   */
   public brainwaves(...labels) {
-    return this.getMetric("sample", ...labels);
+    return this.getMetric("brainwaves", ...labels);
   }
 
+  /**
+   * @param labels  Name of metric properties to filter by
+   * @returns Observable of channelAnalysis metric events
+   */
   public channelAnalysis(...labels) {
     return this.getMetric("channelAnalysis", ...labels);
   }
 
+  /**
+   * @param labels  Name of metric properties to filter by
+   * @returns Observable of emotion metric events
+   */
   public emotion(...labels) {
     return this.getMetric("emotion", ...labels);
   }
 
+  /**
+   * @param labels  Name of metric properties to filter by
+   * @returns Observable of facialExpression metric events
+   */
   public facialExpression(...labels) {
     return this.getMetric("facialExpression", ...labels);
   }
 
+  /**
+   * @param labels  Name of metric properties to filter by
+   * @returns Observable of kinesis metric events
+   */
   public kinesis(...labels) {
     return this.getMetric("kinesis", ...labels);
   }
 
+  /**
+   * @param labels  Name of metric properties to filter by
+   * @returns Observable of status metric events
+   */
   public status(...labels) {
     return this.getMetric("status", ...labels);
   }
 
+  /**
+   * @returns Training methods
+   */
   public get training() {
     return {
       record: training => {

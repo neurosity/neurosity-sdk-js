@@ -9,6 +9,9 @@ import IMetrics from "../metrics.i";
 
 const { apps, initializeApp, auth } = firebase;
 
+/**
+ * @hidden
+ */
 export default class FirebaseClient implements IClient {
   user;
   deviceStore;

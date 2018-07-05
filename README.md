@@ -4,8 +4,6 @@
 * Wifi/WebSocket/Offline & Cloud/Firebase/Online modes
 * Event-driven multi-client real-time architecture
 
-Read full [documentation](https://github.com/neurosity/doc-notion-api-js)
-
 > This is a private (soon to be public) module published on npm. Ensure the npm user has access to the neurosity npm org before installing/publishing.
 
 ## Getting started
@@ -34,7 +32,7 @@ const { Notion } = require("@neurosity/notion");
 
 ## Examples
 
-### Cloud mode  (default)
+### Cloud mode
 
 Utilizes Firebase client for data transport.
 
@@ -67,7 +65,6 @@ interface IOptions {
 }
 ```
 
-
 ### Manually connect
 
 ``` js
@@ -82,8 +79,8 @@ await notion.connect();
 
 Supported clients include
 
-* Firebase
-* WebSocket
+* Cloud
+* Wifi
 
 Clients should be classes with the following interface.
 
@@ -131,11 +128,9 @@ npm run examples:node
 * Check for CORS
 * Security audit
 * Code splitting
-  * Firebase should only be loaded if cloud mode is enabled
-  * socket.io-client should only be loaded on wifi mode
-* Full Documentation
+  * Cloud client should only be loaded if cloud mode is enabled
+  * Wifi client should only be loaded on wifi mode
 * Document how to get `deviceId`
 * Document how to get `apiKey` for cloud mode
 * Remove `apiKey` from examples
-* Add more examples
 * Publish to cdn

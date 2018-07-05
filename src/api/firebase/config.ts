@@ -1,4 +1,4 @@
-export const defaultConfig = {
+const defaultConfig = {
   apiKey: "AIzaSyB0TkZ83Fj0CIzn8AAmE-Osc92s3ER8hy8",
   authDomain: "neurosity-device.firebaseapp.com",
   databaseURL: "https://neurosity-device.firebaseio.com",
@@ -7,7 +7,7 @@ export const defaultConfig = {
   messagingSenderId: "212595049674"
 };
 
-export const configProps = [
+const configProps = [
   "apiKey",
   "authDomain",
   "databaseURL",

@@ -5,7 +5,13 @@ import IActions from "./actions.i";
 import IMetrics from "./metrics.i";
 import IOptions from "../options.i";
 
+/**
+ * @hidden
+ */
 export default class ApiClient implements IClient {
+  /**
+   * @hidden
+   */
   protected _client: IClient;
 
   constructor(options: IOptions) {
@@ -14,7 +20,7 @@ export default class ApiClient implements IClient {
     } else {
       this.client = new WebSocketClient(options);
     }
-    
+
     this.init(options);
   }
 
