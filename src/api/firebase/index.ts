@@ -2,7 +2,7 @@ import firebase from "@firebase/app";
 import "@firebase/auth";
 
 import { getFirebaseConfig } from "./config";
-import { createDeviceStore } from "./deviceStore";
+import { createDeviceStore, TIMESTAMP } from "./deviceStore";
 import IClient from "../client.i";
 import IActions from "../actions.i";
 import IMetrics from "../metrics.i";
@@ -62,5 +62,9 @@ export default class FirebaseClient implements IClient {
         this.deviceStore.unsubscribFromMetric(metric);
       }
     };
+  }
+
+  public get timestamp(): any {
+    return TIMESTAMP;
   }
 }

@@ -52,4 +52,8 @@ export default class WebSocketClient implements IClient {
       unsubscribe: metric => {}
     };
   }
+
+  public get timestamp(): number {
+    return Date.now();
+  }
 }

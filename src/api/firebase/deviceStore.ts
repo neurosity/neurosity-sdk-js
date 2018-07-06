@@ -10,6 +10,8 @@ export interface IDevice {
   metrics: any;
 }
 
+export const TIMESTAMP = database.ServerValue.TIMESTAMP;
+
 /**
  * @hidden
  */
@@ -59,10 +61,7 @@ export const createDeviceStore = deviceId => {
       return await once("info");
     },
     dispatchAction: action => {
-      push("actions", {
-        ...action,
-        clientId
-      });
+      push("actions", action);
     },
     onMetric: (metric, callback) => {
       on("value", `metrics/${clientId}/${metric}`, data => {

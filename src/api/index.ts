@@ -65,4 +65,8 @@ export default class ApiClient implements IClient {
   public get metrics(): IMetrics {
     return this.client.metrics;
   }
+
+  public get timestamp(): number {
+    return this.client.timestamp;
+  }
 }

@@ -7,4 +7,5 @@ export default interface IClient {
   disconnect(callback?: Function): Promise<any>;
   getInfo(): Promise<any>;
   metrics: IMetrics;
+  timestamp: number;
 }
