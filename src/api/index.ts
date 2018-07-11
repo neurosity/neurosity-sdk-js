@@ -8,7 +8,7 @@ import IOptions from "../options.i";
 /**
  * @hidden
  */
-export default class ApiClient implements IClient {
+export default abstract class ApiClient implements IClient {
   /**
    * @hidden
    */

@@ -17,13 +17,13 @@ export const TIMESTAMP = database.ServerValue.TIMESTAMP;
  */
 export const createDeviceStore = deviceId => {
   const deviceRef = database().ref(`devices/${deviceId}`);
-  const clientId = deviceRef.child("subscriptions").push().key;
+  const clientId = `client-` + deviceRef.child("subscriptions").push().key;
 
-  const topics = [
-    "subscriptions",
-    "metrics",
-    "actions"
-  ];
+  const topics = ["subscriptions", "metrics", "actions"];
+
+  const child = topic => {
+    return deviceRef.child(topic);
+  };
 
   const set = (topic, payload) => {
     deviceRef.child(topic).set(payload);
@@ -48,6 +48,10 @@ export const createDeviceStore = deviceId => {
     return snapshot.val();
   };
 
+  const remove = topic => {
+    deviceRef.child(topic).remove();
+  };
+
   // Remove each client's topic on disconnect
   topics.forEach(topic => {
     deviceRef
@@ -63,22 +67,21 @@ export const createDeviceStore = deviceId => {
     dispatchAction: action => {
       push("actions", action);
     },
-    onMetric: (metric, callback) => {
-      on("value", `metrics/${clientId}/${metric}`, data => {
+    onMetric: (subscriptionId, callback) => {
+      on("value", `metrics/${clientId}/${subscriptionId}`, data => {
         if (data !== null) {
           callback(data);
         }
       });
     },
-    subscribeToMetric: metric => {
-      update(`subscriptions/${clientId}`, {
-        [metric]: true
-      });
+    subscribeToMetric: (metric, label) => {
+      const subscriptionId =
+        "subscription-" + child(`subscriptions/${clientId}`).push().key;
+      set(`subscriptions/${clientId}/${subscriptionId}`, { metric, label });
+      return subscriptionId;
     },
-    unsubscribFromMetric: metric => {
-      update(`subscriptions/${clientId}`, {
-        [metric]: false
-      });
+    unsubscribFromMetric: subscriptionId => {
+      remove(`subscriptions/${clientId}/${subscriptionId}`);
     }
   };
 };

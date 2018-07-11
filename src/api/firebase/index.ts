@@ -51,15 +51,35 @@ export default class FirebaseClient implements IClient {
 
   public get metrics(): IMetrics {
     return {
-      on: (metric, callback) => {
-        this.deviceStore.onMetric(metric, callback);
+      /**
+       * Listens for metrics in path:
+       * /devices/:deviceId/metrics/:clientId/:subscriptionId
+       */
+      on: (subscriptionId, callback) => {
+        this.deviceStore.onMetric(subscriptionId, callback);
       },
-      // @TODO: support setting labels
-      subscribe: (metric, ...labels) => {
-        this.deviceStore.subscribeToMetric(metric);
+      /**
+       * Creates a new and unique subscription in path:
+       * /devices/:deviceId/subscriptions/:clientId/:subscriptionId
+       * E.g. /devices/device1/subscriptions/client2/subscription3
+       * 
+       * @param metric
+       * @param label
+       * @returns subscriptionId
+       */
+      subscribe: (metric, label) => {
+        const subscriptionId = this.deviceStore.subscribeToMetric(metric, label);
+        return subscriptionId;
       },
-      unsubscribe: metric => {
-        this.deviceStore.unsubscribFromMetric(metric);
+      /**
+       * Removes subscription in path:
+       * /devices/:deviceId/subscriptions/:clientId/:subscriptionId
+       * 
+       * @param metric
+       * @param subscriptionId
+       */
+      unsubscribe: subscriptionId => {
+        this.deviceStore.unsubscribFromMetric(subscriptionId);
       }
     };
   }

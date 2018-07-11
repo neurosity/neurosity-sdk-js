@@ -1,5 +1,5 @@
 export default interface IMetrics {
-  on(metric: string, callback: Function): void;
-  subscribe(metric: string, ...labels: string[]): void;
-  unsubscribe(metric: string): void;
+  on(subscriptionId: string, callback: Function): void;
+  subscribe(metric: string, label: string): string;
+  unsubscribe(subscriptionId: string): void;
 }
