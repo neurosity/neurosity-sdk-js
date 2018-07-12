@@ -26,20 +26,21 @@ export class Notion extends ApiClient implements INotion {
    * @hidden
    */
   protected getMetric = (metric, ...labels) => {
-    if (!labels.length) {
-      labels = [null];
-    }
-
-    const subscriptionIds = labels.map(label =>
-      this.metrics.subscribe(metric, label)
-    );
-
     return new Observable(observer => {
+      if (!labels.length) {
+        labels = [null];
+      }
+  
+      const subscriptionIds = labels.map(label =>
+        this.metrics.subscribe(metric, label)
+      );
+
       subscriptionIds.forEach(subscriptionId => {
         this.metrics.on(subscriptionId, (...data) => {
           observer.next(...data);
         });
       });
+
       return () => {
         subscriptionIds.forEach(subscriptionId => {
           this.metrics.unsubscribe(subscriptionId);
