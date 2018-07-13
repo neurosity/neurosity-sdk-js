@@ -121,8 +121,9 @@ export class Notion extends ApiClient implements INotion {
       record: training => {
         const message = {
           fit: false,
-          timestamp: this.timestamp,
-          ...training
+          baseline: false,
+          ...training,
+          timestamp: this.timestamp
         };
         this.actions.dispatch({
           command: "training",
