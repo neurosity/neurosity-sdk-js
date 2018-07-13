@@ -11,6 +11,5 @@ notion.getInfo().then(info => {
 
 notion.training.record({
   metric: "kinesis",
-  label: "leftHandPinch",
-  duration: 5000
+  label: "leftHandPinch"
 });
