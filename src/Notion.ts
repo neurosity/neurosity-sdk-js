@@ -1,4 +1,5 @@
-import { Observable } from "rxjs";
+import { Observable, throwError } from "rxjs";
+import { metrics } from "@neurosity/ipk";
 import ApiClient from "./api/index";
 import IOptions from "./options.i";
 import INotion from "./notion.i";
@@ -6,6 +7,13 @@ import INotion from "./notion.i";
 const defaultOptions = {
   cloud: false,
   autoConnect: true
+};
+
+const getMetricLabels = metric => Object.keys(metrics[metric]);
+
+const hasInvalidLabels = (metric, labels) => {
+  const validLabels = getMetricLabels(metric);
+  return !labels.every(label => validLabels.includes(label));
 };
 
 /**
@@ -26,11 +34,20 @@ export class Notion extends ApiClient implements INotion {
    * @hidden
    */
   protected getMetric = (metric, ...labels) => {
+    if (hasInvalidLabels(metric, labels)) {
+      const validLabels = getMetricLabels(metric).join(", ");
+      return throwError(
+        new Error(
+          `One ore more labels provided to ${metric} are invalid. The valid labels for ${metric} are ${validLabels}`
+        )
+      );
+    }
+
     return new Observable(observer => {
       if (!labels.length) {
-        labels = [null];
+        labels = getMetricLabels(metric);
       }
-  
+
       const subscriptionIds = labels.map(label =>
         this.metrics.subscribe(metric, label)
       );
