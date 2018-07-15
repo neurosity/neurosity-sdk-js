@@ -23,9 +23,16 @@ const acceleration = notion
     console.log("acceleration", acceleration);
   });
 
+const kinesis = notion
+  .kinesis("push", "pull")
+  .subscribe(kinesis => {
+    console.log("kinesis", kinesis);
+  });
+
 console.log("subscribed to channelAnalysis");
 console.log("subscribed to channelAnalysis2");
 console.log("subscribed to acceleration");
+console.log("subscribed to kinesis");
 
 setTimeout(() => {
   notion
