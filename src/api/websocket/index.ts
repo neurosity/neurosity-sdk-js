@@ -1,9 +1,9 @@
 import io from "socket.io-client";
 
 import { defaultConfig } from "./config";
-import IClient from "../client.i";
-import IActions from "../actions.i";
-import IMetrics from "../metrics.i";
+import IClient from "../client.d";
+import IActions from "../actions.d";
+import IMetrics from "../metrics.d";
 
 /**
  * @hidden

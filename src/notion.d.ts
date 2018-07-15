@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import ITraining from "./training.i";
+import ITraining from "./training.d";
 
 export default interface INotion {
   acceleration(...labels: string[]): Observable<any>;

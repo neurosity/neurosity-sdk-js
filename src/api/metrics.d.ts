@@ -1,4 +1,4 @@
-import ISubscription from "../subscription.i";
+import ISubscription from "../subscription.d";
 
 export default interface IMetrics {
   on(subscriptionId: string, callback: Function): void;

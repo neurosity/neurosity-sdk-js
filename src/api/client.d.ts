@@ -1,5 +1,5 @@
-import IActions from "./actions.i";
-import IMetrics from "./metrics.i";
+import IActions from "./actions.d";
+import IMetrics from "./metrics.d";
 
 export default interface IClient {
   actions: IActions;

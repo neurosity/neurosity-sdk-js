@@ -1,9 +1,9 @@
 import { Observable, throwError } from "rxjs";
 import { metrics } from "@neurosity/ipk";
 import ApiClient from "./api/index";
-import IOptions from "./options.i";
-import INotion from "./notion.i";
-import ISubscription from "./subscription.i";
+import IOptions from "./options.d";
+import INotion from "./notion.d";
+import ISubscription from "./subscription.d";
 
 const defaultOptions = {
   cloud: false,

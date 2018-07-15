@@ -1,9 +1,9 @@
 import FirebaseClient from "./firebase/index";
 import WebSocketClient from "./websocket/index";
-import IClient from "./client.i";
-import IActions from "./actions.i";
-import IMetrics from "./metrics.i";
-import IOptions from "../options.i";
+import IClient from "./client.d";
+import IActions from "./actions.d";
+import IMetrics from "./metrics.d";
+import IOptions from "../options.d";
 
 /**
  * @hidden
