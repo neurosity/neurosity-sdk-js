@@ -17,7 +17,7 @@ export const TIMESTAMP = database.ServerValue.TIMESTAMP;
  */
 export const createDeviceStore = deviceId => {
   const deviceRef = database().ref(`devices/${deviceId}`);
-  const clientId = `client-` + deviceRef.child("subscriptions").push().key;
+  const clientId = "client" + deviceRef.child("subscriptions").push().key;
 
   const topics = ["subscriptions", "metrics", "actions"];
 
@@ -74,10 +74,10 @@ export const createDeviceStore = deviceId => {
         }
       });
     },
-    subscribeToMetric: (metric, label) => {
+    subscribeToMetric: subscription => {
       const subscriptionId =
-        "subscription-" + child(`subscriptions/${clientId}`).push().key;
-      set(`subscriptions/${clientId}/${subscriptionId}`, { metric, label });
+        "subscription" + child(`subscriptions/${clientId}`).push().key;
+      set(`subscriptions/${clientId}/${subscriptionId}`, subscription);
       return subscriptionId;
     },
     unsubscribFromMetric: subscriptionId => {

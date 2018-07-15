@@ -63,12 +63,11 @@ export default class FirebaseClient implements IClient {
        * /devices/:deviceId/subscriptions/:clientId/:subscriptionId
        * E.g. /devices/device1/subscriptions/client2/subscription3
        * 
-       * @param metric
-       * @param label
+       * @param subscription
        * @returns subscriptionId
        */
-      subscribe: (metric, label) => {
-        const subscriptionId = this.deviceStore.subscribeToMetric(metric, label);
+      subscribe: subscription => {
+        const subscriptionId = this.deviceStore.subscribeToMetric(subscription);
         return subscriptionId;
       },
       /**

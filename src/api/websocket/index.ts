@@ -47,7 +47,7 @@ export default class WebSocketClient implements IClient {
   public get metrics(): IMetrics {
     return {
       on: (subscriptionId, callback) => {},
-      subscribe: (metric, label) => {
+      subscribe: subscription => {
         const subscriptionId = "";
         return subscriptionId;
       },

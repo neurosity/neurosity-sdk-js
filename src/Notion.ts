@@ -3,6 +3,7 @@ import { metrics } from "@neurosity/ipk";
 import ApiClient from "./api/index";
 import IOptions from "./options.i";
 import INotion from "./notion.i";
+import ISubscription from "./subscription.i";
 
 const defaultOptions = {
   cloud: false,
@@ -33,7 +34,9 @@ export class Notion extends ApiClient implements INotion {
   /**
    * @hidden
    */
-  protected getMetric = (metric, ...labels) => {
+  protected getMetric = (subscription: ISubscription) => {
+    const { metric, labels, group } = subscription;
+
     if (hasInvalidLabels(metric, labels)) {
       const validLabels = getMetricLabels(metric).join(", ");
       return throwError(
@@ -44,24 +47,22 @@ export class Notion extends ApiClient implements INotion {
     }
 
     return new Observable(observer => {
-      if (!labels.length) {
-        labels = getMetricLabels(metric);
-      }
+      const withDefaultLabels = labels.length
+        ? labels
+        : getMetricLabels(metric);
 
-      const subscriptionIds = labels.map(label =>
-        this.metrics.subscribe(metric, label)
-      );
+      const subscriptionId = this.metrics.subscribe({
+        metric: metric,
+        labels: withDefaultLabels,
+        group: group
+      });
 
-      subscriptionIds.forEach(subscriptionId => {
-        this.metrics.on(subscriptionId, (...data) => {
-          observer.next(...data);
-        });
+      this.metrics.on(subscriptionId, (...data) => {
+        observer.next(...data);
       });
 
       return () => {
-        subscriptionIds.forEach(subscriptionId => {
-          this.metrics.unsubscribe(subscriptionId);
-        });
+        this.metrics.unsubscribe(subscriptionId);
       };
     });
   };
@@ -71,7 +72,11 @@ export class Notion extends ApiClient implements INotion {
    * @returns Observable of acceleration metric events
    */
   public acceleration(...labels) {
-    return this.getMetric("acceleration", ...labels);
+    return this.getMetric({
+      metric: "acceleration",
+      labels: labels,
+      group: true
+    });
   }
 
   /**
@@ -79,7 +84,11 @@ export class Notion extends ApiClient implements INotion {
    * @returns Observable of awareness metric events
    */
   public awareness(...labels) {
-    return this.getMetric("awareness", ...labels);
+    return this.getMetric({
+      metric: "awareness",
+      labels: labels,
+      group: false
+    });
   }
 
   /**
@@ -87,7 +96,11 @@ export class Notion extends ApiClient implements INotion {
    * @returns Observable of brainwaves metric events
    */
   public brainwaves(...labels) {
-    return this.getMetric("brainwaves", ...labels);
+    return this.getMetric({
+      metric: "brainwaves",
+      labels: labels,
+      group: false
+    });
   }
 
   /**
@@ -95,7 +108,11 @@ export class Notion extends ApiClient implements INotion {
    * @returns Observable of channelAnalysis metric events
    */
   public channelAnalysis(...labels) {
-    return this.getMetric("channelAnalysis", ...labels);
+    return this.getMetric({
+      metric: "channelAnalysis",
+      labels: labels,
+      group: true
+    });
   }
 
   /**
@@ -103,7 +120,11 @@ export class Notion extends ApiClient implements INotion {
    * @returns Observable of emotion metric events
    */
   public emotion(...labels) {
-    return this.getMetric("emotion", ...labels);
+    return this.getMetric({
+      metric: "emotion",
+      labels: labels,
+      group: false
+    });
   }
 
   /**
@@ -111,7 +132,11 @@ export class Notion extends ApiClient implements INotion {
    * @returns Observable of facialExpression metric events
    */
   public facialExpression(...labels) {
-    return this.getMetric("facialExpression", ...labels);
+    return this.getMetric({
+      metric: "facialExpression",
+      labels: labels,
+      group: false
+    });
   }
 
   /**
@@ -119,7 +144,11 @@ export class Notion extends ApiClient implements INotion {
    * @returns Observable of kinesis metric events
    */
   public kinesis(...labels) {
-    return this.getMetric("kinesis", ...labels);
+    return this.getMetric({
+      metric: "kinesis",
+      labels: labels,
+      group: false
+    });
   }
 
   /**
@@ -127,7 +156,11 @@ export class Notion extends ApiClient implements INotion {
    * @returns Observable of status metric events
    */
   public status(...labels) {
-    return this.getMetric("status", ...labels);
+    return this.getMetric({
+      metric: "status",
+      labels: labels,
+      group: true
+    });
   }
 
   /**

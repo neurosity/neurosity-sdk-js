@@ -6,7 +6,7 @@ const notion = new Notion({
 });
 
 const channelAnalysis = notion
-  .channelAnalysis("FP1", "FP2")
+  .channelAnalysis("FC1", "FC2")
   .subscribe(channelAnalysis => {
     console.log("channelAnalysis", channelAnalysis);
   });
@@ -29,7 +29,7 @@ console.log("subscribed to acceleration");
 
 setTimeout(() => {
   notion
-    .channelAnalysis("FP2", "CP1", "CP2", "CP3")
+    .channelAnalysis("FC2", "CP1", "CP2", "CP3")
     .subscribe(channelAnalysis => {
       console.log("channelAnalysis3", channelAnalysis);
     });
