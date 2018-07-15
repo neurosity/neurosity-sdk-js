@@ -1,5 +1,5 @@
 const inquirer = require("inquirer");
-const fs = require('fs');
+const fs = require("fs");
 
 const choices = fs
   .readdirSync("./examples/node")
