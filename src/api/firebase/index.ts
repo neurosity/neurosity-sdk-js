@@ -1,5 +1,5 @@
-import firebase from "@firebase/app";
-import "@firebase/auth";
+import * as firebase from "firebase/app";
+import "firebase/auth";
 
 import { getFirebaseConfig } from "./config";
 import { createDeviceStore, TIMESTAMP } from "./deviceStore";
