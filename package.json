@@ -19,7 +19,7 @@
     "serve:docs": "lite-server --baseDir=./docs",
     "serve:examples": "lite-server --baseDir=./dist/examples",
     "examples:browser": "parcel watch ./examples/browser/index.html -p 3000 --out-dir dist/examples && npm run serve:examples",
-    "examples:node": "node ./examples/node",
+    "examples:node": "npm run build:cjs && node ./examples/node",
     "start": "tsc -w",
     "clean": "del dist",
     "prepublishOnly": "npm run build"
