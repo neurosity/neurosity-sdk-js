@@ -99,7 +99,7 @@ export class Notion extends ApiClient implements INotion {
     return this.getMetric({
       metric: "brainwaves",
       labels: labels,
-      group: false
+      group: true
     });
   }
 
