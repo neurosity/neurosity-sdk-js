@@ -106,6 +106,11 @@ $ npm publish
 
 ## Examples
 
+Requirements to run examples:
+
+* Create `.env` file in root directory
+* Add: DEVICE_ID=YOUR_DEVICE_ID
+
 ### Browser
 
 Builds browser examples and serves examples in the browser with ES modules.
