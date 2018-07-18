@@ -7,8 +7,6 @@ import IClient from "../client.d";
 import IActions from "../actions.d";
 import IMetrics from "../metrics.d";
 
-const { apps, initializeApp, auth } = firebase;
-
 /**
  * @hidden
  */
@@ -21,14 +19,14 @@ export default class FirebaseClient implements IClient {
   }
 
   private init(options) {
-    if (!apps.length) {
-      initializeApp(getFirebaseConfig(options || {}));
+    if (!firebase.apps.length) {
+      firebase.initializeApp(getFirebaseConfig(options || {}));
     }
 
     this.deviceStore = createDeviceStore(options.deviceId);
 
-    auth().signInAnonymously();
-    auth().onAuthStateChanged(user => {
+    firebase.auth().signInAnonymously();
+    firebase.auth().onAuthStateChanged(user => {
       this.user = user;
     });
   }
