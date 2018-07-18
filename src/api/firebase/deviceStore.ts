@@ -1,8 +1,6 @@
 import * as firebase from "firebase/app";
 import "firebase/database";
 
-const { database } = firebase;
-
 export interface IDevice {
   info: any;
   status: any;
@@ -10,13 +8,13 @@ export interface IDevice {
   metrics: any;
 }
 
-export const TIMESTAMP = database.ServerValue.TIMESTAMP;
+export const TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
 
 /**
  * @hidden
  */
 export const createDeviceStore = deviceId => {
-  const deviceRef = database().ref(`devices/${deviceId}`);
+  const deviceRef = firebase.database().ref(`devices/${deviceId}`);
   const clientId = "client" + deviceRef.child("subscriptions").push().key;
 
   const topics = ["subscriptions", "metrics", "actions"];
