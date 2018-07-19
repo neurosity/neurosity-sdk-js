@@ -1,8 +1,9 @@
-import * as firebase from "firebase/app";
+import firebase from "firebase/app";
+import "firebase/database";
 import "firebase/auth";
 
 import { getFirebaseConfig } from "./config";
-import { createDeviceStore, TIMESTAMP } from "./deviceStore";
+import { createDeviceStore } from "./deviceStore";
 import IClient from "../client.d";
 import IActions from "../actions.d";
 import IMetrics from "../metrics.d";
@@ -11,6 +12,7 @@ import IMetrics from "../metrics.d";
  * @hidden
  */
 export default class FirebaseClient implements IClient {
+  app;
   user;
   deviceStore;
 
@@ -19,14 +21,14 @@ export default class FirebaseClient implements IClient {
   }
 
   private init(options) {
-    if (!firebase.apps.length) {
-      firebase.initializeApp(getFirebaseConfig(options || {}));
-    }
+    this.app = firebase.apps.length
+      ? firebase.app(options.deviceId)
+      : firebase.initializeApp(getFirebaseConfig(options || {}), options.deviceId);
 
-    this.deviceStore = createDeviceStore(options.deviceId);
+    this.deviceStore = createDeviceStore(this.app, options.deviceId);
 
-    firebase.auth().signInAnonymously();
-    firebase.auth().onAuthStateChanged(user => {
+    this.app.auth().signInAnonymously();
+    this.app.auth().onAuthStateChanged(user => {
       this.user = user;
     });
   }
@@ -82,6 +84,6 @@ export default class FirebaseClient implements IClient {
   }
 
   public get timestamp(): any {
-    return TIMESTAMP;
+    return firebase.database.ServerValue.TIMESTAMP
   }
 }

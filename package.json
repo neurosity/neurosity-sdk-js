@@ -18,7 +18,7 @@
     "build:docs": "typedoc --out docs --target es6 --theme minimal --mode file --name Notion.js --excludePrivate --excludeProtected src",
     "serve:docs": "lite-server --baseDir=./docs",
     "serve:examples": "lite-server --baseDir=./dist/examples",
-    "examples:browser": "parcel watch ./examples/browser/index.html --out-dir dist/examples | npm run serve:examples",
+    "examples:browser": "npm run build:esm && npm run build:examples && parcel watch ./examples/browser/index.html --out-dir dist/examples | npm run serve:examples",
     "examples:node": "npm run build:cjs && node ./examples/node",
     "start": "tsc -w",
     "clean": "del dist",

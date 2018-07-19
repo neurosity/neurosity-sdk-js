@@ -16,7 +16,8 @@
     "newLine": "lf",
     "stripInternal": true,
     "strict": false,
-    "sourceMap": false
+    "sourceMap": false,
+    "allowSyntheticDefaultImports": true 
   },
   "exclude": [
     "node_modules",
