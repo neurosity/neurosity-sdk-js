@@ -21,16 +21,21 @@ export default class FirebaseClient implements IClient {
   }
 
   private init(options) {
-    this.app = firebase.apps.length
-      ? firebase.app(options.deviceId)
-      : firebase.initializeApp(getFirebaseConfig(options || {}), options.deviceId);
-
+    this.app = this.getApp(options);
     this.deviceStore = createDeviceStore(this.app, options.deviceId);
 
     this.app.auth().signInAnonymously();
     this.app.auth().onAuthStateChanged(user => {
       this.user = user;
     });
+  }
+
+  private getApp(options) {
+    const appName = options.deviceId;
+    const existingApp = firebase.apps.find(app => app.name === appName);
+    return existingApp
+      ? existingApp
+      : firebase.initializeApp(getFirebaseConfig(options || {}), appName);
   }
 
   public get actions(): IActions {
@@ -62,7 +67,7 @@ export default class FirebaseClient implements IClient {
        * Creates a new and unique subscription in path:
        * /devices/:deviceId/subscriptions/:clientId/:subscriptionId
        * E.g. /devices/device1/subscriptions/client2/subscription3
-       * 
+       *
        * @param subscription
        * @returns subscriptionId
        */
@@ -73,7 +78,7 @@ export default class FirebaseClient implements IClient {
       /**
        * Removes subscription in path:
        * /devices/:deviceId/subscriptions/:clientId/:subscriptionId
-       * 
+       *
        * @param metric
        * @param subscriptionId
        */
@@ -84,6 +89,6 @@ export default class FirebaseClient implements IClient {
   }
 
   public get timestamp(): any {
-    return firebase.database.ServerValue.TIMESTAMP
+    return firebase.database.ServerValue.TIMESTAMP;
   }
 }
