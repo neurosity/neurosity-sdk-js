@@ -75,6 +75,7 @@ export const createDeviceStore = (app, deviceId) => {
     },
     unsubscribFromMetric: subscriptionId => {
       remove(`subscriptions/${clientId}/${subscriptionId}`);
+      remove(`metrics/${clientId}/${subscriptionId}`);
     }
   };
 };
