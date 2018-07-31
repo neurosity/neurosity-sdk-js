@@ -1,6 +1,6 @@
 {
   "name": "@neurosity/notion",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Notion API Client by Neurosity",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
