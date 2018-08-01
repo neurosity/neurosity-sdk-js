@@ -1,9 +1,11 @@
 import { Observable, throwError } from "rxjs";
+import { map } from "rxjs/operators";
 import { metrics } from "@neurosity/ipk";
 import ApiClient from "./api/index";
 import IOptions from "./options.d";
 import INotion from "./notion.d";
 import ISubscription from "./subscription.d";
+import { pick } from "./utils/pick";
 
 const defaultOptions = {
   cloud: false,
@@ -68,7 +70,7 @@ export class Notion extends ApiClient implements INotion {
   };
 
   /**
-   * @param labels  Name of metric properties to filter by
+   * @param labels Name of metric properties to filter by
    * @returns Observable of acceleration metric events
    */
   public acceleration(...labels) {
@@ -80,7 +82,7 @@ export class Notion extends ApiClient implements INotion {
   }
 
   /**
-   * @param labels  Name of metric properties to filter by
+   * @param labels Name of metric properties to filter by
    * @returns Observable of awareness metric events
    */
   public awareness(...labels) {
@@ -92,7 +94,7 @@ export class Notion extends ApiClient implements INotion {
   }
 
   /**
-   * @param labels  Name of metric properties to filter by
+   * @param labels Name of metric properties to filter by
    * @returns Observable of brainwaves metric events
    */
   public brainwaves(...labels) {
@@ -104,7 +106,7 @@ export class Notion extends ApiClient implements INotion {
   }
 
   /**
-   * @param labels  Name of metric properties to filter by
+   * @param labels Name of metric properties to filter by
    * @returns Observable of channelAnalysis metric events
    */
   public channelAnalysis(...labels) {
@@ -116,7 +118,7 @@ export class Notion extends ApiClient implements INotion {
   }
 
   /**
-   * @param labels  Name of metric properties to filter by
+   * @param labels Name of metric properties to filter by
    * @returns Observable of emotion metric events
    */
   public emotion(...labels) {
@@ -128,7 +130,7 @@ export class Notion extends ApiClient implements INotion {
   }
 
   /**
-   * @param labels  Name of metric properties to filter by
+   * @param labels Name of metric properties to filter by
    * @returns Observable of facialExpression metric events
    */
   public facialExpression(...labels) {
@@ -140,7 +142,7 @@ export class Notion extends ApiClient implements INotion {
   }
 
   /**
-   * @param labels  Name of metric properties to filter by
+   * @param labels Name of metric properties to filter by
    * @returns Observable of kinesis metric events
    */
   public kinesis(...labels) {
@@ -152,15 +154,34 @@ export class Notion extends ApiClient implements INotion {
   }
 
   /**
-   * @param labels  Name of metric properties to filter by
+   * Emits last state of status and all subsequent status changes
+   *
+   * @param labels Name of metric properties to filter by
    * @returns Observable of status metric events
    */
   public status(...labels) {
-    return this.getMetric({
-      metric: "status",
-      labels: labels,
-      group: true
+    if (hasInvalidLabels("status", labels)) {
+      const validLabels = getMetricLabels("status").join(", ");
+      return throwError(
+        new Error(
+          `One ore more labels provided to status are invalid. Valid labels are ${validLabels}`
+        )
+      );
+    }
+
+    const withDefaultLabels = labels.length
+      ? labels
+      : getMetricLabels("status");
+
+    const status = new Observable(observer => {
+      this.onStatus((...data) => {
+        observer.next(...data);
+      });
+
+      return () => {};
     });
+
+    return status.pipe(map(status => pick(status, withDefaultLabels)));
   }
 
   /**

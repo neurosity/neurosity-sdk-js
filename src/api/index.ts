@@ -62,6 +62,10 @@ export default abstract class ApiClient implements IClient {
     return await this.client.getInfo();
   }
 
+  public onStatus(callback) {
+    this.client.onStatus(callback);
+  }
+
   public get metrics(): IMetrics {
     return this.client.metrics;
   }

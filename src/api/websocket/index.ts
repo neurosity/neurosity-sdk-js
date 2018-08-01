@@ -43,6 +43,8 @@ export default class WebSocketClient implements IClient {
   }
 
   public async getInfo() {}
+  
+  public onStatus() {}
 
   public get metrics(): IMetrics {
     return {

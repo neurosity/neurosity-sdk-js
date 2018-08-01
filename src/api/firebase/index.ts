@@ -54,6 +54,10 @@ export default class FirebaseClient implements IClient {
     return await this.deviceStore.getInfo();
   }
 
+  public onStatus (callback) {
+    this.deviceStore.onStatus(callback);
+  }
+
   public get metrics(): IMetrics {
     return {
       /**

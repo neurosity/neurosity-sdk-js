@@ -6,6 +6,7 @@ export default interface IClient {
   connect(callback?: Function): Promise<any>;
   disconnect(callback?: Function): Promise<any>;
   getInfo(): Promise<any>;
+  onStatus(callback?: Function): void;
   metrics: IMetrics;
   timestamp: number;
 }
