@@ -11,7 +11,8 @@ notion.getInfo().then(info => {
 
 const trainingOptions = {
   metric: "kinesis",
-  label: "leftHandPinch"
+  label: "leftHandPinch",
+  experimentId: "-experiment-123"
 };
 
 // Show metric and label message to user now

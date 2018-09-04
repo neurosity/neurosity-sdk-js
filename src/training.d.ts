@@ -1,11 +1,12 @@
 export interface ITrainingRecording {
+  experimentId: string;
   metric: string;
   label: string;
-  fit: boolean;
-  baseline: boolean;
-  timestamp: Date;
+  fit?: boolean;
+  baseline?: boolean;
+  timestamp?: number;
 }
 
-export default interface ITraining {
+export interface ITraining {
   record(training: ITrainingRecording): void;
 }
