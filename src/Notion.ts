@@ -154,6 +154,18 @@ export class Notion extends ApiClient implements INotion {
   }
 
   /**
+   * @param labels Name of metric properties to filter by
+   * @returns Observable of predictions metric events
+   */
+  public predictions(...labels) {
+    return this.getMetric({
+      metric: "predictions",
+      labels: labels,
+      group: false
+    });
+  }
+
+  /**
    * Emits last state of status and all subsequent status changes
    *
    * @param labels Name of metric properties to filter by

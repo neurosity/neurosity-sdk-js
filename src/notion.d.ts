@@ -10,6 +10,7 @@ export default interface INotion {
   facialExpression(...labels: string[]): Observable<any>;
   getInfo(): Promise<any>;
   kinesis(...labels: string[]): Observable<any>;
+  predictions(...labels: string[]): Observable<any>;
   status(...labels: string[]): Observable<any>;
   training: ITraining;
 }
