@@ -5,30 +5,32 @@ import ApiClient from "./api/index";
 import IOptions from "./options.d";
 import INotion from "./notion.d";
 import ISubscription from "./subscription.d";
+import { getMetricLabels, validateMetric } from "./utils/metric";
 import { pick } from "./utils/pick";
 
 const defaultOptions = {
   cloud: false,
-  autoConnect: true
-};
-
-const getMetricLabels = metric => Object.keys(metrics[metric]);
-
-const hasInvalidLabels = (metric, labels) => {
-  const validLabels = getMetricLabels(metric);
-  return !labels.every(label => validLabels.includes(label));
+  autoConnect: true,
+  metricsAllowed: Object.keys(metrics)
 };
 
 /**
  *
  */
 export class Notion extends ApiClient implements INotion {
-  constructor(options?: IOptions) {
+  private options: IOptions;
+
+  constructor(customOptions: IOptions) {
     super({
       ...defaultOptions,
-      ...options
+      ...customOptions
     });
-    if (!options.deviceId) {
+    this.options = {
+      ...defaultOptions,
+      ...customOptions
+    };
+
+    if (!this.options.deviceId) {
       throw new Error("Notion: deviceId is mandatory");
     }
   }
@@ -36,16 +38,14 @@ export class Notion extends ApiClient implements INotion {
   /**
    * @hidden
    */
-  protected getMetric = (subscription: ISubscription) => {
+  protected getMetric = (
+    subscription: ISubscription
+  ): Observable<any> => {
     const { metric, labels, group } = subscription;
 
-    if (hasInvalidLabels(metric, labels)) {
-      const validLabels = getMetricLabels(metric).join(", ");
-      return throwError(
-        new Error(
-          `One ore more labels provided to ${metric} are invalid. The valid labels for ${metric} are ${validLabels}`
-        )
-      );
+    const error = validateMetric(metric, labels, this.options);
+    if (error) {
+      return throwError(error);
     }
 
     return new Observable(observer => {
@@ -73,7 +73,7 @@ export class Notion extends ApiClient implements INotion {
    * @param labels Name of metric properties to filter by
    * @returns Observable of acceleration metric events
    */
-  public acceleration(...labels) {
+  public acceleration(...labels): Observable<any> {
     return this.getMetric({
       metric: "acceleration",
       labels: labels,
@@ -85,7 +85,7 @@ export class Notion extends ApiClient implements INotion {
    * @param labels Name of metric properties to filter by
    * @returns Observable of awareness metric events
    */
-  public awareness(...labels) {
+  public awareness(...labels): Observable<any> {
     return this.getMetric({
       metric: "awareness",
       labels: labels,
@@ -97,7 +97,7 @@ export class Notion extends ApiClient implements INotion {
    * @param labels Name of metric properties to filter by
    * @returns Observable of brainwaves metric events
    */
-  public brainwaves(...labels) {
+  public brainwaves(...labels): Observable<any> {
     return this.getMetric({
       metric: "brainwaves",
       labels: labels,
@@ -109,7 +109,7 @@ export class Notion extends ApiClient implements INotion {
    * @param labels Name of metric properties to filter by
    * @returns Observable of channelAnalysis metric events
    */
-  public channelAnalysis(...labels) {
+  public channelAnalysis(...labels): Observable<any> {
     return this.getMetric({
       metric: "channelAnalysis",
       labels: labels,
@@ -121,7 +121,7 @@ export class Notion extends ApiClient implements INotion {
    * @param labels Name of metric properties to filter by
    * @returns Observable of emotion metric events
    */
-  public emotion(...labels) {
+  public emotion(...labels): Observable<any> {
     return this.getMetric({
       metric: "emotion",
       labels: labels,
@@ -133,7 +133,7 @@ export class Notion extends ApiClient implements INotion {
    * @param labels Name of metric properties to filter by
    * @returns Observable of facialExpression metric events
    */
-  public facialExpression(...labels) {
+  public facialExpression(...labels): Observable<any> {
     return this.getMetric({
       metric: "facialExpression",
       labels: labels,
@@ -145,7 +145,7 @@ export class Notion extends ApiClient implements INotion {
    * @param labels Name of metric properties to filter by
    * @returns Observable of kinesis metric events
    */
-  public kinesis(...labels) {
+  public kinesis(...labels): Observable<any> {
     return this.getMetric({
       metric: "kinesis",
       labels: labels,
@@ -157,7 +157,7 @@ export class Notion extends ApiClient implements INotion {
    * @param labels Name of metric properties to filter by
    * @returns Observable of predictions metric events
    */
-  public predictions(...labels) {
+  public predictions(...labels): Observable<any> {
     return this.getMetric({
       metric: "predictions",
       labels: labels,
@@ -171,14 +171,10 @@ export class Notion extends ApiClient implements INotion {
    * @param labels Name of metric properties to filter by
    * @returns Observable of status metric events
    */
-  public status(...labels) {
-    if (hasInvalidLabels("status", labels)) {
-      const validLabels = getMetricLabels("status").join(", ");
-      return throwError(
-        new Error(
-          `One ore more labels provided to status are invalid. Valid labels are ${validLabels}`
-        )
-      );
+  public status(...labels): Observable<any> {
+    const error = validateMetric("status", labels, this.options);
+    if (error) {
+      return throwError(error);
     }
 
     const withDefaultLabels = labels.length
