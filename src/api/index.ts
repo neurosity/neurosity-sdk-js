@@ -1,5 +1,4 @@
 import FirebaseClient from "./firebase/index";
-import WebSocketClient from "./websocket/index";
 import IClient from "./client.d";
 import IActions from "./actions.d";
 import IMetrics from "./metrics.d";
@@ -9,69 +8,53 @@ import IOptions from "../options.d";
  * @hidden
  */
 export default abstract class ApiClient implements IClient {
-  /**
-   * @hidden
-   */
-  protected _client: IClient;
+  protected firebase: FirebaseClient;
+  protected options: IOptions;
 
-  constructor(opts: IOptions) {
-    const options = Object.freeze(opts);
-    if (options.cloud) {
-      this.client = new FirebaseClient(options);
-    } else {
-      this.client = new WebSocketClient(options);
-    }
-
-    this.init(options);
-  }
-
-  private init(options: IOptions) {
-    if (options.autoConnect) {
-      this.connect();
-    }
+  constructor(options: IOptions) {
+    this.options = Object.freeze(options);
+    this.firebase = new FirebaseClient(this.options);
   }
 
   public get actions(): IActions {
-    return this.client.actions;
+    return {
+      dispatch: action => {
+        this.firebase.dispatchAction(action);
+      }
+    };
   }
 
-  protected get client() {
-    return this._client;
+  public async getInfo(): Promise<any> {
+    return await this.firebase.getInfo();
   }
 
-  protected set client(client) {
-    this._client = client;
-  }
-
-  public async connect(callback?) {
-    this.client.connect();
-    if (callback) {
-      callback();
-    }
-    await Promise.resolve();
-  }
-
-  public async disconnect(callback?) {
-    this.client.disconnect();
-    if (callback) {
-      callback();
-    }
-    await Promise.resolve();
-  }
-
-  public async getInfo() {
-    return await this.client.getInfo();
-  }
-
-  public onStatus(callback) {
-    this.client.onStatus(callback);
+  public onStatus(callback): void {
+    this.firebase.onStatus(callback);
   }
 
   public get metrics(): IMetrics {
-    return this.client.metrics;
+    return {
+      on: (subscriptionId, callback): void => {
+        const { metricsSubscriber } = this.options;
+        const onMetric = metricsSubscriber
+          ? metricsSubscriber.onMetric
+          : this.firebase.onMetric;
+
+        onMetric(subscriptionId, callback);
+      },
+      subscribe: (subscription): string => {
+        const subscriptionId = this.firebase.subscribeToMetric(
+          subscription
+        );
+        return subscriptionId;
+      },
+      unsubscribe: (subscriptionId): void => {
+        this.firebase.unsubscribFromMetric(subscriptionId);
+      }
+    };
   }
 
   public get timestamp(): number {
-    return this.client.timestamp;
+    return this.firebase.timestamp;
   }
 }
