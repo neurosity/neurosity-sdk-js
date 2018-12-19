@@ -14,7 +14,8 @@ export default abstract class ApiClient implements IClient {
    */
   protected _client: IClient;
 
-  constructor(options: IOptions) {
+  constructor(opts: IOptions) {
+    const options = Object.freeze(opts);
     if (options.cloud) {
       this.client = new FirebaseClient(options);
     } else {

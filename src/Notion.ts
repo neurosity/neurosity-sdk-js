@@ -25,10 +25,10 @@ export class Notion extends ApiClient implements INotion {
       ...defaultOptions,
       ...customOptions
     });
-    this.options = {
+    this.options = Object.freeze({
       ...defaultOptions,
       ...customOptions
-    };
+    });
 
     if (!this.options.deviceId) {
       throw new Error("Notion: deviceId is mandatory");
