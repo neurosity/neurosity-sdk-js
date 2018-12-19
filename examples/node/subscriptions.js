@@ -1,7 +1,6 @@
 const { Notion } = require("../..");
 
 const notion = new Notion({
-  cloud: true,
   deviceId: process.env.DEVICE_ID
 });
 
@@ -11,23 +10,17 @@ const channelAnalysis = notion
     console.log("channelAnalysis", channelAnalysis);
   });
 
-notion
-  .channelAnalysis()
-  .subscribe(channelAnalysis => {
-    console.log("channelAnalysis2", channelAnalysis);
-  });
+notion.channelAnalysis().subscribe(channelAnalysis => {
+  console.log("channelAnalysis2", channelAnalysis);
+});
 
-const acceleration = notion
-  .acceleration()
-  .subscribe(acceleration => {
-    console.log("acceleration", acceleration);
-  });
+const acceleration = notion.acceleration().subscribe(acceleration => {
+  console.log("acceleration", acceleration);
+});
 
-const kinesis = notion
-  .kinesis("push", "pull")
-  .subscribe(kinesis => {
-    console.log("kinesis", kinesis);
-  });
+const kinesis = notion.kinesis("push", "pull").subscribe(kinesis => {
+  console.log("kinesis", kinesis);
+});
 
 console.log("subscribed to channelAnalysis");
 console.log("subscribed to channelAnalysis2");
@@ -42,8 +35,7 @@ setTimeout(() => {
     });
 
   console.log("subscribed to channelAnalysis3");
-  
+
   channelAnalysis.unsubscribe();
   console.log("unsubscribed from channelAnalysis");
-
 }, 8000);

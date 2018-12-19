@@ -1,7 +1,7 @@
 # Notion Client API by Neurosity
 
 - Universal JavaScript support: Node/Browser/Electron
-- Wifi/WebSocket/Offline & Cloud/Firebase/Online modes
+- Firebase + Custom Metric Subscriber
 - Event-driven multi-client real-time architecture
 
 > This is a private (soon to be public) module published on npm. Ensure the npm user has access to the neurosity npm org before installing/publishing.
@@ -37,25 +37,14 @@ const { Notion } = require("@neurosity/notion");
 
 ## Examples
 
-### Cloud mode
+### Basic
 
 Utilizes Firebase client for data transport.
 
 ```js
 const notion = new Notion({
-  cloud: true,
   deviceId: "****",
   apiKey: "************"
-});
-```
-
-### Wifi mode
-
-Utilizes WebSocket client for data transport.
-
-```js
-const notion = new Notion({
-  deviceId: "****"
 });
 ```
 
@@ -65,28 +54,17 @@ Options:
 interface IOptions {
   deviceId: string;
   apiKey?: string;
-  autoConnect?: boolean;
-  cloud?: boolean;
   metricsAllowed?: string[];
+  metricsSubscriber: IMetricsSubscriber;
 }
-```
-
-### Manually connect
-
-```js
-const notion = new Notion({
-  autoConnect: false
-});
-
-await notion.connect();
 ```
 
 ### Clients
 
 Supported clients include
 
-- Cloud
-- Wifi
+- Firebase
+- (Custom Subscriber e.i. Websocket instance)
 
 Clients should be classes with the following interface.
 
@@ -139,10 +117,7 @@ npm run examples:node
 - Test Auth
 - Check for CORS
 - Security audit
-- Code splitting
-  - Cloud client should only be loaded if cloud mode is enabled
-  - Wifi client should only be loaded on wifi mode
 - Document how to get `deviceId`
-- Document how to get `apiKey` for cloud mode
+- Document how to get `apiKey` for firebase
 - Remove `apiKey` from examples
 - Publish to cdn
