@@ -9,23 +9,21 @@ import { getMetricLabels, validateMetric } from "./utils/metric";
 import { pick } from "./utils/pick";
 
 const defaultOptions = {
-  cloud: false,
-  autoConnect: true,
-  metricsAllowed: Object.keys(metrics)
+  metricsAllowed: Object.keys(metrics),
+  metricsSubscriber: null
 };
 
 /**
  *
  */
 export class Notion extends ApiClient implements INotion {
-  private options: IOptions;
+  /**
+   * @hidden
+   */
+  protected options: IOptions;
 
   constructor(customOptions: IOptions) {
     super({
-      ...defaultOptions,
-      ...customOptions
-    });
-    this.options = Object.freeze({
       ...defaultOptions,
       ...customOptions
     });
