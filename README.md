@@ -78,6 +78,54 @@ export interface IClient {
 }
 ```
 
+## Skills
+
+Skills are applications that can be written and deployed to a Notion device.
+
+A Skill is an npm package with:
+
+- index.js
+- package.json
+
+For example:
+
+./index.js
+
+```js
+import { createSkill } from "@neurosity/notion";
+import { Drone } from "parrot-drone";
+
+export const mySkill = createSkill((notion, context) => {
+  const { credentials } = context;
+
+  const drone = new Drone({
+    credentials
+  });
+
+  notion.kinesis().subscribe(kinesis => {
+    drone.setFlightParams(kinesis);
+  });
+});
+```
+
+./package.json
+
+```json
+{
+  "name": "mind-drone",
+  "version": "1.0.0",
+  "description": "Notion-powered drone control",
+  "dependencies": {
+    "@neurosity/notion": "^6.0.0",
+    "parrot-drone": "*"
+  },
+  "engines": {
+    "node": "10"
+  },
+  "private": true
+}
+```
+
 ## Releases
 
 Please use [semver](https://docs.npmjs.com/misc/semver)
