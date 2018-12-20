@@ -10,7 +10,7 @@ import { pick } from "./utils/pick";
 
 const defaultOptions = {
   metricsAllowed: Object.keys(metrics),
-  metricsSubscriber: null
+  websocket: null
 };
 
 /**

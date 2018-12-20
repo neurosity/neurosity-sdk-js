@@ -1,19 +1,26 @@
 import { Notion } from "../Notion";
+import WebsocketClient from "../api/websocket";
+import { IContext } from "./context.d";
 
 // Do not export, this is used to identify skills at runtime
 const token = Symbol();
 
-export function createSkill(app) {
-  function connect(context) {
-    const { deviceId, skill } = context;
-    const { metrics } = skill;
+export function createSkill(app: Function) {
+  function connect(context: IContext): Function {
+    const { deviceId, socketUrl, skill } = context;
+    const { metrics: metricsAllowed } = skill;
+
+    const websocket = new WebsocketClient({
+      socketUrl
+    });
 
     const notion = new Notion({
       deviceId,
-      metricsAllowed: metrics
+      metricsAllowed,
+      websocket
     });
 
-    return function run() {
+    return function run(): Function {
       return app(notion, context);
     };
   }
@@ -26,7 +33,7 @@ export function createSkill(app) {
   return connect;
 }
 
-export function isSkill(connect) {
+export function isSkill(connect: Function): boolean {
   return (
     typeof connect === "function" &&
     Object.getOwnPropertySymbols(connect).includes(token)

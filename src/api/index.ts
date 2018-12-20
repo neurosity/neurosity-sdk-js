@@ -35,17 +35,23 @@ export default abstract class ApiClient implements IClient {
   public get metrics(): IMetrics {
     return {
       on: (subscriptionId, callback): void => {
-        const { metricsSubscriber } = this.options;
-        const onMetric = metricsSubscriber
-          ? metricsSubscriber.onMetric
-          : this.firebase.onMetric;
-
-        onMetric(subscriptionId, callback);
+        const { websocket } = this.options;
+        if (websocket) {
+          websocket.onMetric(subscriptionId, callback);
+        } else {
+          this.firebase.onMetric(subscriptionId, callback);
+        }
       },
       subscribe: (subscription): string => {
-        const subscriptionId = this.firebase.subscribeToMetric(
-          subscription
-        );
+        const { websocket } = this.options;
+        const serverType = websocket
+          ? websocket.serverType
+          : this.firebase.serverType;
+
+        const subscriptionId = this.firebase.subscribeToMetric({
+          ...subscription,
+          serverType
+        });
         return subscriptionId;
       },
       unsubscribe: (subscriptionId): void => {

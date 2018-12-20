@@ -1,10 +1,8 @@
-interface IMetricsSubscriber {
-  onMetric(subscriptionId: string, callback: Function): void;
-}
+import { IWebsocketClient } from "./api/websocket/websocket.d";
 
 export default interface IOptions {
   deviceId: string;
   apiKey?: string;
   metricsAllowed?: string[];
-  metricsSubscriber?: IMetricsSubscriber;
+  websocket?: IWebsocketClient;
 }
