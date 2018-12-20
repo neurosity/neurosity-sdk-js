@@ -9,9 +9,10 @@ import { createDeviceStore } from "./deviceStore";
  * @hidden
  */
 export default class FirebaseClient {
-  app;
-  user;
-  deviceStore;
+  public serverType = "firebase";
+  protected app;
+  protected user;
+  protected deviceStore;
 
   constructor(options) {
     this.init(options);
