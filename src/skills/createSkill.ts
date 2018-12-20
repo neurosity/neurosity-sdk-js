@@ -10,18 +10,17 @@ export function createSkill(app: Function) {
     const { deviceId, socketUrl, skill } = internalContext;
     const { metrics: metricsAllowed } = skill;
 
-    const websocket = new WebsocketClient({
-      socketUrl
-    });
-
-    const notion = new Notion({
-      deviceId,
-      metricsAllowed,
-      websocket
-    });
-
     return function run(): Function {
+      const notion = new Notion({
+        deviceId,
+        metricsAllowed,
+        websocket: new WebsocketClient({
+          socketUrl
+        })
+      });
+
       const externalContext: IExternalContext = { skill };
+
       return app(notion, externalContext);
     };
   }
