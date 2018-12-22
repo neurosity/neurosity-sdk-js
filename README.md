@@ -93,20 +93,15 @@ For example:
 
 ```js
 import { createSkill } from "@neurosity/notion";
-import { Drone } from "parrot-drone";
 
-export const mySkill = createSkill((notion, context) => {
-  const { credentials } = context;
-
-  const drone = new Drone({
-    credentials
-  });
-
+export default createSkill((notion, context) => {
   notion.kinesis().subscribe(kinesis => {
-    drone.setFlightParams(kinesis);
+    console.log(kinesis);
   });
 });
 ```
+
+Note the Skill has to be exported as default.
 
 ./package.json
 
@@ -116,8 +111,7 @@ export const mySkill = createSkill((notion, context) => {
   "version": "1.0.0",
   "description": "Notion-powered drone control",
   "dependencies": {
-    "@neurosity/notion": "^6.0.0",
-    "parrot-drone": "*"
+    "@neurosity/notion": "^1.0.0"
   },
   "engines": {
     "node": "10"
