@@ -1,4 +1,4 @@
-const { createSkill, isSkill } = require("../..");
+const { createSkill, SKILL_TOKEN } = require("../..");
 
 const connect = createSkill((notion, context) => {
   console.log("notion", notion);
@@ -23,3 +23,10 @@ const context = {
 const run = connect(context);
 
 run();
+
+function isSkill(connect) {
+  return (
+    typeof connect === "function" &&
+    Object.getOwnPropertySymbols(connect).includes(SKILL_TOKEN)
+  );
+}

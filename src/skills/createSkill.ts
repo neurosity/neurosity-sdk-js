@@ -2,8 +2,7 @@ import { Notion } from "../Notion";
 import WebsocketClient from "../api/websocket";
 import { IInternalContext, IExternalContext } from "./context.d";
 
-// Do not export, this is used to identify skills at runtime
-const token = Symbol();
+export const SKILL_TOKEN = Symbol();
 
 export function createSkill(app: Function) {
   function connect(internalContext: IInternalContext): Function {
@@ -28,14 +27,7 @@ export function createSkill(app: Function) {
   // The `connect` function is the value that javascript modules
   // exporting `createSkill(...)` will have access to. To identify what
   // a skill is at runtime, we need a way to "tag it" with a token
-  connect[token] = true;
+  connect[SKILL_TOKEN] = true;
 
   return connect;
-}
-
-export function isSkill(connect: Function): boolean {
-  return (
-    typeof connect === "function" &&
-    Object.getOwnPropertySymbols(connect).includes(token)
-  );
 }
