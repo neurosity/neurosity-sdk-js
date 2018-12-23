@@ -9,3 +9,7 @@ console.log(
     Object.getOwnPropertyNames(Object.getPrototypeOf(notion))
   )
 );
+
+(async () => {
+  await notion.disconnect();
+})();

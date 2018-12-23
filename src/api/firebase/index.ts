@@ -90,6 +90,6 @@ export default class FirebaseClient {
   }
 
   public disconnect(): Promise<any> {
-    return this.app().delete();
+    return this.app.delete();
   }
 }
