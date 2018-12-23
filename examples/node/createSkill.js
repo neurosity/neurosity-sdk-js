@@ -1,6 +1,6 @@
 const { createSkill } = require("../..");
 
-export default createSkill((notion, context) => {
+module.exports = createSkill((notion, context) => {
   console.log("notion", notion);
   console.log("context", context);
 
@@ -8,4 +8,8 @@ export default createSkill((notion, context) => {
 
   // should throw error as is not an allowed metric
   // notion.emotion().subscribe(console.log);
+
+  return async () => {
+    // Any additional clean-up here
+  };
 });

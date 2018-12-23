@@ -92,12 +92,16 @@ For example:
 ./index.js
 
 ```js
-import { createSkill } from "@neurosity/notion";
+const { createSkill } = require("@neurosity/notion");
 
-export default createSkill((notion, context) => {
+module.exports = createSkill((notion, context) => {
   notion.kinesis().subscribe(kinesis => {
     console.log(kinesis);
   });
+
+  return async () => {
+    // Any additional clean-up here
+  };
 });
 ```
 
