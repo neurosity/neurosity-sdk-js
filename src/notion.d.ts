@@ -13,4 +13,5 @@ export default interface INotion {
   predictions(...labels: string[]): Observable<any>;
   status(...labels: string[]): Observable<any>;
   training: ITraining;
+  disconnect(): Promise<any>;
 }

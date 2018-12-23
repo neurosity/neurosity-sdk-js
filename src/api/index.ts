@@ -24,6 +24,14 @@ export default abstract class ApiClient implements IClient {
     };
   }
 
+  public async disconnect(): Promise<any> {
+    const { websocket } = this.options;
+    if (websocket) {
+      websocket.disconnect();
+    }
+    return this.firebase.disconnect();
+  }
+
   public async getInfo(): Promise<any> {
     return await this.firebase.getInfo();
   }

@@ -88,4 +88,8 @@ export default class FirebaseClient {
   public get timestamp(): any {
     return firebase.database.ServerValue.TIMESTAMP;
   }
+
+  public disconnect(): Promise<any> {
+    return this.app().delete();
+  }
 }

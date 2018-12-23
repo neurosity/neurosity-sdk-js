@@ -27,7 +27,7 @@ export default class WebSocketClient {
     }
   }
 
-  private disconnect() {
+  public disconnect() {
     if (this.socket.connected) {
       this.socket.disconnect();
     }
