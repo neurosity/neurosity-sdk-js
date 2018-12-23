@@ -210,6 +210,31 @@ export class Notion extends ApiClient implements INotion {
       }
     };
   }
+
+  /**
+   * @returns Skill
+   */
+  public skill(id) {
+    const command = "skills";
+    return {
+      install: async (): Promise<any> => {
+        this.actions.dispatch({
+          command,
+          action: "install",
+          message: { id }
+        });
+        return Promise.resolve();
+      },
+      uninstall: async (): Promise<any> => {
+        this.actions.dispatch({
+          command,
+          action: "uninstall",
+          message: { id }
+        });
+        return Promise.resolve();
+      }
+    };
+  }
 }
 
 export default Notion;
