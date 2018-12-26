@@ -10,7 +10,8 @@ export interface IDevice {
  */
 export const createDeviceStore = (app, deviceId) => {
   const deviceRef = app.database().ref(`devices/${deviceId}`);
-  const clientId = "client" + deviceRef.child("subscriptions").push().key;
+  const clientId =
+    "client" + deviceRef.child("subscriptions").push().key;
 
   const topics = ["subscriptions", "metrics", "actions"];
 
@@ -36,6 +37,14 @@ export const createDeviceStore = (app, deviceId) => {
     });
   };
 
+  const off = (childName, eventType, listener?) => {
+    if (listener) {
+      deviceRef.child(childName).off(eventType, listener);
+    } else {
+      deviceRef.child(childName).off(eventType);
+    }
+  };
+
   const once = async topic => {
     const snapshot = await deviceRef.child(topic).once("value");
     return snapshot.val();
@@ -43,6 +52,21 @@ export const createDeviceStore = (app, deviceId) => {
 
   const remove = topic => {
     deviceRef.child(topic).remove();
+  };
+
+  const bindListener = (
+    eventType: string,
+    topic: string,
+    callback: (res: any) => void,
+    overrideResponse?: any
+  ) => {
+    on(eventType, topic, data => {
+      if (data !== null) {
+        off(topic, eventType);
+        const response = overrideResponse ? overrideResponse : data;
+        callback(response);
+      }
+    });
   };
 
   // Remove each client's topic on disconnect
@@ -64,8 +88,20 @@ export const createDeviceStore = (app, deviceId) => {
         }
       });
     },
-    dispatchAction: action => {
-      push("actions", action);
+    dispatchAction: async action => {
+      const actionId = child("actions").push().key;
+      const actionPath = `actions/${actionId}`;
+      await set(actionPath, action);
+
+      if (action.responseRequired) {
+        return new Promise((resolve, reject) => {
+          const error = new Error("Action removed");
+          bindListener("value", `${actionPath}/response`, resolve);
+          bindListener("child_removed", actionPath, reject, error);
+        });
+      }
+
+      return Promise.resolve();
     },
     onMetric: (subscriptionId, callback) => {
       on("value", `metrics/${clientId}/${subscriptionId}`, data => {

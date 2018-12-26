@@ -40,7 +40,7 @@ export default class FirebaseClient {
   }
 
   public dispatchAction(action) {
-    this.deviceStore.dispatchAction(action);
+    return this.deviceStore.dispatchAction(action);
   }
 
   public async getInfo() {

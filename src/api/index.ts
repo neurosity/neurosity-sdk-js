@@ -19,7 +19,7 @@ export default abstract class ApiClient implements IClient {
   public get actions(): IActions {
     return {
       dispatch: action => {
-        this.firebase.dispatchAction(action);
+        return this.firebase.dispatchAction(action);
       }
     };
   }
