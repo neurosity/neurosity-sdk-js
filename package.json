@@ -50,7 +50,7 @@
     "@neurosity/ipk": "^1.1.0",
     "firebase": "^5.2.0",
     "rxjs": "^6.3.2",
-    "socket.io-client": "^2.1.1"
+    "socket.io-client": "^2.2.0"
   },
   "devDependencies": {
     "@types/node": "^10.9.4",
