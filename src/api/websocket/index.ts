@@ -10,7 +10,6 @@ export default class WebSocketClient {
 
   constructor(options) {
     this.socket = io(options.socketUrl, {
-      autoConnect: true,
       path: `/${options.deviceId}`
     });
 
