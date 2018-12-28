@@ -23,6 +23,7 @@ export function createSkill(app: ISkillApp) {
         deviceId,
         metricsAllowed,
         websocket: new WebsocketClient({
+          deviceId,
           socketUrl
         })
       });
