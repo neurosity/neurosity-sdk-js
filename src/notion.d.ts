@@ -1,5 +1,6 @@
 import { Observable } from "rxjs";
 import { ITraining } from "./training.d";
+import { ISkillInstance } from "./skills/skill.d";
 
 export default interface INotion {
   acceleration(...labels: string[]): Observable<any>;
@@ -12,6 +13,7 @@ export default interface INotion {
   kinesis(...labels: string[]): Observable<any>;
   predictions(...labels: string[]): Observable<any>;
   status(...labels: string[]): Observable<any>;
+  skill(id: string): ISkillInstance;
   training: ITraining;
   disconnect(): Promise<any>;
 }

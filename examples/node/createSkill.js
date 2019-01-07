@@ -1,10 +1,19 @@
 const { createSkill } = require("../..");
 
-module.exports = createSkill((notion, context) => {
+module.exports = createSkill((notion, skill) => {
   console.log("notion", notion);
-  console.log("context", context);
+  console.log("skill instance", skill);
 
-  notion.kinesis().subscribe(console.log);
+  skill.metric("marker").subscribe(data => {
+    console.log(data);
+    // { timestamp: 23453632423 }
+  });
+
+  skill.metric("navigation").next({
+    right: true
+  });
+
+  notion.kinesis("liftRightArm").subscribe(() => {});
 
   // should throw error as is not an allowed metric
   // notion.emotion().subscribe(console.log);

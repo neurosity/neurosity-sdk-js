@@ -42,6 +42,9 @@ export default abstract class ApiClient implements IClient {
 
   public get metrics(): IMetrics {
     return {
+      next: (metricName, metricValue): void => {
+        this.firebase.nextMetric(metricName, metricValue);
+      },
       on: (subscriptionId, callback): void => {
         const { websocket } = this.options;
         if (websocket) {

@@ -1,3 +1,5 @@
+import { Observable } from "rxjs";
+
 export interface ISkill {
   id: string;
   spec: string;
@@ -8,4 +10,18 @@ export interface ISkill {
   userId: string;
   timestamp: number;
   status: string;
+}
+
+type SkillMetric = { [key: string]: any };
+
+interface ISkillMetricNext {
+  next(value: SkillMetric): void;
+}
+
+export interface ISkillInstance {
+  metric(metric: string): Observable<SkillMetric> | ISkillMetricNext;
+}
+
+export interface ISkillSubscription {
+  unsubscribe(): void;
 }

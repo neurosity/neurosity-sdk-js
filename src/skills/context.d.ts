@@ -1,11 +1,7 @@
 import { ISkill } from "./skill.d";
 
-export interface IInternalContext {
+export interface IContext {
   deviceId: string;
   socketUrl: string;
-  skill: ISkill;
-}
-
-export interface IExternalContext {
   skill: ISkill;
 }

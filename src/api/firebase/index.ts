@@ -39,23 +39,37 @@ export default class FirebaseClient {
         );
   }
 
-  public dispatchAction(action) {
+  public dispatchAction(action): Promise<any> {
     return this.deviceStore.dispatchAction(action);
   }
 
-  public async getInfo() {
+  public async getInfo(): Promise<any> {
     return await this.deviceStore.getInfo();
   }
 
-  public onStatus(callback) {
+  public onStatus(callback: Function): void {
     this.deviceStore.onStatus(callback);
+  }
+
+  /**
+   * Pushes metric for each subscriptions in path:
+   * /devices/:deviceId/metrics/:clientId/:subscriptionId
+   * Note: Expensive operation since it fetches all subscriptions
+   * each time.
+   * @TODO: use SubscriptionManager from @neurosity/api
+   */
+  public nextMetric(
+    metricName: string,
+    metricValue: { [label: string]: any }
+  ): void {
+    this.deviceStore.nextMetric(metricName, metricValue);
   }
 
   /**
    * Listens for metrics in path:
    * /devices/:deviceId/metrics/:clientId/:subscriptionId
    */
-  public onMetric(subscriptionId, callback) {
+  public onMetric(subscriptionId: string, callback): void {
     this.deviceStore.onMetric(subscriptionId, callback);
   }
 
@@ -67,7 +81,7 @@ export default class FirebaseClient {
    * @param subscription
    * @returns subscriptionId
    */
-  public subscribeToMetric(subscription) {
+  public subscribeToMetric(subscription: any): string {
     const subscriptionId = this.deviceStore.subscribeToMetric(
       subscription
     );
@@ -81,7 +95,7 @@ export default class FirebaseClient {
    * @param metric
    * @param subscriptionId
    */
-  public unsubscribFromMetric(subscriptionId) {
+  public unsubscribFromMetric(subscriptionId: string): void {
     this.deviceStore.unsubscribFromMetric(subscriptionId);
   }
 

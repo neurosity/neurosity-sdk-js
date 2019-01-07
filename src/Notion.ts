@@ -210,6 +210,42 @@ export class Notion extends ApiClient implements INotion {
       }
     };
   }
+
+  /**
+   * @returns Skill methods
+   */
+  public skill(id: string) {
+    return {
+      metric: (label: string) => {
+        const metricName = `skill:${id}:${label}`;
+        const subscription = new Observable(observer => {
+          const subscriptionId = this.metrics.subscribe({
+            metric: metricName,
+            labels: [label],
+            group: true
+          });
+
+          this.metrics.on(subscriptionId, (...data) => {
+            observer.next(...data);
+          });
+
+          return () => {
+            this.metrics.unsubscribe(subscriptionId);
+          };
+        });
+
+        Object.defineProperty(subscription, "next", {
+          value: (metricValue: { [label: string]: any }): void => {
+            this.metrics.next(metricName, {
+              [label]: metricValue
+            });
+          }
+        });
+
+        return subscription;
+      }
+    };
+  }
 }
 
 export default Notion;

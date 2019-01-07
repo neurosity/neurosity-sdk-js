@@ -1,23 +1,18 @@
 import { Notion } from "../Notion";
 import WebsocketClient from "../api/websocket";
-import { IInternalContext, IExternalContext } from "./context.d";
+import { ISkillInstance, ISkillSubscription } from "../skills/skill.d";
+import { IContext } from "./context.d";
 
 type ISkillApp = (
   notion: Notion,
-  context: IExternalContext
+  skill: ISkillInstance
 ) => () => Promise<void>;
-
-interface ISkillSubscription {
-  unsubscribe(): void;
-}
 
 export function createSkill(app: ISkillApp) {
   return {
-    subscribe: (
-      internalContext: IInternalContext
-    ): ISkillSubscription => {
-      const { deviceId, socketUrl, skill } = internalContext;
-      const { metrics: metricsAllowed } = skill;
+    subscribe: (context: IContext): ISkillSubscription => {
+      const { deviceId, socketUrl, skill: skillData } = context;
+      const { metrics: metricsAllowed } = skillData;
 
       const notion = new Notion({
         deviceId,
@@ -28,8 +23,9 @@ export function createSkill(app: ISkillApp) {
         })
       });
 
-      const externalContext: IExternalContext = { skill };
-      const teardown = app(notion, externalContext);
+      const skill = notion.skill(skillData.id);
+
+      const teardown = app(notion, skill);
 
       return {
         unsubscribe: async () => {

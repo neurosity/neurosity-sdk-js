@@ -103,6 +103,19 @@ export const createDeviceStore = (app, deviceId) => {
 
       return Promise.resolve();
     },
+    nextMetric: async (
+      metricName: string,
+      metricValue: { [label: string]: any }
+    ) => {
+      const subscriptionsByClient = (await once("subscriptions")) || {};
+
+      flattenSubscriptions(subscriptionsByClient)
+        .filter(subscription => subscription.metric === metricName)
+        .forEach(subscription => {
+          const { clientId, subscriptionId } = subscription;
+          set(`metrics/${clientId}/${subscriptionId}`, metricValue);
+        });
+    },
     onMetric: (subscriptionId, callback) => {
       on("value", `metrics/${clientId}/${subscriptionId}`, data => {
         if (data !== null) {
@@ -122,3 +135,17 @@ export const createDeviceStore = (app, deviceId) => {
     }
   };
 };
+
+function flattenSubscriptions(subscriptionsByClient: any): Array<any> {
+  const clientEntries = Object.entries(subscriptionsByClient);
+  return clientEntries.reduce((acc, [clientId, clientSubscriptions]) => {
+    const flattenedSubscriptions = Object.entries(
+      clientSubscriptions
+    ).map(([subscriptionId, subscription]) => ({
+      clientId,
+      subscriptionId,
+      ...subscription
+    }));
+    return [...acc, ...flattenedSubscriptions];
+  }, []);
+}
