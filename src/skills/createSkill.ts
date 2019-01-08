@@ -10,7 +10,9 @@ type ISkillApp = (
 
 export function createSkill(app: ISkillApp) {
   return {
-    subscribe: (context: IContext): ISkillSubscription => {
+    subscribe: async (
+      context: IContext
+    ): Promise<ISkillSubscription> => {
       const { deviceId, socketUrl, skill: skillData } = context;
       const { metrics: metricsAllowed } = skillData;
 
@@ -23,7 +25,7 @@ export function createSkill(app: ISkillApp) {
         })
       });
 
-      const skill = notion.skill(skillData.id);
+      const skill = await notion.skill(skillData.id);
 
       const teardown = app(notion, skill);
 

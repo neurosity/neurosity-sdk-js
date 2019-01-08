@@ -78,9 +78,7 @@ export const createDeviceStore = (app, deviceId) => {
   });
 
   return {
-    getInfo: async () => {
-      return await once("info");
-    },
+    once,
     onStatus: async callback => {
       on("value", "status", data => {
         if (data !== null) {

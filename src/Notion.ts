@@ -7,6 +7,7 @@ import INotion from "./notion.d";
 import ISubscription from "./subscription.d";
 import { getMetricLabels, validateMetric } from "./utils/metric";
 import { pick } from "./utils/pick";
+import { ISkillInstance } from "./skills/skill.d";
 
 const defaultOptions = {
   metricsAllowed: Object.keys(metrics),
@@ -164,7 +165,7 @@ export class Notion extends ApiClient implements INotion {
   }
 
   /**
-   * Emits last state of status and all subsequent status changes
+   * Observes last state of status and all subsequent status changes
    *
    * @param labels Name of metric properties to filter by
    * @returns Observable of status metric events
@@ -212,9 +213,23 @@ export class Notion extends ApiClient implements INotion {
   }
 
   /**
-   * @returns Skill methods
+   * Accesses a skill by ID. Additionally, allows to observe
+   * and push skill metrics
+   *
+   * @param id ID of skill
+   * @returns Skill isntance
    */
-  public skill(id: string) {
+  public async skill(id: string): Promise<ISkillInstance> {
+    const skillData = await this.skills.get(id);
+
+    if (skillData === null) {
+      return Promise.reject(
+        new Error(
+          `Access denied for: ${id}. Make sure the skill is installed.`
+        )
+      );
+    }
+
     return {
       metric: (label: string) => {
         const metricName = `skill:${id}:${label}`;
@@ -232,7 +247,7 @@ export class Notion extends ApiClient implements INotion {
           return () => {
             this.metrics.unsubscribe(subscriptionId);
           };
-        });
+        }).pipe(map(metric => metric[label]));
 
         Object.defineProperty(subscription, "next", {
           value: (metricValue: { [label: string]: any }): void => {

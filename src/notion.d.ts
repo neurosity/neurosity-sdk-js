@@ -13,7 +13,7 @@ export default interface INotion {
   kinesis(...labels: string[]): Observable<any>;
   predictions(...labels: string[]): Observable<any>;
   status(...labels: string[]): Observable<any>;
-  skill(id: string): ISkillInstance;
+  skill(id: string): Promise<ISkillInstance>;
   training: ITraining;
   disconnect(): Promise<any>;
 }

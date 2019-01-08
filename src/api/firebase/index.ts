@@ -44,7 +44,11 @@ export default class FirebaseClient {
   }
 
   public async getInfo(): Promise<any> {
-    return await this.deviceStore.getInfo();
+    return await this.deviceStore.once("info");
+  }
+
+  public async getSkill(id): Promise<any> {
+    return await this.deviceStore.once(`skills/${id}`);
   }
 
   public onStatus(callback: Function): void {

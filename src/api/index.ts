@@ -3,6 +3,7 @@ import IClient from "./client.d";
 import IActions from "./actions.d";
 import IMetrics from "./metrics.d";
 import IOptions from "../options.d";
+import { ISkillsClient, IDeviceSkill } from "../skills/skill.d";
 
 /**
  * @hidden
@@ -67,6 +68,14 @@ export default abstract class ApiClient implements IClient {
       },
       unsubscribe: (subscriptionId): void => {
         this.firebase.unsubscribFromMetric(subscriptionId);
+      }
+    };
+  }
+
+  public get skills(): ISkillsClient {
+    return {
+      get: async (id: string): Promise<IDeviceSkill> => {
+        return this.firebase.getSkill(id);
       }
     };
   }

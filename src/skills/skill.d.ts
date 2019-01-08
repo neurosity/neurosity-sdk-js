@@ -12,6 +12,12 @@ export interface ISkill {
   status: string;
 }
 
+export interface IDeviceSkill {
+  installedDate: number;
+  manifest: { [key: string]: any };
+  status: string;
+}
+
 type SkillMetric = { [key: string]: any };
 
 interface ISkillMetricNext {
@@ -24,4 +30,8 @@ export interface ISkillInstance {
 
 export interface ISkillSubscription {
   unsubscribe(): void;
+}
+
+export interface ISkillsClient {
+  get: (id: string) => Promise<IDeviceSkill>;
 }

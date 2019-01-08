@@ -1,17 +1,19 @@
 const { Notion } = require("../..");
 
-const notion = new Notion({
-  deviceId: process.env.DEVICE_ID
-});
-
-const skill = notion.skill("controller");
-
-skill.metric("navigation").subscribe(data => {
-  console.log("navigation", data);
-});
-
-setInterval(() => {
-  skill.metric("navigation").next({
-    hello: Date.now()
+(async () => {
+  const notion = new Notion({
+    deviceId: process.env.DEVICE_ID
   });
-}, 1500);
+
+  const skill = await notion.skill("ofNF0fadbIoWfOKCogga");
+
+  skill.metric("navigation").subscribe(data => {
+    console.log("navigation", data);
+  });
+
+  setInterval(() => {
+    skill.metric("navigation").next({
+      hello: Date.now()
+    });
+  }, 200);
+})();
