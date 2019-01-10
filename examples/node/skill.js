@@ -7,12 +7,12 @@ const { Notion } = require("../..");
 
   const skill = await notion.skill("ofNF0fadbIoWfOKCogga");
 
-  skill.metric("navigation").subscribe(data => {
-    console.log("navigation", data);
+  skill.metric("fromDevice").subscribe(data => {
+    console.log("fromDevice", data);
   });
 
   setInterval(() => {
-    skill.metric("navigation").next({
+    skill.metric("fromApp").next({
       hello: Date.now()
     });
   }, 200);

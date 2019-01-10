@@ -1,32 +1,21 @@
-import { Notion } from "../Notion";
-import WebsocketClient from "../api/websocket";
+import {
+  createNotionOnDevice,
+  IOnDeviceOptions,
+  INotionOnDevice
+} from "../NotionOnDevice";
 import { ISkillInstance, ISkillSubscription } from "../skills/skill.d";
-import { IContext } from "./context.d";
 
 type ISkillApp = (
-  notion: Notion,
+  notion: INotionOnDevice,
   skill: ISkillInstance
 ) => () => Promise<void>;
 
 export function createSkill(app: ISkillApp) {
   return {
     subscribe: async (
-      context: IContext
+      options: IOnDeviceOptions
     ): Promise<ISkillSubscription> => {
-      const { deviceId, socketUrl, skill: skillData } = context;
-      const { metrics: metricsAllowed } = skillData;
-
-      const notion = new Notion({
-        deviceId,
-        metricsAllowed,
-        websocket: new WebsocketClient({
-          deviceId,
-          socketUrl
-        })
-      });
-
-      const skill = await notion.skill(skillData.id);
-
+      const [notion, skill] = await createNotionOnDevice(options);
       const teardown = app(notion, skill);
 
       return {

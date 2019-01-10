@@ -1,6 +1,5 @@
 import { Observable, throwError } from "rxjs";
 import { map } from "rxjs/operators";
-import { metrics } from "@neurosity/ipk";
 import ApiClient from "./api/index";
 import IOptions from "./options.d";
 import INotion from "./notion.d";
@@ -8,10 +7,6 @@ import ISubscription from "./subscription.d";
 import { getMetricLabels, validateMetric } from "./utils/metric";
 import { pick } from "./utils/pick";
 import { ISkillInstance } from "./skills/skill.d";
-
-const defaultOptions = {
-  metricsAllowed: Object.keys(metrics)
-};
 
 /**
  *
@@ -21,18 +16,16 @@ export class Notion implements INotion {
    * @hidden
    */
   protected options: IOptions;
+  /**
+   * @hidden
+   */
   protected api: ApiClient;
 
-  constructor(customOptions: IOptions) {
-    const options = Object.freeze({
-      ...defaultOptions,
-      ...customOptions
-    });
+  constructor(options: IOptions) {
+    this.options = Object.freeze(options);
+    this.api = new ApiClient(this.options);
 
-    this.options = options;
-    this.api = new ApiClient(options);
-
-    if (!options.deviceId) {
+    if (!this.options.deviceId) {
       throw new Error("Notion: deviceId is mandatory");
     }
   }

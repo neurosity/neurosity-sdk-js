@@ -9,7 +9,9 @@ export const hasInvalidLabels = (metric, labels): boolean => {
 };
 
 export const isMetricDisallowed = (metricName, options): boolean =>
-  !options.metricsAllowed.includes(metricName);
+  "skill" in options &&
+  "metrics" in options.skill &&
+  !options.skill.metrics.includes(metricName);
 
 export const validateMetric = (
   metric,
