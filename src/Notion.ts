@@ -24,10 +24,10 @@ export class Notion implements INotion {
   protected api: ApiClient;
 
   constructor(customOptions: IOptions) {
-    const options = {
+    const options = Object.freeze({
       ...defaultOptions,
       ...customOptions
-    };
+    });
 
     this.options = options;
     this.api = new ApiClient(options);
