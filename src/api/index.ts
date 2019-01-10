@@ -1,20 +1,32 @@
+import { metrics } from "@neurosity/ipk";
 import FirebaseClient from "./firebase/index";
 import IClient from "./client.d";
 import IActions from "./actions.d";
 import IMetrics from "./metrics.d";
-import IOptions from "../options.d";
+import INotionOptions from "../options.d";
 import { ISkillsClient, IDeviceSkill } from "../skills/skill.d";
+import { IWebsocketClient } from "./websocket/websocket.d";
+
+const isNotionMetric = (metric: string): boolean =>
+  !Object.keys(metrics).includes(metric);
+
+interface IOptions extends INotionOptions {
+  onDeviceSocket?: IWebsocketClient;
+}
 
 /**
  * @hidden
  */
-export default abstract class ApiClient implements IClient {
+export default class ApiClient implements IClient {
   protected firebase: FirebaseClient;
-  protected options: IOptions;
+  protected onDeviceSocket: IWebsocketClient;
 
   constructor(options: IOptions) {
-    this.options = Object.freeze(options);
-    this.firebase = new FirebaseClient(this.options);
+    this.firebase = new FirebaseClient(options);
+
+    if (options.onDeviceSocket) {
+      this.onDeviceSocket = options.onDeviceSocket;
+    }
   }
 
   public get actions(): IActions {
@@ -26,9 +38,8 @@ export default abstract class ApiClient implements IClient {
   }
 
   public async disconnect(): Promise<any> {
-    const { websocket } = this.options;
-    if (websocket) {
-      websocket.disconnect();
+    if (this.onDeviceSocket) {
+      this.onDeviceSocket.disconnect();
     }
     return this.firebase.disconnect();
   }
@@ -42,22 +53,22 @@ export default abstract class ApiClient implements IClient {
   }
 
   public get metrics(): IMetrics {
+    const shouldRerouteToDevice = (metric: string): boolean =>
+      this.onDeviceSocket && isNotionMetric(metric);
     return {
       next: (metricName, metricValue): void => {
         this.firebase.nextMetric(metricName, metricValue);
       },
-      on: (subscriptionId, callback): void => {
-        const { websocket } = this.options;
-        if (websocket) {
-          websocket.onMetric(subscriptionId, callback);
+      on: (metricName, subscriptionId, callback): void => {
+        if (shouldRerouteToDevice(metricName)) {
+          this.onDeviceSocket.onMetric(subscriptionId, callback);
         } else {
           this.firebase.onMetric(subscriptionId, callback);
         }
       },
       subscribe: (subscription): string => {
-        const { websocket } = this.options;
-        const serverType = websocket
-          ? websocket.serverType
+        const serverType = shouldRerouteToDevice(subscription.metric)
+          ? this.onDeviceSocket.serverType
           : this.firebase.serverType;
 
         const subscriptionId = this.firebase.subscribeToMetric({
