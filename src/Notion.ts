@@ -10,28 +10,39 @@ import { pick } from "./utils/pick";
 import { ISkillInstance } from "./skills/skill.d";
 
 const defaultOptions = {
-  metricsAllowed: Object.keys(metrics),
-  websocket: null
+  metricsAllowed: Object.keys(metrics)
 };
 
 /**
  *
  */
-export class Notion extends ApiClient implements INotion {
+export class Notion implements INotion {
   /**
    * @hidden
    */
   protected options: IOptions;
+  protected api: ApiClient;
 
   constructor(customOptions: IOptions) {
-    super({
+    const options = {
       ...defaultOptions,
       ...customOptions
-    });
+    };
 
-    if (!this.options.deviceId) {
+    this.options = options;
+    this.api = new ApiClient(options);
+
+    if (!options.deviceId) {
       throw new Error("Notion: deviceId is mandatory");
     }
+  }
+
+  public async getInfo() {
+    return await this.api.getInfo();
+  }
+
+  public async disconnect() {
+    return await this.api.disconnect();
   }
 
   /**
@@ -52,18 +63,18 @@ export class Notion extends ApiClient implements INotion {
         ? labels
         : getMetricLabels(metric);
 
-      const subscriptionId = this.metrics.subscribe({
+      const subscriptionId = this.api.metrics.subscribe({
         metric: metric,
         labels: withDefaultLabels,
         group: group
       });
 
-      this.metrics.on(subscriptionId, (...data) => {
+      this.api.metrics.on(subscriptionId, (...data) => {
         observer.next(...data);
       });
 
       return () => {
-        this.metrics.unsubscribe(subscriptionId);
+        this.api.metrics.unsubscribe(subscriptionId);
       };
     });
   };
@@ -181,7 +192,7 @@ export class Notion extends ApiClient implements INotion {
       : getMetricLabels("status");
 
     const status = new Observable(observer => {
-      this.onStatus((...data) => {
+      this.api.onStatus((...data) => {
         observer.next(...data);
       });
 
@@ -200,10 +211,10 @@ export class Notion extends ApiClient implements INotion {
         const message = {
           fit: false,
           baseline: false,
-          timestamp: this.timestamp,
+          timestamp: this.api.timestamp,
           ...training
         };
-        this.actions.dispatch({
+        this.api.actions.dispatch({
           command: "training",
           action: "record",
           message
@@ -220,7 +231,7 @@ export class Notion extends ApiClient implements INotion {
    * @returns Skill isntance
    */
   public async skill(id: string): Promise<ISkillInstance> {
-    const skillData = await this.skills.get(id);
+    const skillData = await this.api.skills.get(id);
 
     if (skillData === null) {
       return Promise.reject(
@@ -234,24 +245,24 @@ export class Notion extends ApiClient implements INotion {
       metric: (label: string) => {
         const metricName = `skill:${id}:${label}`;
         const subscription = new Observable(observer => {
-          const subscriptionId = this.metrics.subscribe({
+          const subscriptionId = this.api.metrics.subscribe({
             metric: metricName,
             labels: [label],
             group: true
           });
 
-          this.metrics.on(subscriptionId, (...data) => {
+          this.api.metrics.on(subscriptionId, (...data) => {
             observer.next(...data);
           });
 
           return () => {
-            this.metrics.unsubscribe(subscriptionId);
+            this.api.metrics.unsubscribe(subscriptionId);
           };
         }).pipe(map(metric => metric[label]));
 
         Object.defineProperty(subscription, "next", {
           value: (metricValue: { [label: string]: any }): void => {
-            this.metrics.next(metricName, {
+            this.api.metrics.next(metricName, {
               [label]: metricValue
             });
           }
