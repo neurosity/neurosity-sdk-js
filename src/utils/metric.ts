@@ -1,22 +1,29 @@
 import { metrics } from "@neurosity/ipk";
+import IOptions from "../options";
 
-export const getMetricLabels = (metric): Array<string> =>
+export const getMetricLabels = (metric: string): string[] =>
   Object.keys(metrics[metric]);
 
-export const hasInvalidLabels = (metric, labels): boolean => {
+export const hasInvalidLabels = (
+  metric: string,
+  labels: string[]
+): boolean => {
   const validLabels = getMetricLabels(metric);
   return !labels.every(label => validLabels.includes(label));
 };
 
-export const isMetricDisallowed = (metricName, options): boolean =>
+export const isMetricDisallowed = (
+  metricName: string,
+  options: IOptions
+): boolean =>
   "skill" in options &&
   "metrics" in options.skill &&
   !options.skill.metrics.includes(metricName);
 
 export const validateMetric = (
-  metric,
-  labels,
-  options
+  metric: string,
+  labels: string[],
+  options: IOptions
 ): Error | false => {
   if (isMetricDisallowed(metric, options)) {
     return new Error(
