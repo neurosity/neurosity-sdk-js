@@ -3,7 +3,7 @@ import io from "socket.io-client";
 /**
  * @hidden
  */
-export default class WebSocketClient {
+export default class WebsocketClient {
   public serverType: string = "websocket";
   protected socket;
   options;

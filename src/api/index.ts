@@ -1,31 +1,30 @@
 import { metrics } from "@neurosity/ipk";
 import FirebaseClient from "./firebase/index";
+import WebsocketClient from "./websocket";
 import IClient from "./client.d";
 import IActions from "./actions.d";
 import IMetrics from "./metrics.d";
-import INotionOptions from "../options.d";
+import IOptions from "../options.d";
 import { ISkillsClient, IDeviceSkill } from "../skills/skill.d";
-import { IWebsocketClient } from "./websocket/websocket.d";
 
 const isNotionMetric = (metric: string): boolean =>
   !Object.keys(metrics).includes(metric);
-
-interface IOptions extends INotionOptions {
-  onDeviceSocket?: IWebsocketClient;
-}
 
 /**
  * @hidden
  */
 export default class ApiClient implements IClient {
   protected firebase: FirebaseClient;
-  protected onDeviceSocket: IWebsocketClient;
+  protected onDeviceSocket: WebsocketClient;
 
   constructor(options: IOptions) {
     this.firebase = new FirebaseClient(options);
 
-    if (options.onDeviceSocket) {
-      this.onDeviceSocket = options.onDeviceSocket;
+    if (options.onDeviceSocketUrl) {
+      this.onDeviceSocket = new WebsocketClient({
+        deviceId: options.deviceId,
+        socketUrl: options.onDeviceSocketUrl
+      });
     }
   }
 

@@ -54,8 +54,6 @@ Options:
 interface IOptions {
   deviceId: string;
   apiKey?: string;
-  metricsAllowed?: string[];
-  websocket: IWebsocketClient;
 }
 ```
 
