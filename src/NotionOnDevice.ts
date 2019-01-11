@@ -3,14 +3,15 @@ import IOptions from "./options.d";
 import { ISkill, ISkillInstance } from "./skills/skill.d";
 import INotion from "./notion";
 
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+export type INotionOnDevice = Pick<
+  INotion,
+  Exclude<keyof INotion, "skill">
+>;
 
 export interface IOnDeviceOptions extends IOptions {
   onDeviceSocketUrl: string;
   skill: ISkill;
 }
-
-export interface INotionOnDevice extends Omit<INotion, "skill"> {}
 
 export async function createNotionOnDevice(
   options: IOnDeviceOptions
