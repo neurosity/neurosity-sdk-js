@@ -15,5 +15,5 @@ const { Notion } = require("../..");
     skill.metric("fromApp").next({
       hello: Date.now()
     });
-  }, 200);
+  }, 2000);
 })();

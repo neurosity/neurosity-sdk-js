@@ -8,7 +8,7 @@ import IOptions from "../options.d";
 import { ISkillsClient, IDeviceSkill } from "../skills/skill.d";
 
 const isNotionMetric = (metric: string): boolean =>
-  !Object.keys(metrics).includes(metric);
+  Object.keys(metrics).includes(metric);
 
 /**
  * @hidden
@@ -53,7 +53,7 @@ export default class ApiClient implements IClient {
 
   public get metrics(): IMetrics {
     const shouldRerouteToDevice = (metric: string): boolean =>
-      this.onDeviceSocket && isNotionMetric(metric);
+      this.onDeviceSocket && !isNotionMetric(metric);
     return {
       next: (metricName, metricValue): void => {
         this.firebase.nextMetric(metricName, metricValue);
