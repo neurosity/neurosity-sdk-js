@@ -103,12 +103,14 @@ export const createDeviceStore = (app, deviceId) => {
     },
     nextMetric: async (
       metricName: string,
-      metricValue: { [label: string]: any }
+      metricValue: { [label: string]: any },
+      serverType: string
     ) => {
       const subscriptionsByClient = (await once("subscriptions")) || {};
 
       flattenSubscriptions(subscriptionsByClient)
         .filter(subscription => subscription.metric === metricName)
+        .filter(subscription => subscription.serverType === serverType)
         .forEach(subscription => {
           const { clientId, subscriptionId } = subscription;
           set(`metrics/${clientId}/${subscriptionId}`, metricValue);

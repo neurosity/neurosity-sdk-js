@@ -66,7 +66,11 @@ export default class FirebaseClient {
     metricName: string,
     metricValue: { [label: string]: any }
   ): void {
-    this.deviceStore.nextMetric(metricName, metricValue);
+    this.deviceStore.nextMetric(
+      metricName,
+      metricValue,
+      this.serverType
+    );
   }
 
   /**
