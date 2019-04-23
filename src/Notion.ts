@@ -122,6 +122,18 @@ export class Notion implements INotion {
 
   /**
    * @param labels Name of metric properties to filter by
+   * @returns Observable of signalQuality metric events
+   */
+  public signalQuality(...labels): Observable<any> {
+    return this.getMetric({
+      metric: "signalQuality",
+      labels: labels,
+      group: true
+    });
+  }
+
+  /**
+   * @param labels Name of metric properties to filter by
    * @returns Observable of emotion metric events
    */
   public emotion(...labels): Observable<any> {
