@@ -10,32 +10,16 @@ const channelAnalysis = notion
     console.log("channelAnalysis", channelAnalysis);
   });
 
-notion.channelAnalysis().subscribe(channelAnalysis => {
-  console.log("channelAnalysis2", channelAnalysis);
-});
-
-const acceleration = notion.acceleration().subscribe(acceleration => {
-  console.log("acceleration", acceleration);
-});
-
 const kinesis = notion.kinesis("push", "pull").subscribe(kinesis => {
   console.log("kinesis", kinesis);
 });
 
 console.log("subscribed to channelAnalysis");
-console.log("subscribed to channelAnalysis2");
-console.log("subscribed to acceleration");
 console.log("subscribed to kinesis");
 
 setTimeout(() => {
-  notion
-    .channelAnalysis("FC2", "CP1", "CP2", "CP3")
-    .subscribe(channelAnalysis => {
-      console.log("channelAnalysis3", channelAnalysis);
-    });
-
-  console.log("subscribed to channelAnalysis3");
-
   channelAnalysis.unsubscribe();
+  kinesis.unsubscribe();
   console.log("unsubscribed from channelAnalysis");
-}, 8000);
+  console.log("unsubscribed from kinesis");
+}, 4000);
