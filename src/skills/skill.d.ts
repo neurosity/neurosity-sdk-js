@@ -1,10 +1,13 @@
 import { Observable } from "rxjs";
 
+type SkillProps = { [key: string]: string | number | boolean };
+
 export interface ISkill {
   id: string;
   spec: string;
   name: string;
   description: string;
+  props?: SkillProps;
   organization?: string;
   metrics: string[];
   userId: string;
@@ -25,6 +28,7 @@ interface ISkillMetricNext {
 }
 
 export interface ISkillInstance {
+  props?: SkillProps;
   metric(metric: string): Observable<SkillMetric> | ISkillMetricNext;
 }
 
