@@ -23,7 +23,10 @@ export function createSkill(app: ISkillApp) {
           await notion.disconnect();
 
           if (teardown && "then" in teardown) {
-            return await teardown;
+            const cleanUp: any = await teardown;
+            if (typeof cleanUp === "function") {
+              cleanUp();
+            }
           }
 
           if (typeof teardown === "function" && "then" in teardown()) {
