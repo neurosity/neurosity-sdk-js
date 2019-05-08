@@ -22,11 +22,19 @@ export function createSkill(app: ISkillApp) {
         unsubscribe: async () => {
           await notion.disconnect();
 
+          if (teardown && "then" in teardown) {
+            return await teardown;
+          }
+
           if (typeof teardown === "function" && "then" in teardown()) {
             return await teardown();
           }
 
-          return null;
+          if (typeof teardown === "function") {
+            return teardown();
+          }
+
+          return teardown;
         }
       };
     }
