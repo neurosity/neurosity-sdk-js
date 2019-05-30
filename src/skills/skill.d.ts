@@ -4,6 +4,7 @@ type SkillProps = { [key: string]: string | number | boolean };
 
 export interface ISkill {
   id: string;
+  bundleId: string;
   spec: string;
   name: string;
   description: string;
@@ -13,6 +14,7 @@ export interface ISkill {
   userId: string;
   timestamp: number;
   status: string;
+  thumbnail: string;
 }
 
 export interface IDeviceSkill {

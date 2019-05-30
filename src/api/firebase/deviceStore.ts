@@ -69,6 +69,16 @@ export const createDeviceStore = (app, deviceId) => {
     });
   };
 
+  const lastOfChildValue = async (topic, key, value) => {
+    const snapshot = await deviceRef
+      .child(topic)
+      .orderByChild(key)
+      .equalTo(value)
+      .limitToLast(1)
+      .once("value");
+    return snapshot.val();
+  };
+
   // Remove each client's topic on disconnect
   topics.forEach(topic => {
     deviceRef
@@ -79,6 +89,7 @@ export const createDeviceStore = (app, deviceId) => {
 
   return {
     once,
+    lastOfChildValue,
     onStatus: async callback => {
       on("value", "status", data => {
         if (data !== null) {
@@ -138,14 +149,17 @@ export const createDeviceStore = (app, deviceId) => {
 
 function flattenSubscriptions(subscriptionsByClient: any): Array<any> {
   const clientEntries = Object.entries(subscriptionsByClient);
-  return clientEntries.reduce((acc, [clientId, clientSubscriptions]) => {
-    const flattenedSubscriptions = Object.entries(
-      clientSubscriptions
-    ).map(([subscriptionId, subscription]) => ({
-      clientId,
-      subscriptionId,
-      ...subscription
-    }));
-    return [...acc, ...flattenedSubscriptions];
-  }, []);
+  return clientEntries.reduce(
+    (acc, [clientId, clientSubscriptions]) => {
+      const flattenedSubscriptions = Object.entries(
+        clientSubscriptions
+      ).map(([subscriptionId, subscription]) => ({
+        clientId,
+        subscriptionId,
+        ...subscription
+      }));
+      return [...acc, ...flattenedSubscriptions];
+    },
+    []
+  );
 }

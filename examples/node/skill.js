@@ -5,7 +5,7 @@ const { Notion } = require("../..");
     deviceId: process.env.DEVICE_ID
   });
 
-  const skill = await notion.skill("ofNF0fadbIoWfOKCogga");
+  const skill = await notion.skill("app.neurosity.akimy");
 
   skill.metric("fromDevice").subscribe(data => {
     console.log("fromDevice", data);

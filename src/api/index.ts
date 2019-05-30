@@ -84,8 +84,8 @@ export default class ApiClient implements IClient {
 
   public get skills(): ISkillsClient {
     return {
-      get: async (id: string): Promise<IDeviceSkill> => {
-        return this.firebase.getSkill(id);
+      get: async (bundleId: string): Promise<IDeviceSkill> => {
+        return this.firebase.getSkill(bundleId);
       }
     };
   }

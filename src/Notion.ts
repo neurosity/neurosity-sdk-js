@@ -229,26 +229,26 @@ export class Notion implements INotion {
   }
 
   /**
-   * Accesses a skill by ID. Additionally, allows to observe
+   * Accesses a skill by Bundle ID. Additionally, allows to observe
    * and push skill metrics
    *
-   * @param id ID of skill
+   * @param bundleId Bundle ID of skill
    * @returns Skill isntance
    */
-  public async skill(id: string): Promise<ISkillInstance> {
-    const skillData = await this.api.skills.get(id);
+  public async skill(bundleId: string): Promise<ISkillInstance> {
+    const skillData = await this.api.skills.get(bundleId);
 
     if (skillData === null) {
       return Promise.reject(
         new Error(
-          `Access denied for: ${id}. Make sure the skill is installed.`
+          `Access denied for: ${bundleId}. Make sure the skill is installed.`
         )
       );
     }
 
     return {
       metric: (label: string) => {
-        const metricName = `skill:${id}:${label}`;
+        const metricName = `skill:${bundleId}:${label}`;
         const subscription = new Observable(observer => {
           const subscriptionId = this.api.metrics.subscribe({
             metric: metricName,

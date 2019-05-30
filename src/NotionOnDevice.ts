@@ -18,7 +18,7 @@ export async function createNotionOnDevice(
 ): Promise<[INotionOnDevice, ISkillInstance]> {
   const notion = new Notion(options);
   const skill = {
-    ...(await notion.skill(options.skill.id)),
+    ...(await notion.skill(options.skill.bundleId)),
     props: "props" in options.skill ? options.skill.props : {}
   };
   delete notion.skill;
