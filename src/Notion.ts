@@ -248,7 +248,7 @@ export class Notion implements INotion {
 
     return {
       metric: (label: string) => {
-        const metricName = `skill:${bundleId}:${label}`;
+        const metricName = `skill~${skillData.id}~${label}`;
         const subscription = new Observable(observer => {
           const subscriptionId = this.api.metrics.subscribe({
             metric: metricName,
