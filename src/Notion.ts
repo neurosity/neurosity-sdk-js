@@ -62,12 +62,16 @@ export class Notion implements INotion {
         group: group
       });
 
-      this.api.metrics.on(metric, subscriptionId, (...data) => {
-        observer.next(...data);
-      });
+      const listener = this.api.metrics.on(
+        metric,
+        subscriptionId,
+        (...data) => {
+          observer.next(...data);
+        }
+      );
 
       return () => {
-        this.api.metrics.unsubscribe(subscriptionId);
+        this.api.metrics.unsubscribe(subscriptionId, listener);
       };
     });
   };
@@ -256,12 +260,16 @@ export class Notion implements INotion {
             group: true
           });
 
-          this.api.metrics.on(metricName, subscriptionId, (...data) => {
-            observer.next(...data);
-          });
+          const listener = this.api.metrics.on(
+            metricName,
+            subscriptionId,
+            (...data) => {
+              observer.next(...data);
+            }
+          );
 
           return () => {
-            this.api.metrics.unsubscribe(subscriptionId);
+            this.api.metrics.unsubscribe(subscriptionId, listener);
           };
         }).pipe(map(metric => metric[label]));
 

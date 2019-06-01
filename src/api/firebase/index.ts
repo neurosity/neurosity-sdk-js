@@ -111,8 +111,11 @@ export default class FirebaseClient {
    * @param metric
    * @param subscriptionId
    */
-  public unsubscribFromMetric(subscriptionId: string): void {
-    this.deviceStore.unsubscribFromMetric(subscriptionId);
+  public unsubscribFromMetric(
+    subscriptionId: string,
+    listener: Function
+  ): void {
+    this.deviceStore.unsubscribFromMetric(subscriptionId, listener);
   }
 
   public get timestamp(): any {

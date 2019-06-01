@@ -58,15 +58,19 @@ export default class ApiClient implements IClient {
       next: (metricName, metricValue): void => {
         this.firebase.nextMetric(metricName, metricValue);
       },
-      on: (metricName, subscriptionId, callback): void => {
+      on: (metricName, subscriptionId, callback) => {
         if (shouldRerouteToDevice(metricName)) {
-          this.onDeviceSocket.onMetric(
+          return this.onDeviceSocket.onMetric(
             metricName,
             subscriptionId,
             callback
           );
         } else {
-          this.firebase.onMetric(metricName, subscriptionId, callback);
+          return this.firebase.onMetric(
+            metricName,
+            subscriptionId,
+            callback
+          );
         }
       },
       subscribe: (subscription): string => {
@@ -80,8 +84,11 @@ export default class ApiClient implements IClient {
         });
         return subscriptionId;
       },
-      unsubscribe: (subscriptionId): void => {
-        this.firebase.unsubscribFromMetric(subscriptionId);
+      unsubscribe: (
+        subscriptionId: string,
+        listener: Function
+      ): void => {
+        this.firebase.unsubscribFromMetric(subscriptionId, listener);
       }
     };
   }

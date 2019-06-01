@@ -17,7 +17,7 @@ export default class WebsocketClient {
   }
 
   public onMetric(metricName, subscriptionId, callback) {
-    this.socket.on(`metrics/${subscriptionId}`, callback);
+    return this.socket.on(`metrics/${subscriptionId}`, callback);
   }
 
   private init() {

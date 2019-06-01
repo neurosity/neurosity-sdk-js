@@ -32,7 +32,7 @@ export const createDeviceStore = (app, deviceId) => {
   };
 
   const on = (eventType: any = "value", topic, callback) => {
-    deviceRef.child(topic).on(eventType, snapshot => {
+    return deviceRef.child(topic).on(eventType, snapshot => {
       callback(snapshot.val(), snapshot);
     });
   };
@@ -121,8 +121,12 @@ export const createDeviceStore = (app, deviceId) => {
     ) => {
       set(`metrics/${metricName}`, metricValue);
     },
-    onMetric: (metricName, subscriptionId, callback) => {
-      on("value", `metrics/${metricName}`, data => {
+    onMetric: (
+      metricName: string,
+      subscriptionId: string,
+      callback: Function
+    ) => {
+      return on("value", `metrics/${metricName}`, data => {
         if (data !== null) {
           callback(data);
         }
@@ -134,7 +138,11 @@ export const createDeviceStore = (app, deviceId) => {
       set(`subscriptions/${clientId}/${subscriptionId}`, subscription);
       return subscriptionId;
     },
-    unsubscribFromMetric: subscriptionId => {
+    unsubscribFromMetric: (
+      subscriptionId: string,
+      listener: Function
+    ) => {
+      off("value", listener);
       remove(`subscriptions/${clientId}/${subscriptionId}`);
     }
   };
