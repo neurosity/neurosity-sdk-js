@@ -18,6 +18,8 @@ export interface ISkill {
 }
 
 export interface IDeviceSkill {
+  id: string;
+  bundleId: string;
   installedDate: number;
   manifest: { [key: string]: any };
   status: string;
