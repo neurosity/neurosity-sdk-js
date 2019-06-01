@@ -76,7 +76,9 @@ export const createDeviceStore = (app, deviceId) => {
       .equalTo(value)
       .limitToLast(1)
       .once("value");
-    return snapshot.val();
+    const results = snapshot.val();
+    const [match] = Object.values(results || {});
+    return match || null;
   };
 
   // Remove each client's topic on disconnect
@@ -117,18 +119,10 @@ export const createDeviceStore = (app, deviceId) => {
       metricValue: { [label: string]: any },
       serverType: string
     ) => {
-      const subscriptionsByClient = (await once("subscriptions")) || {};
-
-      flattenSubscriptions(subscriptionsByClient)
-        .filter(subscription => subscription.metric === metricName)
-        .filter(subscription => subscription.serverType === serverType)
-        .forEach(subscription => {
-          const { clientId, subscriptionId } = subscription;
-          set(`metrics/${clientId}/${subscriptionId}`, metricValue);
-        });
+      set(`metrics/${metricName}`, metricValue);
     },
-    onMetric: (subscriptionId, callback) => {
-      on("value", `metrics/${clientId}/${subscriptionId}`, data => {
+    onMetric: (metricName, subscriptionId, callback) => {
+      on("value", `metrics/${metricName}`, data => {
         if (data !== null) {
           callback(data);
         }
@@ -142,24 +136,6 @@ export const createDeviceStore = (app, deviceId) => {
     },
     unsubscribFromMetric: subscriptionId => {
       remove(`subscriptions/${clientId}/${subscriptionId}`);
-      remove(`metrics/${clientId}/${subscriptionId}`);
     }
   };
 };
-
-function flattenSubscriptions(subscriptionsByClient: any): Array<any> {
-  const clientEntries = Object.entries(subscriptionsByClient);
-  return clientEntries.reduce(
-    (acc, [clientId, clientSubscriptions]) => {
-      const flattenedSubscriptions = Object.entries(
-        clientSubscriptions
-      ).map(([subscriptionId, subscription]) => ({
-        clientId,
-        subscriptionId,
-        ...subscription
-      }));
-      return [...acc, ...flattenedSubscriptions];
-    },
-    []
-  );
-}

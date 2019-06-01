@@ -12,7 +12,7 @@ const { Notion } = require("../..");
   });
 
   setInterval(() => {
-    skill.metric("fromApp").next({
+    skill.metric("fromDevice").next({
       hello: Date.now()
     });
   }, 2000);

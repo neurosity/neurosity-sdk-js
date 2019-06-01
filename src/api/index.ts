@@ -60,9 +60,13 @@ export default class ApiClient implements IClient {
       },
       on: (metricName, subscriptionId, callback): void => {
         if (shouldRerouteToDevice(metricName)) {
-          this.onDeviceSocket.onMetric(subscriptionId, callback);
+          this.onDeviceSocket.onMetric(
+            metricName,
+            subscriptionId,
+            callback
+          );
         } else {
-          this.firebase.onMetric(subscriptionId, callback);
+          this.firebase.onMetric(metricName, subscriptionId, callback);
         }
       },
       subscribe: (subscription): string => {

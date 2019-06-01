@@ -81,8 +81,12 @@ export default class FirebaseClient {
    * Listens for metrics in path:
    * /devices/:deviceId/metrics/:clientId/:subscriptionId
    */
-  public onMetric(subscriptionId: string, callback): void {
-    this.deviceStore.onMetric(subscriptionId, callback);
+  public onMetric(
+    metricName: string,
+    subscriptionId: string,
+    callback
+  ): void {
+    this.deviceStore.onMetric(metricName, subscriptionId, callback);
   }
 
   /**
