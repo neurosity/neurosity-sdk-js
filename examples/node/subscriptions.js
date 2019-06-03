@@ -4,13 +4,17 @@ const notion = new Notion({
   deviceId: process.env.DEVICE_ID
 });
 
+const notion2 = new Notion({
+  deviceId: process.env.DEVICE_ID
+});
+
 const channelAnalysis = notion
   .channelAnalysis("FC1", "FC2")
   .subscribe(channelAnalysis => {
     console.log("channelAnalysis", channelAnalysis);
   });
 
-const kinesis = notion.kinesis("push", "pull").subscribe(kinesis => {
+const kinesis = notion2.kinesis("push", "pull").subscribe(kinesis => {
   console.log("kinesis", kinesis);
 });
 

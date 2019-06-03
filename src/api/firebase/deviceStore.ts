@@ -10,10 +10,7 @@ export interface IDevice {
  */
 export const createDeviceStore = (app, deviceId) => {
   const deviceRef = app.database().ref(`devices/${deviceId}`);
-  const clientId =
-    "client" + deviceRef.child("subscriptions").push().key;
-
-  const topics = ["subscriptions", "metrics", "actions"];
+  const clientId = deviceRef.child("subscriptions").push().key;
 
   const child = topic => {
     return deviceRef.child(topic);
@@ -81,14 +78,6 @@ export const createDeviceStore = (app, deviceId) => {
     return match || null;
   };
 
-  // Remove each client's topic on disconnect
-  topics.forEach(topic => {
-    deviceRef
-      .child(`${topic}/${clientId}`)
-      .onDisconnect()
-      .remove();
-  });
-
   return {
     once,
     lastOfChildValue,
@@ -100,9 +89,11 @@ export const createDeviceStore = (app, deviceId) => {
       });
     },
     dispatchAction: async action => {
-      const actionId = child("actions").push().key;
+      const snapshot = await push("actions", action);
+      const actionId = snapshot.key;
       const actionPath = `actions/${actionId}`;
-      await set(actionPath, action);
+
+      snapshot.onDisconnect().remove();
 
       if (action.responseRequired) {
         return new Promise((resolve, reject) => {
@@ -112,7 +103,7 @@ export const createDeviceStore = (app, deviceId) => {
         });
       }
 
-      return Promise.resolve();
+      return actionId;
     },
     nextMetric: async (
       metricName: string,
@@ -132,10 +123,15 @@ export const createDeviceStore = (app, deviceId) => {
         }
       });
     },
-    subscribeToMetric: subscription => {
-      const subscriptionId =
-        "subscription" + child(`subscriptions/${clientId}`).push().key;
-      set(`subscriptions/${clientId}/${subscriptionId}`, subscription);
+    subscribeToMetric: async subscription => {
+      const snapshot = await push("subscriptions", {
+        ...subscription,
+        clientId
+      });
+      const subscriptionId = snapshot.key;
+
+      snapshot.onDisconnect().remove();
+
       return subscriptionId;
     },
     unsubscribFromMetric: (
@@ -143,7 +139,7 @@ export const createDeviceStore = (app, deviceId) => {
       listener: Function
     ) => {
       off("value", listener);
-      remove(`subscriptions/${clientId}/${subscriptionId}`);
+      remove(`subscriptions/${subscriptionId}`);
     }
   };
 };
