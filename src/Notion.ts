@@ -78,18 +78,6 @@ export class Notion implements INotion {
 
   /**
    * @param labels Name of metric properties to filter by
-   * @returns Observable of acceleration metric events
-   */
-  public acceleration(...labels): Observable<any> {
-    return this.getMetric({
-      metric: "acceleration",
-      labels: labels,
-      group: true
-    });
-  }
-
-  /**
-   * @param labels Name of metric properties to filter by
    * @returns Observable of awareness metric events
    */
   public awareness(...labels): Observable<any> {
@@ -143,18 +131,6 @@ export class Notion implements INotion {
   public emotion(...labels): Observable<any> {
     return this.getMetric({
       metric: "emotion",
-      labels: labels,
-      group: false
-    });
-  }
-
-  /**
-   * @param labels Name of metric properties to filter by
-   * @returns Observable of facialExpression metric events
-   */
-  public facialExpression(...labels): Observable<any> {
-    return this.getMetric({
-      metric: "facialExpression",
       labels: labels,
       group: false
     });
