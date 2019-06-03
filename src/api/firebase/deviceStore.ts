@@ -17,7 +17,7 @@ export const createDeviceStore = (app, deviceId) => {
   };
 
   const set = (topic, payload) => {
-    deviceRef.child(topic).set(payload);
+    return deviceRef.child(topic).set(payload);
   };
 
   const push = (topic, payload) => {
@@ -123,16 +123,21 @@ export const createDeviceStore = (app, deviceId) => {
         }
       });
     },
-    subscribeToMetric: async subscription => {
-      const snapshot = await push("subscriptions", {
-        ...subscription,
-        clientId
+    subscribeToMetric: subscription => {
+      const id = deviceRef.child("subscriptions").push().key;
+      const childPath = `subscriptions/${id}`;
+      set(childPath, {
+        id,
+        clientId,
+        ...subscription
       });
-      const subscriptionId = snapshot.key;
 
-      snapshot.onDisconnect().remove();
+      deviceRef
+        .child(childPath)
+        .onDisconnect()
+        .remove();
 
-      return subscriptionId;
+      return id;
     },
     unsubscribFromMetric: (
       subscriptionId: string,

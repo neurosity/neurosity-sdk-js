@@ -23,7 +23,5 @@ console.log("subscribed to kinesis");
 
 setTimeout(() => {
   channelAnalysis.unsubscribe();
-  kinesis.unsubscribe();
   console.log("unsubscribed from channelAnalysis");
-  console.log("unsubscribed from kinesis");
 }, 4000);
