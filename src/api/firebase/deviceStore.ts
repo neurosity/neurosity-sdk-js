@@ -112,9 +112,14 @@ export const createDeviceStore = (app, deviceId) => {
       set(`metrics/${metricName}`, metricValue);
     },
     onMetric: (subscription, callback: Function) => {
-      return on("value", `metrics/${subscription.metric}`, data => {
+      const { atomic, metric, labels } = subscription;
+      const child = atomic
+        ? `metrics/${metric}`
+        : `metrics/${metric}/${labels[0]}`;
+      return on("value", child, data => {
         if (data !== null) {
-          callback(data);
+          const response = atomic ? data : { [labels[0]]: data };
+          callback(response);
         }
       });
     },

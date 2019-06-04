@@ -14,6 +14,12 @@ const channelAnalysis = notion
     console.log("channelAnalysis", channelAnalysis);
   });
 
+const channelAnalysis2 = notion
+  .channelAnalysis("FC1", "FC2")
+  .subscribe(channelAnalysis => {
+    console.log("channelAnalysis", channelAnalysis);
+  });
+
 const kinesis = notion2.kinesis("push", "pull").subscribe(kinesis => {
   console.log("kinesis", kinesis);
 });
