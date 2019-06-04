@@ -44,7 +44,7 @@ export class Notion implements INotion {
   protected getMetric = (
     subscription: ISubscription
   ): Observable<any> => {
-    const { metric, labels, group } = subscription;
+    const { metric, labels, atomic } = subscription;
 
     const error = validateMetric(metric, labels, this.options);
     if (error) {
@@ -56,22 +56,40 @@ export class Notion implements INotion {
         ? labels
         : getMetricLabels(metric);
 
-      const subscriptionId = this.api.metrics.subscribe({
-        metric: metric,
-        labels: withDefaultLabels,
-        group: group
-      });
+      const subscriptions: ISubscription[] = atomic
+        ? [
+            this.api.metrics.subscribe({
+              metric: metric,
+              labels: withDefaultLabels,
+              atomic: atomic
+            })
+          ]
+        : withDefaultLabels.map(label => {
+            return this.api.metrics.subscribe({
+              metric: metric,
+              labels: [label],
+              atomic: atomic
+            });
+          });
 
-      const listener = this.api.metrics.on(
-        metric,
-        subscriptionId,
-        (...data) => {
-          observer.next(...data);
-        }
+      const subscriptionWithListeners = subscriptions.map(
+        subscription => ({
+          subscription,
+          listener: this.api.metrics.on(
+            subscription,
+            (...data: any) => {
+              observer.next(...data);
+            }
+          )
+        })
       );
 
       return () => {
-        this.api.metrics.unsubscribe(subscriptionId, listener);
+        subscriptionWithListeners.forEach(
+          ({ subscription, listener }) => {
+            this.api.metrics.unsubscribe(subscription, listener);
+          }
+        );
       };
     });
   };
@@ -84,7 +102,7 @@ export class Notion implements INotion {
     return this.getMetric({
       metric: "awareness",
       labels: labels,
-      group: false
+      atomic: false
     });
   }
 
@@ -96,7 +114,7 @@ export class Notion implements INotion {
     return this.getMetric({
       metric: "brainwaves",
       labels: labels,
-      group: true
+      atomic: false
     });
   }
 
@@ -108,7 +126,7 @@ export class Notion implements INotion {
     return this.getMetric({
       metric: "channelAnalysis",
       labels: labels,
-      group: true
+      atomic: true
     });
   }
 
@@ -120,7 +138,7 @@ export class Notion implements INotion {
     return this.getMetric({
       metric: "signalQuality",
       labels: labels,
-      group: true
+      atomic: true
     });
   }
 
@@ -132,7 +150,7 @@ export class Notion implements INotion {
     return this.getMetric({
       metric: "emotion",
       labels: labels,
-      group: false
+      atomic: false
     });
   }
 
@@ -144,7 +162,7 @@ export class Notion implements INotion {
     return this.getMetric({
       metric: "kinesis",
       labels: labels,
-      group: false
+      atomic: false
     });
   }
 
@@ -156,7 +174,7 @@ export class Notion implements INotion {
     return this.getMetric({
       metric: "predictions",
       labels: labels,
-      group: false
+      atomic: false
     });
   }
 
@@ -230,22 +248,23 @@ export class Notion implements INotion {
       metric: (label: string) => {
         const metricName = `skill~${skillData.id}~${label}`;
         const subscription = new Observable(observer => {
-          const subscriptionId = this.api.metrics.subscribe({
-            metric: metricName,
-            labels: [label],
-            group: true
-          });
+          const subscription: ISubscription = this.api.metrics.subscribe(
+            {
+              metric: metricName,
+              labels: [label],
+              atomic: true
+            }
+          );
 
           const listener = this.api.metrics.on(
-            metricName,
-            subscriptionId,
-            (...data) => {
+            subscription,
+            (...data: any) => {
               observer.next(...data);
             }
           );
 
           return () => {
-            this.api.metrics.unsubscribe(subscriptionId, listener);
+            this.api.metrics.unsubscribe(subscription, listener);
           };
         }).pipe(map(metric => metric[label]));
 

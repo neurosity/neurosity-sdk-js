@@ -58,37 +58,26 @@ export default class ApiClient implements IClient {
       next: (metricName, metricValue): void => {
         this.firebase.nextMetric(metricName, metricValue);
       },
-      on: (metricName, subscriptionId, callback) => {
-        if (shouldRerouteToDevice(metricName)) {
-          return this.onDeviceSocket.onMetric(
-            metricName,
-            subscriptionId,
-            callback
-          );
+      on: (subscription, callback) => {
+        if (shouldRerouteToDevice(subscription.metric)) {
+          return this.onDeviceSocket.onMetric(subscription, callback);
         } else {
-          return this.firebase.onMetric(
-            metricName,
-            subscriptionId,
-            callback
-          );
+          return this.firebase.onMetric(subscription, callback);
         }
       },
-      subscribe: (subscription): string => {
+      subscribe: subscription => {
         const serverType = shouldRerouteToDevice(subscription.metric)
           ? this.onDeviceSocket.serverType
           : this.firebase.serverType;
 
-        const subscriptionId = this.firebase.subscribeToMetric({
+        const subscriptionCreated = this.firebase.subscribeToMetric({
           ...subscription,
           serverType
         });
-        return subscriptionId;
+        return subscriptionCreated;
       },
-      unsubscribe: (
-        subscriptionId: string,
-        listener: Function
-      ): void => {
-        this.firebase.unsubscribFromMetric(subscriptionId, listener);
+      unsubscribe: (subscription, listener): void => {
+        this.firebase.unsubscribFromMetric(subscription, listener);
       }
     };
   }

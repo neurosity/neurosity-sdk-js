@@ -107,17 +107,12 @@ export const createDeviceStore = (app, deviceId) => {
     },
     nextMetric: async (
       metricName: string,
-      metricValue: { [label: string]: any },
-      serverType: string
+      metricValue: { [label: string]: any }
     ) => {
       set(`metrics/${metricName}`, metricValue);
     },
-    onMetric: (
-      metricName: string,
-      subscriptionId: string,
-      callback: Function
-    ) => {
-      return on("value", `metrics/${metricName}`, data => {
+    onMetric: (subscription, callback: Function) => {
+      return on("value", `metrics/${subscription.metric}`, data => {
         if (data !== null) {
           callback(data);
         }
@@ -126,25 +121,23 @@ export const createDeviceStore = (app, deviceId) => {
     subscribeToMetric: subscription => {
       const id = deviceRef.child("subscriptions").push().key;
       const childPath = `subscriptions/${id}`;
-      set(childPath, {
+      const subscriptionCreated = {
         id,
         clientId,
         ...subscription
-      });
+      };
+      set(childPath, subscriptionCreated);
 
       deviceRef
         .child(childPath)
         .onDisconnect()
         .remove();
 
-      return id;
+      return subscriptionCreated;
     },
-    unsubscribFromMetric: (
-      subscriptionId: string,
-      listener: Function
-    ) => {
+    unsubscribFromMetric: (subscription, listener: Function) => {
       off("value", listener);
-      remove(`subscriptions/${subscriptionId}`);
+      remove(`subscriptions/${subscription.id}`);
     }
   };
 };

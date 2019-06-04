@@ -61,43 +61,32 @@ export default class FirebaseClient {
 
   /**
    * Pushes metric for each subscriptions in path:
-   * /devices/:deviceId/metrics/:clientId/:subscriptionId
-   * Note: Expensive operation since it fetches all subscriptions
-   * each time.
-   * @TODO: use SubscriptionManager from @neurosity/api
+   * /devices/:deviceId/metrics/:metricName
    */
   public nextMetric(
     metricName: string,
     metricValue: { [label: string]: any }
   ): void {
-    this.deviceStore.nextMetric(
-      metricName,
-      metricValue,
-      this.serverType
-    );
+    this.deviceStore.nextMetric(metricName, metricValue);
   }
 
   /**
    * Listens for metrics in path:
-   * /devices/:deviceId/metrics/:clientId/:subscriptionId
+   * /devices/:deviceId/metrics/:metricName
    */
-  public onMetric(
-    metricName: string,
-    subscriptionId: string,
-    callback
-  ): void {
-    this.deviceStore.onMetric(metricName, subscriptionId, callback);
+  public onMetric(subscription, callback): void {
+    this.deviceStore.onMetric(subscription, callback);
   }
 
   /**
    * Creates a new and unique subscription in path:
-   * /devices/:deviceId/subscriptions/:clientId/:subscriptionId
-   * E.g. /devices/device1/subscriptions/client2/subscription3
+   * /devices/:deviceId/subscriptions/:subscriptionId
+   * E.g. /devices/device1/subscriptions/subscription3
    *
    * @param subscription
    * @returns subscriptionId
    */
-  public subscribeToMetric(subscription: any): string {
+  public subscribeToMetric(subscription) {
     const subscriptionId = this.deviceStore.subscribeToMetric(
       subscription
     );
@@ -106,16 +95,13 @@ export default class FirebaseClient {
 
   /**
    * Removes subscription in path:
-   * /devices/:deviceId/subscriptions/:clientId/:subscriptionId
+   * /devices/:deviceId/subscriptions/:subscriptionId
    *
    * @param metric
    * @param subscriptionId
    */
-  public unsubscribFromMetric(
-    subscriptionId: string,
-    listener: Function
-  ): void {
-    this.deviceStore.unsubscribFromMetric(subscriptionId, listener);
+  public unsubscribFromMetric(subscription, listener: Function): void {
+    this.deviceStore.unsubscribFromMetric(subscription, listener);
   }
 
   public get timestamp(): any {
