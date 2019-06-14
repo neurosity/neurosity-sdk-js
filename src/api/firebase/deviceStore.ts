@@ -118,8 +118,7 @@ export const createDeviceStore = (app, deviceId) => {
         : `metrics/${metric}/${labels[0]}`;
       return on("value", child, data => {
         if (data !== null) {
-          const response = atomic ? data : { [labels[0]]: data };
-          callback(response);
+          callback(data);
         }
       });
     },
