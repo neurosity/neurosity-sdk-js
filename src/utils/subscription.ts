@@ -1,14 +1,14 @@
 import { metrics } from "@neurosity/ipk";
 import IOptions from "../options";
 
-export const getMetricLabels = (metric: string): string[] =>
+export const getLabels = (metric: string): string[] =>
   Object.keys(metrics[metric]);
 
 export const hasInvalidLabels = (
   metric: string,
   labels: string[]
 ): boolean => {
-  const validLabels = getMetricLabels(metric);
+  const validLabels = getLabels(metric);
   return !labels.every(label => validLabels.includes(label));
 };
 
@@ -20,11 +20,19 @@ export const isMetricDisallowed = (
   "metrics" in options.skill &&
   !options.skill.metrics.includes(metricName);
 
-export const validateMetric = (
+export const validate = (
   metric: string,
   labels: string[],
   options: IOptions
 ): Error | false => {
+  const validLabels = getLabels(metric).join(", ");
+
+  if (!labels.length) {
+    return new Error(
+      `At least one label is required for ${metric} metric. Please add one of the following labels: ${validLabels}`
+    );
+  }
+
   if (isMetricDisallowed(metric, options)) {
     return new Error(
       `No permission to access the ${metric} metric. To access this metric, edit the skill's permissions`
@@ -32,7 +40,6 @@ export const validateMetric = (
   }
 
   if (hasInvalidLabels(metric, labels)) {
-    const validLabels = getMetricLabels(metric).join(", ");
     return new Error(
       `One ore more labels provided to ${metric} are invalid. The valid labels for ${metric} are ${validLabels}`
     );

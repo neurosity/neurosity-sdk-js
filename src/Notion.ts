@@ -4,7 +4,7 @@ import ApiClient from "./api/index";
 import IOptions from "./options.d";
 import INotion from "./notion.d";
 import ISubscription from "./subscription.d";
-import { getMetricLabels, validateMetric } from "./utils/metric";
+import { getLabels, validate } from "./utils/subscription";
 import { ISkillInstance } from "./skills/skill.d";
 
 /**
@@ -45,25 +45,21 @@ export class Notion implements INotion {
   ): Observable<any> => {
     const { metric, labels, atomic } = subscription;
 
-    const error = validateMetric(metric, labels, this.options);
+    const error = validate(metric, labels, this.options);
     if (error) {
       return throwError(error);
     }
 
     return new Observable(observer => {
-      const withDefaultLabels = labels.length
-        ? labels
-        : getMetricLabels(metric);
-
       const subscriptions: ISubscription[] = atomic
         ? [
             this.api.metrics.subscribe({
               metric: metric,
-              labels: withDefaultLabels,
+              labels: labels,
               atomic: atomic
             })
           ]
-        : withDefaultLabels.map(label => {
+        : labels.map(label => {
             return this.api.metrics.subscribe({
               metric: metric,
               labels: [label],
@@ -97,10 +93,13 @@ export class Notion implements INotion {
    * @param labels Name of metric properties to filter by
    * @returns Observable of awareness metric events
    */
-  public awareness(...labels: string[]): Observable<any> {
+  public awareness(
+    label: string,
+    ...otherLabels: string[]
+  ): Observable<any> {
     return this.getMetric({
       metric: "awareness",
-      labels: labels,
+      labels: label ? [label, ...otherLabels] : [],
       atomic: false
     });
   }
@@ -109,10 +108,13 @@ export class Notion implements INotion {
    * @param labels Name of metric properties to filter by
    * @returns Observable of brainwaves metric events
    */
-  public brainwaves(...labels: string[]): Observable<any> {
+  public brainwaves(
+    label: string,
+    ...otherLabels: string[]
+  ): Observable<any> {
     return this.getMetric({
       metric: "brainwaves",
-      labels: labels,
+      labels: label ? [label, ...otherLabels] : [],
       atomic: false
     });
   }
@@ -125,7 +127,7 @@ export class Notion implements INotion {
     const metric = "channelAnalysis";
     return this.getMetric({
       metric,
-      labels: getMetricLabels(metric),
+      labels: getLabels(metric),
       atomic: true
     });
   }
@@ -137,7 +139,7 @@ export class Notion implements INotion {
     const metric = "signalQuality";
     return this.getMetric({
       metric,
-      labels: getMetricLabels(metric),
+      labels: getLabels(metric),
       atomic: true
     });
   }
@@ -145,10 +147,13 @@ export class Notion implements INotion {
   /**
    * @returns Observable of emotion metric events
    */
-  public emotion(...labels: string[]): Observable<any> {
+  public emotion(
+    label: string,
+    ...otherLabels: string[]
+  ): Observable<any> {
     return this.getMetric({
       metric: "emotion",
-      labels: labels,
+      labels: label ? [label, ...otherLabels] : [],
       atomic: false
     });
   }
@@ -157,10 +162,13 @@ export class Notion implements INotion {
    * @param labels Name of metric properties to filter by
    * @returns Observable of kinesis metric events
    */
-  public kinesis(...labels: string[]): Observable<any> {
+  public kinesis(
+    label: string,
+    ...otherLabels: string[]
+  ): Observable<any> {
     return this.getMetric({
       metric: "kinesis",
-      labels: labels,
+      labels: label ? [label, ...otherLabels] : [],
       atomic: false
     });
   }
@@ -169,10 +177,13 @@ export class Notion implements INotion {
    * @param labels Name of metric properties to filter by
    * @returns Observable of predictions metric events
    */
-  public predictions(...labels: string[]): Observable<any> {
+  public predictions(
+    label: string,
+    ...otherLabels: string[]
+  ): Observable<any> {
     return this.getMetric({
       metric: "predictions",
-      labels: labels,
+      labels: label ? [label, ...otherLabels] : [],
       atomic: false
     });
   }

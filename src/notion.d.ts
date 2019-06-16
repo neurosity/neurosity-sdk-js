@@ -3,13 +3,13 @@ import { ITraining } from "./training.d";
 import { ISkillInstance } from "./skills/skill.d";
 
 export default interface INotion {
-  awareness(...labels: string[]): Observable<any>;
-  brainwaves(...labels: string[]): Observable<any>;
+  awareness(label: string, ...otherLabels: string[]): Observable<any>;
+  brainwaves(label: string, ...otherLabels: string[]): Observable<any>;
   channelAnalysis(): Observable<any>;
-  emotion(...labels: string[]): Observable<any>;
+  emotion(label: string, ...otherLabels: string[]): Observable<any>;
   getInfo(): Promise<any>;
-  kinesis(...labels: string[]): Observable<any>;
-  predictions(...labels: string[]): Observable<any>;
+  kinesis(label: string, ...otherLabels: string[]): Observable<any>;
+  predictions(label: string, ...otherLabels: string[]): Observable<any>;
   signalQuality(): Observable<any>;
   status(): Observable<any>;
   skill(id: string): Promise<ISkillInstance>;
