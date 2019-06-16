@@ -6,7 +6,8 @@ export default interface IClient {
   actions: IActions;
   disconnect(): Promise<any>;
   getInfo(): Promise<any>;
-  onStatus(callback?: Function): void;
+  onStatus(callback: Function): Function;
+  offStatus(listener: Function): void;
   metrics: IMetrics;
   skills: ISkillsClient;
   timestamp: number;

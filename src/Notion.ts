@@ -5,7 +5,6 @@ import IOptions from "./options.d";
 import INotion from "./notion.d";
 import ISubscription from "./subscription.d";
 import { getMetricLabels, validateMetric } from "./utils/metric";
-import { pick } from "./utils/pick";
 import { ISkillInstance } from "./skills/skill.d";
 
 /**
@@ -98,7 +97,7 @@ export class Notion implements INotion {
    * @param labels Name of metric properties to filter by
    * @returns Observable of awareness metric events
    */
-  public awareness(...labels): Observable<any> {
+  public awareness(...labels: string[]): Observable<any> {
     return this.getMetric({
       metric: "awareness",
       labels: labels,
@@ -110,7 +109,7 @@ export class Notion implements INotion {
    * @param labels Name of metric properties to filter by
    * @returns Observable of brainwaves metric events
    */
-  public brainwaves(...labels): Observable<any> {
+  public brainwaves(...labels: string[]): Observable<any> {
     return this.getMetric({
       metric: "brainwaves",
       labels: labels,
@@ -122,31 +121,31 @@ export class Notion implements INotion {
    * @param labels Name of metric properties to filter by
    * @returns Observable of channelAnalysis metric events
    */
-  public channelAnalysis(...labels): Observable<any> {
+  public channelAnalysis(): Observable<any> {
+    const metric = "channelAnalysis";
     return this.getMetric({
-      metric: "channelAnalysis",
-      labels: labels,
+      metric,
+      labels: getMetricLabels(metric),
       atomic: true
     });
   }
 
   /**
-   * @param labels Name of metric properties to filter by
    * @returns Observable of signalQuality metric events
    */
-  public signalQuality(...labels): Observable<any> {
+  public signalQuality(): Observable<any> {
+    const metric = "signalQuality";
     return this.getMetric({
-      metric: "signalQuality",
-      labels: labels,
+      metric,
+      labels: getMetricLabels(metric),
       atomic: true
     });
   }
 
   /**
-   * @param labels Name of metric properties to filter by
    * @returns Observable of emotion metric events
    */
-  public emotion(...labels): Observable<any> {
+  public emotion(...labels: string[]): Observable<any> {
     return this.getMetric({
       metric: "emotion",
       labels: labels,
@@ -158,7 +157,7 @@ export class Notion implements INotion {
    * @param labels Name of metric properties to filter by
    * @returns Observable of kinesis metric events
    */
-  public kinesis(...labels): Observable<any> {
+  public kinesis(...labels: string[]): Observable<any> {
     return this.getMetric({
       metric: "kinesis",
       labels: labels,
@@ -170,7 +169,7 @@ export class Notion implements INotion {
    * @param labels Name of metric properties to filter by
    * @returns Observable of predictions metric events
    */
-  public predictions(...labels): Observable<any> {
+  public predictions(...labels: string[]): Observable<any> {
     return this.getMetric({
       metric: "predictions",
       labels: labels,
@@ -181,28 +180,16 @@ export class Notion implements INotion {
   /**
    * Observes last state of status and all subsequent status changes
    *
-   * @param labels Name of metric properties to filter by
    * @returns Observable of status metric events
    */
-  public status(...labels): Observable<any> {
-    const error = validateMetric("status", labels, this.options);
-    if (error) {
-      return throwError(error);
-    }
-
-    const withDefaultLabels = labels.length
-      ? labels
-      : getMetricLabels("status");
-
-    const status = new Observable(observer => {
-      this.api.onStatus((...data) => {
-        observer.next(...data);
+  public status(): Observable<any> {
+    return new Observable(observer => {
+      const listener = this.api.onStatus(status => {
+        observer.next(status);
       });
 
-      return () => {};
+      return () => this.api.offStatus(listener);
     });
-
-    return status.pipe(map(status => pick(status, withDefaultLabels)));
   }
 
   /**

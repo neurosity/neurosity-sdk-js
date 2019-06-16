@@ -47,8 +47,12 @@ export default class ApiClient implements IClient {
     return await this.firebase.getInfo();
   }
 
-  public onStatus(callback): void {
-    this.firebase.onStatus(callback);
+  public onStatus(callback: Function): Function {
+    return this.firebase.onStatus(callback);
+  }
+
+  public offStatus(listener: Function): void {
+    this.firebase.offStatus(listener);
   }
 
   public get metrics(): IMetrics {

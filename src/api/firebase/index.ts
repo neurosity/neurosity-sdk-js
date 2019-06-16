@@ -55,8 +55,12 @@ export default class FirebaseClient {
     );
   }
 
-  public onStatus(callback: Function): void {
-    this.deviceStore.onStatus(callback);
+  public onStatus(callback: Function): Function {
+    return this.deviceStore.onStatus(callback);
+  }
+
+  public offStatus(listener: Function): void {
+    this.deviceStore.offStatus(listener);
   }
 
   /**

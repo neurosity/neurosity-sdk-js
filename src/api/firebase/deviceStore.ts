@@ -81,12 +81,15 @@ export const createDeviceStore = (app, deviceId) => {
   return {
     once,
     lastOfChildValue,
-    onStatus: async callback => {
-      on("value", "status", data => {
+    onStatus: (callback: Function): Function => {
+      return on("value", "status", (data: any) => {
         if (data !== null) {
           callback(data);
         }
       });
+    },
+    offStatus: (listener: Function): void => {
+      off("value", listener);
     },
     dispatchAction: async action => {
       const snapshot = await push("actions", action);
