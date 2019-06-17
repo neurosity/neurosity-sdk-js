@@ -1,6 +1,6 @@
 import { timer, pipe, range } from "rxjs";
 import { map, filter, concat } from "rxjs/operators";
-import { bufferCount, concatMap } from "rxjs/operators";
+import { bufferCount, concatMap, skip } from "rxjs/operators";
 
 type Options = {
   getTimesync: () => Promise<number>;
@@ -9,7 +9,7 @@ type Options = {
 };
 
 const defaultOptions = {
-  bufferSize: 25,
+  bufferSize: 100,
   updateInterval: 1000 // @TODO: every 120s
 };
 
@@ -47,6 +47,7 @@ export class Timesync {
 
   filterOutliers() {
     return pipe(
+      skip(1),
       filter((offset: number) => {
         return (
           this._offset === 0 ||
@@ -64,7 +65,6 @@ export class Timesync {
         const serverTime = await getTimesync();
         const responseEndtime = Date.now();
         const oneWayDuration = (responseEndtime - requestStartTime) / 2;
-        console.log("oneWayDuration", oneWayDuration);
         return responseEndtime - oneWayDuration - serverTime;
       })
     );
