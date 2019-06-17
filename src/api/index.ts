@@ -1,6 +1,7 @@
 import { metrics } from "@neurosity/ipk";
 import FirebaseClient from "./firebase/index";
 import WebsocketClient from "./websocket";
+import { Timesync } from "../timesync";
 import IClient from "./client.d";
 import IActions from "./actions.d";
 import IMetrics from "./metrics.d";
@@ -16,9 +17,13 @@ const isNotionMetric = (metric: string): boolean =>
 export default class ApiClient implements IClient {
   protected firebase: FirebaseClient;
   protected onDeviceSocket: WebsocketClient;
+  protected timesync: Timesync;
 
   constructor(options: IOptions) {
     this.firebase = new FirebaseClient(options);
+    this.timesync = new Timesync({
+      getTimesync: this.firebase.getTimesync.bind(this.firebase)
+    });
 
     if (options.onDeviceSocketUrl) {
       this.onDeviceSocket = new WebsocketClient({
@@ -95,6 +100,6 @@ export default class ApiClient implements IClient {
   }
 
   public get timestamp(): number {
-    return this.firebase.timestamp;
+    return this.timesync.timestamp;
   }
 }

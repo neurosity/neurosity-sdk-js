@@ -63,6 +63,15 @@ export default class FirebaseClient {
     this.deviceStore.offStatus(listener);
   }
 
+  public async getTimesync(): Promise<number> {
+    const response = await this.dispatchAction({
+      command: "timesync",
+      action: "get",
+      responseRequired: true
+    });
+    return response.timestamp;
+  }
+
   /**
    * Pushes metric for each subscriptions in path:
    * /devices/:deviceId/metrics/:metricName
