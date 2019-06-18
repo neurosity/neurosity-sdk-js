@@ -1,6 +1,7 @@
 import { timer, pipe, range } from "rxjs";
-import { map, filter, concat } from "rxjs/operators";
-import { bufferCount, concatMap, skip } from "rxjs/operators";
+import { map, concat, skip } from "rxjs/operators";
+import { bufferCount, concatMap } from "rxjs/operators";
+import outliers from "outliers";
 
 type Options = {
   getTimesync: () => Promise<number>;
@@ -10,7 +11,7 @@ type Options = {
 
 const defaultOptions = {
   bufferSize: 100,
-  updateInterval: 1000 // @TODO: every 120s
+  updateInterval: 1000
 };
 
 export class Timesync {
@@ -32,27 +33,22 @@ export class Timesync {
     const timer$ = timer(updateInterval, updateInterval);
 
     burst$
-      .pipe(concat(timer$))
       .pipe(
+        concat(timer$),
         this.toOffset(),
-        this.filterOutliers(),
         bufferCount(bufferSize, 1),
-        map(this.average)
+        this.filterOutliers(),
+        map(list => this.average(list))
       )
       .subscribe(offset => {
-        console.log("offset", offset);
         this._offset = offset;
       });
   }
 
   filterOutliers() {
     return pipe(
-      skip(1),
-      filter((offset: number) => {
-        return (
-          this._offset === 0 ||
-          Math.abs(offset) < Math.abs((0.1 + this._offset) * 3)
-        );
+      map((offsets: number[]): number[] => {
+        return offsets.filter(outliers());
       })
     );
   }
@@ -66,7 +62,8 @@ export class Timesync {
         const responseEndtime = Date.now();
         const oneWayDuration = (responseEndtime - requestStartTime) / 2;
         return responseEndtime - oneWayDuration - serverTime;
-      })
+      }),
+      skip(1) // Firebase's 1st roundtrip always takes a while
     );
   }
 

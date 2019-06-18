@@ -49,6 +49,7 @@
   "dependencies": {
     "@neurosity/ipk": "^1.4.0",
     "firebase": "^6.1.0",
+    "outliers": "0.0.3",
     "rxjs": "^6.5.1",
     "socket.io-client": "^2.2.0"
   },
