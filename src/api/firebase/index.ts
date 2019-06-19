@@ -68,7 +68,7 @@ export default class FirebaseClient {
       command: "timesync",
       action: "get",
       responseRequired: true,
-      responseTimeout: 1000
+      responseTimeout: 250
     });
     return response.timestamp;
   }

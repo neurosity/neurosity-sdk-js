@@ -1,5 +1,5 @@
-import { timer, pipe, range, empty } from "rxjs";
-import { map, concat, skip } from "rxjs/operators";
+import { timer, pipe, range } from "rxjs";
+import { map, concat } from "rxjs/operators";
 import { bufferCount, concatMap } from "rxjs/operators";
 import outliers from "outliers";
 
@@ -10,7 +10,7 @@ type Options = {
 };
 
 const defaultOptions = {
-  bufferSize: 25,
+  bufferSize: 100,
   updateInterval: 1 * 60 * 1000 // every minute
 };
 
@@ -68,15 +68,14 @@ export class Timesync {
 
         if (error) {
           console.log(error);
-          return empty();
+          return 0;
         }
 
         const responseEndtime = Date.now();
         const oneWayDuration = (responseEndtime - requestStartTime) / 2;
         const offset = responseEndtime - oneWayDuration - serverTime;
         return offset;
-      }),
-      skip(1) // Firebase's 1st roundtrip always takes a while
+      })
     );
   }
 
