@@ -67,7 +67,8 @@ export default class FirebaseClient {
     const response = await this.dispatchAction({
       command: "timesync",
       action: "get",
-      responseRequired: true
+      responseRequired: true,
+      responseTimeout: 1000
     });
     return response.timestamp;
   }
