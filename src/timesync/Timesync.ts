@@ -1,4 +1,4 @@
-import { timer, pipe, range } from "rxjs";
+import { timer, pipe, range, empty } from "rxjs";
 import { map, concat, skip } from "rxjs/operators";
 import { bufferCount, concatMap } from "rxjs/operators";
 import outliers from "outliers";
@@ -10,8 +10,8 @@ type Options = {
 };
 
 const defaultOptions = {
-  bufferSize: 100,
-  updateInterval: 1000
+  bufferSize: 25,
+  updateInterval: 1 * 60 * 1000 // every minute
 };
 
 export class Timesync {
@@ -30,7 +30,9 @@ export class Timesync {
   private starTimer(): void {
     const { bufferSize, updateInterval } = this.options;
     const burst$ = range(0, bufferSize);
-    const timer$ = timer(updateInterval, updateInterval);
+    const timer$ = timer(updateInterval, updateInterval).pipe(
+      map(i => bufferSize + i)
+    );
 
     burst$
       .pipe(
@@ -47,9 +49,11 @@ export class Timesync {
 
   filterOutliers() {
     return pipe(
-      map((offsets: number[]): number[] => {
-        return offsets.filter(outliers());
-      })
+      map(
+        (offsets: number[]): number[] => {
+          return offsets.filter(outliers());
+        }
+      )
     );
   }
 
@@ -58,10 +62,19 @@ export class Timesync {
     return pipe(
       concatMap(async () => {
         const requestStartTime = Date.now();
-        const serverTime = await getTimesync();
+        const [error, serverTime] = await getTimesync()
+          .then(offset => [null, offset])
+          .catch(error => [error]);
+
+        if (error) {
+          console.log(error);
+          return empty();
+        }
+
         const responseEndtime = Date.now();
         const oneWayDuration = (responseEndtime - requestStartTime) / 2;
-        return responseEndtime - oneWayDuration - serverTime;
+        const offset = responseEndtime - oneWayDuration - serverTime;
+        return offset;
       }),
       skip(1) // Firebase's 1st roundtrip always takes a while
     );
