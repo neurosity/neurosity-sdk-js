@@ -1,6 +1,6 @@
 {
   "name": "@neurosity/notion",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Notion API Client by Neurosity",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -49,6 +49,7 @@
   "dependencies": {
     "@neurosity/ipk": "^1.4.0",
     "firebase": "^6.1.0",
+    "outliers": "0.0.3",
     "rxjs": "^6.5.1",
     "socket.io-client": "^2.2.0"
   },

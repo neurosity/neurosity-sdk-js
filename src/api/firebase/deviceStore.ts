@@ -99,11 +99,21 @@ export const createDeviceStore = (app, deviceId) => {
       snapshot.onDisconnect().remove();
 
       if (action.responseRequired) {
-        return new Promise((resolve, reject) => {
+        const reponseTimeout = action.responseTimeout || 600000; // defaults to 10 minutes
+        const timeout = new Promise((_, reject) => {
+          const id = setTimeout(() => {
+            clearTimeout(id);
+            reject(`Action response timed out in ${reponseTimeout}ms.`);
+          }, reponseTimeout);
+        });
+
+        const response = new Promise((resolve, reject) => {
           const error = new Error("Action removed");
           bindListener("value", `${actionPath}/response`, resolve);
           bindListener("child_removed", actionPath, reject, error);
         });
+
+        return Promise.race([response, timeout]);
       }
 
       return actionId;

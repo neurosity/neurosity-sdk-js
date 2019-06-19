@@ -1,6 +1,7 @@
-import { timer, pipe, range } from "rxjs";
-import { map, filter, concat } from "rxjs/operators";
+import { timer, pipe, range, empty } from "rxjs";
+import { map, concat, skip } from "rxjs/operators";
 import { bufferCount, concatMap } from "rxjs/operators";
+import outliers from "outliers";
 
 type Options = {
   getTimesync: () => Promise<number>;
@@ -10,7 +11,7 @@ type Options = {
 
 const defaultOptions = {
   bufferSize: 25,
-  updateInterval: 1000 // @TODO: every 120s
+  updateInterval: 1 * 60 * 1000 // every minute
 };
 
 export class Timesync {
@@ -29,30 +30,30 @@ export class Timesync {
   private starTimer(): void {
     const { bufferSize, updateInterval } = this.options;
     const burst$ = range(0, bufferSize);
-    const timer$ = timer(updateInterval, updateInterval);
+    const timer$ = timer(updateInterval, updateInterval).pipe(
+      map(i => bufferSize + i)
+    );
 
     burst$
-      .pipe(concat(timer$))
       .pipe(
+        concat(timer$),
         this.toOffset(),
-        this.filterOutliers(),
         bufferCount(bufferSize, 1),
-        map(this.average)
+        this.filterOutliers(),
+        map(list => this.average(list))
       )
       .subscribe(offset => {
-        console.log("offset", offset);
         this._offset = offset;
       });
   }
 
   filterOutliers() {
     return pipe(
-      filter((offset: number) => {
-        return (
-          this._offset === 0 ||
-          Math.abs(offset) < Math.abs((0.1 + this._offset) * 3)
-        );
-      })
+      map(
+        (offsets: number[]): number[] => {
+          return offsets.filter(outliers());
+        }
+      )
     );
   }
 
@@ -61,12 +62,21 @@ export class Timesync {
     return pipe(
       concatMap(async () => {
         const requestStartTime = Date.now();
-        const serverTime = await getTimesync();
+        const [error, serverTime] = await getTimesync()
+          .then(offset => [null, offset])
+          .catch(error => [error]);
+
+        if (error) {
+          console.log(error);
+          return empty();
+        }
+
         const responseEndtime = Date.now();
         const oneWayDuration = (responseEndtime - requestStartTime) / 2;
-        console.log("oneWayDuration", oneWayDuration);
-        return responseEndtime - oneWayDuration - serverTime;
-      })
+        const offset = responseEndtime - oneWayDuration - serverTime;
+        return offset;
+      }),
+      skip(1) // Firebase's 1st roundtrip always takes a while
     );
   }
 

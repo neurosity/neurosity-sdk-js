@@ -5,4 +5,5 @@ export default interface IOptions {
   apiKey?: string;
   skill?: ISkill;
   onDeviceSocketUrl?: string;
+  timesync?: string;
 }

@@ -15,15 +15,20 @@ const isNotionMetric = (metric: string): boolean =>
  * @hidden
  */
 export default class ApiClient implements IClient {
+  protected options: IOptions;
   protected firebase: FirebaseClient;
   protected onDeviceSocket: WebsocketClient;
   protected timesync: Timesync;
 
   constructor(options: IOptions) {
+    this.options = options;
     this.firebase = new FirebaseClient(options);
-    this.timesync = new Timesync({
-      getTimesync: this.firebase.getTimesync.bind(this.firebase)
-    });
+
+    if (options.timesync) {
+      this.timesync = new Timesync({
+        getTimesync: this.firebase.getTimesync.bind(this.firebase)
+      });
+    }
 
     if (options.onDeviceSocketUrl) {
       this.onDeviceSocket = new WebsocketClient({
@@ -100,6 +105,6 @@ export default class ApiClient implements IClient {
   }
 
   public get timestamp(): number {
-    return this.timesync.timestamp;
+    return this.options.timesync ? this.timesync.timestamp : Date.now();
   }
 }
