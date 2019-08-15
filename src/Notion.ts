@@ -90,6 +90,26 @@ export class Notion implements INotion {
   };
 
   /**
+   * Injects an EEG marker to data stream
+   *
+   * @param label Name the label to inject
+   */
+  public addMarker(label: string) {
+    if (!label) {
+      throw new Error("Notion: a label is required for addMarker");
+    }
+
+    this.api.actions.dispatch({
+      command: "marker",
+      action: "add",
+      message: {
+        label,
+        timestamp: this.api.timestamp
+      }
+    });
+  }
+
+  /**
    * @param labels Name of metric properties to filter by
    * @returns Observable of awareness metric events
    */

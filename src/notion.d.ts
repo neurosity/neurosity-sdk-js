@@ -3,6 +3,7 @@ import { ITraining } from "./training.d";
 import { ISkillInstance } from "./skills/skill.d";
 
 export default interface INotion {
+  addMarker(label: string): void;
   awareness(label: string, ...otherLabels: string[]): Observable<any>;
   brainwaves(label: string, ...otherLabels: string[]): Observable<any>;
   channelAnalysis(): Observable<any>;
