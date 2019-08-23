@@ -140,6 +140,13 @@ export class Notion implements INotion {
   }
 
   /**
+   * @returns Observable of calm events - awareness/calm alias
+   */
+  public calm(): Observable<any> {
+    return this.awareness("calm");
+  }
+
+  /**
    * @param labels Name of metric properties to filter by
    * @returns Observable of channelAnalysis metric events
    */

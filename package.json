@@ -47,7 +47,7 @@
   },
   "homepage": "https://github.com/neurosity/lib-api-client#readme",
   "dependencies": {
-    "@neurosity/ipk": "^1.4.0",
+    "@neurosity/ipk": "^1.5.0",
     "firebase": "^6.1.0",
     "outliers": "0.0.3",
     "rxjs": "^6.5.1",

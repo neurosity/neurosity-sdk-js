@@ -6,6 +6,7 @@ export default interface INotion {
   addMarker(label: string): void;
   awareness(label: string, ...otherLabels: string[]): Observable<any>;
   brainwaves(label: string, ...otherLabels: string[]): Observable<any>;
+  calm(): Observable<any>;
   channelAnalysis(): Observable<any>;
   emotion(label: string, ...otherLabels: string[]): Observable<any>;
   getInfo(): Promise<any>;
