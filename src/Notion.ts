@@ -1,11 +1,11 @@
 import { Observable, throwError } from "rxjs";
 import { map } from "rxjs/operators";
 import ApiClient from "./api/index";
-import IOptions from "./options.d";
-import INotion from "./notion.d";
-import ISubscription from "./subscription.d";
+import IOptions from "./types/options";
+import INotion from "./types/notion";
+import ISubscription from "./types/subscription";
 import { getLabels, validate } from "./utils/subscription";
-import { ISkillInstance } from "./skills/skill.d";
+import { ISkillInstance } from "./types/skill";
 
 /**
  *

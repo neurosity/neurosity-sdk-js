@@ -1,4 +1,4 @@
-import ISubscription from "../subscription.d";
+import ISubscription from "./subscription";
 
 type SubscriptionListener = Function;
 

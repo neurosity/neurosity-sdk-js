@@ -1,6 +1,6 @@
 import { Notion } from "./Notion";
-import IOptions from "./options.d";
-import { ISkill, ISkillInstance } from "./skills/skill.d";
+import IOptions from "./types/options";
+import { ISkill, ISkillInstance } from "./types/skill";
 import INotion from "./notion";
 
 export type INotionOnDevice = Pick<

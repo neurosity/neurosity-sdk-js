@@ -1,6 +1,6 @@
-import IActions from "./actions.d";
-import IMetrics from "./metrics.d";
-import { ISkillsClient } from "../skills/skill.d";
+import IActions from "./actions";
+import IMetrics from "./metrics";
+import { ISkillsClient } from "./skill";
 
 export default interface IClient {
   actions: IActions;

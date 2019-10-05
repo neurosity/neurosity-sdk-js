@@ -1,6 +1,6 @@
 import { Observable } from "rxjs";
-import { ITraining } from "./training.d";
-import { ISkillInstance } from "./skills/skill.d";
+import { ITraining } from "./training";
+import { ISkillInstance } from "./skill";
 
 export default interface INotion {
   addMarker(label: string): void;

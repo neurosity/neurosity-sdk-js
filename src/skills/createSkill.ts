@@ -3,7 +3,7 @@ import {
   IOnDeviceOptions,
   INotionOnDevice
 } from "../NotionOnDevice";
-import { ISkillInstance, ISkillSubscription } from "../skills/skill.d";
+import { ISkillInstance, ISkillSubscription } from "../types/skill";
 
 type ISkillApp = (
   notion: INotionOnDevice,

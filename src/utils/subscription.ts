@@ -1,5 +1,5 @@
 import { metrics } from "@neurosity/ipk";
-import IOptions from "../options";
+import IOptions from "../types/options";
 
 export const getLabels = (metric: string): string[] =>
   Object.keys(metrics[metric]);

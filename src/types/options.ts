@@ -1,4 +1,4 @@
-import { ISkill } from "./skills/skill.d";
+import { ISkill } from "./skill";
 
 export default interface IOptions {
   deviceId: string;

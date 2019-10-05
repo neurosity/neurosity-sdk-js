@@ -2,11 +2,11 @@ import { metrics } from "@neurosity/ipk";
 import FirebaseClient from "./firebase/index";
 import WebsocketClient from "./websocket";
 import { Timesync } from "../timesync";
-import IClient from "./client.d";
-import IActions from "./actions.d";
-import IMetrics from "./metrics.d";
-import IOptions from "../options.d";
-import { ISkillsClient, IDeviceSkill } from "../skills/skill.d";
+import IClient from "../types/client";
+import IActions from "../types/actions";
+import IMetrics from "../types/metrics";
+import IOptions from "../types/options";
+import { ISkillsClient, IDeviceSkill } from "../types/skill";
 
 const isNotionMetric = (metric: string): boolean =>
   Object.keys(metrics).includes(metric);
