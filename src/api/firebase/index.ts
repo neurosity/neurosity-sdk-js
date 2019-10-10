@@ -4,6 +4,7 @@ import "firebase/auth";
 
 import { getFirebaseConfig } from "./config";
 import { createDeviceStore } from "./deviceStore";
+import IOptions from "../../types/options";
 
 /**
  * @hidden
@@ -14,16 +15,46 @@ export default class FirebaseClient {
   protected user;
   protected deviceStore;
 
-  constructor(options) {
+  constructor(options: IOptions) {
     this.init(options);
   }
 
   private init(options) {
     this.app = this.getApp(options);
     this.deviceStore = createDeviceStore(this.app, options.deviceId);
+    this.authenticate(options);
+  }
 
-    this.app.auth().signInAnonymously();
+  authenticate(options: IOptions) {
+    const { accessToken, email, password } = options;
+
+    if (!accessToken && !email && !password) {
+      throw new Error(
+        `Either email/password or an accessToken is required`
+      );
+    }
+
+    if (accessToken) {
+      this.app
+        .auth()
+        .signInWithCustomToken(accessToken)
+        .catch((error: Error) => {
+          throw new Error(error.message);
+        });
+    }
+
+    if (email && password) {
+      this.app
+        .auth()
+        .signInWithEmailAndPassword(email, password)
+        .catch((error: Error) => {
+          console.log(error);
+          //throw new Error(error.message);
+        });
+    }
+
     this.app.auth().onAuthStateChanged(user => {
+      console.log("user", user);
       this.user = user;
     });
   }

@@ -43,8 +43,7 @@ Utilizes Firebase client for data transport.
 
 ```js
 const notion = new Notion({
-  deviceId: "****",
-  apiKey: "************"
+  deviceId: "****"
 });
 ```
 
@@ -53,7 +52,6 @@ Options:
 ```ts
 interface IOptions {
   deviceId: string;
-  apiKey?: string;
 }
 ```
 
@@ -382,11 +380,6 @@ npm run examples:node
 
 ## TODOs
 
-- Add error handling
-- Test Auth
-- Check for CORS
 - Security audit
 - Document how to get `deviceId`
-- Document how to get `apiKey` for firebase
-- Remove `apiKey` from examples
 - Publish to cdn
