@@ -186,6 +186,13 @@ export class Notion implements INotion {
   }
 
   /**
+   * @returns Observable of focus events - awareness/focus alias
+   */
+  public focus(): Observable<any> {
+    return this.awareness("focus");
+  }
+
+  /**
    * @param labels Name of metric properties to filter by
    * @returns Observable of kinesis metric events
    */

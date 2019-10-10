@@ -9,6 +9,7 @@ export default interface INotion {
   calm(): Observable<any>;
   channelAnalysis(): Observable<any>;
   emotion(label: string, ...otherLabels: string[]): Observable<any>;
+  focus(): Observable<any>;
   getInfo(): Promise<any>;
   kinesis(label: string, ...otherLabels: string[]): Observable<any>;
   predictions(label: string, ...otherLabels: string[]): Observable<any>;
