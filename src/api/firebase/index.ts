@@ -2,9 +2,10 @@ import firebase from "firebase/app";
 import "firebase/database";
 import "firebase/auth";
 
-import { getFirebaseConfig } from "./config";
+import { config } from "./config";
 import { createDeviceStore } from "./deviceStore";
 import IOptions from "../../types/options";
+import { Credentials } from "../../types/credentials";
 
 /**
  * @hidden
@@ -20,54 +21,45 @@ export default class FirebaseClient {
   }
 
   private init(options) {
-    this.app = this.getApp(options);
+    this.app = this.getApp(options.deviceId);
     this.deviceStore = createDeviceStore(this.app, options.deviceId);
-    this.authenticate(options);
   }
 
-  authenticate(options: IOptions) {
-    const { accessToken, email, password } = options;
+  login(credentials: Credentials) {
+    this.app.auth().onAuthStateChanged(user => {
+      this.user = user;
+    });
 
-    if (!accessToken && !email && !password) {
-      throw new Error(
-        `Either email/password or an accessToken is required`
-      );
-    }
-
-    if (accessToken) {
-      this.app
+    if ("accessToken" in credentials) {
+      return this.app
         .auth()
-        .signInWithCustomToken(accessToken)
+        .signInWithCredential(credentials.accessToken)
         .catch((error: Error) => {
           throw new Error(error.message);
         });
     }
 
-    if (email && password) {
-      this.app
+    if ("email" in credentials && "password" in credentials) {
+      const { email, password } = credentials;
+      return this.app
         .auth()
         .signInWithEmailAndPassword(email, password)
         .catch((error: Error) => {
-          console.log(error);
-          //throw new Error(error.message);
+          throw new Error(error.message);
         });
     }
 
-    this.app.auth().onAuthStateChanged(user => {
-      console.log("user", user);
-      this.user = user;
-    });
+    throw new Error(
+      `Either email/password or an accessToken is required`
+    );
   }
 
-  private getApp(options) {
-    const appName = options.deviceId;
+  private getApp(deviceId: string) {
+    const appName = deviceId;
     const existingApp = firebase.apps.find(app => app.name === appName);
     return existingApp
       ? existingApp
-      : firebase.initializeApp(
-          getFirebaseConfig(options || {}),
-          appName
-        );
+      : firebase.initializeApp(config, appName);
   }
 
   public dispatchAction(action): Promise<any> {

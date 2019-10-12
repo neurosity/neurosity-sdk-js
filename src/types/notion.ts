@@ -1,6 +1,7 @@
 import { Observable } from "rxjs";
 import { ITraining } from "./training";
 import { ISkillInstance } from "./skill";
+import { Credentials } from "./credentials";
 
 export default interface INotion {
   addMarker(label: string): void;
@@ -11,6 +12,7 @@ export default interface INotion {
   emotion(label: string, ...otherLabels: string[]): Observable<any>;
   focus(): Observable<any>;
   getInfo(): Promise<any>;
+  login(credentails: Credentials): Promise<any>;
   kinesis(label: string, ...otherLabels: string[]): Observable<any>;
   predictions(label: string, ...otherLabels: string[]): Observable<any>;
   signalQuality(): Observable<any>;

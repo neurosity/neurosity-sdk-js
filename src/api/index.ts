@@ -7,6 +7,7 @@ import IActions from "../types/actions";
 import IMetrics from "../types/metrics";
 import IOptions from "../types/options";
 import { ISkillsClient, IDeviceSkill } from "../types/skill";
+import { Credentials } from "../types/credentials";
 
 const isNotionMetric = (metric: string): boolean =>
   Object.keys(metrics).includes(metric);
@@ -23,12 +24,6 @@ export default class ApiClient implements IClient {
   constructor(options: IOptions) {
     this.options = options;
     this.firebase = new FirebaseClient(options);
-
-    if (options.timesync) {
-      this.timesync = new Timesync({
-        getTimesync: this.firebase.getTimesync.bind(this.firebase)
-      });
-    }
 
     if (options.onDeviceSocketUrl) {
       this.onDeviceSocket = new WebsocketClient({
@@ -55,6 +50,16 @@ export default class ApiClient implements IClient {
 
   public async getInfo(): Promise<any> {
     return await this.firebase.getInfo();
+  }
+
+  public async login(credentials: Credentials): Promise<any> {
+    const user = await this.firebase.login(credentials);
+    if (user && this.options.timesync) {
+      this.timesync = new Timesync({
+        getTimesync: this.firebase.getTimesync.bind(this.firebase)
+      });
+    }
+    return user;
   }
 
   public onStatus(callback: Function): Function {
