@@ -1,19 +1,13 @@
-const { Notion } = require("../..");
+module.exports = async function(notion) {
+  const akimy = await notion.skill("app.neurosity.akimy");
 
-(async () => {
-  const notion = new Notion({
-    deviceId: process.env.DEVICE_ID
-  });
-
-  const skill = await notion.skill("app.neurosity.akimy");
-
-  skill.metric("fromDevice").subscribe(data => {
+  akimy.metric("fromDevice").subscribe(data => {
     console.log("fromDevice", data);
   });
 
   setInterval(() => {
-    skill.metric("fromDevice").next({
+    akimy.metric("fromDevice").next({
       hello: Date.now()
     });
   }, 2000);
-})();
+};

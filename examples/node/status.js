@@ -1,9 +1,5 @@
-const { Notion } = require("../..");
-
-const notion = new Notion({
-  deviceId: process.env.DEVICE_ID
-});
-
-notion.status().subscribe(status => {
-  console.log("status", status);
-});
+module.exports = async function(notion) {
+  notion.status().subscribe(status => {
+    console.log("status", status);
+  });
+};
