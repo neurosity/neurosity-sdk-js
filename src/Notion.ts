@@ -6,6 +6,7 @@ import INotion from "./types/notion";
 import ISubscription from "./types/subscription";
 import { getLabels, validate } from "./utils/subscription";
 import { ISkillInstance } from "./types/skill";
+import { Credentials } from "./types/credentials";
 
 /**
  *
@@ -27,6 +28,10 @@ export class Notion implements INotion {
     if (!this.options.deviceId) {
       throw new Error("Notion: deviceId is mandatory");
     }
+  }
+
+  public async login(credentials: Credentials) {
+    return await this.api.login(credentials);
   }
 
   public async getInfo() {
