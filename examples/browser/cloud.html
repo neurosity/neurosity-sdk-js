@@ -9,13 +9,19 @@
     <script type="module">
       import { Notion } from "./notion.mjs";
 
-      const notion = new Notion({
-        deviceId: "concept1"
-      });
+      (async () => {
+        const notion = new Notion({
+          deviceId: process.env.NEUROSITY_DEVICE_ID
+        });
 
-      notion.getInfo().then(info => {
+        await notion.login({
+          email: process.env.NEUROSITY_EMAIL,
+          password: process.env.NEUROSITY_PASSWORD
+        });
+
+        const info = await notion.getInfo();
         console.log("info", info);
-      });
+      })();
     </script>
   </body>
 </html>

@@ -1,9 +1,4 @@
-const { Notion } = require("../..");
-
-const notion = new Notion({
-  deviceId: process.env.DEVICE_ID
-});
-
-notion.getInfo().then(info => {
+module.exports = async function(notion) {
+  const info = await notion.getInfo();
   console.log("info", info);
-});
+};

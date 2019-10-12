@@ -359,8 +359,10 @@ $ npm publish
 
 Requirements to run examples:
 
-- Create `.env` file in root directory
-- Add: DEVICE_ID=YOUR_DEVICE_ID
+- Create `.env` file in root directory and add:
+- NEUROSITY_DEVICE_ID=**deviceId**
+- NEUROSITY_EMAIL=**email**
+- NEUROSITY_PASSOWRD=**password**
 
 ### Browser
 
