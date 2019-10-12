@@ -13,7 +13,7 @@ const questions = [
   {
     type: "list",
     name: "exampleFileName",
-    message: `What do example would you like to run for device id ${deviceId}?`,
+    message: `Select an example to run for device id ${deviceId}?`,
     choices
   }
 ];
