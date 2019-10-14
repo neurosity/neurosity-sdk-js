@@ -3,8 +3,9 @@ export interface IEmailAndPassword {
   password: string;
 }
 
-export interface IAccessToken {
+export interface IOAuthCredentials {
   accessToken: string;
+  providerId: string;
 }
 
-export type Credentials = IEmailAndPassword | IAccessToken;
+export type Credentials = IEmailAndPassword | IOAuthCredentials;

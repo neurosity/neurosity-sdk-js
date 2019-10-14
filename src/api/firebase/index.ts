@@ -30,10 +30,18 @@ export default class FirebaseClient {
       this.user = user;
     });
 
-    if ("accessToken" in credentials) {
+    if ("accessToken" in credentials && "providerId" in credentials) {
+      const provider = new firebase.auth.OAuthProvider(
+        credentials.providerId
+      );
+
+      const oAuthCredential = provider.credential(
+        credentials.accessToken
+      );
+
       return this.app
         .auth()
-        .signInWithCredential(credentials.accessToken)
+        .signInWithCredential(oAuthCredential)
         .catch((error: Error) => {
           throw new Error(error.message);
         });
