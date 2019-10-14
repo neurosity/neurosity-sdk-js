@@ -30,35 +30,25 @@ export default class FirebaseClient {
       this.user = user;
     });
 
-    if ("accessToken" in credentials && "providerId" in credentials) {
+    if ("idToken" in credentials && "providerId" in credentials) {
       const provider = new firebase.auth.OAuthProvider(
         credentials.providerId
       );
 
-      const oAuthCredential = provider.credential(
-        credentials.accessToken
-      );
+      const oAuthCredential = provider.credential(credentials.idToken);
 
-      return this.app
-        .auth()
-        .signInWithCredential(oAuthCredential)
-        .catch((error: Error) => {
-          throw new Error(error.message);
-        });
+      return this.app.auth().signInWithCredential(oAuthCredential);
     }
 
     if ("email" in credentials && "password" in credentials) {
       const { email, password } = credentials;
       return this.app
         .auth()
-        .signInWithEmailAndPassword(email, password)
-        .catch((error: Error) => {
-          throw new Error(error.message);
-        });
+        .signInWithEmailAndPassword(email, password);
     }
 
     throw new Error(
-      `Either email/password or an accessToken is required`
+      `Either email/password or an idToken/providerId is required`
     );
   }
 

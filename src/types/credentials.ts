@@ -4,7 +4,7 @@ export interface IEmailAndPassword {
 }
 
 export interface IOAuthCredentials {
-  accessToken: string;
+  idToken: string;
   providerId: string;
 }
 
