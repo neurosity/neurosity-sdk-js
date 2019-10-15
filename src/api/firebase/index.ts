@@ -2,6 +2,8 @@ import firebase from "firebase/app";
 import "firebase/database";
 import "firebase/auth";
 
+import { FirebaseAuth, User } from "@firebase/auth-types";
+
 import { config } from "./config";
 import { createDeviceStore } from "./deviceStore";
 import IOptions from "../../types/options";
@@ -13,38 +15,36 @@ import { Credentials } from "../../types/credentials";
 export default class FirebaseClient {
   public serverType = "firebase";
   protected app;
-  protected user;
+  protected auth: FirebaseAuth;
+  protected user: User;
   protected deviceStore;
 
   constructor(options: IOptions) {
     this.init(options);
   }
 
-  private init(options) {
+  private init(options: IOptions) {
     this.app = this.getApp(options.deviceId);
+    this.auth = this.app.auth();
     this.deviceStore = createDeviceStore(this.app, options.deviceId);
+
+    this.auth.onAuthStateChanged(user => {
+      this.user = user;
+    });
   }
 
   login(credentials: Credentials) {
-    this.app.auth().onAuthStateChanged(user => {
-      this.user = user;
-    });
-
     if ("idToken" in credentials && "providerId" in credentials) {
       const provider = new firebase.auth.OAuthProvider(
         credentials.providerId
       );
-
       const oAuthCredential = provider.credential(credentials.idToken);
-
-      return this.app.auth().signInWithCredential(oAuthCredential);
+      return this.auth.signInWithCredential(oAuthCredential);
     }
 
     if ("email" in credentials && "password" in credentials) {
       const { email, password } = credentials;
-      return this.app
-        .auth()
-        .signInWithEmailAndPassword(email, password);
+      return this.auth.signInWithEmailAndPassword(email, password);
     }
 
     throw new Error(
@@ -53,11 +53,23 @@ export default class FirebaseClient {
   }
 
   private getApp(deviceId: string) {
-    const appName = deviceId;
-    const existingApp = firebase.apps.find(app => app.name === appName);
-    return existingApp
-      ? existingApp
-      : firebase.initializeApp(config, appName);
+    const notionAppName = deviceId;
+    const neurosityApp = firebase.apps.find(
+      (app: any) =>
+        app.name === "[DEFAULT]" &&
+        app.options.databaseURL === config.databaseURL
+    );
+
+    if (neurosityApp) {
+      return neurosityApp;
+    }
+
+    const notionApp = firebase.apps.find(
+      app => app.name === notionAppName
+    );
+    return notionApp
+      ? notionApp
+      : firebase.initializeApp(config, notionAppName);
   }
 
   public dispatchAction(action): Promise<any> {
