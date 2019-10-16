@@ -248,11 +248,16 @@ export class Notion implements INotion {
   public get training() {
     return {
       record: training => {
+        const userId =
+          this.api.user && "uid" in this.api.user
+            ? this.api.user.uid
+            : null;
         const message = {
           fit: false,
           baseline: false,
           timestamp: this.api.timestamp,
-          ...training
+          ...training,
+          userId
         };
         this.api.actions.dispatch({
           command: "training",

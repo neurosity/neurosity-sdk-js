@@ -16,6 +16,7 @@ const isNotionMetric = (metric: string): boolean =>
  * @hidden
  */
 export default class ApiClient implements IClient {
+  public user;
   protected options: IOptions;
   protected firebase: FirebaseClient;
   protected onDeviceSocket: WebsocketClient;
@@ -25,9 +26,12 @@ export default class ApiClient implements IClient {
     this.options = options;
     this.firebase = new FirebaseClient(options);
 
+    this.firebase.onAuthStateChanged().subscribe(user => {
+      this.user = user;
+    });
+
     if (this.options.timesync) {
       this.firebase.onLogin().subscribe(() => {
-        console.log("timesync enabled");
         this.timesync = new Timesync({
           getTimesync: this.firebase.getTimesync.bind(this.firebase)
         });

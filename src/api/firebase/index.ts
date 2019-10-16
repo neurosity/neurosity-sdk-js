@@ -16,8 +16,8 @@ import { Credentials } from "../../types/credentials";
 export default class FirebaseClient {
   public serverType = "firebase";
   protected app;
-  protected user: User;
   protected deviceStore;
+  public user: User | null;
 
   constructor(options: IOptions) {
     this.init(options);
@@ -27,8 +27,16 @@ export default class FirebaseClient {
     this.app = this.getApp(options.deviceId);
     this.deviceStore = createDeviceStore(this.app, options.deviceId);
 
-    this.app.auth().onAuthStateChanged(user => {
+    this.app.auth().onAuthStateChanged((user: User | null) => {
       this.user = user;
+    });
+  }
+
+  onAuthStateChanged(): Observable<User | null> {
+    return new Observable(observer => {
+      this.app.auth().onAuthStateChanged((user: User | null) => {
+        observer.next(user);
+      });
     });
   }
 
