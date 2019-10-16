@@ -1,3 +1,4 @@
+import { Observable } from "rxjs";
 import firebase from "firebase/app";
 import "firebase/database";
 import "firebase/auth";
@@ -28,6 +29,20 @@ export default class FirebaseClient {
 
     this.app.auth().onAuthStateChanged(user => {
       this.user = user;
+    });
+  }
+
+  onLogin(): Observable<User> {
+    return new Observable(observer => {
+      const unsubscribe = this.app
+        .auth()
+        .onAuthStateChanged((user: User) => {
+          if (!!user) {
+            observer.next(user);
+            observer.complete();
+          }
+        });
+      return () => unsubscribe();
     });
   }
 

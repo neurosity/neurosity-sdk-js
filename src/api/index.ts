@@ -25,6 +25,15 @@ export default class ApiClient implements IClient {
     this.options = options;
     this.firebase = new FirebaseClient(options);
 
+    if (this.options.timesync) {
+      this.firebase.onLogin().subscribe(() => {
+        console.log("timesync enabled");
+        this.timesync = new Timesync({
+          getTimesync: this.firebase.getTimesync.bind(this.firebase)
+        });
+      });
+    }
+
     if (options.onDeviceSocketUrl) {
       this.onDeviceSocket = new WebsocketClient({
         deviceId: options.deviceId,
@@ -54,11 +63,6 @@ export default class ApiClient implements IClient {
 
   public async login(credentials: Credentials): Promise<any> {
     const user = await this.firebase.login(credentials);
-    if (user && this.options.timesync) {
-      this.timesync = new Timesync({
-        getTimesync: this.firebase.getTimesync.bind(this.firebase)
-      });
-    }
     return user;
   }
 
