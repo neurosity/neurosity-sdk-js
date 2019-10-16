@@ -2,7 +2,7 @@ import firebase from "firebase/app";
 import "firebase/database";
 import "firebase/auth";
 
-import { FirebaseAuth, User } from "@firebase/auth-types";
+import { User } from "@firebase/auth-types";
 
 import { config } from "./config";
 import { createDeviceStore } from "./deviceStore";
@@ -15,7 +15,6 @@ import { Credentials } from "../../types/credentials";
 export default class FirebaseClient {
   public serverType = "firebase";
   protected app;
-  protected auth: FirebaseAuth;
   protected user: User;
   protected deviceStore;
 
@@ -25,10 +24,9 @@ export default class FirebaseClient {
 
   private init(options: IOptions) {
     this.app = this.getApp(options.deviceId);
-    this.auth = this.app.auth();
     this.deviceStore = createDeviceStore(this.app, options.deviceId);
 
-    this.auth.onAuthStateChanged(user => {
+    this.app.auth().onAuthStateChanged(user => {
       this.user = user;
     });
   }
@@ -39,12 +37,14 @@ export default class FirebaseClient {
         credentials.providerId
       );
       const oAuthCredential = provider.credential(credentials.idToken);
-      return this.auth.signInWithCredential(oAuthCredential);
+      return this.app.auth().signInWithCredential(oAuthCredential);
     }
 
     if ("email" in credentials && "password" in credentials) {
       const { email, password } = credentials;
-      return this.auth.signInWithEmailAndPassword(email, password);
+      return this.app
+        .auth()
+        .signInWithEmailAndPassword(email, password);
     }
 
     throw new Error(
@@ -54,7 +54,15 @@ export default class FirebaseClient {
 
   private getApp(deviceId: string) {
     const notionAppName = deviceId;
-    const neurosityApp = firebase.apps.find(
+    const moduleApps = firebase.apps;
+    const browserApps =
+      typeof window !== "undefined" &&
+      "firebase" in window &&
+      "apps" in window.firebase
+        ? window.firebase.apps
+        : [];
+
+    const neurosityApp = [...moduleApps, ...browserApps].find(
       (app: any) =>
         app.name === "[DEFAULT]" &&
         app.options.databaseURL === config.databaseURL
@@ -64,7 +72,7 @@ export default class FirebaseClient {
       return neurosityApp;
     }
 
-    const notionApp = firebase.apps.find(
+    const notionApp = moduleApps.find(
       app => app.name === notionAppName
     );
     return notionApp

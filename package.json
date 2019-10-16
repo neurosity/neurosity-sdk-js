@@ -15,7 +15,7 @@
     "build:browser": "parcel build ./src/index.ts --target browser --out-dir dist/browser --out-file notion.js",
     "build:electron": "parcel build ./src/index.ts --target electron --out-dir dist/electron",
     "build:examples": "copyfiles -f ./dist/esm/*.mjs ./dist/browser/*.js ./dist/examples && parcel build ./examples/browser/index.html --target browser --out-dir dist/examples",
-    "build:docs": "typedoc --out docs --target es6 --theme minimal --mode file --name Notion.js --excludePrivate --excludeProtected src",
+    "build:docs": "typedoc --out docs --target es6 --theme minimal --mode file --name Notion.js --excludePrivate --excludeProtected --ignoreCompilerErrors src",
     "serve:docs": "lite-server --baseDir=./docs",
     "serve:examples": "lite-server --baseDir=./dist/examples",
     "examples:browser": "npm run build:esm && npm run build:examples && parcel watch ./examples/browser/index.html --out-dir dist/examples | npm run serve:examples",
@@ -65,7 +65,7 @@
     "rollup": "^0.61.2",
     "rollup-plugin-commonjs": "^9.1.3",
     "rollup-plugin-node-resolve": "^3.3.0",
-    "typedoc": "^0.14.0",
-    "typescript": "^3.6.4"
+    "typedoc": "^0.15.0",
+    "typescript": "^3.7.0-beta"
   }
 }
