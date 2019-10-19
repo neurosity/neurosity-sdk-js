@@ -61,8 +61,9 @@ interface IOptions {
 - Focus
 - Kinesis
 - Device
-  - Status
   - Info
+  - Settings
+  - Status
 - Channel Aalysis
 - Training
 - Brainwaves
@@ -198,6 +199,31 @@ const notion = new Notion();
 
 notion.status().subscribe(status => {
   console.log(status); // status example: { connected: true, powered: true, ... }
+});
+```
+
+### Device / Settings
+
+##### Methods:
+
+```
+- settings(): => Observable<Settings>
+- changeSettings(settings: ChangeSettings): Promise<void>
+```
+
+```js
+import { Notion } from "@neurosity/notion";
+
+const notion = new Notion();
+
+notion.settings().subscribe(settings => {
+  console.log(settings);
+  // { lsl: false }
+  // { lsl: true }
+});
+
+await notion.changeSettings({
+  lsl: true
 });
 ```
 

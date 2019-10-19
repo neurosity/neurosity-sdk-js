@@ -3,6 +3,7 @@ import IActions from "./actions";
 import IMetrics from "./metrics";
 import { ISkillsClient } from "./skill";
 import { Credentials } from "./credentials";
+import { ChangeSettings } from "./settings";
 
 export default interface IClient {
   user: User | null;
@@ -15,5 +16,5 @@ export default interface IClient {
   metrics: IMetrics;
   skills: ISkillsClient;
   timestamp: number;
-  toggleFeature(featureName: string): Promise<void>;
+  changeSettings(settings: ChangeSettings): Promise<void>;
 }

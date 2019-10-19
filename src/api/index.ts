@@ -8,6 +8,7 @@ import IMetrics from "../types/metrics";
 import IOptions from "../types/options";
 import { ISkillsClient, IDeviceSkill } from "../types/skill";
 import { Credentials } from "../types/credentials";
+import { ChangeSettings } from "../types/settings";
 
 const isNotionMetric = (metric: string): boolean =>
   Object.keys(metrics).includes(metric);
@@ -121,7 +122,7 @@ export default class ApiClient implements IClient {
     return this.options.timesync ? this.timesync.timestamp : Date.now();
   }
 
-  public toggleFeature(featureName: string): Promise<void> {
-    return this.firebase.toggleFeature(featureName);
+  public changeSettings(settings: ChangeSettings): Promise<void> {
+    return this.firebase.changeSettings(settings);
   }
 }

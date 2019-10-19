@@ -7,7 +7,7 @@ import ISubscription from "./types/subscription";
 import { getLabels, validate } from "./utils/subscription";
 import { ISkillInstance } from "./types/skill";
 import { Credentials } from "./types/credentials";
-import { Features } from "./types/features";
+import { Settings, ChangeSettings } from "./types/settings";
 
 /**
  *
@@ -192,16 +192,16 @@ export class Notion implements INotion {
   }
 
   /**
-   * Observes last state of `features` and all subsequent `features` changes
+   * Observes last state of `settings` and all subsequent `settings` changes
    *
-   * @returns Observable of `features` metric events
+   * @returns Observable of `settings` metric events
    */
-  public features(): Observable<Features> {
+  public settings(): Observable<Settings> {
     return new Observable(observer => {
       const listener = this.api.onNamespace(
-        "features",
-        (features: Features) => {
-          observer.next(features);
+        "settings",
+        (settings: Settings) => {
+          observer.next(settings);
         }
       );
 
@@ -261,8 +261,8 @@ export class Notion implements INotion {
     });
   }
 
-  public toggleFeature(featureName: string): Promise<void> {
-    return this.api.toggleFeature(featureName);
+  public changeSettings(settings: ChangeSettings): Promise<void> {
+    return this.api.changeSettings(settings);
   }
 
   /**

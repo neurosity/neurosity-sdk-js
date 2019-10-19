@@ -81,6 +81,7 @@ export const createDeviceStore = (app, deviceId) => {
   return {
     set,
     once,
+    update,
     lastOfChildValue,
     onNamespace: (namespace: string, callback: Function): Function => {
       return on("value", namespace, (data: any) => {

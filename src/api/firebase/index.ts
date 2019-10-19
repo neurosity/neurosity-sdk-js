@@ -186,12 +186,8 @@ export default class FirebaseClient {
     return firebase.database.ServerValue.TIMESTAMP;
   }
 
-  public async toggleFeature(featureName: string): Promise<void> {
-    const path = `features/${featureName}`;
-    const currentValue = await this.deviceStore.once(path);
-    const toggledValue =
-      typeof currentValue === "boolean" ? !currentValue : true;
-    return this.deviceStore.set(path, toggledValue);
+  public async changeSettings(settings): Promise<void> {
+    return this.deviceStore.update("settings", settings);
   }
 
   public disconnect(): Promise<any> {
