@@ -12,24 +12,24 @@ export const createDeviceStore = (app, deviceId) => {
   const deviceRef = app.database().ref(`devices/${deviceId}`);
   const clientId = deviceRef.child("subscriptions").push().key;
 
-  const child = topic => {
-    return deviceRef.child(topic);
+  const child = namespace => {
+    return deviceRef.child(namespace);
   };
 
-  const set = (topic, payload) => {
-    return deviceRef.child(topic).set(payload);
+  const set = (namespace, payload) => {
+    return deviceRef.child(namespace).set(payload);
   };
 
-  const push = (topic, payload) => {
-    return deviceRef.child(topic).push(payload);
+  const push = (namespace, payload) => {
+    return deviceRef.child(namespace).push(payload);
   };
 
-  const update = (topic, payload) => {
-    deviceRef.child(topic).update(payload);
+  const update = (namespace, payload) => {
+    deviceRef.child(namespace).update(payload);
   };
 
-  const on = (eventType: any = "value", topic, callback) => {
-    return deviceRef.child(topic).on(eventType, snapshot => {
+  const on = (eventType: any = "value", namespace, callback) => {
+    return deviceRef.child(namespace).on(eventType, snapshot => {
       callback(snapshot.val(), snapshot);
     });
   };
@@ -42,33 +42,33 @@ export const createDeviceStore = (app, deviceId) => {
     }
   };
 
-  const once = async topic => {
-    const snapshot = await deviceRef.child(topic).once("value");
+  const once = async namespace => {
+    const snapshot = await deviceRef.child(namespace).once("value");
     return snapshot.val();
   };
 
-  const remove = topic => {
-    deviceRef.child(topic).remove();
+  const remove = namespace => {
+    deviceRef.child(namespace).remove();
   };
 
   const bindListener = (
     eventType: string,
-    topic: string,
+    namespace: string,
     callback: (res: any) => void,
     overrideResponse?: any
   ) => {
-    on(eventType, topic, data => {
+    on(eventType, namespace, data => {
       if (data !== null) {
-        off(topic, eventType);
+        off(namespace, eventType);
         const response = overrideResponse ? overrideResponse : data;
         callback(response);
       }
     });
   };
 
-  const lastOfChildValue = async (topic, key, value) => {
+  const lastOfChildValue = async (namespace, key, value) => {
     const snapshot = await deviceRef
-      .child(topic)
+      .child(namespace)
       .orderByChild(key)
       .equalTo(value)
       .limitToLast(1)
@@ -79,16 +79,17 @@ export const createDeviceStore = (app, deviceId) => {
   };
 
   return {
+    set,
     once,
     lastOfChildValue,
-    onStatus: (callback: Function): Function => {
-      return on("value", "status", (data: any) => {
+    onNamespace: (namespace: string, callback: Function): Function => {
+      return on("value", namespace, (data: any) => {
         if (data !== null) {
           callback(data);
         }
       });
     },
-    offStatus: (listener: Function): void => {
+    offNamespace: (listener: Function): void => {
       off("value", listener);
     },
     dispatchAction: async action => {

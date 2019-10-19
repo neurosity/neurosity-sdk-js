@@ -2,6 +2,7 @@ import { Observable } from "rxjs";
 import { ITraining } from "./training";
 import { ISkillInstance } from "./skill";
 import { Credentials } from "./credentials";
+import { Features } from "./features";
 
 export default interface INotion {
   addMarker(label: string): void;
@@ -10,6 +11,7 @@ export default interface INotion {
   calm(): Observable<any>;
   channelAnalysis(): Observable<any>;
   emotion(label: string, ...otherLabels: string[]): Observable<any>;
+  features(): Observable<Features>;
   focus(): Observable<any>;
   getInfo(): Promise<any>;
   login(credentails: Credentials): Promise<any>;
@@ -18,6 +20,7 @@ export default interface INotion {
   signalQuality(): Observable<any>;
   status(): Observable<any>;
   skill(id: string): Promise<ISkillInstance>;
+  toggleFeature(featureName: string): Promise<void>;
   training: ITraining;
   disconnect(): Promise<any>;
 }

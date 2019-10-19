@@ -119,12 +119,12 @@ export default class FirebaseClient {
     );
   }
 
-  public onStatus(callback: Function): Function {
-    return this.deviceStore.onStatus(callback);
+  public onNamespace(namespace: string, callback: Function): Function {
+    return this.deviceStore.onNamespace(namespace, callback);
   }
 
-  public offStatus(listener: Function): void {
-    this.deviceStore.offStatus(listener);
+  public offNamespace(listener: Function): void {
+    this.deviceStore.offNamespace(listener);
   }
 
   public async getTimesync(): Promise<number> {
@@ -184,6 +184,14 @@ export default class FirebaseClient {
 
   public get timestamp(): any {
     return firebase.database.ServerValue.TIMESTAMP;
+  }
+
+  public async toggleFeature(featureName: string): Promise<void> {
+    const path = `features/${featureName}`;
+    const currentValue = await this.deviceStore.once(path);
+    const toggledValue =
+      typeof currentValue === "boolean" ? !currentValue : true;
+    return this.deviceStore.set(path, toggledValue);
   }
 
   public disconnect(): Promise<any> {

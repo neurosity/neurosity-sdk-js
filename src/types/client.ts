@@ -10,9 +10,10 @@ export default interface IClient {
   disconnect(): Promise<any>;
   getInfo(): Promise<any>;
   login?(credentails: Credentials): Promise<any>;
-  onStatus(callback: Function): Function;
-  offStatus(listener: Function): void;
+  onNamespace(namespace: string, callback: Function): Function;
+  offNamespace(listener: Function): void;
   metrics: IMetrics;
   skills: ISkillsClient;
   timestamp: number;
+  toggleFeature(featureName: string): Promise<void>;
 }

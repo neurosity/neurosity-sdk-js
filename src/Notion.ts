@@ -7,6 +7,7 @@ import ISubscription from "./types/subscription";
 import { getLabels, validate } from "./utils/subscription";
 import { ISkillInstance } from "./types/skill";
 import { Credentials } from "./types/credentials";
+import { Features } from "./types/features";
 
 /**
  *
@@ -191,6 +192,24 @@ export class Notion implements INotion {
   }
 
   /**
+   * Observes last state of `features` and all subsequent `features` changes
+   *
+   * @returns Observable of `features` metric events
+   */
+  public features(): Observable<Features> {
+    return new Observable(observer => {
+      const listener = this.api.onNamespace(
+        "features",
+        (features: Features) => {
+          observer.next(features);
+        }
+      );
+
+      return () => this.api.offNamespace(listener);
+    });
+  }
+
+  /**
    * @returns Observable of focus events - awareness/focus alias
    */
   public focus(): Observable<any> {
@@ -228,18 +247,22 @@ export class Notion implements INotion {
   }
 
   /**
-   * Observes last state of status and all subsequent status changes
+   * Observes last state of `status` and all subsequent `status` changes
    *
-   * @returns Observable of status metric events
+   * @returns Observable of `status` metric events
    */
   public status(): Observable<any> {
     return new Observable(observer => {
-      const listener = this.api.onStatus(status => {
+      const listener = this.api.onNamespace("status", status => {
         observer.next(status);
       });
 
-      return () => this.api.offStatus(listener);
+      return () => this.api.offNamespace(listener);
     });
+  }
+
+  public toggleFeature(featureName: string): Promise<void> {
+    return this.api.toggleFeature(featureName);
   }
 
   /**

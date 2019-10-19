@@ -70,12 +70,12 @@ export default class ApiClient implements IClient {
     return user;
   }
 
-  public onStatus(callback: Function): Function {
-    return this.firebase.onStatus(callback);
+  public onNamespace(namespace: string, callback: Function): Function {
+    return this.firebase.onNamespace(namespace, callback);
   }
 
-  public offStatus(listener: Function): void {
-    this.firebase.offStatus(listener);
+  public offNamespace(listener: Function): void {
+    this.firebase.offNamespace(listener);
   }
 
   public get metrics(): IMetrics {
@@ -119,5 +119,9 @@ export default class ApiClient implements IClient {
 
   public get timestamp(): number {
     return this.options.timesync ? this.timesync.timestamp : Date.now();
+  }
+
+  public toggleFeature(featureName: string): Promise<void> {
+    return this.firebase.toggleFeature(featureName);
   }
 }
