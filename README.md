@@ -1,5 +1,14 @@
 # Notion Client API by Neurosity
 
+<p align="center">
+  <img alt="banner" src="images/notion-preview.png" width="600">
+</p>
+<p align="center" href="">
+  Provide a stable and powerful interface for Notion
+</p>
+
+## Welcome!
+
 - Universal JavaScript support: Node/Browser/Electron
 - Firebase + Custom Metric Subscriber
 - Event-driven multi-client real-time architecture
@@ -86,7 +95,7 @@ const notion = new Notion();
 
 #### Calm
 
-Constantly fires and predicts user's calm level from passive cognitive state.
+Constantly fires and predicts user's calm level from passive cognitive state. Calm is based on the Alpha brainwave. There is a lot of research that shows a correlation between alpha and meditation/relaxtion.
 
 ```js
 const mind = new Notion();
@@ -187,6 +196,7 @@ console.log(info); // { channels: 8, samplingRate: 250, ... }
 ##### Metrics:
 
 - battery: Number
+- charging: Boolean
 - connected: Boolean
 - powered: Boolean
 - updating: Boolean
@@ -244,7 +254,7 @@ mind.training.record({
 ##### Metrics:
 
 - raw
-- timestamp
+- powerByBand
 - frequency
 - psd
 
@@ -385,3 +395,6 @@ npm run examples:node
 - Security audit
 - Document how to get `deviceId`
 - Publish to cdn
+
+[link_ts_doc_base_url]: file:///Users/aj/Neurosity/notion-js/docs/
+[link_ts_brainwaves]: classes/notion.html#brainwaves
