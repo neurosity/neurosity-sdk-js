@@ -7,11 +7,83 @@
   Provide a stable and powerful interface for Notion
 </p>
 
-## Welcome!
+First and foremost, Welcome! :tada: Willkommen! :confetti_ball: Bienvenue! :balloon::balloon::balloon:
 
-- Universal JavaScript support: Node/Browser/Electron
-- Firebase + Custom Metric Subscriber
-- Event-driven multi-client real-time architecture
+Thank you for visiting the NotionJS repository.
+
+This document (the README file) is a hub to give you some information about the project. Jump straight to one of the sections below, or just scroll down to find out more.
+
+* [What are we doing? (And why?)](#what-are-we-doing)
+* [Who are we?](#who-are-we)
+* [What do we need?](#what-do-we-need)
+* [How can you get involved?](#get-involved)
+* [Get in touch](#contact-us)
+* [Find out more](#find-out-more)
+* [Installing](#installing)
+
+## What are we doing?
+
+### The problem
+
+* People want to use an API instead of working with raw data
+* People want to integrate Notion into client and serverside applications
+* People don't want un authorized access to their data
+* Time syncronization is important between client and Notion
+* Notion should be able to support thousands of authorized viewers
+
+So, there are a lot of wants be developers but there is still a lot of work needed to solve these problems.
+
+### The solution
+
+The NotionJS API will:
+
+* Universal JavaScript support: Node/Browser/Electron
+* Firebase + Custom Metric Subscriber
+* Event-driven multi-client real-time architecture
+
+Using NotionJS allows you, the user, to quickly integrate Notion so you can begin investing in yourself by hacking your life.
+
+## Who are we?
+
+Mainly, we are Neurosity. [Alex Castillo][link_alex_twitter] is the primary Author of NotionJS. We seek to open source the API portion of Notion such that the community at large can begin to improve the interface between applications and Notion. If we can write applications better, then the world improves.
+
+## What do we need?
+
+**You**! In whatever way you can help.
+
+We need expertise in programming, user experience, software sustainability, documentation and technical writing and project management.
+
+We'd love your feedback along the way.
+
+Our primary goal is to provide a stable and powerful interface for Notion, and we're excited to support the professional development of any and all of our contributors. If you're looking to learn to code, try out working collaboratively, or translate you skills to the digital domain, we're here to help.
+
+## Get involved
+
+If you think you can help in any of the areas listed above (and we bet you can) or in any of the many areas that we haven't yet thought of (and here we're *sure* you can) then please check out our [contributors' guidelines](CONTRIBUTING.md) and our [roadmap](ROADMAP.md).
+
+Please note that it's very important to us that we maintain a positive and supportive environment for everyone who wants to participate. When you join us we ask that you follow our [code of conduct](CODE_OF_CONDUCT.md) in all interactions both on and offline.
+
+
+## Contact us
+
+If you want to report a problem or suggest an enhancement, we'd love for you to [open an issue](../../issues) at this github repository so we can get right on it!
+
+## Find out more
+
+You might be interested in:
+
+* Buy a [Notion][link_notion_buy] from [Neurosity][link_neurosity].
+
+And of course, you'll want to know our:
+
+* [Contributors' guidelines](CONTRIBUTING.md)
+* [Roadmap](ROADMAP.md)
+
+## Thank you
+
+Thank you so much (Danke schön! Merci beaucoup!) for visiting the project and we do hope that you'll join us on this amazing journey to provide a stable and powerful interface for Notion.
+
+## Welcome!
 
 > This is a private (soon to be public) module published on npm. Ensure the npm user has access to the neurosity npm org before installing/publishing.
 
@@ -76,6 +148,7 @@ interface IOptions {
 - Training
 - Brainwaves
   - Raw
+  - Power by Band
   - Frequency
   - PSD
 
@@ -398,3 +471,7 @@ npm run examples:node
 
 [link_ts_doc_base_url]: file:///Users/aj/Neurosity/notion-js/docs/
 [link_ts_brainwaves]: classes/notion.html#brainwaves
+[link_alex_twitter]: https://twitter.com/castillo__io
+[link_aj_twitter]: https://twitter.com/andrewjaykeller
+[link_neurosity]: https://neurosity.co
+[link_notion_buy]: https://neurosity.co/developer-kit
