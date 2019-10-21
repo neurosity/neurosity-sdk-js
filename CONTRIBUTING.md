@@ -18,11 +18,11 @@ If you're new to Git and want to learn how to fork this repo, make your own addi
 
 ### Community
 
-This project is maintained by [Neurosity](https://neurosity.co). Join the [Neurosity Discord](https://openbci.com/forum/), where discussions about Neurosity and Notion take place.
+This project is maintained by [Neurosity](https://neurosity.co). Join the [Neurosity Discord Chat](https://discord.gg/E4dvX6g), where discussions about Neurosity and Notion take place.
 
 ## How can I contribute?
 
-This is currently a small, humble project so our contribution process is rather casual. If there's a feature you'd be interested in building, go ahead! Let us know on the [Neurosity Discord](https://openbci.com/forum/) or [open an issue](../../issues) so others can follow along and we'll support you as much as we can. When you're finished submit a pull request to the master branch referencing the specific issue you addressed.
+This is currently a small, humble project so our contribution process is rather casual. If there's a feature you'd be interested in building, go ahead! Let us know on the [Neurosity Discord](https://discord.gg/E4dvX6g) or [open an issue](../../issues) so others can follow along and we'll support you as much as we can. When you're finished submit a pull request to the master branch referencing the specific issue you addressed.
 
 If you find a bug, or have a suggestion on how to improve the project, please fill out a [Github issue](../../issues).
 
