@@ -1,8 +1,8 @@
-# OpenBCI GUI Code of Conduct
+# NotionJS Code of Conduct
 
 ## Purpose
 
-It is our hope that any one is able to contribute to OpenBCI GUI regardless of their background. Thus, we hope to provide a safe, welcoming, and warmly geeky environment for everybody, regardless of gender, sexual orientation, ability, ethnicity, socioeconomic status, and religion (or lack thereof).
+It is our hope that any one is able to contribute to NotionJS regardless of their background. Thus, we hope to provide a safe, welcoming, and warmly geeky environment for everybody, regardless of gender, sexual orientation, ability, ethnicity, socioeconomic status, and religion (or lack thereof).
 
 ## Our Standards
 
@@ -50,7 +50,7 @@ further defined and clarified by project maintainers.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting the project team at [contact@openbci.com](mailto:contact@openbci.com). All
+reported by contacting the project team at [contact@neurosity.co](mailto:contact@neurosity.co). All
 complaints will be reviewed and investigated and will result in a response that
 is deemed necessary and appropriate to the circumstances. The project team is
 obligated to maintain confidentiality with regard to the reporter of an incident.
