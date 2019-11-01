@@ -1,6 +1,5 @@
 dist
 build
-docs
 package-lock.json
 node_modules
 .cache
