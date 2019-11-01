@@ -58,6 +58,60 @@
       },
       "tutorial": {
         "title": "Tutorial"
+      },
+      "version-3.5.0/api/version-3.5.0-authentication": {
+        "title": "Authentication"
+      },
+      "version-3.5.0/api/version-3.5.0-brainwaves": {
+        "title": "Brainwaves"
+      },
+      "version-3.5.0/api/version-3.5.0-calm": {
+        "title": "Calm"
+      },
+      "version-3.5.0/api/version-3.5.0-disconnect": {
+        "title": "Disconnect"
+      },
+      "version-3.5.0/api/version-3.5.0-focus": {
+        "title": "Focus"
+      },
+      "version-3.5.0/api/version-3.5.0-info": {
+        "title": "Device Information"
+      },
+      "version-3.5.0/api/version-3.5.0-kinesis": {
+        "title": "Kinesis"
+      },
+      "version-3.5.0/api/version-3.5.0-settings": {
+        "title": "Device Settings"
+      },
+      "version-3.5.0/api/version-3.5.0-signal-quality": {
+        "title": "Signal Quality"
+      },
+      "version-3.5.0/api/version-3.5.0-status": {
+        "title": "Device Status"
+      },
+      "version-3.5.0/version-3.5.0-getting-started": {
+        "title": "Getting Started"
+      },
+      "version-3.5.0/guides/version-3.5.0-data": {
+        "title": "Data"
+      },
+      "version-3.5.0/guides/version-3.5.0-Device": {
+        "title": "Device"
+      },
+      "version-3.5.0/guides/version-3.5.0-ethics": {
+        "title": "Ethics"
+      },
+      "version-3.5.0/guides/version-3.5.0-signal": {
+        "title": "Signal"
+      },
+      "version-3.5.0/guides/version-3.5.0-training": {
+        "title": "Training"
+      },
+      "version-3.5.0/version-3.5.0-resources": {
+        "title": "Resources"
+      },
+      "version-3.5.0/version-3.5.0-tutorial": {
+        "title": "Tutorial"
       }
     },
     "links": {
