@@ -3,7 +3,7 @@ id: getting-started
 title: Getting Started
 ---
 
-## Getting started
+## Try Notion
 
 ```bash
 npm install @neurosity/notion

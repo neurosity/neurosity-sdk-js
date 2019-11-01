@@ -55,6 +55,10 @@ const siteConfig = {
   headerIcon: "img/logo.png",
   favicon: "img/favicon.png",
 
+  stylesheets: [
+    "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700"
+  ],
+
   /* Colors for website */
   colors: {
     primaryColor: "#000000",
