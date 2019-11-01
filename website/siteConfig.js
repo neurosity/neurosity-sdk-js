@@ -51,8 +51,8 @@ const siteConfig = {
       href: repoUrl,
       label: "GitHub"
     },
-    { page: "help", label: "Help" },
-    { blog: true, label: "Blog" }
+    { blog: true, label: "Blog" },
+    { page: "help", label: "Need Help?" }
     // { search: true }
   ],
 
