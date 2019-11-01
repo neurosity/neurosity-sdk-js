@@ -1,0 +1,24 @@
+{
+  "docs": {
+    "Getting Started": ["getting-started", "tutorial", "resources"],
+    "Guides": [
+      "guides/darta",
+      "guides/device",
+      "guides/ethics",
+      "guides/signal",
+      "guides/training"
+    ],
+    "API Reference": [
+      "api/brainwaves",
+      "api/calm",
+      "api/kinesis",
+      "api/focus",
+      "api/authentication",
+      "api/signal-quality",
+      "api/info",
+      "api/settings",
+      "api/status",
+      "api/disconnect"
+    ]
+  }
+}
