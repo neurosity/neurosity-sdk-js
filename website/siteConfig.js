@@ -20,7 +20,21 @@ const users = [
   }
 ];
 
+const organizationName = "neurosity";
+const projectName = "notion-js";
+const repoUrl = `https://github.com/${organizationName}/${projectName}`;
+
 const siteConfig = {
+  // Used for publishing and more
+  organizationName,
+  projectName,
+  // You may provide arbitrary config keys to be used as needed by your
+  // template. For example, if you need your repo's URL...
+  // For top-level user or org sites, the organization is still the same.
+  // e.g., for the https://JoelMarcey.github.io site, it would be set like...
+  //   organizationName: 'JoelMarcey'
+  repoUrl,
+
   title: "Notion", // Title for your website.
   tagline: "Empowering the Mind",
   url: "https://neurosity.co", // Your website URL
@@ -29,23 +43,17 @@ const siteConfig = {
   //   url: 'https://facebook.github.io',
   //   baseUrl: '/test-site/',
 
-  // Used for publishing and more
-  projectName: "notion-js",
-  organizationName: "neurosity",
-
-  // You may provide arbitrary config keys to be used as needed by your
-  // template. For example, if you need your repo's URL...
-  repoUrl: "https://github.com/neurosity/notion-js",
-  // For top-level user or org sites, the organization is still the same.
-  // e.g., for the https://JoelMarcey.github.io site, it would be set like...
-  //   organizationName: 'JoelMarcey'
-
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
     { doc: "getting-started", label: "Docs" },
     { doc: "api/calm", label: "API" },
+    {
+      href: repoUrl,
+      label: "GitHub"
+    },
     { page: "help", label: "Help" },
     { blog: true, label: "Blog" }
+    // { search: true }
   ],
 
   // If you have users set above, you add it here:
@@ -65,20 +73,6 @@ const siteConfig = {
     secondaryColor: "#222222"
   },
 
-  /* Custom fonts for website */
-  /*
-  fonts: {
-    myFont: [
-      "Times New Roman",
-      "Serif"
-    ],
-    myOtherFont: [
-      "-apple-system",
-      "system-ui"
-    ]
-  },
-  */
-
   // This copyright info is used in /core/Footer.js and blog RSS/Atom feeds.
   copyright: `Copyright © ${new Date().getFullYear()} Neurosity, Inc`,
 
@@ -94,6 +88,11 @@ const siteConfig = {
   onPageNav: "separate",
   // No .html extensions for paths.
   cleanUrl: true,
+  scrollToTopOptions: {
+    zIndex: 100
+  },
+  enableUpdateTime: true,
+  enableUpdateBy: true,
 
   // Open Graph and Twitter card images.
   ogImage: "img/undraw_online.svg",
