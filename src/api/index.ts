@@ -75,8 +75,8 @@ export default class ApiClient implements IClient {
     return this.firebase.onNamespace(namespace, callback);
   }
 
-  public offNamespace(listener: Function): void {
-    this.firebase.offNamespace(listener);
+  public offNamespace(namespace: string, listener: Function): void {
+    this.firebase.offNamespace(namespace, listener);
   }
 
   public get metrics(): IMetrics {

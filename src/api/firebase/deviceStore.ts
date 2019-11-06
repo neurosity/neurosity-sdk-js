@@ -90,8 +90,8 @@ export const createDeviceStore = (app, deviceId) => {
         }
       });
     },
-    offNamespace: (listener: Function): void => {
-      off("value", listener);
+    offNamespace: (namespace: string, listener: Function): void => {
+      off(namespace, "value", listener);
     },
     dispatchAction: async action => {
       const snapshot = await push("actions", action);

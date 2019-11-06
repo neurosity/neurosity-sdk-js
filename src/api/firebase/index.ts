@@ -123,8 +123,8 @@ export default class FirebaseClient {
     return this.deviceStore.onNamespace(namespace, callback);
   }
 
-  public offNamespace(listener: Function): void {
-    this.deviceStore.offNamespace(listener);
+  public offNamespace(namespace: string, listener: Function): void {
+    this.deviceStore.offNamespace(namespace, listener);
   }
 
   public async getTimesync(): Promise<number> {

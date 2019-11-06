@@ -12,7 +12,7 @@ export default interface IClient {
   getInfo(): Promise<any>;
   login?(credentails: Credentials): Promise<any>;
   onNamespace(namespace: string, callback: Function): Function;
-  offNamespace(listener: Function): void;
+  offNamespace(namespace: string, listener: Function): void;
   metrics: IMetrics;
   skills: ISkillsClient;
   timestamp: number;

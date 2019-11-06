@@ -197,15 +197,16 @@ export class Notion implements INotion {
    * @returns Observable of `settings` metric events
    */
   public settings(): Observable<Settings> {
+    const namespace = "settings";
     return new Observable(observer => {
       const listener = this.api.onNamespace(
-        "settings",
+        namespace,
         (settings: Settings) => {
           observer.next(settings);
         }
       );
 
-      return () => this.api.offNamespace(listener);
+      return () => this.api.offNamespace(namespace, listener);
     });
   }
 
@@ -252,12 +253,13 @@ export class Notion implements INotion {
    * @returns Observable of `status` metric events
    */
   public status(): Observable<any> {
+    const namespace = "status";
     return new Observable(observer => {
-      const listener = this.api.onNamespace("status", status => {
+      const listener = this.api.onNamespace(namespace, status => {
         observer.next(status);
       });
 
-      return () => this.api.offNamespace(listener);
+      return () => this.api.offNamespace(namespace, listener);
     });
   }
 
