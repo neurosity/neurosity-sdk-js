@@ -15,6 +15,7 @@ import { Credentials } from "../../types/credentials";
  */
 export default class FirebaseClient {
   public serverType = "firebase";
+  protected standalone: boolean;
   protected app;
   protected deviceStore;
   public user: User | null;
@@ -25,6 +26,7 @@ export default class FirebaseClient {
 
   private init(options: IOptions) {
     this.app = this.getApp(options.deviceId);
+    this.standalone = this.app.name === options.deviceId;
     this.deviceStore = createDeviceStore(this.app, options.deviceId);
 
     this.app.auth().onAuthStateChanged((user: User | null) => {
@@ -191,6 +193,9 @@ export default class FirebaseClient {
   }
 
   public disconnect(): Promise<any> {
-    return this.app.delete();
+    if (this.standalone) {
+      return this.app.delete();
+    }
+    return Promise.resolve();
   }
 }
