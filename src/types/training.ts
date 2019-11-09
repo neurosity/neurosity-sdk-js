@@ -9,4 +9,6 @@ export interface ITrainingRecording {
 
 export interface ITraining {
   record(training: ITrainingRecording): void;
+  stop(training: ITrainingRecording): void;
+  stopAll(): void;
 }

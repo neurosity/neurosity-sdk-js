@@ -289,6 +289,22 @@ export class Notion implements INotion {
           action: "record",
           message
         });
+      },
+      stop: training => {
+        this.api.actions.dispatch({
+          command: "training",
+          action: "stopAll",
+          message: {
+            ...training
+          }
+        });
+      },
+      stopAll: () => {
+        this.api.actions.dispatch({
+          command: "training",
+          action: "stopAll",
+          message: {}
+        });
       }
     };
   }
