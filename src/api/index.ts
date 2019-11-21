@@ -71,6 +71,14 @@ export default class ApiClient implements IClient {
     return user;
   }
 
+  public async logout(): Promise<any> {
+    return await this.firebase.logout();
+  }
+
+  public onAuthStateChanged() {
+    return this.firebase.onAuthStateChanged();
+  }
+
   public onNamespace(namespace: string, callback: Function): Function {
     return this.firebase.onNamespace(namespace, callback);
   }

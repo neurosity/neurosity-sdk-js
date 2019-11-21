@@ -77,6 +77,10 @@ export default class FirebaseClient {
     );
   }
 
+  logout() {
+    return this.app.auth().signOut();
+  }
+
   private getApp(deviceId: string) {
     const notionAppName = deviceId;
     const moduleApps = firebase.apps;

@@ -35,6 +35,14 @@ export class Notion implements INotion {
     return await this.api.login(credentials);
   }
 
+  public async logout() {
+    return await this.api.logout();
+  }
+
+  public onAuthStateChanged(): Observable<any> {
+    return this.api.onAuthStateChanged();
+  }
+
   public async getInfo() {
     return await this.api.getInfo();
   }
