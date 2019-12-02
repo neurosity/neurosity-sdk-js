@@ -1,6 +1,7 @@
 ---
-id: signal
+id: version-v3.8.0-signal
 title: Signal
+original_id: signal
 ---
 
 Signal

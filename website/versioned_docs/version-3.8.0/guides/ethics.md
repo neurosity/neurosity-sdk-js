@@ -1,6 +1,7 @@
 ---
-id: ethics
+id: version-v3.8.0-ethics
 title: Ethics
+original_id: ethics
 ---
 
 Ethics are at the core of every Notion. We believe that our collective future has all of us wearing brain computers for terrific, empowering, experiences. 
