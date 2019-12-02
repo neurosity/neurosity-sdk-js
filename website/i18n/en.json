@@ -112,6 +112,12 @@
       },
       "version-3.5.0/version-3.5.0-tutorial": {
         "title": "Tutorial"
+      },
+      "version-3.8.0/guides/version-v3.8.0-ethics": {
+        "title": "Ethics"
+      },
+      "version-3.8.0/guides/version-v3.8.0-signal": {
+        "title": "Signal"
       }
     },
     "links": {
