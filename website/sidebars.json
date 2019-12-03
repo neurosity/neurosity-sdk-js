@@ -1,17 +1,19 @@
 {
   "docs": {
-    "Getting Started": [
+    "Overview": ["overview"],
+    "GET STARTED": [
       "getting-started", 
       "tutorial", 
       "resources"
     ],
-    "Guides": [
+    "WORKING WITH NOTION": [
+      "guides/importing",
       "guides/device",
       "guides/ethics",
       "guides/signal",
       "guides/training"
     ],
-    "API Reference": [
+    "API REFERENCES": [
       "api/authentication",
       "api/brainwaves",
       "api/calm",

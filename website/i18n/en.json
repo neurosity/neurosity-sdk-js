@@ -26,6 +26,9 @@
       "api/kinesis": {
         "title": "Kinesis"
       },
+      "api/predictions": {
+        "title": "Predictions"
+      },
       "api/settings": {
         "title": "Device Settings"
       },
@@ -130,6 +133,9 @@
       },
       "version-3.8.0/api/version-3.8.0-kinesis": {
         "title": "Kinesis"
+      },
+      "version-3.8.0/api/version-3.8.0-predictions": {
+        "title": "Predictions"
       },
       "version-3.8.0/version-3.8.0-getting-started": {
         "title": "Getting Started"
