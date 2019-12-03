@@ -41,6 +41,10 @@ h5 {
   font-weight: 700;
 }
 
+a {
+  color: #002f68;
+}
+
 .fixedHeaderContainer header .headerTitleWithLogo,
 .toc .toggleNav .navBreadcrumb h2 {
   letter-spacing: initial;

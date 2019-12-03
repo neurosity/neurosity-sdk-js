@@ -1,6 +1,7 @@
 ---
-id: importing
+id: version-3.8.0-importing
 title: Importing
+original_id: importing
 ---
 We support ESM, Node and the Browser:
 

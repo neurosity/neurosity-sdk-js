@@ -47,11 +47,17 @@
       "guides/ethics": {
         "title": "Ethics"
       },
+      "guides/importing": {
+        "title": "Importing"
+      },
       "guides/signal": {
         "title": "Signal"
       },
       "guides/training": {
         "title": "Training"
+      },
+      "overview": {
+        "title": "Overview"
       },
       "resources": {
         "title": "Resources"
@@ -146,11 +152,17 @@
       "version-3.8.0/guides/version-3.8.0-ethics": {
         "title": "Ethics"
       },
+      "version-3.8.0/guides/version-3.8.0-importing": {
+        "title": "Importing"
+      },
       "version-3.8.0/guides/version-3.8.0-signal": {
         "title": "Signal"
       },
       "version-3.8.0/guides/version-3.8.0-training": {
         "title": "Training"
+      },
+      "version-3.8.0/version-3.8.0-overview": {
+        "title": "NotionJS"
       },
       "version-3.8.0/version-3.8.0-resources": {
         "title": "Resources"
@@ -164,6 +176,10 @@
       "Need Help?": "Need Help?"
     },
     "categories": {
+      "Overview": "Overview",
+      "GET STARTED": "GET STARTED",
+      "WORKING WITH NOTION": "WORKING WITH NOTION",
+      "API REFERENCES": "API REFERENCES",
       "Getting Started": "Getting Started",
       "Guides": "Guides",
       "API Reference": "API Reference"

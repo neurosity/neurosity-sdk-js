@@ -1,6 +1,7 @@
 ---
-id: overview
+id: version-3.8.0-overview
 title: NotionJS
+original_id: overview
 ---
 NotionJS is built with accessibility and ease of use in mind. Neurosity created the API for the Notion headset many months before we made prototypes. We knew that if we could create a brain-computer with such a simple API, we would have a real shot at making the next major computing platform. A computing platform is a place filled with applications built by Neurosity and many other developers. We believe some of the best apps will be written by people outside of Neurosity.
 
