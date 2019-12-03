@@ -10,9 +10,9 @@ Read our knowledge base at [support.neurosity.co](support.neurosity.co).
 
 Join our [online community here](https://support.neurosity.co/hc/en-us/community/topics) for general discussions and feature requests.
 
-## Real Time Chat
+## Real-time Chat
 
-For real time help, join the chat over at [our discord](https://discord.gg/E4dvX6g).
+For real-time help, join the chat over at [our discord](https://discord.gg/E4dvX6g).
 
 ## Support
 

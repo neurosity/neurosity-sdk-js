@@ -1,6 +1,7 @@
 ---
-id: status
+id: version-3.8.0-status
 title: Device Status
+original_id: status
 ---
 
 ## Metrics:
