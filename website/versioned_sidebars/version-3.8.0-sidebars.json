@@ -1,17 +1,21 @@
 {
   "version-3.8.0-docs": {
-    "Getting Started": [
+    "Overview": [
+      "version-3.8.0-overview"
+    ],
+    "GET STARTED": [
       "version-3.8.0-getting-started",
       "version-3.8.0-tutorial",
       "version-3.8.0-resources"
     ],
-    "Guides": [
+    "WORKING WITH NOTION": [
+      "version-3.8.0-guides/importing",
       "version-3.8.0-guides/device",
       "version-3.8.0-guides/ethics",
       "version-3.8.0-guides/signal",
       "version-3.8.0-guides/training"
     ],
-    "API Reference": [
+    "API REFERENCES": [
       "version-3.8.0-api/authentication",
       "version-3.8.0-api/brainwaves",
       "version-3.8.0-api/calm",

@@ -3,6 +3,7 @@ id: version-3.8.0-getting-started
 title: Getting Started
 original_id: getting-started
 ---
+The minimum requirement is setting up an account with [console.neurosity.co](consle.neurosity.co). If you need help setting up an account, see our guide here.
 
 ## Installing
 
@@ -10,30 +11,7 @@ original_id: getting-started
 npm install @neurosity/notion
 ```
 
-## Importing
 
-Then import the module
-
-### ESM
-
-```js
-import { Notion } from "@neurosity/notion";
-```
-
-### Node
-
-```js
-const { Notion } = require("@neurosity/notion");
-```
-
-### Browser
-
-```html
-<script type="module">
-  import { Notion } from "./node_modules/notion/esm/notion.mjs";
-</script>
-<script nomodule src="./node_modules/notion/browser/notion.js">
-```
 
 ## Using
 
