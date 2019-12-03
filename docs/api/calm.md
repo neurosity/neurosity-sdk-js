@@ -3,9 +3,11 @@ id: calm
 title: Calm
 ---
 
-Constantly fires and predicts user's calm level from passive cognitive state.
+Constantly fires and predicts user's calm level from passive cognitive state. Calm is a probability from `0.0` to `1.0`. To get calm over 0.3 is significant. Calm will take up to 16 seconds to initialize. We normally take a longer rolling average of calm to produce brain processes over time, see how we do it in our [flow walk through](https://support.neurosity.co/hc/en-us/articles/360036343372-Flow-state).
 
 ```js
+import { Notion } from "@neurosity/notion";
+
 const mind = new Notion();
 
 mind.calm().subscribe(calm => {

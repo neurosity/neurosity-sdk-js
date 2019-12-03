@@ -2,7 +2,7 @@
   "docs": {
     "Getting Started": ["getting-started", "tutorial", "resources"],
     "Guides": [
-      "guides/darta",
+      "guides/data",
       "guides/device",
       "guides/ethics",
       "guides/signal",

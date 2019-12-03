@@ -20,6 +20,8 @@ interface IInfo {
 }
 ```
 
+## Example
+
 ```js
 import { Notion } from "@neurosity/notion";
 

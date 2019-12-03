@@ -3,9 +3,11 @@ id: focus
 title: Focus
 ---
 
-Constantly fires and predicts user's focus level from passive cognitive state.
+Constantly fires and predicts user's focus level from passive cognitive state based on the gamma brainwave. Focus is a probability from `0.0` to `1.0`. To get focus over 0.3 is significant. Focus will take up to 16 seconds to initialize.
 
 ```js
+import { Notion } from "@neurosity/notion";
+
 const mind = new Notion();
 
 mind.focus().subscribe(focus => {
@@ -18,7 +20,7 @@ mind.focus().subscribe(focus => {
 
 // Demo
 mind.focus().subscribe(({ probability }) => {
-  if (probability > 0.75) {
+  if (probability > 0.5) {
     notifications.off();
   }
 });
