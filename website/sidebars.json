@@ -7,9 +7,8 @@
       "resources"
     ],
     "WORKING WITH NOTION": [
-      "guides/importing",
-      "guides/device",
       "guides/ethics",
+      "guides/importing",
       "guides/signal",
       "guides/training"
     ],
@@ -17,6 +16,8 @@
       "api/authentication",
       "api/brainwaves",
       "api/calm",
+      "api/channel-analysis",
+      "api/clients",
       "api/disconnect",
       "api/focus",
       "api/info",
@@ -24,7 +25,9 @@
       "api/predictions",
       "api/settings",
       "api/signal-quality",
-      "api/status"
+      "api/skills",
+      "api/status",
+      "api/training"
     ]
   }
 }

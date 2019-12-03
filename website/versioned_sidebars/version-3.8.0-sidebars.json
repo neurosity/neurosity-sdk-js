@@ -9,9 +9,8 @@
       "version-3.8.0-resources"
     ],
     "WORKING WITH NOTION": [
-      "version-3.8.0-guides/importing",
-      "version-3.8.0-guides/device",
       "version-3.8.0-guides/ethics",
+      "version-3.8.0-guides/importing",
       "version-3.8.0-guides/signal",
       "version-3.8.0-guides/training"
     ],
@@ -19,6 +18,8 @@
       "version-3.8.0-api/authentication",
       "version-3.8.0-api/brainwaves",
       "version-3.8.0-api/calm",
+      "version-3.8.0-api/channel-analysis",
+      "version-3.8.0-api/clients",
       "version-3.8.0-api/disconnect",
       "version-3.8.0-api/focus",
       "version-3.8.0-api/info",
@@ -26,7 +27,9 @@
       "version-3.8.0-api/predictions",
       "version-3.8.0-api/settings",
       "version-3.8.0-api/signal-quality",
-      "version-3.8.0-api/status"
+      "version-3.8.0-api/skills",
+      "version-3.8.0-api/status",
+      "version-3.8.0-api/training"
     ]
   }
 }
