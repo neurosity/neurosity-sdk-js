@@ -1,24 +1,28 @@
 {
   "docs": {
-    "Getting Started": ["getting-started", "tutorial", "resources"],
+    "Getting Started": [
+      "getting-started", 
+      "tutorial", 
+      "resources"
+    ],
     "Guides": [
-      "guides/data",
       "guides/device",
       "guides/ethics",
       "guides/signal",
       "guides/training"
     ],
     "API Reference": [
+      "api/authentication",
       "api/brainwaves",
       "api/calm",
-      "api/kinesis",
+      "api/disconnect",
       "api/focus",
-      "api/authentication",
-      "api/signal-quality",
       "api/info",
+      "api/kinesis",
+      "api/predictions",
       "api/settings",
-      "api/status",
-      "api/disconnect"
+      "api/signal-quality",
+      "api/status"
     ]
   }
 }

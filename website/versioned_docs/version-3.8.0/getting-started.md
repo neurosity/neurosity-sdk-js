@@ -1,6 +1,7 @@
 ---
-id: getting-started
+id: version-3.8.0-getting-started
 title: Getting Started
+original_id: getting-started
 ---
 
 ## Installing

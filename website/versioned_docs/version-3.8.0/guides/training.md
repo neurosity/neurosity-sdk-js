@@ -1,6 +1,7 @@
 ---
-id: training
+id: version-3.8.0-training
 title: Training
+original_id: training
 ---
 
 Before getting started, read about [imagined thought training here](https://support.neurosity.co/hc/en-us/articles/360036344012-Imagined-thought-training) in our guide.
