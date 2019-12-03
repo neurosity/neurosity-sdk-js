@@ -23,6 +23,7 @@ const users = [
 const organizationName = "neurosity";
 const projectName = "notion-js";
 const repoUrl = `https://github.com/${organizationName}/${projectName}`;
+const helpUrl = "https://support.neurosity.co";
 
 const siteConfig = {
   // Used for publishing and more
@@ -46,13 +47,10 @@ const siteConfig = {
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
     { doc: "getting-started", label: "Docs" },
-    { doc: "api/calm", label: "API" },
-    {
-      href: repoUrl,
-      label: "GitHub"
-    },
+    { doc: "api/authentication", label: "API" },
+    { href: repoUrl, label: "GitHub" },
     { blog: true, label: "Blog" },
-    { page: "help", label: "Need Help?" }
+    { href: helpUrl, label: "Need Help?" }
     // { search: true }
   ],
 
