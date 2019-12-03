@@ -1,5 +1,5 @@
 ---
-id: version-v3.8.0-signal
+id: version-3.8.0-signal
 title: Signal
 original_id: signal
 ---

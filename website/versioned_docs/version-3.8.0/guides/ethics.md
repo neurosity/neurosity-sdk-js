@@ -1,5 +1,5 @@
 ---
-id: version-v3.8.0-ethics
+id: version-3.8.0-ethics
 title: Ethics
 original_id: ethics
 ---

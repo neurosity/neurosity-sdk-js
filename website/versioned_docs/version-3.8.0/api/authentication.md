@@ -1,6 +1,7 @@
 ---
-id: authentication
+id: version-3.8.0-authentication
 title: Authentication
+original_id: authentication
 ---
 We take data privacy very seriously at Neurosity. Should you find a bug or vulnerability, please [submit a request](support.neurosity.co), and we will take your inquiry seriously and work as fast as possible to fix the issue for all.
 
