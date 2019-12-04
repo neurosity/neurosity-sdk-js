@@ -32,3 +32,5 @@ If you're new to JavaScript, head over to the [tutorial](docs/tutorial) to learn
 ## Dive right into development
 
 You'll want to [learn how to authenticate](/docs/api/authentication) with Notion next using your [console.neurosity.co](console.neurosity.co) login.
+
+If you're looking for exact API references, check out the [API section](/docs/ref/index) of these docs!
