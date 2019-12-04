@@ -57,7 +57,7 @@ license: (ISC) MIT
 ```
 
 <p align="center">
-  <img alt="Initial set up of NPM project" src="docs/images/tutorial/npm_init.png">
+  <img alt="Initial set up of NPM project" src="images/tutorial/npm_init.png">
 </p>
 
 Next you'll want to launch a VSCode window for the newly created project.
@@ -71,22 +71,39 @@ code .
 You'll need to launch a terminal window inside VS Code, you may toggle the terminal with `CTRL+~`.
 
 <p align="center">
-  <img alt="Toggle command line" src="docs/images/tutorial/vscode-toggle-command-line.png">
+  <img alt="Toggle command line" src="images/tutorial/vscode-toggle-command-line.png">
 </p>
 
 To create a new file, you may select the new file button.
 
 <p align="center">
-  <img alt="Highlighting new file button in vscode" src="docs/images/tutorial/vscode-new-file-button.png">
+  <img alt="Highlighting new file button in vscode" src="images/tutorial/vscode-new-file-button.png">
 </p>
 
 Go ahead and make a new file called `index.js`, we'll use it soon as the base of our new project.
 
 <p align="center">
-  <img alt="Created a new file called index.js" src="docs/images/tutorial/vscode-make-index-js-file.png">
+  <img alt="Created a new file called index.js" src="images/tutorial/vscode-make-index-js-file.png">
 </p>
 
-### Add Dependencies
+## Adding Notion to a Node Project
+
+### Add `.gitignore` file
+
+The first thing we want to do is add a file called `.gitignore` to tell git to ignore certain files. Add another file to the root directory called `.gitignore`, then add the following:
+
+```
+node_modules
+.DS_Store
+```
+
+<p align="center">
+  <img alt="Created a new file called index.js" src="images/tutorial/vscode-gitignore.png">
+</p>
+
+Adding `node_modules` will help VS Code run a little bit better because we're telling it that we don't need to track anything in that folder.
+
+### Install Dependencies
 
 The first dependency we need to install is from Neurosity, it's called Notion. We'll end up using some environment variables from a `.env` file, so go ahead and install another dependency for that as well. From the command line, enter:
 
@@ -94,11 +111,11 @@ The first dependency we need to install is from Neurosity, it's called Notion. W
 npm install @neurosity/notion dotenv
 ```
 
-That's it for now!
+<p align="center">
+  <img alt="Created a new file called index.js" src="images/tutorial/vscode-install-dependencies.png">
+</p>
 
-## Adding Notion to a Node Project
-
-### Add Dependencies
+### Add Dependencies to `index.js`
 
 Importing libraries in Node is quite simple, all you have to do is add the following to the top of your index.js file:
 
@@ -106,6 +123,10 @@ Importing libraries in Node is quite simple, all you have to do is add the follo
 const { Notion } = require("@neurosity/notion");
 require('dotenv').config();
 ```
+
+<p align="center">
+  <img alt="Created a new file called index.js" src="images/tutorial/vscode-add-dependencies-to-index.png">
+</p>
 
 ### Add start script to package.json
 
@@ -152,10 +173,101 @@ npm start
 You should see the program run and exit successfully
 
 <p align="center">
-  <img alt="Created a new file called index.js" src="docs/images/tutorial/vscode-run-empty-program.png">
+  <img alt="Ran our node program with no errors" src="images/tutorial/vscode-run-empty-program.png">
 </p>
 
+## Add Authentication
 
+At this point you will need to have [created an account](https://support.neurosity.co/hc/en-us/articles/360036196792-Create-account-with-Neurosity) with [console.neurosity.co](https://console.neurosity.co) and [claimed your Notion](https://support.neurosity.co/hc/en-us/articles/360037562351).
+
+### Get variables from `.env` file
+
+We'll first attempt to get our environment variables to show what happens when they are not there at runtime. Add the following code to pull the deviceId, email and password from the enviroment variables:
+
+```js
+const deviceId = process.env.DEVICE_ID || "";
+const email = process.env.EMAIL || "";
+const password = process.env.PASSWORD || "";
+```
+
+To verify that the variables are not blank, we could add a function to check for that and quit the program if so. Add the following function to your program next:
+
+```js
+const verifyEnvs = (email, password, deviceId) => {
+  const invalidEnv = (env) => {
+    return (env === "" || env === 0);
+  }
+  if (invalidEnv(email) || invalidEnv(password) || invalidEnv(deviceId)) {
+      console.error("Please verify deviceId, email and password are in .env file, quitting...");
+      process.exit(0);
+  }
+}
+verifyEnvs(email, password, deviceId);
+
+console.log(`${email} attempting to authenticate to ${deviceId}`);
+```
+
+Now if we run our program, we should see an error print out! Run with `npm start` from the CLI.
+
+<p align="center">
+  <img alt="Ran our node program with no errors" src="images/tutorial/vscode-no-env-found.png">
+</p>
+
+### Add `.env` file
+
+Next we'll add an `.env` to store our deviceId, login, and password. Add a new file called `.env` and add your deviceId, email and password. Learn how to [find your device ID](https://support.neurosity.co/hc/en-us/articles/360037198152-Get-Notion-Device-ID).
+
+```.env
+DEVICE_ID=442333d1bcea35533daba9b51234abcd
+EMAIL=hans.berger@neurosity.co
+PASSWORD=Password#1!
+```
+
+<p align="center">
+  <img alt="Created a new file called .env" src="images/tutorial/vscode-env-file.png">
+</p>
+
+Now if we run our program, we should see a success message print out, informing us that our variables have been extracted successfully.
+
+<p align="center">
+  <img alt="Pulled out three variables from .env" src="images/tutorial/vscode-got-env-variables.png">
+</p>
+
+### Instantiate a Notion Session
+
+We can then use the `deviceId` to instantiate a new Notion session by adding the following line to our file.
+
+```js
+const notion = new Notion({
+  deviceId
+});
+```
+
+### Add async login
+
+We need to use an [`async/await`](https://javascript.info/async-await) paradigm for authenticating to the device. Go ahead and create an async functinon called `main` to the `index.js` file.
+
+```js
+const main = async () => {
+  await notion.login({
+    email,
+    password
+  })
+  .catch(error => {
+    console.log(error);
+    process.exit(1);
+  });
+  console.log("Logged in");
+}
+
+main();
+```
+
+Then run the program with `npm start` in the CLI. If all worked, then you should see:
+
+<p align="center">
+  <img alt="Made a function that authenticated with Notion" src="images/tutorial/vscode-main-logged-in.png">
+</p>
 
 ## Dive right into development
 
