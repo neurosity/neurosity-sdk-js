@@ -25,10 +25,18 @@ async function main() {
     email: "hans.berger@neurosity.co",
     password: "eegDisc0verer!"
   })
-  .catch(error => {
-    console.log("error", error);
-  });
-  // logged in!
+    .catch(error => {
+      console.log("Log in error", error);
+    });
+
+  console.log("logged in!");
+
+  await notion.logout()
+    .catch(error => {
+      console.log("Log out error", error);
+    })
+  
+  console.log("logged out!");
 }
 ```
 

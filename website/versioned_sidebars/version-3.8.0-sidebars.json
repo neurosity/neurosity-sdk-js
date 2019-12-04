@@ -15,7 +15,9 @@
       "version-3.8.0-guides/training"
     ],
     "API REFERENCES": [
+      "version-3.8.0-api/add-marker",
       "version-3.8.0-api/authentication",
+      "version-3.8.0-api/awareness",
       "version-3.8.0-api/brainwaves",
       "version-3.8.0-api/calm",
       "version-3.8.0-api/channel-analysis",
