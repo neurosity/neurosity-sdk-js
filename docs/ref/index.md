@@ -12,16 +12,16 @@ sidebar_label: "README"
 
 ## The Repository
 
-This repository ("`NotionJS API`") is where we (Neurosity) develop the [Notion](https://neurosity.co) API. Not only do we work on code and issues here, we also publish our [roadmap](https://github.com/neurosity/notion-js/blob/master/ROADMAP.md). This source code is available to everyone under the standard [MIT license]
+This repository ("`NotionJS API`") is where we (Neurosity) develop the [Notion](https://neurosity.co) API. Not only do we work on code and issues here, but we also publish our [roadmap](https://github.com/neurosity/notion-js/blob/master/ROADMAP.md). This source code is available to everyone under the standard [MIT license]
 Thank you for visiting the NotionJS repository.
 
 ## NotionJS
 
 <p align="center">
-  <img alt="Model wearing a Notion headset" src="images/notion-preview.png">
+  <img alt="Model wearing a Notion headset" src="docs/images/notion-preview.png">
 </p>
 
-This document (the README file) is a hub to give you some information about the NotionJS API. At a high level we seek to use the NotionJS to provide the following solution:
+This document (the README file) is a hub to give you some information about the NotionJS API. At a high-level we seek to use the NotionJS to provide the following solution:
 
 * Universal JavaScript support: Node/Browser/Electron
 * Firebase + Custom Metric Subscriber
@@ -49,7 +49,7 @@ please see the document [How to Contribute](https://github.com/Neurosity/notion-
 ## Feedback
 
 * Ask a question on [Stack Overflow](https://stackoverflow.com/questions/tagged/notion-js)
-* [Request a new feature](CONTRIBUTING.md)
+* [Request a new feature](https://github.com/neurosity/notion-js/blob/master/CONTRIBUTING.md)
 * Discuss a new feature on our [community](https://support.neurosity.co/hc/en-us/community/topics)
 * Up vote [popular feature requests](https://github.com/neurosity/notion-js/issues?q=is%3Aopen+is%3Aissue+label%3Afeature-request+sort%3Areactions-%2B1-desc)
 * [File an issue](https://github.com/neurosity/notion-js/issues)
@@ -57,7 +57,7 @@ please see the document [How to Contribute](https://github.com/Neurosity/notion-
 
 ## Code of Conduct
 
-This project has adopted a [Code of Conduct](CODE_OF_CONDUCT.md). Contact [opencode@neurosity.co](mailto:opencode@neurosity.co) with any additional questions or comments.
+This project has adopted a [Code of Conduct](https://github.com/neurosity/notion-js/blob/master/CODE_OF_CONDUCT.md). Contact [opencode@neurosity.co](mailto:opencode@neurosity.co) with any additional questions or comments.
 
 ## License
 
@@ -67,7 +67,7 @@ Licensed under the [MIT](LICENSE.txt) license.
 
 ## Thank you
 
-Thank you so much (Danke schön! Merci beaucoup!) for visiting the project and we do hope that you'll join us on this amazing journey to provide a stable and powerful interface for Notion.
+Thank you so much (Danke schön! Merci beaucoup!) for visiting the project. We hope that you'll join us on this amazing journey to provide a stable and powerful interface for Notion.
 
 [link_ts_doc_base_url]: file:///Users/aj/Neurosity/notion-js/docs/
 [link_ts_brainwaves]: classes/notion.html#brainwaves

@@ -26,7 +26,7 @@ sidebar_label: "NotionOnDevice"
 
 Ƭ **INotionOnDevice**: *Pick‹[INotion](../interfaces/_types_notion_.inotion.md), Exclude‹keyof INotion, "skill"››*
 
-*Defined in [NotionOnDevice.ts:6](https://github.com/neurosity/notion-js/blob/58d781f/src/NotionOnDevice.ts#L6)*
+*Defined in [NotionOnDevice.ts:6](https://github.com/neurosity/notion-js/blob/80b48df/src/NotionOnDevice.ts#L6)*
 
 ## Functions
 
@@ -34,7 +34,7 @@ sidebar_label: "NotionOnDevice"
 
 ▸ **createNotionOnDevice**(`options`: [IOnDeviceOptions](../interfaces/_notionondevice_.iondeviceoptions.md)): *Promise‹[[INotionOnDevice](_notionondevice_.md#inotionondevice), [ISkillInstance](../interfaces/_types_skill_.iskillinstance.md)]›*
 
-*Defined in [NotionOnDevice.ts:16](https://github.com/neurosity/notion-js/blob/58d781f/src/NotionOnDevice.ts#L16)*
+*Defined in [NotionOnDevice.ts:16](https://github.com/neurosity/notion-js/blob/80b48df/src/NotionOnDevice.ts#L16)*
 
 **Parameters:**
 

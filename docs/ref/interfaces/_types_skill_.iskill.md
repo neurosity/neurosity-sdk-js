@@ -33,7 +33,7 @@ sidebar_label: "ISkill"
 
 • **bundleId**: *string*
 
-*Defined in [types/skill.ts:7](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L7)*
+*Defined in [types/skill.ts:7](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L7)*
 
 ___
 
@@ -41,7 +41,7 @@ ___
 
 • **description**: *string*
 
-*Defined in [types/skill.ts:10](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L10)*
+*Defined in [types/skill.ts:10](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L10)*
 
 ___
 
@@ -49,7 +49,7 @@ ___
 
 • **id**: *string*
 
-*Defined in [types/skill.ts:6](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L6)*
+*Defined in [types/skill.ts:6](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L6)*
 
 ___
 
@@ -57,7 +57,7 @@ ___
 
 • **metrics**: *string[]*
 
-*Defined in [types/skill.ts:13](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L13)*
+*Defined in [types/skill.ts:13](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L13)*
 
 ___
 
@@ -65,7 +65,7 @@ ___
 
 • **name**: *string*
 
-*Defined in [types/skill.ts:9](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L9)*
+*Defined in [types/skill.ts:9](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L9)*
 
 ___
 
@@ -73,7 +73,7 @@ ___
 
 • **organization**? : *string*
 
-*Defined in [types/skill.ts:12](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L12)*
+*Defined in [types/skill.ts:12](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L12)*
 
 ___
 
@@ -81,7 +81,7 @@ ___
 
 • **props**? : *[SkillProps](../modules/_types_skill_.md#skillprops)*
 
-*Defined in [types/skill.ts:11](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L11)*
+*Defined in [types/skill.ts:11](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L11)*
 
 ___
 
@@ -89,7 +89,7 @@ ___
 
 • **spec**: *string*
 
-*Defined in [types/skill.ts:8](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L8)*
+*Defined in [types/skill.ts:8](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L8)*
 
 ___
 
@@ -97,7 +97,7 @@ ___
 
 • **status**: *string*
 
-*Defined in [types/skill.ts:16](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L16)*
+*Defined in [types/skill.ts:16](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L16)*
 
 ___
 
@@ -105,7 +105,7 @@ ___
 
 • **thumbnail**: *string*
 
-*Defined in [types/skill.ts:17](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L17)*
+*Defined in [types/skill.ts:17](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L17)*
 
 ___
 
@@ -113,7 +113,7 @@ ___
 
 • **timestamp**: *number*
 
-*Defined in [types/skill.ts:15](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L15)*
+*Defined in [types/skill.ts:15](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L15)*
 
 ___
 
@@ -121,4 +121,4 @@ ___
 
 • **userId**: *string*
 
-*Defined in [types/skill.ts:14](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L14)*
+*Defined in [types/skill.ts:14](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L14)*

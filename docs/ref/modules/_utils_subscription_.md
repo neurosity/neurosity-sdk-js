@@ -21,7 +21,7 @@ sidebar_label: "utils/subscription"
 
 ▸ **getLabels**(`metric`: string): *string[]*
 
-*Defined in [utils/subscription.ts:4](https://github.com/neurosity/notion-js/blob/58d781f/src/utils/subscription.ts#L4)*
+*Defined in [utils/subscription.ts:4](https://github.com/neurosity/notion-js/blob/80b48df/src/utils/subscription.ts#L4)*
 
 **Parameters:**
 
@@ -37,7 +37,7 @@ ___
 
 ▸ **hasInvalidLabels**(`metric`: string, `labels`: string[]): *boolean*
 
-*Defined in [utils/subscription.ts:7](https://github.com/neurosity/notion-js/blob/58d781f/src/utils/subscription.ts#L7)*
+*Defined in [utils/subscription.ts:7](https://github.com/neurosity/notion-js/blob/80b48df/src/utils/subscription.ts#L7)*
 
 **Parameters:**
 
@@ -54,7 +54,7 @@ ___
 
 ▸ **isMetricDisallowed**(`metricName`: string, `options`: [IOptions](../interfaces/_types_options_.ioptions.md)): *boolean*
 
-*Defined in [utils/subscription.ts:15](https://github.com/neurosity/notion-js/blob/58d781f/src/utils/subscription.ts#L15)*
+*Defined in [utils/subscription.ts:15](https://github.com/neurosity/notion-js/blob/80b48df/src/utils/subscription.ts#L15)*
 
 **Parameters:**
 
@@ -71,7 +71,7 @@ ___
 
 ▸ **validate**(`metric`: string, `labels`: string[], `options`: [IOptions](../interfaces/_types_options_.ioptions.md)): *Error | false*
 
-*Defined in [utils/subscription.ts:23](https://github.com/neurosity/notion-js/blob/58d781f/src/utils/subscription.ts#L23)*
+*Defined in [utils/subscription.ts:23](https://github.com/neurosity/notion-js/blob/80b48df/src/utils/subscription.ts#L23)*
 
 **Parameters:**
 

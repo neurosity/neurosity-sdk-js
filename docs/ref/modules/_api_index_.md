@@ -18,7 +18,7 @@ sidebar_label: "api/index"
 
 ▸ **isNotionMetric**(`metric`: string): *boolean*
 
-*Defined in [api/index.ts:13](https://github.com/neurosity/notion-js/blob/58d781f/src/api/index.ts#L13)*
+*Defined in [api/index.ts:13](https://github.com/neurosity/notion-js/blob/80b48df/src/api/index.ts#L13)*
 
 **Parameters:**
 

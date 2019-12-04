@@ -26,7 +26,7 @@ sidebar_label: "IDeviceSkill"
 
 • **bundleId**: *string*
 
-*Defined in [types/skill.ts:22](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L22)*
+*Defined in [types/skill.ts:22](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L22)*
 
 ___
 
@@ -34,7 +34,7 @@ ___
 
 • **id**: *string*
 
-*Defined in [types/skill.ts:21](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L21)*
+*Defined in [types/skill.ts:21](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L21)*
 
 ___
 
@@ -42,7 +42,7 @@ ___
 
 • **installedDate**: *number*
 
-*Defined in [types/skill.ts:23](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L23)*
+*Defined in [types/skill.ts:23](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L23)*
 
 ___
 
@@ -50,7 +50,7 @@ ___
 
 • **manifest**: *object*
 
-*Defined in [types/skill.ts:24](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L24)*
+*Defined in [types/skill.ts:24](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L24)*
 
 #### Type declaration:
 
@@ -62,4 +62,4 @@ ___
 
 • **status**: *string*
 
-*Defined in [types/skill.ts:25](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L25)*
+*Defined in [types/skill.ts:25](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L25)*

@@ -23,4 +23,4 @@ sidebar_label: "types/credentials"
 
 Ƭ **Credentials**: *[IEmailAndPassword](../interfaces/_types_credentials_.iemailandpassword.md) | [IOAuthCredentials](../interfaces/_types_credentials_.ioauthcredentials.md)*
 
-*Defined in [types/credentials.ts:11](https://github.com/neurosity/notion-js/blob/58d781f/src/types/credentials.ts#L11)*
+*Defined in [types/credentials.ts:11](https://github.com/neurosity/notion-js/blob/80b48df/src/types/credentials.ts#L11)*

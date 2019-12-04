@@ -28,7 +28,7 @@ sidebar_label: "types/skill"
 
 Ƭ **SkillMetric**: *object*
 
-*Defined in [types/skill.ts:28](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L28)*
+*Defined in [types/skill.ts:28](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L28)*
 
 #### Type declaration:
 
@@ -40,7 +40,7 @@ ___
 
 Ƭ **SkillProps**: *object*
 
-*Defined in [types/skill.ts:3](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L3)*
+*Defined in [types/skill.ts:3](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L3)*
 
 #### Type declaration:
 

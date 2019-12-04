@@ -52,7 +52,7 @@ sidebar_label: "Notion"
 
 \+ **new Notion**(`options`: [IOptions](../interfaces/_types_options_.ioptions.md)): *[Notion](_notion_.notion.md)*
 
-*Defined in [Notion.ts:23](https://github.com/neurosity/notion-js/blob/58d781f/src/Notion.ts#L23)*
+*Defined in [Notion.ts:23](https://github.com/neurosity/notion-js/blob/80b48df/src/Notion.ts#L23)*
 
 **Parameters:**
 
@@ -68,7 +68,7 @@ Name | Type |
 
 • **get training**(): *object*
 
-*Defined in [Notion.ts:281](https://github.com/neurosity/notion-js/blob/58d781f/src/Notion.ts#L281)*
+*Defined in [Notion.ts:281](https://github.com/neurosity/notion-js/blob/80b48df/src/Notion.ts#L281)*
 
 **Returns:** *object*
 
@@ -88,7 +88,7 @@ Training methods
 
 *Implementation of [INotion](../interfaces/_types_notion_.inotion.md)*
 
-*Defined in [Notion.ts:111](https://github.com/neurosity/notion-js/blob/58d781f/src/Notion.ts#L111)*
+*Defined in [Notion.ts:111](https://github.com/neurosity/notion-js/blob/80b48df/src/Notion.ts#L111)*
 
 Injects an EEG marker to data stream
 
@@ -108,7 +108,7 @@ ___
 
 *Implementation of [INotion](../interfaces/_types_notion_.inotion.md)*
 
-*Defined in [Notion.ts:130](https://github.com/neurosity/notion-js/blob/58d781f/src/Notion.ts#L130)*
+*Defined in [Notion.ts:130](https://github.com/neurosity/notion-js/blob/80b48df/src/Notion.ts#L130)*
 
 **Parameters:**
 
@@ -129,7 +129,7 @@ ___
 
 *Implementation of [INotion](../interfaces/_types_notion_.inotion.md)*
 
-*Defined in [Notion.ts:145](https://github.com/neurosity/notion-js/blob/58d781f/src/Notion.ts#L145)*
+*Defined in [Notion.ts:145](https://github.com/neurosity/notion-js/blob/80b48df/src/Notion.ts#L145)*
 
 **Parameters:**
 
@@ -150,7 +150,7 @@ ___
 
 *Implementation of [INotion](../interfaces/_types_notion_.inotion.md)*
 
-*Defined in [Notion.ts:159](https://github.com/neurosity/notion-js/blob/58d781f/src/Notion.ts#L159)*
+*Defined in [Notion.ts:159](https://github.com/neurosity/notion-js/blob/80b48df/src/Notion.ts#L159)*
 
 **Returns:** *Observable‹any›*
 
@@ -164,7 +164,7 @@ ___
 
 *Implementation of [INotion](../interfaces/_types_notion_.inotion.md)*
 
-*Defined in [Notion.ts:274](https://github.com/neurosity/notion-js/blob/58d781f/src/Notion.ts#L274)*
+*Defined in [Notion.ts:274](https://github.com/neurosity/notion-js/blob/80b48df/src/Notion.ts#L274)*
 
 **Parameters:**
 
@@ -182,7 +182,7 @@ ___
 
 *Implementation of [INotion](../interfaces/_types_notion_.inotion.md)*
 
-*Defined in [Notion.ts:167](https://github.com/neurosity/notion-js/blob/58d781f/src/Notion.ts#L167)*
+*Defined in [Notion.ts:167](https://github.com/neurosity/notion-js/blob/80b48df/src/Notion.ts#L167)*
 
 **Returns:** *Observable‹any›*
 
@@ -196,7 +196,7 @@ ___
 
 *Implementation of [INotion](../interfaces/_types_notion_.inotion.md)*
 
-*Defined in [Notion.ts:50](https://github.com/neurosity/notion-js/blob/58d781f/src/Notion.ts#L50)*
+*Defined in [Notion.ts:50](https://github.com/neurosity/notion-js/blob/80b48df/src/Notion.ts#L50)*
 
 **Returns:** *Promise‹any›*
 
@@ -208,7 +208,7 @@ ___
 
 *Implementation of [INotion](../interfaces/_types_notion_.inotion.md)*
 
-*Defined in [Notion.ts:191](https://github.com/neurosity/notion-js/blob/58d781f/src/Notion.ts#L191)*
+*Defined in [Notion.ts:191](https://github.com/neurosity/notion-js/blob/80b48df/src/Notion.ts#L191)*
 
 **Parameters:**
 
@@ -229,7 +229,7 @@ ___
 
 *Implementation of [INotion](../interfaces/_types_notion_.inotion.md)*
 
-*Defined in [Notion.ts:224](https://github.com/neurosity/notion-js/blob/58d781f/src/Notion.ts#L224)*
+*Defined in [Notion.ts:224](https://github.com/neurosity/notion-js/blob/80b48df/src/Notion.ts#L224)*
 
 **Returns:** *Observable‹any›*
 
@@ -243,7 +243,7 @@ ___
 
 *Implementation of [INotion](../interfaces/_types_notion_.inotion.md)*
 
-*Defined in [Notion.ts:46](https://github.com/neurosity/notion-js/blob/58d781f/src/Notion.ts#L46)*
+*Defined in [Notion.ts:46](https://github.com/neurosity/notion-js/blob/80b48df/src/Notion.ts#L46)*
 
 **Returns:** *Promise‹any›*
 
@@ -255,7 +255,7 @@ ___
 
 *Implementation of [INotion](../interfaces/_types_notion_.inotion.md)*
 
-*Defined in [Notion.ts:232](https://github.com/neurosity/notion-js/blob/58d781f/src/Notion.ts#L232)*
+*Defined in [Notion.ts:232](https://github.com/neurosity/notion-js/blob/80b48df/src/Notion.ts#L232)*
 
 **Parameters:**
 
@@ -276,7 +276,7 @@ ___
 
 *Implementation of [INotion](../interfaces/_types_notion_.inotion.md)*
 
-*Defined in [Notion.ts:34](https://github.com/neurosity/notion-js/blob/58d781f/src/Notion.ts#L34)*
+*Defined in [Notion.ts:34](https://github.com/neurosity/notion-js/blob/80b48df/src/Notion.ts#L34)*
 
 **Parameters:**
 
@@ -292,7 +292,7 @@ ___
 
 ▸ **logout**(): *Promise‹any›*
 
-*Defined in [Notion.ts:38](https://github.com/neurosity/notion-js/blob/58d781f/src/Notion.ts#L38)*
+*Defined in [Notion.ts:38](https://github.com/neurosity/notion-js/blob/80b48df/src/Notion.ts#L38)*
 
 **Returns:** *Promise‹any›*
 
@@ -302,7 +302,7 @@ ___
 
 ▸ **onAuthStateChanged**(): *Observable‹any›*
 
-*Defined in [Notion.ts:42](https://github.com/neurosity/notion-js/blob/58d781f/src/Notion.ts#L42)*
+*Defined in [Notion.ts:42](https://github.com/neurosity/notion-js/blob/80b48df/src/Notion.ts#L42)*
 
 **Returns:** *Observable‹any›*
 
@@ -314,7 +314,7 @@ ___
 
 *Implementation of [INotion](../interfaces/_types_notion_.inotion.md)*
 
-*Defined in [Notion.ts:247](https://github.com/neurosity/notion-js/blob/58d781f/src/Notion.ts#L247)*
+*Defined in [Notion.ts:247](https://github.com/neurosity/notion-js/blob/80b48df/src/Notion.ts#L247)*
 
 **Parameters:**
 
@@ -335,7 +335,7 @@ ___
 
 *Implementation of [INotion](../interfaces/_types_notion_.inotion.md)*
 
-*Defined in [Notion.ts:207](https://github.com/neurosity/notion-js/blob/58d781f/src/Notion.ts#L207)*
+*Defined in [Notion.ts:207](https://github.com/neurosity/notion-js/blob/80b48df/src/Notion.ts#L207)*
 
 Observes last state of `settings` and all subsequent `settings` changes
 
@@ -351,7 +351,7 @@ ___
 
 *Implementation of [INotion](../interfaces/_types_notion_.inotion.md)*
 
-*Defined in [Notion.ts:179](https://github.com/neurosity/notion-js/blob/58d781f/src/Notion.ts#L179)*
+*Defined in [Notion.ts:179](https://github.com/neurosity/notion-js/blob/80b48df/src/Notion.ts#L179)*
 
 **Returns:** *Observable‹any›*
 
@@ -365,7 +365,7 @@ ___
 
 *Implementation of [INotion](../interfaces/_types_notion_.inotion.md)*
 
-*Defined in [Notion.ts:327](https://github.com/neurosity/notion-js/blob/58d781f/src/Notion.ts#L327)*
+*Defined in [Notion.ts:327](https://github.com/neurosity/notion-js/blob/80b48df/src/Notion.ts#L327)*
 
 Accesses a skill by Bundle ID. Additionally, allows to observe
 and push skill metrics
@@ -388,7 +388,7 @@ ___
 
 *Implementation of [INotion](../interfaces/_types_notion_.inotion.md)*
 
-*Defined in [Notion.ts:263](https://github.com/neurosity/notion-js/blob/58d781f/src/Notion.ts#L263)*
+*Defined in [Notion.ts:263](https://github.com/neurosity/notion-js/blob/80b48df/src/Notion.ts#L263)*
 
 Observes last state of `status` and all subsequent `status` changes
 

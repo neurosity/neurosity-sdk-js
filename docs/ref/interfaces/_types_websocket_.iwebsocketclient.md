@@ -27,7 +27,7 @@ sidebar_label: "IWebsocketClient"
 
 • **serverType**: *string*
 
-*Defined in [types/websocket.ts:2](https://github.com/neurosity/notion-js/blob/58d781f/src/types/websocket.ts#L2)*
+*Defined in [types/websocket.ts:2](https://github.com/neurosity/notion-js/blob/80b48df/src/types/websocket.ts#L2)*
 
 ## Methods
 
@@ -35,7 +35,7 @@ sidebar_label: "IWebsocketClient"
 
 ▸ **disconnect**(): *void*
 
-*Defined in [types/websocket.ts:8](https://github.com/neurosity/notion-js/blob/58d781f/src/types/websocket.ts#L8)*
+*Defined in [types/websocket.ts:8](https://github.com/neurosity/notion-js/blob/80b48df/src/types/websocket.ts#L8)*
 
 **Returns:** *void*
 
@@ -45,7 +45,7 @@ ___
 
 ▸ **onMetric**(`metricName`: string, `subscriptionId`: string, `callback`: Function): *void*
 
-*Defined in [types/websocket.ts:3](https://github.com/neurosity/notion-js/blob/58d781f/src/types/websocket.ts#L3)*
+*Defined in [types/websocket.ts:3](https://github.com/neurosity/notion-js/blob/80b48df/src/types/websocket.ts#L3)*
 
 **Parameters:**
 

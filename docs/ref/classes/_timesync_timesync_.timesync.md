@@ -39,7 +39,7 @@ sidebar_label: "Timesync"
 
 \+ **new Timesync**(`options`: [Options](../modules/_timesync_timesync_.md#options)): *[Timesync](_timesync_timesync_.timesync.md)*
 
-*Defined in [timesync/Timesync.ts:19](https://github.com/neurosity/notion-js/blob/58d781f/src/timesync/Timesync.ts#L19)*
+*Defined in [timesync/Timesync.ts:19](https://github.com/neurosity/notion-js/blob/80b48df/src/timesync/Timesync.ts#L19)*
 
 **Parameters:**
 
@@ -55,7 +55,7 @@ Name | Type |
 
 • **_offset**: *number* = 0
 
-*Defined in [timesync/Timesync.ts:19](https://github.com/neurosity/notion-js/blob/58d781f/src/timesync/Timesync.ts#L19)*
+*Defined in [timesync/Timesync.ts:19](https://github.com/neurosity/notion-js/blob/80b48df/src/timesync/Timesync.ts#L19)*
 
 ___
 
@@ -63,7 +63,7 @@ ___
 
 • **options**: *[Options](../modules/_timesync_timesync_.md#options)*
 
-*Defined in [timesync/Timesync.ts:18](https://github.com/neurosity/notion-js/blob/58d781f/src/timesync/Timesync.ts#L18)*
+*Defined in [timesync/Timesync.ts:18](https://github.com/neurosity/notion-js/blob/80b48df/src/timesync/Timesync.ts#L18)*
 
 ## Accessors
 
@@ -71,7 +71,7 @@ ___
 
 • **get offset**(): *number*
 
-*Defined in [timesync/Timesync.ts:88](https://github.com/neurosity/notion-js/blob/58d781f/src/timesync/Timesync.ts#L88)*
+*Defined in [timesync/Timesync.ts:88](https://github.com/neurosity/notion-js/blob/80b48df/src/timesync/Timesync.ts#L88)*
 
 **Returns:** *number*
 
@@ -81,7 +81,7 @@ ___
 
 • **get timestamp**(): *number*
 
-*Defined in [timesync/Timesync.ts:92](https://github.com/neurosity/notion-js/blob/58d781f/src/timesync/Timesync.ts#L92)*
+*Defined in [timesync/Timesync.ts:92](https://github.com/neurosity/notion-js/blob/80b48df/src/timesync/Timesync.ts#L92)*
 
 **Returns:** *number*
 
@@ -91,7 +91,7 @@ ___
 
 ▸ **average**(`list`: number[]): *number*
 
-*Defined in [timesync/Timesync.ts:82](https://github.com/neurosity/notion-js/blob/58d781f/src/timesync/Timesync.ts#L82)*
+*Defined in [timesync/Timesync.ts:82](https://github.com/neurosity/notion-js/blob/80b48df/src/timesync/Timesync.ts#L82)*
 
 **Parameters:**
 
@@ -107,7 +107,7 @@ ___
 
 ▸ **filterOutliers**(): *UnaryFunction‹Observable‹number[]›, Observable‹number[]››*
 
-*Defined in [timesync/Timesync.ts:50](https://github.com/neurosity/notion-js/blob/58d781f/src/timesync/Timesync.ts#L50)*
+*Defined in [timesync/Timesync.ts:50](https://github.com/neurosity/notion-js/blob/80b48df/src/timesync/Timesync.ts#L50)*
 
 **Returns:** *UnaryFunction‹Observable‹number[]›, Observable‹number[]››*
 
@@ -117,7 +117,7 @@ ___
 
 ▸ **starTimer**(): *void*
 
-*Defined in [timesync/Timesync.ts:30](https://github.com/neurosity/notion-js/blob/58d781f/src/timesync/Timesync.ts#L30)*
+*Defined in [timesync/Timesync.ts:30](https://github.com/neurosity/notion-js/blob/80b48df/src/timesync/Timesync.ts#L30)*
 
 **Returns:** *void*
 
@@ -127,6 +127,6 @@ ___
 
 ▸ **toOffset**(): *UnaryFunction‹Observable‹unknown›, Observable‹number››*
 
-*Defined in [timesync/Timesync.ts:60](https://github.com/neurosity/notion-js/blob/58d781f/src/timesync/Timesync.ts#L60)*
+*Defined in [timesync/Timesync.ts:60](https://github.com/neurosity/notion-js/blob/80b48df/src/timesync/Timesync.ts#L60)*
 
 **Returns:** *UnaryFunction‹Observable‹unknown›, Observable‹number››*

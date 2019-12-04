@@ -27,7 +27,7 @@ sidebar_label: "ISubscription"
 
 • **atomic**: *boolean*
 
-*Defined in [types/subscription.ts:4](https://github.com/neurosity/notion-js/blob/58d781f/src/types/subscription.ts#L4)*
+*Defined in [types/subscription.ts:4](https://github.com/neurosity/notion-js/blob/80b48df/src/types/subscription.ts#L4)*
 
 ___
 
@@ -35,7 +35,7 @@ ___
 
 • **clientId**? : *string*
 
-*Defined in [types/subscription.ts:6](https://github.com/neurosity/notion-js/blob/58d781f/src/types/subscription.ts#L6)*
+*Defined in [types/subscription.ts:6](https://github.com/neurosity/notion-js/blob/80b48df/src/types/subscription.ts#L6)*
 
 ___
 
@@ -43,7 +43,7 @@ ___
 
 • **id**? : *string*
 
-*Defined in [types/subscription.ts:5](https://github.com/neurosity/notion-js/blob/58d781f/src/types/subscription.ts#L5)*
+*Defined in [types/subscription.ts:5](https://github.com/neurosity/notion-js/blob/80b48df/src/types/subscription.ts#L5)*
 
 ___
 
@@ -51,7 +51,7 @@ ___
 
 • **labels**: *string[]*
 
-*Defined in [types/subscription.ts:3](https://github.com/neurosity/notion-js/blob/58d781f/src/types/subscription.ts#L3)*
+*Defined in [types/subscription.ts:3](https://github.com/neurosity/notion-js/blob/80b48df/src/types/subscription.ts#L3)*
 
 ___
 
@@ -59,7 +59,7 @@ ___
 
 • **metric**: *string*
 
-*Defined in [types/subscription.ts:2](https://github.com/neurosity/notion-js/blob/58d781f/src/types/subscription.ts#L2)*
+*Defined in [types/subscription.ts:2](https://github.com/neurosity/notion-js/blob/80b48df/src/types/subscription.ts#L2)*
 
 ___
 
@@ -67,4 +67,4 @@ ___
 
 • **serverType**? : *string*
 
-*Defined in [types/subscription.ts:7](https://github.com/neurosity/notion-js/blob/58d781f/src/types/subscription.ts#L7)*
+*Defined in [types/subscription.ts:7](https://github.com/neurosity/notion-js/blob/80b48df/src/types/subscription.ts#L7)*

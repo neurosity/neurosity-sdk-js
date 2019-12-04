@@ -24,7 +24,7 @@ sidebar_label: "ITraining"
 
 ▸ **record**(`training`: [ITrainingRecording](_types_training_.itrainingrecording.md)): *void*
 
-*Defined in [types/training.ts:11](https://github.com/neurosity/notion-js/blob/58d781f/src/types/training.ts#L11)*
+*Defined in [types/training.ts:11](https://github.com/neurosity/notion-js/blob/80b48df/src/types/training.ts#L11)*
 
 **Parameters:**
 
@@ -40,7 +40,7 @@ ___
 
 ▸ **stop**(`training`: [ITrainingRecording](_types_training_.itrainingrecording.md)): *void*
 
-*Defined in [types/training.ts:12](https://github.com/neurosity/notion-js/blob/58d781f/src/types/training.ts#L12)*
+*Defined in [types/training.ts:12](https://github.com/neurosity/notion-js/blob/80b48df/src/types/training.ts#L12)*
 
 **Parameters:**
 
@@ -56,6 +56,6 @@ ___
 
 ▸ **stopAll**(): *void*
 
-*Defined in [types/training.ts:13](https://github.com/neurosity/notion-js/blob/58d781f/src/types/training.ts#L13)*
+*Defined in [types/training.ts:13](https://github.com/neurosity/notion-js/blob/80b48df/src/types/training.ts#L13)*
 
 **Returns:** *void*

@@ -26,7 +26,7 @@ sidebar_label: "ISkillInstance"
 
 • **props**? : *[SkillProps](../modules/_types_skill_.md#skillprops)*
 
-*Defined in [types/skill.ts:35](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L35)*
+*Defined in [types/skill.ts:35](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L35)*
 
 ## Methods
 
@@ -34,7 +34,7 @@ sidebar_label: "ISkillInstance"
 
 ▸ **metric**(`metric`: string): *Observable‹[SkillMetric](../modules/_types_skill_.md#skillmetric)› | [ISkillMetricNext](_types_skill_.iskillmetricnext.md)*
 
-*Defined in [types/skill.ts:36](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L36)*
+*Defined in [types/skill.ts:36](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L36)*
 
 **Parameters:**
 

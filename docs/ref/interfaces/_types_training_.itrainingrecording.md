@@ -27,7 +27,7 @@ sidebar_label: "ITrainingRecording"
 
 • **baseline**? : *boolean*
 
-*Defined in [types/training.ts:6](https://github.com/neurosity/notion-js/blob/58d781f/src/types/training.ts#L6)*
+*Defined in [types/training.ts:6](https://github.com/neurosity/notion-js/blob/80b48df/src/types/training.ts#L6)*
 
 ___
 
@@ -35,7 +35,7 @@ ___
 
 • **experimentId**: *string*
 
-*Defined in [types/training.ts:2](https://github.com/neurosity/notion-js/blob/58d781f/src/types/training.ts#L2)*
+*Defined in [types/training.ts:2](https://github.com/neurosity/notion-js/blob/80b48df/src/types/training.ts#L2)*
 
 ___
 
@@ -43,7 +43,7 @@ ___
 
 • **fit**? : *boolean*
 
-*Defined in [types/training.ts:5](https://github.com/neurosity/notion-js/blob/58d781f/src/types/training.ts#L5)*
+*Defined in [types/training.ts:5](https://github.com/neurosity/notion-js/blob/80b48df/src/types/training.ts#L5)*
 
 ___
 
@@ -51,7 +51,7 @@ ___
 
 • **label**: *string*
 
-*Defined in [types/training.ts:4](https://github.com/neurosity/notion-js/blob/58d781f/src/types/training.ts#L4)*
+*Defined in [types/training.ts:4](https://github.com/neurosity/notion-js/blob/80b48df/src/types/training.ts#L4)*
 
 ___
 
@@ -59,7 +59,7 @@ ___
 
 • **metric**: *string*
 
-*Defined in [types/training.ts:3](https://github.com/neurosity/notion-js/blob/58d781f/src/types/training.ts#L3)*
+*Defined in [types/training.ts:3](https://github.com/neurosity/notion-js/blob/80b48df/src/types/training.ts#L3)*
 
 ___
 
@@ -67,4 +67,4 @@ ___
 
 • **timestamp**? : *number*
 
-*Defined in [types/training.ts:7](https://github.com/neurosity/notion-js/blob/58d781f/src/types/training.ts#L7)*
+*Defined in [types/training.ts:7](https://github.com/neurosity/notion-js/blob/80b48df/src/types/training.ts#L7)*

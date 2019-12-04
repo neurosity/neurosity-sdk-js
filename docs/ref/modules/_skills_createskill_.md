@@ -22,7 +22,7 @@ sidebar_label: "skills/createSkill"
 
 Ƭ **ISkillApp**: *function*
 
-*Defined in [skills/createSkill.ts:8](https://github.com/neurosity/notion-js/blob/58d781f/src/skills/createSkill.ts#L8)*
+*Defined in [skills/createSkill.ts:8](https://github.com/neurosity/notion-js/blob/80b48df/src/skills/createSkill.ts#L8)*
 
 #### Type declaration:
 
@@ -43,7 +43,7 @@ Name | Type |
 
 ▸ **createSkill**(`app`: [ISkillApp](_skills_createskill_.md#iskillapp)): *object*
 
-*Defined in [skills/createSkill.ts:13](https://github.com/neurosity/notion-js/blob/58d781f/src/skills/createSkill.ts#L13)*
+*Defined in [skills/createSkill.ts:13](https://github.com/neurosity/notion-js/blob/80b48df/src/skills/createSkill.ts#L13)*
 
 **Parameters:**
 

@@ -25,7 +25,7 @@ sidebar_label: "IMetrics"
 
 ▸ **next**(`metricName`: string, `metricValue`: object): *void*
 
-*Defined in [types/metrics.ts:6](https://github.com/neurosity/notion-js/blob/58d781f/src/types/metrics.ts#L6)*
+*Defined in [types/metrics.ts:6](https://github.com/neurosity/notion-js/blob/80b48df/src/types/metrics.ts#L6)*
 
 **Parameters:**
 
@@ -42,7 +42,7 @@ ___
 
 ▸ **on**(`subscription`: [ISubscription](_types_subscription_.isubscription.md), `callback`: Function): *[SubscriptionListener](../modules/_types_metrics_.md#subscriptionlistener)*
 
-*Defined in [types/metrics.ts:7](https://github.com/neurosity/notion-js/blob/58d781f/src/types/metrics.ts#L7)*
+*Defined in [types/metrics.ts:7](https://github.com/neurosity/notion-js/blob/80b48df/src/types/metrics.ts#L7)*
 
 **Parameters:**
 
@@ -59,7 +59,7 @@ ___
 
 ▸ **subscribe**(`subscription`: [ISubscription](_types_subscription_.isubscription.md)): *[ISubscription](_types_subscription_.isubscription.md)*
 
-*Defined in [types/metrics.ts:11](https://github.com/neurosity/notion-js/blob/58d781f/src/types/metrics.ts#L11)*
+*Defined in [types/metrics.ts:11](https://github.com/neurosity/notion-js/blob/80b48df/src/types/metrics.ts#L11)*
 
 **Parameters:**
 
@@ -75,7 +75,7 @@ ___
 
 ▸ **unsubscribe**(`subscription`: [ISubscription](_types_subscription_.isubscription.md), `listener`: [SubscriptionListener](../modules/_types_metrics_.md#subscriptionlistener)): *void*
 
-*Defined in [types/metrics.ts:12](https://github.com/neurosity/notion-js/blob/58d781f/src/types/metrics.ts#L12)*
+*Defined in [types/metrics.ts:12](https://github.com/neurosity/notion-js/blob/80b48df/src/types/metrics.ts#L12)*
 
 **Parameters:**
 

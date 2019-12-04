@@ -22,7 +22,7 @@ sidebar_label: "IActions"
 
 ▸ **dispatch**(`action`: [IAction](_types_actions_.iaction.md)): *Promise‹any›*
 
-*Defined in [types/actions.ts:9](https://github.com/neurosity/notion-js/blob/58d781f/src/types/actions.ts#L9)*
+*Defined in [types/actions.ts:9](https://github.com/neurosity/notion-js/blob/80b48df/src/types/actions.ts#L9)*
 
 **Parameters:**
 
