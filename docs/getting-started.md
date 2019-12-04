@@ -13,7 +13,7 @@ To download the necessary tools, clone the repository, and install dependencies 
 You'll need the following tools:
 
 - [Git](https://git-scm.com)
-- [Node.JS](https://nodejs.org/en/), **x64**, version `>= 10.x`, `<= 12.x`
+- [Node.JS](https://nodejs.org/en/)
 - [NPM](https://npmjs.org), use a [package manager](https://nodejs.org/en/download/package-manager/) to install.
 
 Install and build all of the dependencies using [`NPM`](https://npmjs.org)
@@ -88,25 +88,74 @@ Go ahead and make a new file called `index.js`, we'll use it soon as the base of
 
 ### Add Dependencies
 
-The first dependency we need to install is from Neurosity, it's called Notion. From the command line, enter:
+The first dependency we need to install is from Neurosity, it's called Notion. We'll end up using some environment variables from a `.env` file, so go ahead and install another dependency for that as well. From the command line, enter:
 
 ```bash
-npm install @neurosity/notion
-```
-
-We'll end up using some environment variables from a `.env` file, so go ahead and install another dependency for that:
-
-```bash
-npm install dotenv
+npm install @neurosity/notion dotenv
 ```
 
 That's it for now!
 
 ## Adding Notion to a Node Project
 
-### Add Notion Dependency
+### Add Dependencies
 
-Importing libraries in Node is quite simple, all you have to do is add 
+Importing libraries in Node is quite simple, all you have to do is add the following to the top of your index.js file:
+
+```js
+const { Notion } = require("@neurosity/notion");
+require('dotenv').config();
+```
+
+### Add start script to package.json
+
+Now head over to the file called `package.json`. The `package.json` is at the core of every Node package. **Ignore the file called `package-lock.json`, it's automatically generated.** 
+
+Find the section called `"scripts"` and add a property called `"start"` that will start the node process:
+
+```json
+"start": "node index.js"
+```
+
+Your `package.json` will look like below once added:
+
+```json
+{
+  "name": "hello-world",
+  "version": "1.0.0",
+  "description": "My first application using Notion",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "notion"
+  ],
+  "author": "Hans Berger",
+  "license": "MIT",
+  "dependencies": {
+    "@neurosity/notion": "^3.8.0",
+    "dotenv": "^8.2.0"
+  }
+}
+```
+
+### Run the project from the CLI
+
+Navigate back to the terminal and run `npm start` to make sure the project runs with out any errors.
+
+```bash
+npm start
+```
+
+You should see the program run and exit successfully
+
+<p align="center">
+  <img alt="Created a new file called index.js" src="docs/images/tutorial/vscode-run-empty-program.png">
+</p>
+
+
 
 ## Dive right into development
 
