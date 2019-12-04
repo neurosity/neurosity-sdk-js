@@ -22,7 +22,7 @@ sidebar_label: "ISkillMetricNext"
 
 ▸ **next**(`value`: [SkillMetric](../modules/_types_skill_.md#skillmetric)): *void*
 
-*Defined in [types/skill.ts:31](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L31)*
+*Defined in [types/skill.ts:31](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L31)*
 
 **Parameters:**
 

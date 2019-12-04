@@ -22,4 +22,4 @@ sidebar_label: "types/metrics"
 
 Ƭ **SubscriptionListener**: *Function*
 
-*Defined in [types/metrics.ts:3](https://github.com/neurosity/notion-js/blob/58d781f/src/types/metrics.ts#L3)*
+*Defined in [types/metrics.ts:3](https://github.com/neurosity/notion-js/blob/80b48df/src/types/metrics.ts#L3)*

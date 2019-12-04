@@ -22,7 +22,7 @@ sidebar_label: "ISkillsClient"
 
 • **get**: *function*
 
-*Defined in [types/skill.ts:44](https://github.com/neurosity/notion-js/blob/58d781f/src/types/skill.ts#L44)*
+*Defined in [types/skill.ts:44](https://github.com/neurosity/notion-js/blob/80b48df/src/types/skill.ts#L44)*
 
 #### Type declaration:
 

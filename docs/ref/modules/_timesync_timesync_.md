@@ -26,7 +26,7 @@ sidebar_label: "timesync/Timesync"
 
 Ƭ **Options**: *object*
 
-*Defined in [timesync/Timesync.ts:6](https://github.com/neurosity/notion-js/blob/58d781f/src/timesync/Timesync.ts#L6)*
+*Defined in [timesync/Timesync.ts:6](https://github.com/neurosity/notion-js/blob/80b48df/src/timesync/Timesync.ts#L6)*
 
 #### Type declaration:
 
@@ -44,16 +44,16 @@ sidebar_label: "timesync/Timesync"
 
 ### ▪ **defaultOptions**: *object*
 
-*Defined in [timesync/Timesync.ts:12](https://github.com/neurosity/notion-js/blob/58d781f/src/timesync/Timesync.ts#L12)*
+*Defined in [timesync/Timesync.ts:12](https://github.com/neurosity/notion-js/blob/80b48df/src/timesync/Timesync.ts#L12)*
 
 ###  bufferSize
 
 • **bufferSize**: *number* = 100
 
-*Defined in [timesync/Timesync.ts:13](https://github.com/neurosity/notion-js/blob/58d781f/src/timesync/Timesync.ts#L13)*
+*Defined in [timesync/Timesync.ts:13](https://github.com/neurosity/notion-js/blob/80b48df/src/timesync/Timesync.ts#L13)*
 
 ###  updateInterval
 
 • **updateInterval**: *number* =  1 * 60 * 1000
 
-*Defined in [timesync/Timesync.ts:14](https://github.com/neurosity/notion-js/blob/58d781f/src/timesync/Timesync.ts#L14)*
+*Defined in [timesync/Timesync.ts:14](https://github.com/neurosity/notion-js/blob/80b48df/src/timesync/Timesync.ts#L14)*

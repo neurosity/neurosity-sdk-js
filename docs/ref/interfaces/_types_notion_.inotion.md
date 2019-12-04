@@ -46,7 +46,7 @@ sidebar_label: "INotion"
 
 • **training**: *[ITraining](_types_training_.itraining.md)*
 
-*Defined in [types/notion.ts:24](https://github.com/neurosity/notion-js/blob/58d781f/src/types/notion.ts#L24)*
+*Defined in [types/notion.ts:24](https://github.com/neurosity/notion-js/blob/80b48df/src/types/notion.ts#L24)*
 
 ## Methods
 
@@ -54,7 +54,7 @@ sidebar_label: "INotion"
 
 ▸ **addMarker**(`label`: string): *void*
 
-*Defined in [types/notion.ts:8](https://github.com/neurosity/notion-js/blob/58d781f/src/types/notion.ts#L8)*
+*Defined in [types/notion.ts:8](https://github.com/neurosity/notion-js/blob/80b48df/src/types/notion.ts#L8)*
 
 **Parameters:**
 
@@ -70,7 +70,7 @@ ___
 
 ▸ **awareness**(`label`: string, ...`otherLabels`: string[]): *Observable‹any›*
 
-*Defined in [types/notion.ts:9](https://github.com/neurosity/notion-js/blob/58d781f/src/types/notion.ts#L9)*
+*Defined in [types/notion.ts:9](https://github.com/neurosity/notion-js/blob/80b48df/src/types/notion.ts#L9)*
 
 **Parameters:**
 
@@ -87,7 +87,7 @@ ___
 
 ▸ **brainwaves**(`label`: string, ...`otherLabels`: string[]): *Observable‹any›*
 
-*Defined in [types/notion.ts:10](https://github.com/neurosity/notion-js/blob/58d781f/src/types/notion.ts#L10)*
+*Defined in [types/notion.ts:10](https://github.com/neurosity/notion-js/blob/80b48df/src/types/notion.ts#L10)*
 
 **Parameters:**
 
@@ -104,7 +104,7 @@ ___
 
 ▸ **calm**(): *Observable‹any›*
 
-*Defined in [types/notion.ts:11](https://github.com/neurosity/notion-js/blob/58d781f/src/types/notion.ts#L11)*
+*Defined in [types/notion.ts:11](https://github.com/neurosity/notion-js/blob/80b48df/src/types/notion.ts#L11)*
 
 **Returns:** *Observable‹any›*
 
@@ -114,7 +114,7 @@ ___
 
 ▸ **changeSettings**(`settings`: [ChangeSettings](../modules/_types_settings_.md#changesettings)): *Promise‹void›*
 
-*Defined in [types/notion.ts:23](https://github.com/neurosity/notion-js/blob/58d781f/src/types/notion.ts#L23)*
+*Defined in [types/notion.ts:23](https://github.com/neurosity/notion-js/blob/80b48df/src/types/notion.ts#L23)*
 
 **Parameters:**
 
@@ -130,7 +130,7 @@ ___
 
 ▸ **channelAnalysis**(): *Observable‹any›*
 
-*Defined in [types/notion.ts:12](https://github.com/neurosity/notion-js/blob/58d781f/src/types/notion.ts#L12)*
+*Defined in [types/notion.ts:12](https://github.com/neurosity/notion-js/blob/80b48df/src/types/notion.ts#L12)*
 
 **Returns:** *Observable‹any›*
 
@@ -140,7 +140,7 @@ ___
 
 ▸ **disconnect**(): *Promise‹any›*
 
-*Defined in [types/notion.ts:25](https://github.com/neurosity/notion-js/blob/58d781f/src/types/notion.ts#L25)*
+*Defined in [types/notion.ts:25](https://github.com/neurosity/notion-js/blob/80b48df/src/types/notion.ts#L25)*
 
 **Returns:** *Promise‹any›*
 
@@ -150,7 +150,7 @@ ___
 
 ▸ **emotion**(`label`: string, ...`otherLabels`: string[]): *Observable‹any›*
 
-*Defined in [types/notion.ts:13](https://github.com/neurosity/notion-js/blob/58d781f/src/types/notion.ts#L13)*
+*Defined in [types/notion.ts:13](https://github.com/neurosity/notion-js/blob/80b48df/src/types/notion.ts#L13)*
 
 **Parameters:**
 
@@ -167,7 +167,7 @@ ___
 
 ▸ **focus**(): *Observable‹any›*
 
-*Defined in [types/notion.ts:14](https://github.com/neurosity/notion-js/blob/58d781f/src/types/notion.ts#L14)*
+*Defined in [types/notion.ts:14](https://github.com/neurosity/notion-js/blob/80b48df/src/types/notion.ts#L14)*
 
 **Returns:** *Observable‹any›*
 
@@ -177,7 +177,7 @@ ___
 
 ▸ **getInfo**(): *Promise‹any›*
 
-*Defined in [types/notion.ts:15](https://github.com/neurosity/notion-js/blob/58d781f/src/types/notion.ts#L15)*
+*Defined in [types/notion.ts:15](https://github.com/neurosity/notion-js/blob/80b48df/src/types/notion.ts#L15)*
 
 **Returns:** *Promise‹any›*
 
@@ -187,7 +187,7 @@ ___
 
 ▸ **kinesis**(`label`: string, ...`otherLabels`: string[]): *Observable‹any›*
 
-*Defined in [types/notion.ts:17](https://github.com/neurosity/notion-js/blob/58d781f/src/types/notion.ts#L17)*
+*Defined in [types/notion.ts:17](https://github.com/neurosity/notion-js/blob/80b48df/src/types/notion.ts#L17)*
 
 **Parameters:**
 
@@ -204,7 +204,7 @@ ___
 
 ▸ **login**(`credentails`: [Credentials](../modules/_types_credentials_.md#credentials)): *Promise‹any›*
 
-*Defined in [types/notion.ts:16](https://github.com/neurosity/notion-js/blob/58d781f/src/types/notion.ts#L16)*
+*Defined in [types/notion.ts:16](https://github.com/neurosity/notion-js/blob/80b48df/src/types/notion.ts#L16)*
 
 **Parameters:**
 
@@ -220,7 +220,7 @@ ___
 
 ▸ **predictions**(`label`: string, ...`otherLabels`: string[]): *Observable‹any›*
 
-*Defined in [types/notion.ts:18](https://github.com/neurosity/notion-js/blob/58d781f/src/types/notion.ts#L18)*
+*Defined in [types/notion.ts:18](https://github.com/neurosity/notion-js/blob/80b48df/src/types/notion.ts#L18)*
 
 **Parameters:**
 
@@ -237,7 +237,7 @@ ___
 
 ▸ **settings**(): *Observable‹[Settings](../modules/_types_settings_.md#settings)›*
 
-*Defined in [types/notion.ts:19](https://github.com/neurosity/notion-js/blob/58d781f/src/types/notion.ts#L19)*
+*Defined in [types/notion.ts:19](https://github.com/neurosity/notion-js/blob/80b48df/src/types/notion.ts#L19)*
 
 **Returns:** *Observable‹[Settings](../modules/_types_settings_.md#settings)›*
 
@@ -247,7 +247,7 @@ ___
 
 ▸ **signalQuality**(): *Observable‹any›*
 
-*Defined in [types/notion.ts:20](https://github.com/neurosity/notion-js/blob/58d781f/src/types/notion.ts#L20)*
+*Defined in [types/notion.ts:20](https://github.com/neurosity/notion-js/blob/80b48df/src/types/notion.ts#L20)*
 
 **Returns:** *Observable‹any›*
 
@@ -257,7 +257,7 @@ ___
 
 ▸ **skill**(`id`: string): *Promise‹[ISkillInstance](_types_skill_.iskillinstance.md)›*
 
-*Defined in [types/notion.ts:22](https://github.com/neurosity/notion-js/blob/58d781f/src/types/notion.ts#L22)*
+*Defined in [types/notion.ts:22](https://github.com/neurosity/notion-js/blob/80b48df/src/types/notion.ts#L22)*
 
 **Parameters:**
 
@@ -273,6 +273,6 @@ ___
 
 ▸ **status**(): *Observable‹any›*
 
-*Defined in [types/notion.ts:21](https://github.com/neurosity/notion-js/blob/58d781f/src/types/notion.ts#L21)*
+*Defined in [types/notion.ts:21](https://github.com/neurosity/notion-js/blob/80b48df/src/types/notion.ts#L21)*
 
 **Returns:** *Observable‹any›*

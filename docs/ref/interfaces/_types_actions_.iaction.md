@@ -25,7 +25,7 @@ sidebar_label: "IAction"
 
 • **action**: *string*
 
-*Defined in [types/actions.ts:3](https://github.com/neurosity/notion-js/blob/58d781f/src/types/actions.ts#L3)*
+*Defined in [types/actions.ts:3](https://github.com/neurosity/notion-js/blob/80b48df/src/types/actions.ts#L3)*
 
 ___
 
@@ -33,7 +33,7 @@ ___
 
 • **command**: *string*
 
-*Defined in [types/actions.ts:2](https://github.com/neurosity/notion-js/blob/58d781f/src/types/actions.ts#L2)*
+*Defined in [types/actions.ts:2](https://github.com/neurosity/notion-js/blob/80b48df/src/types/actions.ts#L2)*
 
 ___
 
@@ -41,7 +41,7 @@ ___
 
 • **message**? : *any*
 
-*Defined in [types/actions.ts:4](https://github.com/neurosity/notion-js/blob/58d781f/src/types/actions.ts#L4)*
+*Defined in [types/actions.ts:4](https://github.com/neurosity/notion-js/blob/80b48df/src/types/actions.ts#L4)*
 
 ___
 
@@ -49,4 +49,4 @@ ___
 
 • **responseRequired**? : *boolean*
 
-*Defined in [types/actions.ts:5](https://github.com/neurosity/notion-js/blob/58d781f/src/types/actions.ts#L5)*
+*Defined in [types/actions.ts:5](https://github.com/neurosity/notion-js/blob/80b48df/src/types/actions.ts#L5)*

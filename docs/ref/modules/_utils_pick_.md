@@ -18,7 +18,7 @@ sidebar_label: "utils/pick"
 
 ▸ **pick**(`object`: any, `props`: any): *any*
 
-*Defined in [utils/pick.ts:1](https://github.com/neurosity/notion-js/blob/58d781f/src/utils/pick.ts#L1)*
+*Defined in [utils/pick.ts:1](https://github.com/neurosity/notion-js/blob/80b48df/src/utils/pick.ts#L1)*
 
 **Parameters:**
 

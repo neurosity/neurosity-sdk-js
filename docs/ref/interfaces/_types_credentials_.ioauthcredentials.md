@@ -23,7 +23,7 @@ sidebar_label: "IOAuthCredentials"
 
 • **idToken**: *string*
 
-*Defined in [types/credentials.ts:7](https://github.com/neurosity/notion-js/blob/58d781f/src/types/credentials.ts#L7)*
+*Defined in [types/credentials.ts:7](https://github.com/neurosity/notion-js/blob/80b48df/src/types/credentials.ts#L7)*
 
 ___
 
@@ -31,4 +31,4 @@ ___
 
 • **providerId**: *string*
 
-*Defined in [types/credentials.ts:8](https://github.com/neurosity/notion-js/blob/58d781f/src/types/credentials.ts#L8)*
+*Defined in [types/credentials.ts:8](https://github.com/neurosity/notion-js/blob/80b48df/src/types/credentials.ts#L8)*

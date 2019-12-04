@@ -29,7 +29,7 @@ sidebar_label: "IOnDeviceOptions"
 
 *Inherited from [IOptions](_types_options_.ioptions.md).[deviceId](_types_options_.ioptions.md#deviceid)*
 
-*Defined in [types/options.ts:4](https://github.com/neurosity/notion-js/blob/58d781f/src/types/options.ts#L4)*
+*Defined in [types/options.ts:4](https://github.com/neurosity/notion-js/blob/80b48df/src/types/options.ts#L4)*
 
 ___
 
@@ -39,7 +39,7 @@ ___
 
 *Overrides [IOptions](_types_options_.ioptions.md).[onDeviceSocketUrl](_types_options_.ioptions.md#optional-ondevicesocketurl)*
 
-*Defined in [NotionOnDevice.ts:12](https://github.com/neurosity/notion-js/blob/58d781f/src/NotionOnDevice.ts#L12)*
+*Defined in [NotionOnDevice.ts:12](https://github.com/neurosity/notion-js/blob/80b48df/src/NotionOnDevice.ts#L12)*
 
 ___
 
@@ -49,7 +49,7 @@ ___
 
 *Overrides [IOptions](_types_options_.ioptions.md).[skill](_types_options_.ioptions.md#optional-skill)*
 
-*Defined in [NotionOnDevice.ts:13](https://github.com/neurosity/notion-js/blob/58d781f/src/NotionOnDevice.ts#L13)*
+*Defined in [NotionOnDevice.ts:13](https://github.com/neurosity/notion-js/blob/80b48df/src/NotionOnDevice.ts#L13)*
 
 ___
 
@@ -59,4 +59,4 @@ ___
 
 *Inherited from [IOptions](_types_options_.ioptions.md).[timesync](_types_options_.ioptions.md#optional-timesync)*
 
-*Defined in [types/options.ts:7](https://github.com/neurosity/notion-js/blob/58d781f/src/types/options.ts#L7)*
+*Defined in [types/options.ts:7](https://github.com/neurosity/notion-js/blob/80b48df/src/types/options.ts#L7)*

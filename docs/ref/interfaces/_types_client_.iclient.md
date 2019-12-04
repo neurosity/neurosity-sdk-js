@@ -35,7 +35,7 @@ sidebar_label: "IClient"
 
 • **actions**: *[IActions](_types_actions_.iactions.md)*
 
-*Defined in [types/client.ts:10](https://github.com/neurosity/notion-js/blob/58d781f/src/types/client.ts#L10)*
+*Defined in [types/client.ts:10](https://github.com/neurosity/notion-js/blob/80b48df/src/types/client.ts#L10)*
 
 ___
 
@@ -43,7 +43,7 @@ ___
 
 • **metrics**: *[IMetrics](_types_metrics_.imetrics.md)*
 
-*Defined in [types/client.ts:16](https://github.com/neurosity/notion-js/blob/58d781f/src/types/client.ts#L16)*
+*Defined in [types/client.ts:16](https://github.com/neurosity/notion-js/blob/80b48df/src/types/client.ts#L16)*
 
 ___
 
@@ -51,7 +51,7 @@ ___
 
 • **skills**: *[ISkillsClient](_types_skill_.iskillsclient.md)*
 
-*Defined in [types/client.ts:17](https://github.com/neurosity/notion-js/blob/58d781f/src/types/client.ts#L17)*
+*Defined in [types/client.ts:17](https://github.com/neurosity/notion-js/blob/80b48df/src/types/client.ts#L17)*
 
 ___
 
@@ -59,7 +59,7 @@ ___
 
 • **timestamp**: *number*
 
-*Defined in [types/client.ts:18](https://github.com/neurosity/notion-js/blob/58d781f/src/types/client.ts#L18)*
+*Defined in [types/client.ts:18](https://github.com/neurosity/notion-js/blob/80b48df/src/types/client.ts#L18)*
 
 ___
 
@@ -67,7 +67,7 @@ ___
 
 • **user**: *User | null*
 
-*Defined in [types/client.ts:9](https://github.com/neurosity/notion-js/blob/58d781f/src/types/client.ts#L9)*
+*Defined in [types/client.ts:9](https://github.com/neurosity/notion-js/blob/80b48df/src/types/client.ts#L9)*
 
 ## Methods
 
@@ -75,7 +75,7 @@ ___
 
 ▸ **changeSettings**(`settings`: [ChangeSettings](../modules/_types_settings_.md#changesettings)): *Promise‹void›*
 
-*Defined in [types/client.ts:19](https://github.com/neurosity/notion-js/blob/58d781f/src/types/client.ts#L19)*
+*Defined in [types/client.ts:19](https://github.com/neurosity/notion-js/blob/80b48df/src/types/client.ts#L19)*
 
 **Parameters:**
 
@@ -91,7 +91,7 @@ ___
 
 ▸ **disconnect**(): *Promise‹any›*
 
-*Defined in [types/client.ts:11](https://github.com/neurosity/notion-js/blob/58d781f/src/types/client.ts#L11)*
+*Defined in [types/client.ts:11](https://github.com/neurosity/notion-js/blob/80b48df/src/types/client.ts#L11)*
 
 **Returns:** *Promise‹any›*
 
@@ -101,7 +101,7 @@ ___
 
 ▸ **getInfo**(): *Promise‹any›*
 
-*Defined in [types/client.ts:12](https://github.com/neurosity/notion-js/blob/58d781f/src/types/client.ts#L12)*
+*Defined in [types/client.ts:12](https://github.com/neurosity/notion-js/blob/80b48df/src/types/client.ts#L12)*
 
 **Returns:** *Promise‹any›*
 
@@ -111,7 +111,7 @@ ___
 
 ▸ **login**(`credentails`: [Credentials](../modules/_types_credentials_.md#credentials)): *Promise‹any›*
 
-*Defined in [types/client.ts:13](https://github.com/neurosity/notion-js/blob/58d781f/src/types/client.ts#L13)*
+*Defined in [types/client.ts:13](https://github.com/neurosity/notion-js/blob/80b48df/src/types/client.ts#L13)*
 
 **Parameters:**
 
@@ -127,7 +127,7 @@ ___
 
 ▸ **offNamespace**(`namespace`: string, `listener`: Function): *void*
 
-*Defined in [types/client.ts:15](https://github.com/neurosity/notion-js/blob/58d781f/src/types/client.ts#L15)*
+*Defined in [types/client.ts:15](https://github.com/neurosity/notion-js/blob/80b48df/src/types/client.ts#L15)*
 
 **Parameters:**
 
@@ -144,7 +144,7 @@ ___
 
 ▸ **onNamespace**(`namespace`: string, `callback`: Function): *Function*
 
-*Defined in [types/client.ts:14](https://github.com/neurosity/notion-js/blob/58d781f/src/types/client.ts#L14)*
+*Defined in [types/client.ts:14](https://github.com/neurosity/notion-js/blob/80b48df/src/types/client.ts#L14)*
 
 **Parameters:**
 

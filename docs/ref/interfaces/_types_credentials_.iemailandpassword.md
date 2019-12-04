@@ -23,7 +23,7 @@ sidebar_label: "IEmailAndPassword"
 
 • **email**: *string*
 
-*Defined in [types/credentials.ts:2](https://github.com/neurosity/notion-js/blob/58d781f/src/types/credentials.ts#L2)*
+*Defined in [types/credentials.ts:2](https://github.com/neurosity/notion-js/blob/80b48df/src/types/credentials.ts#L2)*
 
 ___
 
@@ -31,4 +31,4 @@ ___
 
 • **password**: *string*
 
-*Defined in [types/credentials.ts:3](https://github.com/neurosity/notion-js/blob/58d781f/src/types/credentials.ts#L3)*
+*Defined in [types/credentials.ts:3](https://github.com/neurosity/notion-js/blob/80b48df/src/types/credentials.ts#L3)*

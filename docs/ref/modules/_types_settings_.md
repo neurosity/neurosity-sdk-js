@@ -19,7 +19,7 @@ sidebar_label: "types/settings"
 
 Ƭ **ChangeSettings**: *object*
 
-*Defined in [types/settings.ts:5](https://github.com/neurosity/notion-js/blob/58d781f/src/types/settings.ts#L5)*
+*Defined in [types/settings.ts:5](https://github.com/neurosity/notion-js/blob/80b48df/src/types/settings.ts#L5)*
 
 #### Type declaration:
 
@@ -31,7 +31,7 @@ ___
 
 Ƭ **Settings**: *object*
 
-*Defined in [types/settings.ts:1](https://github.com/neurosity/notion-js/blob/58d781f/src/types/settings.ts#L1)*
+*Defined in [types/settings.ts:1](https://github.com/neurosity/notion-js/blob/80b48df/src/types/settings.ts#L1)*
 
 #### Type declaration:
 

@@ -25,7 +25,7 @@ sidebar_label: "IDevice"
 
 • **info**: *any*
 
-*Defined in [api/firebase/deviceStore.ts:2](https://github.com/neurosity/notion-js/blob/58d781f/src/api/firebase/deviceStore.ts#L2)*
+*Defined in [api/firebase/deviceStore.ts:2](https://github.com/neurosity/notion-js/blob/80b48df/src/api/firebase/deviceStore.ts#L2)*
 
 ___
 
@@ -33,7 +33,7 @@ ___
 
 • **metrics**: *any*
 
-*Defined in [api/firebase/deviceStore.ts:5](https://github.com/neurosity/notion-js/blob/58d781f/src/api/firebase/deviceStore.ts#L5)*
+*Defined in [api/firebase/deviceStore.ts:5](https://github.com/neurosity/notion-js/blob/80b48df/src/api/firebase/deviceStore.ts#L5)*
 
 ___
 
@@ -41,7 +41,7 @@ ___
 
 • **status**: *any*
 
-*Defined in [api/firebase/deviceStore.ts:3](https://github.com/neurosity/notion-js/blob/58d781f/src/api/firebase/deviceStore.ts#L3)*
+*Defined in [api/firebase/deviceStore.ts:3](https://github.com/neurosity/notion-js/blob/80b48df/src/api/firebase/deviceStore.ts#L3)*
 
 ___
 
@@ -49,4 +49,4 @@ ___
 
 • **subscriptions**: *any*
 
-*Defined in [api/firebase/deviceStore.ts:4](https://github.com/neurosity/notion-js/blob/58d781f/src/api/firebase/deviceStore.ts#L4)*
+*Defined in [api/firebase/deviceStore.ts:4](https://github.com/neurosity/notion-js/blob/80b48df/src/api/firebase/deviceStore.ts#L4)*

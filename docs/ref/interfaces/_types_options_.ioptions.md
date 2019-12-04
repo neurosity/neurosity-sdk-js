@@ -27,7 +27,7 @@ sidebar_label: "IOptions"
 
 • **deviceId**: *string*
 
-*Defined in [types/options.ts:4](https://github.com/neurosity/notion-js/blob/58d781f/src/types/options.ts#L4)*
+*Defined in [types/options.ts:4](https://github.com/neurosity/notion-js/blob/80b48df/src/types/options.ts#L4)*
 
 ___
 
@@ -35,7 +35,7 @@ ___
 
 • **onDeviceSocketUrl**? : *string*
 
-*Defined in [types/options.ts:6](https://github.com/neurosity/notion-js/blob/58d781f/src/types/options.ts#L6)*
+*Defined in [types/options.ts:6](https://github.com/neurosity/notion-js/blob/80b48df/src/types/options.ts#L6)*
 
 ___
 
@@ -43,7 +43,7 @@ ___
 
 • **skill**? : *[ISkill](_types_skill_.iskill.md)*
 
-*Defined in [types/options.ts:5](https://github.com/neurosity/notion-js/blob/58d781f/src/types/options.ts#L5)*
+*Defined in [types/options.ts:5](https://github.com/neurosity/notion-js/blob/80b48df/src/types/options.ts#L5)*
 
 ___
 
@@ -51,4 +51,4 @@ ___
 
 • **timesync**? : *boolean*
 
-*Defined in [types/options.ts:7](https://github.com/neurosity/notion-js/blob/58d781f/src/types/options.ts#L7)*
+*Defined in [types/options.ts:7](https://github.com/neurosity/notion-js/blob/80b48df/src/types/options.ts#L7)*
