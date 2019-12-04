@@ -4,7 +4,7 @@ title: Skills
 ---
 Skills are applications that can be written and deployed to a Notion device. **Skill support will be added ASAP**
 
-A Skill is an npm package with:
+A skill is an npm package with:
 
 - index.js
 - package.json

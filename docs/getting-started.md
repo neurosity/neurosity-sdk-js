@@ -2,11 +2,11 @@
 id: getting-started
 title: Getting Started
 ---
-You'll need to setup an account once with Neurosity via [console.neurosity.co](consle.neurosity.co). Learn how to [setup an acount with Neurosity Developer Console](https://support.neurosity.co/hc/en-us/articles/360036196792).
+Welcome to Neurosity's NotionJS repository. To begin, you'll need to set up an account once with Neurosity via [console.neurosity.co](consle.neurosity.co). Learn how to [setup an acount with Neurosity Developer Console](https://support.neurosity.co/hc/en-us/articles/360036196792).
 
 ## Prerequisites
 
-In order to download necessary tools, clone the repository, and install dependencies via `npm`, you need network access. 
+To download the necessary tools, clone the repository, and install dependencies via `npm`, you need network access. 
 
 You'll need the following tools:
 
@@ -14,7 +14,7 @@ You'll need the following tools:
 - [Node.JS](https://nodejs.org/en/), **x64**, version `>= 10.x`, `<= 12.x`
 - [NPM](https://npmjs.org), use a [package manager](https://nodejs.org/en/download/package-manager/) to install.
 
-Install and build all of the dependencies using `NPM`
+Install and build all of the dependencies using [`NPM`](https://npmjs.org)
 
 ## Installing
 
@@ -31,3 +31,5 @@ If you're new to JavaScript, head over to the [tutorial](docs/tutorial) to learn
 ## Dive right into development
 
 You'll want to [learn how to authenticate](/docs/api/authentication) with Notion next using your [console.neurosity.co](console.neurosity.co) login.
+
+If you're looking for exact API references, check out the [API section](/docs/ref/index) of these docs!

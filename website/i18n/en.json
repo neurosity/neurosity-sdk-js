@@ -5,26 +5,14 @@
     "previous": "Previous",
     "tagline": "Empowering the Mind",
     "docs": {
-      "api/add-marker": {
-        "title": "Add marker"
-      },
       "api/authentication": {
         "title": "Authentication"
-      },
-      "api/awareness": {
-        "title": "Awareness"
       },
       "api/brainwaves": {
         "title": "Brainwaves"
       },
       "api/calm": {
         "title": "Calm"
-      },
-      "api/channel-analysis": {
-        "title": "Channel Analysis"
-      },
-      "api/clients": {
-        "title": "Clients"
       },
       "api/disconnect": {
         "title": "Disconnect"
@@ -53,9 +41,6 @@
       "api/status": {
         "title": "Device Status"
       },
-      "api/training": {
-        "title": "Training"
-      },
       "getting-started": {
         "title": "Getting Started"
       },
@@ -73,6 +58,202 @@
       },
       "overview": {
         "title": "NotionJS"
+      },
+      "ref/classes/_notion_.notion": {
+        "title": "Notion",
+        "sidebar_label": "Notion"
+      },
+      "ref/classes/_timesync_timesync_.timesync": {
+        "title": "Timesync",
+        "sidebar_label": "Timesync"
+      },
+      "ref/globals": {
+        "title": "@neurosity/notion",
+        "sidebar_label": "Globals"
+      },
+      "ref/index": {
+        "title": "@neurosity/notion",
+        "sidebar_label": "README"
+      },
+      "ref/interfaces/_api_firebase_devicestore_.idevice": {
+        "title": "IDevice",
+        "sidebar_label": "IDevice"
+      },
+      "ref/interfaces/_notionondevice_.iondeviceoptions": {
+        "title": "IOnDeviceOptions",
+        "sidebar_label": "IOnDeviceOptions"
+      },
+      "ref/interfaces/_types_actions_.iaction": {
+        "title": "IAction",
+        "sidebar_label": "IAction"
+      },
+      "ref/interfaces/_types_actions_.iactions": {
+        "title": "IActions",
+        "sidebar_label": "IActions"
+      },
+      "ref/interfaces/_types_client_.iclient": {
+        "title": "IClient",
+        "sidebar_label": "IClient"
+      },
+      "ref/interfaces/_types_credentials_.iemailandpassword": {
+        "title": "IEmailAndPassword",
+        "sidebar_label": "IEmailAndPassword"
+      },
+      "ref/interfaces/_types_credentials_.ioauthcredentials": {
+        "title": "IOAuthCredentials",
+        "sidebar_label": "IOAuthCredentials"
+      },
+      "ref/interfaces/_types_metrics_.imetrics": {
+        "title": "IMetrics",
+        "sidebar_label": "IMetrics"
+      },
+      "ref/interfaces/_types_notion_.inotion": {
+        "title": "INotion",
+        "sidebar_label": "INotion"
+      },
+      "ref/interfaces/_types_options_.ioptions": {
+        "title": "IOptions",
+        "sidebar_label": "IOptions"
+      },
+      "ref/interfaces/_types_skill_.ideviceskill": {
+        "title": "IDeviceSkill",
+        "sidebar_label": "IDeviceSkill"
+      },
+      "ref/interfaces/_types_skill_.iskill": {
+        "title": "ISkill",
+        "sidebar_label": "ISkill"
+      },
+      "ref/interfaces/_types_skill_.iskillinstance": {
+        "title": "ISkillInstance",
+        "sidebar_label": "ISkillInstance"
+      },
+      "ref/interfaces/_types_skill_.iskillmetricnext": {
+        "title": "ISkillMetricNext",
+        "sidebar_label": "ISkillMetricNext"
+      },
+      "ref/interfaces/_types_skill_.iskillsclient": {
+        "title": "ISkillsClient",
+        "sidebar_label": "ISkillsClient"
+      },
+      "ref/interfaces/_types_skill_.iskillsubscription": {
+        "title": "ISkillSubscription",
+        "sidebar_label": "ISkillSubscription"
+      },
+      "ref/interfaces/_types_subscription_.isubscription": {
+        "title": "ISubscription",
+        "sidebar_label": "ISubscription"
+      },
+      "ref/interfaces/_types_training_.itraining": {
+        "title": "ITraining",
+        "sidebar_label": "ITraining"
+      },
+      "ref/interfaces/_types_training_.itrainingrecording": {
+        "title": "ITrainingRecording",
+        "sidebar_label": "ITrainingRecording"
+      },
+      "ref/interfaces/_types_websocket_.iwebsocketclient": {
+        "title": "IWebsocketClient",
+        "sidebar_label": "IWebsocketClient"
+      },
+      "ref/modules/_api_firebase_config_": {
+        "title": "api/firebase/config",
+        "sidebar_label": "api/firebase/config"
+      },
+      "ref/modules/_api_firebase_devicestore_": {
+        "title": "api/firebase/deviceStore",
+        "sidebar_label": "api/firebase/deviceStore"
+      },
+      "ref/modules/_api_firebase_index_": {
+        "title": "api/firebase/index",
+        "sidebar_label": "api/firebase/index"
+      },
+      "ref/modules/_api_index_": {
+        "title": "api/index",
+        "sidebar_label": "api/index"
+      },
+      "ref/modules/_api_websocket_index_": {
+        "title": "api/websocket/index",
+        "sidebar_label": "api/websocket/index"
+      },
+      "ref/modules/_index_": {
+        "title": "index",
+        "sidebar_label": "index"
+      },
+      "ref/modules/_notion_": {
+        "title": "Notion",
+        "sidebar_label": "Notion"
+      },
+      "ref/modules/_notionondevice_": {
+        "title": "NotionOnDevice",
+        "sidebar_label": "NotionOnDevice"
+      },
+      "ref/modules/_skills_createskill_": {
+        "title": "skills/createSkill",
+        "sidebar_label": "skills/createSkill"
+      },
+      "ref/modules/_skills_index_": {
+        "title": "skills/index",
+        "sidebar_label": "skills/index"
+      },
+      "ref/modules/_timesync_index_": {
+        "title": "timesync/index",
+        "sidebar_label": "timesync/index"
+      },
+      "ref/modules/_timesync_timesync_": {
+        "title": "timesync/Timesync",
+        "sidebar_label": "timesync/Timesync"
+      },
+      "ref/modules/_types_actions_": {
+        "title": "types/actions",
+        "sidebar_label": "types/actions"
+      },
+      "ref/modules/_types_client_": {
+        "title": "types/client",
+        "sidebar_label": "types/client"
+      },
+      "ref/modules/_types_credentials_": {
+        "title": "types/credentials",
+        "sidebar_label": "types/credentials"
+      },
+      "ref/modules/_types_metrics_": {
+        "title": "types/metrics",
+        "sidebar_label": "types/metrics"
+      },
+      "ref/modules/_types_notion_": {
+        "title": "types/notion",
+        "sidebar_label": "types/notion"
+      },
+      "ref/modules/_types_options_": {
+        "title": "types/options",
+        "sidebar_label": "types/options"
+      },
+      "ref/modules/_types_settings_": {
+        "title": "types/settings",
+        "sidebar_label": "types/settings"
+      },
+      "ref/modules/_types_skill_": {
+        "title": "types/skill",
+        "sidebar_label": "types/skill"
+      },
+      "ref/modules/_types_subscription_": {
+        "title": "types/subscription",
+        "sidebar_label": "types/subscription"
+      },
+      "ref/modules/_types_training_": {
+        "title": "types/training",
+        "sidebar_label": "types/training"
+      },
+      "ref/modules/_types_websocket_": {
+        "title": "types/websocket",
+        "sidebar_label": "types/websocket"
+      },
+      "ref/modules/_utils_pick_": {
+        "title": "utils/pick",
+        "sidebar_label": "utils/pick"
+      },
+      "ref/modules/_utils_subscription_": {
+        "title": "utils/subscription",
+        "sidebar_label": "utils/subscription"
       },
       "resources": {
         "title": "Resources"
@@ -131,26 +312,14 @@
       "version-3.5.0/version-3.5.0-tutorial": {
         "title": "Tutorial"
       },
-      "version-3.8.0/api/version-3.8.0-add-marker": {
-        "title": "Add marker"
-      },
       "version-3.8.0/api/version-3.8.0-authentication": {
         "title": "Authentication"
-      },
-      "version-3.8.0/api/version-3.8.0-awareness": {
-        "title": "Awareness"
       },
       "version-3.8.0/api/version-3.8.0-brainwaves": {
         "title": "Brainwaves"
       },
       "version-3.8.0/api/version-3.8.0-calm": {
         "title": "Calm"
-      },
-      "version-3.8.0/api/version-3.8.0-channel-analysis": {
-        "title": "Channel Analysis"
-      },
-      "version-3.8.0/api/version-3.8.0-clients": {
-        "title": "Clients"
       },
       "version-3.8.0/api/version-3.8.0-disconnect": {
         "title": "Disconnect"
@@ -176,9 +345,6 @@
       "version-3.8.0/api/version-3.8.0-status": {
         "title": "Device Status"
       },
-      "version-3.8.0/api/version-3.8.0-training": {
-        "title": "Training"
-      },
       "version-3.8.0/version-3.8.0-getting-started": {
         "title": "Getting Started"
       },
@@ -197,6 +363,202 @@
       "version-3.8.0/version-3.8.0-overview": {
         "title": "NotionJS"
       },
+      "version-3.8.0/ref/classes/version-3.8.0-_notion_.notion": {
+        "title": "Notion",
+        "sidebar_label": "Notion"
+      },
+      "version-3.8.0/ref/classes/version-3.8.0-_timesync_timesync_.timesync": {
+        "title": "Timesync",
+        "sidebar_label": "Timesync"
+      },
+      "version-3.8.0/ref/version-3.8.0-globals": {
+        "title": "@neurosity/notion",
+        "sidebar_label": "Globals"
+      },
+      "version-3.8.0/ref/version-3.8.0-index": {
+        "title": "@neurosity/notion",
+        "sidebar_label": "README"
+      },
+      "version-3.8.0/ref/interfaces/version-3.8.0-_api_firebase_devicestore_.idevice": {
+        "title": "IDevice",
+        "sidebar_label": "IDevice"
+      },
+      "version-3.8.0/ref/interfaces/version-3.8.0-_notionondevice_.iondeviceoptions": {
+        "title": "IOnDeviceOptions",
+        "sidebar_label": "IOnDeviceOptions"
+      },
+      "version-3.8.0/ref/interfaces/version-3.8.0-_types_actions_.iaction": {
+        "title": "IAction",
+        "sidebar_label": "IAction"
+      },
+      "version-3.8.0/ref/interfaces/version-3.8.0-_types_actions_.iactions": {
+        "title": "IActions",
+        "sidebar_label": "IActions"
+      },
+      "version-3.8.0/ref/interfaces/version-3.8.0-_types_client_.iclient": {
+        "title": "IClient",
+        "sidebar_label": "IClient"
+      },
+      "version-3.8.0/ref/interfaces/version-3.8.0-_types_credentials_.iemailandpassword": {
+        "title": "IEmailAndPassword",
+        "sidebar_label": "IEmailAndPassword"
+      },
+      "version-3.8.0/ref/interfaces/version-3.8.0-_types_credentials_.ioauthcredentials": {
+        "title": "IOAuthCredentials",
+        "sidebar_label": "IOAuthCredentials"
+      },
+      "version-3.8.0/ref/interfaces/version-3.8.0-_types_metrics_.imetrics": {
+        "title": "IMetrics",
+        "sidebar_label": "IMetrics"
+      },
+      "version-3.8.0/ref/interfaces/version-3.8.0-_types_notion_.inotion": {
+        "title": "INotion",
+        "sidebar_label": "INotion"
+      },
+      "version-3.8.0/ref/interfaces/version-3.8.0-_types_options_.ioptions": {
+        "title": "IOptions",
+        "sidebar_label": "IOptions"
+      },
+      "version-3.8.0/ref/interfaces/version-3.8.0-_types_skill_.ideviceskill": {
+        "title": "IDeviceSkill",
+        "sidebar_label": "IDeviceSkill"
+      },
+      "version-3.8.0/ref/interfaces/version-3.8.0-_types_skill_.iskill": {
+        "title": "ISkill",
+        "sidebar_label": "ISkill"
+      },
+      "version-3.8.0/ref/interfaces/version-3.8.0-_types_skill_.iskillinstance": {
+        "title": "ISkillInstance",
+        "sidebar_label": "ISkillInstance"
+      },
+      "version-3.8.0/ref/interfaces/version-3.8.0-_types_skill_.iskillmetricnext": {
+        "title": "ISkillMetricNext",
+        "sidebar_label": "ISkillMetricNext"
+      },
+      "version-3.8.0/ref/interfaces/version-3.8.0-_types_skill_.iskillsclient": {
+        "title": "ISkillsClient",
+        "sidebar_label": "ISkillsClient"
+      },
+      "version-3.8.0/ref/interfaces/version-3.8.0-_types_skill_.iskillsubscription": {
+        "title": "ISkillSubscription",
+        "sidebar_label": "ISkillSubscription"
+      },
+      "version-3.8.0/ref/interfaces/version-3.8.0-_types_subscription_.isubscription": {
+        "title": "ISubscription",
+        "sidebar_label": "ISubscription"
+      },
+      "version-3.8.0/ref/interfaces/version-3.8.0-_types_training_.itraining": {
+        "title": "ITraining",
+        "sidebar_label": "ITraining"
+      },
+      "version-3.8.0/ref/interfaces/version-3.8.0-_types_training_.itrainingrecording": {
+        "title": "ITrainingRecording",
+        "sidebar_label": "ITrainingRecording"
+      },
+      "version-3.8.0/ref/interfaces/version-3.8.0-_types_websocket_.iwebsocketclient": {
+        "title": "IWebsocketClient",
+        "sidebar_label": "IWebsocketClient"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_api_firebase_config_": {
+        "title": "api/firebase/config",
+        "sidebar_label": "api/firebase/config"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_api_firebase_devicestore_": {
+        "title": "api/firebase/deviceStore",
+        "sidebar_label": "api/firebase/deviceStore"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_api_firebase_index_": {
+        "title": "api/firebase/index",
+        "sidebar_label": "api/firebase/index"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_api_index_": {
+        "title": "api/index",
+        "sidebar_label": "api/index"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_api_websocket_index_": {
+        "title": "api/websocket/index",
+        "sidebar_label": "api/websocket/index"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_index_": {
+        "title": "index",
+        "sidebar_label": "index"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_notion_": {
+        "title": "Notion",
+        "sidebar_label": "Notion"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_notionondevice_": {
+        "title": "NotionOnDevice",
+        "sidebar_label": "NotionOnDevice"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_skills_createskill_": {
+        "title": "skills/createSkill",
+        "sidebar_label": "skills/createSkill"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_skills_index_": {
+        "title": "skills/index",
+        "sidebar_label": "skills/index"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_timesync_index_": {
+        "title": "timesync/index",
+        "sidebar_label": "timesync/index"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_timesync_timesync_": {
+        "title": "timesync/Timesync",
+        "sidebar_label": "timesync/Timesync"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_types_actions_": {
+        "title": "types/actions",
+        "sidebar_label": "types/actions"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_types_client_": {
+        "title": "types/client",
+        "sidebar_label": "types/client"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_types_credentials_": {
+        "title": "types/credentials",
+        "sidebar_label": "types/credentials"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_types_metrics_": {
+        "title": "types/metrics",
+        "sidebar_label": "types/metrics"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_types_notion_": {
+        "title": "types/notion",
+        "sidebar_label": "types/notion"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_types_options_": {
+        "title": "types/options",
+        "sidebar_label": "types/options"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_types_settings_": {
+        "title": "types/settings",
+        "sidebar_label": "types/settings"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_types_skill_": {
+        "title": "types/skill",
+        "sidebar_label": "types/skill"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_types_subscription_": {
+        "title": "types/subscription",
+        "sidebar_label": "types/subscription"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_types_training_": {
+        "title": "types/training",
+        "sidebar_label": "types/training"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_types_websocket_": {
+        "title": "types/websocket",
+        "sidebar_label": "types/websocket"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_utils_pick_": {
+        "title": "utils/pick",
+        "sidebar_label": "utils/pick"
+      },
+      "version-3.8.0/ref/modules/version-3.8.0-_utils_subscription_": {
+        "title": "utils/subscription",
+        "sidebar_label": "utils/subscription"
+      },
       "version-3.8.0/version-3.8.0-resources": {
         "title": "Resources"
       }
@@ -205,14 +567,17 @@
       "Docs": "Docs",
       "API": "API",
       "GitHub": "GitHub",
-      "Blog": "Blog",
       "Need Help?": "Need Help?"
     },
     "categories": {
       "Overview": "Overview",
       "GET STARTED": "GET STARTED",
       "WORKING WITH NOTION": "WORKING WITH NOTION",
-      "API REFERENCES": "API REFERENCES",
+      "API GUIDES": "API GUIDES",
+      "Introduction": "Introduction",
+      "External Modules": "External Modules",
+      "Classes": "Classes",
+      "Interfaces": "Interfaces",
       "Getting Started": "Getting Started",
       "Guides": "Guides",
       "API Reference": "API Reference"

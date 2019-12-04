@@ -1,9 +1,11 @@
 {
   "docs": {
-    "Overview": ["overview"],
+    "Overview": [
+      "overview"
+    ],
     "GET STARTED": [
-      "getting-started", 
-      "tutorial", 
+      "getting-started",
+      "tutorial",
       "resources"
     ],
     "WORKING WITH NOTION": [
@@ -12,14 +14,10 @@
       "guides/signal",
       "guides/training"
     ],
-    "API REFERENCES": [
-      "api/add-marker",
+    "API GUIDES": [
       "api/authentication",
-      "api/awareness",
       "api/brainwaves",
       "api/calm",
-      "api/channel-analysis",
-      "api/clients",
       "api/disconnect",
       "api/focus",
       "api/info",
@@ -28,8 +26,88 @@
       "api/settings",
       "api/signal-quality",
       "api/skills",
-      "api/status",
-      "api/training"
+      "api/status"
+    ]
+  },
+  "@neurosity/notion": {
+    "Introduction": [
+      "ref/index",
+      "ref/globals"
+    ],
+    "External Modules": [
+      "ref/modules/_notion_",
+      "ref/classes/_notion_.notion",
+      "ref/modules/_notionondevice_",
+      "ref/interfaces/_notionondevice_.iondeviceoptions",
+      "ref/modules/_api_firebase_config_",
+      "ref/modules/_api_firebase_devicestore_",
+      "ref/interfaces/_api_firebase_devicestore_.idevice",
+      "ref/modules/_api_firebase_index_",
+      "ref/modules/_api_index_",
+      "ref/modules/_api_websocket_index_",
+      "ref/modules/_index_",
+      "ref/modules/_skills_createskill_",
+      "ref/modules/_skills_index_",
+      "ref/modules/_timesync_timesync_",
+      "ref/classes/_timesync_timesync_.timesync",
+      "ref/modules/_timesync_index_",
+      "ref/modules/_types_actions_",
+      "ref/interfaces/_types_actions_.iaction",
+      "ref/interfaces/_types_actions_.iactions",
+      "ref/modules/_types_client_",
+      "ref/interfaces/_types_client_.iclient",
+      "ref/modules/_types_credentials_",
+      "ref/interfaces/_types_credentials_.iemailandpassword",
+      "ref/interfaces/_types_credentials_.ioauthcredentials",
+      "ref/modules/_types_metrics_",
+      "ref/interfaces/_types_metrics_.imetrics",
+      "ref/modules/_types_notion_",
+      "ref/interfaces/_types_notion_.inotion",
+      "ref/modules/_types_options_",
+      "ref/interfaces/_types_options_.ioptions",
+      "ref/modules/_types_settings_",
+      "ref/modules/_types_skill_",
+      "ref/interfaces/_types_skill_.ideviceskill",
+      "ref/interfaces/_types_skill_.iskill",
+      "ref/interfaces/_types_skill_.iskillinstance",
+      "ref/interfaces/_types_skill_.iskillmetricnext",
+      "ref/interfaces/_types_skill_.iskillsubscription",
+      "ref/interfaces/_types_skill_.iskillsclient",
+      "ref/modules/_types_subscription_",
+      "ref/interfaces/_types_subscription_.isubscription",
+      "ref/modules/_types_training_",
+      "ref/interfaces/_types_training_.itraining",
+      "ref/interfaces/_types_training_.itrainingrecording",
+      "ref/modules/_types_websocket_",
+      "ref/interfaces/_types_websocket_.iwebsocketclient",
+      "ref/modules/_utils_pick_",
+      "ref/modules/_utils_subscription_"
+    ],
+    "Classes": [
+      "ref/classes/_notion_.notion",
+      "ref/classes/_timesync_timesync_.timesync"
+    ],
+    "Interfaces": [
+      "ref/interfaces/_notionondevice_.iondeviceoptions",
+      "ref/interfaces/_api_firebase_devicestore_.idevice",
+      "ref/interfaces/_types_actions_.iaction",
+      "ref/interfaces/_types_actions_.iactions",
+      "ref/interfaces/_types_client_.iclient",
+      "ref/interfaces/_types_credentials_.iemailandpassword",
+      "ref/interfaces/_types_credentials_.ioauthcredentials",
+      "ref/interfaces/_types_metrics_.imetrics",
+      "ref/interfaces/_types_notion_.inotion",
+      "ref/interfaces/_types_options_.ioptions",
+      "ref/interfaces/_types_skill_.ideviceskill",
+      "ref/interfaces/_types_skill_.iskill",
+      "ref/interfaces/_types_skill_.iskillinstance",
+      "ref/interfaces/_types_skill_.iskillmetricnext",
+      "ref/interfaces/_types_skill_.iskillsubscription",
+      "ref/interfaces/_types_skill_.iskillsclient",
+      "ref/interfaces/_types_subscription_.isubscription",
+      "ref/interfaces/_types_training_.itraining",
+      "ref/interfaces/_types_training_.itrainingrecording",
+      "ref/interfaces/_types_websocket_.iwebsocketclient"
     ]
   }
 }
