@@ -3,11 +3,9 @@ id: training
 title: Training
 ---
 
-Before getting started, read about [imagined thought training here](https://support.neurosity.co/hc/en-us/articles/360036344012-Imagined-thought-training) in our guide.
+We recommend learning about an [imagined thought training here](https://support.neurosity.co/hc/en-us/articles/360036344012-Imagined-thought-training) before starting this guide.
 
-## Training
-
-The most basic idea to training is compare two thoughts. That's the basis of thought recognition. We start by looking at the difference between an active state and a rest state. 
+Training builds a model between two thoughts. That's the basis of thought recognition. We start by looking at the difference between an active state and a rest state. 
 
 To train a thought, you need to timesync and you need to call a special api endpoint. 
 

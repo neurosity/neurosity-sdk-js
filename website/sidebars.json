@@ -13,7 +13,9 @@
       "guides/training"
     ],
     "API REFERENCES": [
+      "api/add-marker",
       "api/authentication",
+      "api/awareness",
       "api/brainwaves",
       "api/calm",
       "api/channel-analysis",

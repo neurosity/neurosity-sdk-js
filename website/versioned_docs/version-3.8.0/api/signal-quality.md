@@ -1,6 +1,7 @@
 ---
-id: signal-quality
+id: version-3.8.0-signal-quality
 title: Signal Quality
+original_id: signal-quality
 ---
 Impedance based signal quality metrics.
 
