@@ -1,12 +1,7 @@
 dist
 build
-package-lock.json
 node_modules
 .cache
 .env
 .DS_Store
-docs/assets/
-docs/classes/
-docs/interfaces/
-docs/globals.html
-docs/index.html
+docs/reference
