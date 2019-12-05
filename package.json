@@ -29,7 +29,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/neurosity/lib-api-client.git"
+    "url": "git+https://github.com/neurosity/notion-js.git"
   },
   "keywords": [
     "neurosity",
@@ -43,9 +43,9 @@
   "author": "Alex Castillo",
   "license": "UNLICENSED",
   "bugs": {
-    "url": "https://github.com/neurosity/lib-api-client/issues"
+    "url": "https://github.com/neurosity/notion-js/issues"
   },
-  "homepage": "https://github.com/neurosity/lib-api-client#readme",
+  "homepage": "https://github.com/neurosity/notion-js#readme",
   "dependencies": {
     "@neurosity/ipk": "^1.6.0",
     "firebase": "^7.2.0",
