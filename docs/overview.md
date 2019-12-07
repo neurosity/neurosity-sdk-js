@@ -2,7 +2,7 @@
 id: overview
 title: NotionJS
 ---
-NotionJS is built with ease of use and privacy in mind. Our goal is to make the next major computing platform. A computing platform is a place filled with applications built by Neurosity and many other developers. The first step in building a platform with a simple API, so anyone could get started. We believe some of the best apps will be written by people outside of Neurosity.
+NotionJS is built with privacy and ease of use  in mind. Our goal is to make the next major computing platform, a new system, that learns from you. A computing platform is a place filled with applications built by Neurosity and many other developers. The first step in building a platform for us to build on. This repository is used by the Neurosity team to build our very own applications. We have a dream that some of the best apps will be written by people outside of Neurosity.
 
 This documentation describes:
 
