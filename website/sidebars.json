@@ -18,14 +18,14 @@
       "api/brainwaves",
       "api/calm",
       "api/disconnect",
-      "api/focus",
       "api/info",
+      "api/settings",
+      "api/status",
+      "api/focus",
       "api/kinesis",
       "api/predictions",
-      "api/settings",
       "api/signal-quality",
-      "api/skills",
-      "api/status"
+      "api/skills"
     ]
   },
   "@neurosity/notion": {
