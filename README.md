@@ -4,7 +4,7 @@
 
 ## The Repository
 
-This repository ("`NotionJS API`") is where we (Neurosity) develop the [Notion](https://neurosity.co) API. Not only do we work on code and issues here, but we also publish our [roadmap](https://github.com/neurosity/notion-js/blob/master/ROADMAP.md). This source code is available to everyone under the standard [MIT license]
+This repository is where we ([Neurosity](https://neurosity.co) develop the [Notion](https://neurosity.co) API. Not only do we work on code and issues here, but we also publish our [roadmap](https://github.com/neurosity/notion-js/blob/master/ROADMAP.md). This source code is available to everyone under the standard [MIT license]
 Thank you for visiting the NotionJS repository.
 
 ## NotionJS
