@@ -94,6 +94,11 @@ The first thing we want to do is add a file called `.gitignore` to tell git to i
 
 ```
 node_modules
+```
+
+On macOS, we'll go ahead an add another commonly ignored file:
+
+```
 .DS_Store
 ```
 
