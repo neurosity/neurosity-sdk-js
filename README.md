@@ -9,10 +9,6 @@ Thank you for visiting the NotionJS repository.
 
 ## NotionJS
 
-<p align="center">
-  <img alt="Model wearing a Notion headset" src="docs/images/notion-preview.png">
-</p>
-
 This document (the README file) is a hub to give you some information about the NotionJS API. At a high-level we seek to use the NotionJS to provide the following solution:
 
 * Universal JavaScript support: Node/Browser/Electron
@@ -56,14 +52,3 @@ This project has adopted a [Code of Conduct](https://github.com/neurosity/notion
 Copyright (c) Neurosity, Inc. All rights reserved.
 
 Licensed under the [MIT](LICENSE.txt) license.
-
-## Thank you
-
-Thank you so much (Danke schön! Merci beaucoup!) for visiting the project. We hope that you'll join us on this amazing journey to provide a stable and powerful interface for Notion.
-
-[link_ts_doc_base_url]: file:///Users/aj/Neurosity/notion-js/docs/
-[link_ts_brainwaves]: classes/notion.html#brainwaves
-[link_alex_twitter]: https://twitter.com/castillo__io
-[link_aj_twitter]: https://twitter.com/andrewjaykeller
-[link_neurosity]: https://neurosity.co
-[link_notion_buy]: https://neurosity.co/developer-kit
