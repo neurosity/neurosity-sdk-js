@@ -9,12 +9,12 @@ Thank you for visiting the NotionJS repository.
 
 ## NotionJS
 
-This document (the README file) is a hub to give you some information about the NotionJS API. At a high-level we seek to use the NotionJS to provide the following solution:
+This document (the README file) is a hub to give you some information about the NotionJS API. At a high-level we seek to use NotionJS to provide the following solutions:
 
 * Universal JavaScript support: Node/Browser/Electron
 * Firebase + Custom Metric Subscriber
 * Event-driven multi-client real-time architecture
-* Time synchronized imagined thought training
+* Time synchronize clients to Notions
 
 Using NotionJS allows you to quickly integrate Notion so you can begin extending the capabilities of your Notion.
 
@@ -22,8 +22,8 @@ Using NotionJS allows you to quickly integrate Notion so you can begin extending
 
 There are many ways you can participate in the project, for example:
 
-* [Submit bugs and feature requests](https://github.com/neurosity/notion-js/issues), and help us verify as they are checked in
-* Review [source code changes](https://github.com/neurosity/notion-js/pulls)
+* [Submit bugs and feature requests](https://github.com/neurosity/notion-js/issues), and help us verify as they are checked in.
+* Review [source code changes](https://github.com/neurosity/notion-js/pulls).
 * Review the [documentation](https://github.com/neurosity/notion-js/tree/master/website) and make pull requests for anything from typos to new content.
 
 If you are interested in fixing issues and contributing directly to the code base,
