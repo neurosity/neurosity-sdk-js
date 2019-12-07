@@ -42,13 +42,20 @@ class Footer extends React.Component {
             <h5>Docs</h5>
             <a href={this.docUrl("getting-started")}>Getting Started</a>
             <a href={this.docUrl("guides/ethics")}>Guides</a>
-            <a href={this.docUrl("api/brainwaves")}>API Reference</a>
+            <a href={this.docUrl("api/authentication")}>API Guides</a>
+            <a href={this.docUrl("reference/index")}>API Reference</a>
           </div>
           <div>
             <h5>Community</h5>
-            <a href={this.pageUrl("users.html")}>User Showcase</a>
             <a
-              href="https://stackoverflow.com/questions/tagged/"
+              href="https://support.neurosity.co"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              Knowledge Base
+            </a>
+            <a
+              href="https://stackoverflow.com/questions/tagged/notion-js"
               target="_blank"
               rel="noreferrer noopener"
             >
