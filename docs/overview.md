@@ -2,17 +2,17 @@
 id: overview
 title: NotionJS
 ---
-NotionJS is built with privacy and ease of use  in mind. Our goal is to make the next major computing platform, a new system, that learns from you. A computing platform is a place filled with applications built by Neurosity and many other developers. The first step in building a platform for us to build on. This repository is used by the Neurosity team to build our very own applications. We have a dream that some of the best apps will be written by people outside of Neurosity.
+NotionJS is built with privacy and ease of use  in mind. Our dream is to build the next major computing platform, a new system, that learns from you via symbiotic computing. A computing platform is a place filled with applications built by millions of developers. The first step in building this new platform is to make applications that add value. To make applications quickly, easily, and accessible by any number of clients, we use NotionJS. This repository is used by the Neurosity team to build our very own applications. We have a dream that some of the best apps will be written by people outside of Neurosity.
 
 This documentation describes:
 
 * How to authenticate, query, train, and use a Notion
-* How to take advantage of Neurosity's rich NotionJS API
+* How to take advantage of Neurosity's NotionJS
 * Where to find guides and code samples to help get you started
 
 ## What can NotionJS do?
 
-Here are some exampels of what you can achieve with NotionJS API:
+Here are some examples of what you can achieve with NotionJS:
 
 * Authenticate and access a Notion - [Authentication](docs/api/authenticate)
 * Query device status - [Info](docs/api/info) or [Status](docs/api/status)
@@ -23,7 +23,7 @@ Here are some exampels of what you can achieve with NotionJS API:
 
 ## How to use NotionJS?
 
-Building a good application with NotionJS can take a lot of effort. Here is what each section of the API doc can help you with:
+Building a good application with NotionJS can take a lot of effort. Here is what each section of the API docs can help you with:
 
 * **Get Started** teaches fundamental concepts for using NotionJS
 * **Guides** includes in-depth guides on various NotionJS development topics, such as [ethics](guides/ethics) and [training](guides/training).
