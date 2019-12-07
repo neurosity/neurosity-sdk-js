@@ -20,7 +20,7 @@ Install and build all of the dependencies using [`NPM`](https://npmjs.org)
 
 ### VSCode
 
-We'll be using [VSCode](https://code.visualstudio.com/download) to program this tutorial and our extension with powered by Notion. Check out our guide to [installing and getting started with VSCode and the Notion extension](https://support.neurosity.co/hc/en-us/articles/360036195712-Installing-and-using-the-VSCode-extension).
+We'll be using [VSCode](https://code.visualstudio.com/download) to program this tutorial. For a little added fun, we recommend adding the Neurosity VSCode extension to track your flow state while programming. Check out our guide to [installing and getting started with VSCode and the Notion extension](https://support.neurosity.co/hc/en-us/articles/360036195712-Installing-and-using-the-VSCode-extension).
 
 ### Tutorial Repository
 
