@@ -2,13 +2,9 @@
 id: settings
 title: Device Settings
 ---
+Settings are options that can be changed at run time. The only settings as of now are enabling and disabling LSL. To request more settings, head over to the [online community](https://support.neurosity.co/hc/en-us/community/topics).
 
-## Methods:
-
-```
-- settings(): => Observable<Settings>
-- changeSettings(settings: ChangeSettings): Promise<void>
-```
+An example of using NotionJS to query and then toggle  device settings:
 
 ```js
 import { Notion } from "@neurosity/notion";

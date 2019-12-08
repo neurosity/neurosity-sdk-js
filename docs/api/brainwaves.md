@@ -2,15 +2,18 @@
 id: brainwaves
 title: Brainwaves
 ---
-The brainwaves API is what we always wished for when it came to inventing the future: an easy way to get lossless brainwaves. Sometimes we wanted to manipulate the raw data and other times we wanted to analyze the power in each frequency bin. With brainwaves, our goal is to enable new APIs and powerful programs to be built. We expect that someone working with the brainwaves API has a bit of experience working with raw brainwave data or a strong desire to learn.
+The brainwaves API provides lossless [Electroencephalography ("EEG") data](https://en.wikipedia.org/wiki/Electroencephalography), [Fast Fourier Transform ("FFT")](https://en.wikipedia.org/wiki/Fast_Fourier_transform), and [Power Spectral Density ("PSD")](https://en.wikipedia.org/wiki/Spectral_density#Power_spectral_density). 
+
+EEG data can feed Neural Nets and more complex feature extraction methods. FFT and PSD are so commonly used to build metrics across the brain that instead of having you, a developer, implement FFT in every app you use, you can subscribe to the global FFT, saving precious resources for computations that add value to your application. When we want to make a new API such as [calm](docs/api/calm) we'll use this `brainwaves` endpoint. We will then combine that generally with [@neurosity/eeg-pipes](https://github.com/neurosity/eeg-pipes). These provide an incredibly fast way to prototype new research papers. Notion is a platform for implementing EEG research, and NotionJS with EEG-Pipes is the way to do it. Someone working with the brainwaves API has a bit of experience working with raw brainwave data or a strong desire to learn.
 
 ## Metrics
 
 There are four metrics:
 
-- raw
 - frequency
-- psd
+- [`psd`](https://en.wikipedia.org/wiki/Spectral_density#Power_spectral_density)
+- raw
+- timestamp
 
 ```js
 const mind = new Notion();
