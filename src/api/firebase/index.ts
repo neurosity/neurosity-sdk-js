@@ -10,6 +10,8 @@ import { createDeviceStore } from "./deviceStore";
 import IOptions from "../../types/options";
 import { Credentials } from "../../types/credentials";
 
+const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
+
 /**
  * @hidden
  */
@@ -27,7 +29,11 @@ export default class FirebaseClient {
   private init(options: IOptions) {
     this.app = this.getApp(options.deviceId);
     this.standalone = this.app.name === options.deviceId;
-    this.deviceStore = createDeviceStore(this.app, options.deviceId);
+    this.deviceStore = createDeviceStore(
+      this.app,
+      options.deviceId,
+      SERVER_TIMESTAMP
+    );
 
     this.app.auth().onAuthStateChanged((user: User | null) => {
       this.user = user;
@@ -189,7 +195,7 @@ export default class FirebaseClient {
   }
 
   public get timestamp(): any {
-    return firebase.database.ServerValue.TIMESTAMP;
+    return SERVER_TIMESTAMP;
   }
 
   public async changeSettings(settings): Promise<void> {

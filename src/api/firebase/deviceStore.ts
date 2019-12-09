@@ -8,9 +8,27 @@ export interface IDevice {
 /**
  * @hidden
  */
-export const createDeviceStore = (app, deviceId) => {
+export const createDeviceStore = (app, deviceId, SERVER_TIMESTAMP) => {
   const deviceRef = app.database().ref(`devices/${deviceId}`);
   const clientId = deviceRef.child("subscriptions").push().key;
+  const clientRef = deviceRef.child(`clients/${clientId}`);
+
+  // Add client connections to db and remove them when offline
+  app
+    .database()
+    .ref(".info/connected")
+    .on("value", snapshot => {
+      if (!snapshot.val()) {
+        return;
+      }
+
+      clientRef
+        .onDisconnect()
+        .remove()
+        .then(() => {
+          clientRef.set(SERVER_TIMESTAMP);
+        });
+    });
 
   const child = namespace => {
     return deviceRef.child(namespace);
