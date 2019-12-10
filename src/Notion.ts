@@ -1,4 +1,4 @@
-import { Observable, throwError } from "rxjs";
+import { Observable, throwError, timer } from "rxjs";
 import { map } from "rxjs/operators";
 import ApiClient from "./api/index";
 import IOptions from "./types/options";
@@ -262,12 +262,28 @@ export class Notion implements INotion {
    */
   public status(): Observable<any> {
     const namespace = "status";
+    const updateStatusInterval = 2000;
+
     return new Observable(observer => {
+      const updateStatusSubscription = timer(
+        0,
+        updateStatusInterval
+      ).subscribe(i => {
+        this.api
+          .httpsCallable("updateDeviceStatus", {
+            deviceId: this.options.deviceId
+          })
+          .catch(console.error);
+      });
+
       const listener = this.api.onNamespace(namespace, status => {
         observer.next(status);
       });
 
-      return () => this.api.offNamespace(namespace, listener);
+      return () => {
+        updateStatusSubscription.unsubscribe();
+        this.api.offNamespace(namespace, listener);
+      };
     });
   }
 

@@ -118,6 +118,10 @@ export default class ApiClient implements IClient {
     };
   }
 
+  public httpsCallable(functionName: string, data: object) {
+    return this.firebase.httpsCallable(functionName, data);
+  }
+
   public get skills(): ISkillsClient {
     return {
       get: async (bundleId: string): Promise<IDeviceSkill> => {
