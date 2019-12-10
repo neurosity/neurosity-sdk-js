@@ -1,6 +1,7 @@
 import { Observable } from "rxjs";
 import firebase from "firebase/app";
 import "firebase/database";
+import "firebase/functions";
 import "firebase/auth";
 
 import { User } from "@firebase/auth-types";
@@ -147,6 +148,10 @@ export default class FirebaseClient {
       responseTimeout: 250
     });
     return response.timestamp;
+  }
+
+  public httpsCallable(functionName: string, data: object) {
+    return this.app.functions().httpsCallable(functionName)(data);
   }
 
   /**
