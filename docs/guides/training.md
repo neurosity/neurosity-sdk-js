@@ -61,7 +61,7 @@ const trainingOptions = {
 };
 
 // Subscribe to Kinesis
-notion.kinesis(metric).subscribe(kinesis => {
+notion.kinesis(label).subscribe(kinesis => {
   console.log("leftArm kinesis detection", kinesis);
 });
 
