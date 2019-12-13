@@ -317,7 +317,7 @@ export class Notion implements INotion {
       stop: training => {
         this.api.actions.dispatch({
           command: "training",
-          action: "stopAll",
+          action: "stop",
           message: {
             ...training
           }
