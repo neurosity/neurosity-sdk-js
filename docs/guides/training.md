@@ -67,7 +67,7 @@ notion.kinesis(metric).subscribe(kinesis => {
 
 // Subscribe to raw predictions
 notion
-  .predictions(metric)
+  .predictions(label)
   .subscribe(prediction => {
     console.log("leftArm prediction", prediction);
   });
