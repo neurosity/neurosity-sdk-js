@@ -2,7 +2,7 @@ import {
   createNotionOnDevice,
   IOnDeviceOptions,
   INotionOnDevice
-} from "../NotionOnDevice";
+} from "./NotionOnDevice";
 import { ISkillInstance, ISkillSubscription } from "../types/skill";
 
 type ISkillApp = (

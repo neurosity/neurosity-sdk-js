@@ -1,0 +1,22 @@
+{
+  "mode": "file",
+  "out": "./docs/reference",
+  "toc": ["classes/notion"],
+  "includes": "./src",
+  "exclude": [
+    "**/types/**/*.ts",
+    "**/timesync/**/*.ts",
+    "**/skills/**/*.ts",
+    "**/api/**/*.ts",
+    "**/utils/**/*.ts"
+  ],
+  "excludeExternals": true,
+  "excludeNotExported": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "readme": "none",
+  "theme": "docusaurus",
+  "disableOutputCheck": true,
+  "ignoreCompilerErrors": true,
+  "plugin": "typedoc-plugin-markdown"
+}

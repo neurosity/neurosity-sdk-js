@@ -1,7 +1,7 @@
-import { Notion } from "./Notion";
-import IOptions from "./types/options";
-import { ISkill, ISkillInstance } from "./types/skill";
-import INotion from "./notion";
+import { Notion } from "../Notion";
+import IOptions from "../types/options";
+import { ISkill, ISkillInstance } from "../types/skill";
+import INotion from "../notion";
 
 export type INotionOnDevice = Pick<
   INotion,
@@ -13,6 +13,9 @@ export interface IOnDeviceOptions extends IOptions {
   skill: ISkill;
 }
 
+/**
+ * @internal
+ */
 export async function createNotionOnDevice(
   options: IOnDeviceOptions
 ): Promise<[INotionOnDevice, ISkillInstance]> {

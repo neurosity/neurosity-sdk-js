@@ -11,12 +11,12 @@
     "build": "npm run build:cjs && npm run build:esm && npm run build:browser && npm run build:electron && npm run build:examples",
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "build:docs": "npm run build:typedoc && cd website && npm install && npm run build",
+    "build:typedoc": "del docs/reference && typedoc",
     "build:esm": "tsc -p tsconfig.esm.json && npm run build:esm:bundle",
     "build:esm:bundle": "rollup -c",
     "build:browser": "parcel build ./src/index.ts --target browser --out-dir dist/browser --out-file notion.js",
     "build:electron": "parcel build ./src/index.ts --target electron --out-dir dist/electron",
     "build:examples": "copyfiles -f ./dist/esm/*.mjs ./dist/browser/*.js ./dist/examples && parcel build ./examples/browser/index.html --target browser --out-dir dist/examples",
-    "build:typedoc": "typedoc --disableOutputCheck --plugin typedoc-plugin-markdown --theme docusaurus --ignoreCompilerErrors --out ./docs/reference",
     "serve:examples": "lite-server --baseDir=./dist/examples",
     "examples:browser": "npm run build:esm && npm run build:examples && parcel watch ./examples/browser/index.html --out-dir dist/examples | npm run serve:examples",
     "examples:node": "npm run build:cjs && node ./examples/node",
@@ -51,7 +51,8 @@
     "firebase": "^7.2.0",
     "outliers": "0.0.3",
     "rxjs": "^6.5.1",
-    "socket.io-client": "^2.2.0"
+    "socket.io-client": "^2.2.0",
+    "typedoc-plugin-internal-external": "^2.0.2"
   },
   "devDependencies": {
     "@types/node": "^12.0.4",
