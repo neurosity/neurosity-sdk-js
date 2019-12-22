@@ -35,9 +35,6 @@
       "api/signal-quality": {
         "title": "Signal Quality"
       },
-      "api/skills": {
-        "title": "Skills"
-      },
       "api/status": {
         "title": "Device Status"
       },
