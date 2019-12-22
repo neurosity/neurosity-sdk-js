@@ -41,11 +41,11 @@
     "node": ">=4"
   },
   "author": "Alex Castillo",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/neurosity/notion-js/issues"
   },
-  "homepage": "https://github.com/neurosity/notion-js#readme",
+  "homepage": "https://github.com/neurosity/notion-js",
   "dependencies": {
     "@neurosity/ipk": "^1.7.0",
     "firebase": "^7.2.0",
