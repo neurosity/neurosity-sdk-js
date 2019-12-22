@@ -49,11 +49,9 @@ export class Timesync {
 
   filterOutliers() {
     return pipe(
-      map(
-        (offsets: number[]): number[] => {
-          return offsets.filter(outliers());
-        }
-      )
+      map((offsets: number[]): number[] => {
+        return offsets.filter(outliers());
+      })
     );
   }
 

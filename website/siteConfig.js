@@ -47,7 +47,7 @@ const siteConfig = {
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
     { doc: "getting-started", label: "Docs" },
-    { doc: "reference/index", label: "API" },
+    { doc: "reference/classes/notion", label: "Reference" },
     { href: repoUrl, label: "GitHub" },
     // { blog: true, label: "Blog" },
     { href: helpUrl, label: "Need Help?" }
