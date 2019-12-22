@@ -52,7 +52,7 @@ export class Notion implements INotion {
   }
 
   /**
-   * @hidden
+   * @internal
    */
   protected getMetric = (
     subscription: ISubscription
@@ -158,19 +158,6 @@ export class Notion implements INotion {
    */
   public calm(): Observable<any> {
     return this.awareness("calm");
-  }
-
-  /**
-   * @param labels Name of metric properties to filter by
-   * @returns Observable of channelAnalysis metric events
-   */
-  public channelAnalysis(): Observable<any> {
-    const metric = "channelAnalysis";
-    return this.getMetric({
-      metric,
-      labels: getLabels(metric),
-      atomic: true
-    });
   }
 
   /**
@@ -334,6 +321,7 @@ export class Notion implements INotion {
   }
 
   /**
+   * @internal
    * Accesses a skill by Bundle ID. Additionally, allows to observe
    * and push skill metrics
    *
