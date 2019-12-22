@@ -9,7 +9,6 @@ export default interface INotion {
   awareness(label: string, ...otherLabels: string[]): Observable<any>;
   brainwaves(label: string, ...otherLabels: string[]): Observable<any>;
   calm(): Observable<any>;
-  channelAnalysis(): Observable<any>;
   emotion(label: string, ...otherLabels: string[]): Observable<any>;
   focus(): Observable<any>;
   getInfo(): Promise<any>;
