@@ -1,7 +1,5 @@
 # NotionJS API
 
-> This is a private (soon to be public) module published on npm. Ensure the npm user has access to the neurosity npm org before installing/publishing.
-
 ## The Repository
 
 This repository is where we ([Neurosity](https://neurosity.co) develop the [Notion](https://neurosity.co) API. Not only do we work on code and issues here, but we also publish our [roadmap](https://github.com/neurosity/notion-js/blob/master/ROADMAP.md). This source code is available to everyone under the standard [MIT license]
