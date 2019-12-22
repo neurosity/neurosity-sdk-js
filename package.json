@@ -47,7 +47,7 @@
   },
   "homepage": "https://github.com/neurosity/notion-js",
   "dependencies": {
-    "@neurosity/ipk": "^1.7.0",
+    "@neurosity/ipk": "^2.0.0",
     "firebase": "^7.2.0",
     "outliers": "0.0.3",
     "rxjs": "^6.5.1",
