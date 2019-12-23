@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export interface TrainingRecording {
   experimentId: string;
   metric: string;
