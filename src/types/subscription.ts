@@ -1,4 +1,7 @@
-export default interface ISubscription {
+/**
+ * @internal
+ */
+export interface Subscription {
   metric: string;
   labels: string[];
   atomic: boolean;

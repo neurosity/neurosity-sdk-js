@@ -1,11 +1,17 @@
-export interface IEmailAndPassword {
+/**
+ * @internal
+ */
+export interface EmailAndPassword {
   email: string;
   password: string;
 }
 
-export interface IOAuthCredentials {
+/**
+ * @internal
+ */
+export interface OAuthCredentials {
   idToken: string;
   providerId: string;
 }
 
-export type Credentials = IEmailAndPassword | IOAuthCredentials;
+export type Credentials = EmailAndPassword | OAuthCredentials;

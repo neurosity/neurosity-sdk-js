@@ -3,7 +3,7 @@ import io from "socket.io-client";
 /**
  * @hidden
  */
-export default class WebsocketClient {
+export class WebsocketClient {
   public serverType: string = "websocket";
   protected socket;
   options;
@@ -20,13 +20,13 @@ export default class WebsocketClient {
     return this.socket.on(`metrics/${subscription.id}`, callback);
   }
 
-  private init() {
+  private init(): void {
     if (!this.socket.connected) {
       this.socket.connect();
     }
   }
 
-  public disconnect() {
+  public disconnect(): void {
     if (this.socket.connected) {
       this.socket.disconnect();
     }

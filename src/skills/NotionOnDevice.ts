@@ -1,24 +1,20 @@
 import { Notion } from "../Notion";
-import IOptions from "../types/options";
-import { ISkill, ISkillInstance } from "../types/skill";
-import INotion from "../notion";
+import { NotionOptions } from "../types/options";
+import { Skill, SkillInstance } from "../types/skill";
 
-export type INotionOnDevice = Pick<
-  INotion,
-  Exclude<keyof INotion, "skill">
->;
+export type NotionOnDevice = Omit<Notion, "skill">;
 
-export interface IOnDeviceOptions extends IOptions {
+export interface OnDeviceOptions extends NotionOptions {
   onDeviceSocketUrl: string;
-  skill: ISkill;
+  skill: Skill;
 }
 
 /**
  * @internal
  */
 export async function createNotionOnDevice(
-  options: IOnDeviceOptions
-): Promise<[INotionOnDevice, ISkillInstance]> {
+  options: OnDeviceOptions
+): Promise<[NotionOnDevice, SkillInstance]> {
   const notion = new Notion(options);
   const skill = {
     ...(await notion.skill(options.skill.bundleId)),

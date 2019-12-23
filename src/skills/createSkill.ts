@@ -1,20 +1,20 @@
 import {
   createNotionOnDevice,
-  IOnDeviceOptions,
-  INotionOnDevice
+  OnDeviceOptions,
+  NotionOnDevice
 } from "./NotionOnDevice";
-import { ISkillInstance, ISkillSubscription } from "../types/skill";
+import { SkillInstance, SkillSubscription } from "../types/skill";
 
 type ISkillApp = (
-  notion: INotionOnDevice,
-  skill: ISkillInstance
+  notion: NotionOnDevice,
+  skill: SkillInstance
 ) => () => Promise<void>;
 
 export function createSkill(app: ISkillApp) {
   return {
     subscribe: async (
-      options: IOnDeviceOptions
-    ): Promise<ISkillSubscription> => {
+      options: OnDeviceOptions
+    ): Promise<SkillSubscription> => {
       const [notion, skill] = await createNotionOnDevice(options);
       const teardown = app(notion, skill);
 

@@ -1,8 +1,10 @@
-import { ISkill } from "./skill";
+import { Skill } from "./skill";
 
-export default interface IOptions {
+export interface NotionOptions {
   deviceId: string;
-  skill?: ISkill;
-  onDeviceSocketUrl?: string;
   timesync?: boolean;
+  // @hidden
+  skill?: Skill;
+  // @hidden
+  onDeviceSocketUrl?: string;
 }

@@ -4,7 +4,6 @@
   "toc": ["classes/notion"],
   "includes": "./src",
   "exclude": [
-    "**/types/**/*.ts",
     "**/timesync/**/*.ts",
     "**/skills/**/*.ts",
     "**/api/**/*.ts",

@@ -8,7 +8,7 @@ import { User } from "@firebase/auth-types";
 
 import { config } from "./config";
 import { createDeviceStore } from "./deviceStore";
-import IOptions from "../../types/options";
+import { NotionOptions } from "../../types/options";
 import { Credentials } from "../../types/credentials";
 
 const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
@@ -16,18 +16,18 @@ const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
 /**
  * @hidden
  */
-export default class FirebaseClient {
+export class FirebaseClient {
   public serverType = "firebase";
   protected standalone: boolean;
   protected app;
   protected deviceStore;
   public user: User | null;
 
-  constructor(options: IOptions) {
+  constructor(options: NotionOptions) {
     this.init(options);
   }
 
-  private init(options: IOptions) {
+  private init(options: NotionOptions) {
     this.app = this.getApp(options.deviceId);
     this.standalone = this.app.name === options.deviceId;
     this.deviceStore = createDeviceStore(

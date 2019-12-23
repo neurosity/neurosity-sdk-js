@@ -1,10 +1,16 @@
-interface IAction {
+/**
+ * @internal
+ */
+export interface Action {
   command: string;
   action: string;
   message?: any;
   responseRequired?: boolean;
 }
 
-export default interface IActions {
-  dispatch(action: IAction): Promise<any>;
+/**
+ * @internal
+ */
+export interface Actions {
+  dispatch(action: Action): Promise<any>;
 }

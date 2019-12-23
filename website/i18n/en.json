@@ -64,6 +64,38 @@
         "title": "@neurosity/notion",
         "sidebar_label": "Globals"
       },
+      "reference/interfaces/calm": {
+        "title": "Calm",
+        "sidebar_label": "Calm"
+      },
+      "reference/interfaces/epoch": {
+        "title": "Epoch",
+        "sidebar_label": "Epoch"
+      },
+      "reference/interfaces/focus": {
+        "title": "Focus",
+        "sidebar_label": "Focus"
+      },
+      "reference/interfaces/notionoptions": {
+        "title": "NotionOptions",
+        "sidebar_label": "NotionOptions"
+      },
+      "reference/interfaces/powerbyband": {
+        "title": "PowerByBand",
+        "sidebar_label": "PowerByBand"
+      },
+      "reference/interfaces/psd": {
+        "title": "PSD",
+        "sidebar_label": "PSD"
+      },
+      "reference/interfaces/settings": {
+        "title": "Settings",
+        "sidebar_label": "Settings"
+      },
+      "reference/interfaces/trainingrecording": {
+        "title": "TrainingRecording",
+        "sidebar_label": "TrainingRecording"
+      },
       "resources": {
         "title": "Resources"
       }
@@ -80,7 +112,8 @@
       "WORKING WITH NOTION": "WORKING WITH NOTION",
       "API GUIDES": "API GUIDES",
       "Introduction": "Introduction",
-      "Classes": "Classes"
+      "Classes": "Classes",
+      "Interfaces": "Interfaces"
     }
   },
   "pages-strings": {
