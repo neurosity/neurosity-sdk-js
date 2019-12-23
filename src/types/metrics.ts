@@ -1,16 +1,19 @@
-import ISubscription from "./subscription";
+import { Subscription } from "./subscription";
 
 type SubscriptionListener = Function;
 
-export default interface IMetrics {
+/**
+ * @internal
+ */
+export interface Metrics {
   next(metricName: string, metricValue: { [label: string]: any }): void;
   on(
-    subscription: ISubscription,
+    subscription: Subscription,
     callback: Function
   ): SubscriptionListener;
-  subscribe(subscription: ISubscription): ISubscription;
+  subscribe(subscription: Subscription): Subscription;
   unsubscribe(
-    subscription: ISubscription,
+    subscription: Subscription,
     listener: SubscriptionListener
   ): void;
 }

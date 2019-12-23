@@ -1,12 +1,12 @@
 import { metrics } from "@neurosity/ipk";
-import FirebaseClient from "./firebase/index";
-import WebsocketClient from "./websocket";
+import { FirebaseClient } from "./firebase/index";
+import { WebsocketClient } from "./websocket";
 import { Timesync } from "../timesync";
-import IClient from "../types/client";
-import IActions from "../types/actions";
-import IMetrics from "../types/metrics";
-import IOptions from "../types/options";
-import { ISkillsClient, IDeviceSkill } from "../types/skill";
+import { Client } from "../types/client";
+import { Actions } from "../types/actions";
+import { Metrics } from "../types/metrics";
+import { NotionOptions } from "../types/options";
+import { SkillsClient, DeviceSkill } from "../types/skill";
 import { Credentials } from "../types/credentials";
 import { ChangeSettings } from "../types/settings";
 
@@ -16,14 +16,14 @@ const isNotionMetric = (metric: string): boolean =>
 /**
  * @hidden
  */
-export default class ApiClient implements IClient {
+export class ApiClient implements Client {
   public user;
-  protected options: IOptions;
+  protected options: NotionOptions;
   protected firebase: FirebaseClient;
   protected onDeviceSocket: WebsocketClient;
   protected timesync: Timesync;
 
-  constructor(options: IOptions) {
+  constructor(options: NotionOptions) {
     this.options = options;
     this.firebase = new FirebaseClient(options);
 
@@ -47,7 +47,7 @@ export default class ApiClient implements IClient {
     }
   }
 
-  public get actions(): IActions {
+  public get actions(): Actions {
     return {
       dispatch: action => {
         return this.firebase.dispatchAction(action);
@@ -87,7 +87,7 @@ export default class ApiClient implements IClient {
     this.firebase.offNamespace(namespace, listener);
   }
 
-  public get metrics(): IMetrics {
+  public get metrics(): Metrics {
     const shouldRerouteToDevice = (metric: string): boolean =>
       this.onDeviceSocket && isNotionMetric(metric);
     return {
@@ -122,9 +122,9 @@ export default class ApiClient implements IClient {
     return this.firebase.httpsCallable(functionName, data);
   }
 
-  public get skills(): ISkillsClient {
+  public get skills(): SkillsClient {
     return {
-      get: async (bundleId: string): Promise<IDeviceSkill> => {
+      get: async (bundleId: string): Promise<DeviceSkill> => {
         return this.firebase.getSkill(bundleId);
       }
     };

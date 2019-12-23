@@ -1,28 +1,54 @@
 import { Observable, throwError, timer } from "rxjs";
 import { map } from "rxjs/operators";
-import ApiClient from "./api/index";
-import IOptions from "./types/options";
-import INotion from "./types/notion";
-import ISubscription from "./types/subscription";
+import { ApiClient } from "./api/index";
 import { getLabels, validate } from "./utils/subscription";
-import { ISkillInstance } from "./types/skill";
+import { NotionOptions } from "./types/options";
+import { Subscription } from "./types/subscription";
+import { Training } from "./types/training";
+import { SkillInstance } from "./types/skill";
 import { Credentials } from "./types/credentials";
 import { Settings, ChangeSettings } from "./types/settings";
+import { Calm } from "./types/calm";
+import { Focus } from "./types/focus";
+import {
+  BrainwavesLabel,
+  Epoch,
+  PowerByBand,
+  PSD
+} from "./types/brainwaves";
 
 /**
+ * Example
+ * ```typescript
+ * import { Notion } from "@neurosity/notion";
  *
+ * const notion = new Notion({
+ *   deviceId: "..."
+ * });
+ * ```
  */
-export class Notion implements INotion {
+export class Notion {
   /**
    * @hidden
    */
-  protected options: IOptions;
+  protected options: NotionOptions;
   /**
    * @hidden
    */
   protected api: ApiClient;
 
-  constructor(options: IOptions) {
+  /**
+   * Creates new instance of Notion
+   * 
+   * ```typescript
+   * const notion = new Notion({
+   *   deviceId: "..."
+   * });
+   * ```
+
+   * @param options
+   */
+  constructor(options: NotionOptions) {
     this.options = Object.freeze(options);
     this.api = new ApiClient(this.options);
 
@@ -31,10 +57,31 @@ export class Notion implements INotion {
     }
   }
 
-  public async login(credentials: Credentials) {
+  /**
+   * Starts user session
+   *
+   * ```typescript
+   * await notion.login({
+   *   email: "...",
+   *   password: "..."
+   * });
+   * ```
+   *
+   * @param credentials
+   */
+  public async login(credentials: Credentials): Promise<void> {
     return await this.api.login(credentials);
   }
 
+  /**
+   * Ends user session
+   *
+   * ```typescript
+   * await notion.logout();
+   * // session has ended
+   * ```
+   *
+   */
   public async logout() {
     return await this.api.logout();
   }
@@ -43,11 +90,23 @@ export class Notion implements INotion {
     return this.api.onAuthStateChanged();
   }
 
+  /**
+   * ```typescript
+   * const info = await notion.getInfo();
+   * ```
+   */
   public async getInfo() {
     return await this.api.getInfo();
   }
 
-  public async disconnect() {
+  /**
+   * Ends database connection
+   *
+   * ```typescript
+   * await notion.disconnect();
+   * ```
+   */
+  public async disconnect(): Promise<void> {
     return await this.api.disconnect();
   }
 
@@ -55,7 +114,7 @@ export class Notion implements INotion {
    * @internal
    */
   protected getMetric = (
-    subscription: ISubscription
+    subscription: Subscription
   ): Observable<any> => {
     const { metric, labels, atomic } = subscription;
 
@@ -65,7 +124,7 @@ export class Notion implements INotion {
     }
 
     return new Observable(observer => {
-      const subscriptions: ISubscription[] = atomic
+      const subscriptions: Subscription[] = atomic
         ? [
             this.api.metrics.subscribe({
               metric: metric,
@@ -106,9 +165,17 @@ export class Notion implements INotion {
   /**
    * Injects an EEG marker to data stream
    *
+   * ```typescript
+   * notion.addMarker("eyes-closed");
+   *
+   * // later...
+   *
+   * notion.addMarker("eyes-open");
+   * ```
+   *
    * @param label Name the label to inject
    */
-  public addMarker(label: string) {
+  public addMarker(label: string): void {
     if (!label) {
       throw new Error("Notion: a label is required for addMarker");
     }
@@ -139,13 +206,35 @@ export class Notion implements INotion {
   }
 
   /**
+   *
+   * Example
+   * ```typescript
+   * notion.brainwaves("raw").subscribe(brainwaves => {
+   *   console.log(brainwaves);
+   * });
+   * ```
+   *
+   * Example
+   * ```typescript
+   * notion.brainwaves("powerByBand").subscribe(brainwaves => {
+   *   console.log(brainwaves);
+   * });
+   * ```
+   *
+   * Example
+   * ```typescript
+   * notion.brainwaves("psd").subscribe(brainwaves => {
+   *   console.log(brainwaves);
+   * });
+   * ```
+   *
    * @param labels Name of metric properties to filter by
    * @returns Observable of brainwaves metric events
    */
   public brainwaves(
-    label: string,
-    ...otherLabels: string[]
-  ): Observable<any> {
+    label: BrainwavesLabel,
+    ...otherLabels: BrainwavesLabel[]
+  ): Observable<Epoch | PowerByBand | PSD> {
     return this.getMetric({
       metric: "brainwaves",
       labels: label ? [label, ...otherLabels] : [],
@@ -154,13 +243,38 @@ export class Notion implements INotion {
   }
 
   /**
+   * Example
+   * ```typescript
+   * notion.calm().subscribe(calm => {
+   *   console.log(calm.probability);
+   * });
+   *
+   * // 0.45
+   * // 0.47
+   * // 0.53
+   * // 0.51
+   * // ...
+   * ```
+   *
    * @returns Observable of calm events - awareness/calm alias
    */
-  public calm(): Observable<any> {
+  public calm(): Observable<Calm> {
     return this.awareness("calm");
   }
 
   /**
+   * Observes signal quality data where each property is the name
+   * of the channel and the value includes the standard deviation and
+   * a status set by the device
+   *
+   * ```typescript
+   * notion.signalQuality().subscribe(signalQuality => {
+   *   console.log(signalQuality);
+   * });
+   *
+   * // { FC6: { standardDeviation: 3.5, status: "good" }, C3: {...}, ... }
+   * ```
+   *
    * @returns Observable of signalQuality metric events
    */
   public signalQuality(): Observable<any> {
@@ -173,6 +287,9 @@ export class Notion implements INotion {
   }
 
   /**
+   * @internal
+   * Proof of Concept for `emotion` - Not user facing yet
+   *
    * @returns Observable of emotion metric events
    */
   public emotion(
@@ -188,6 +305,15 @@ export class Notion implements INotion {
 
   /**
    * Observes last state of `settings` and all subsequent `settings` changes
+   *
+   * ```typescript
+   * notion.settings().subscribe(settings => {
+   *   console.log(settings.lsl);
+   * });
+   *
+   * // true
+   * // ...
+   * ```
    *
    * @returns Observable of `settings` metric events
    */
@@ -206,9 +332,22 @@ export class Notion implements INotion {
   }
 
   /**
+   * Example
+   * ```typescript
+   * notion.focus().subscribe(focus => {
+   *   console.log(focus.probability);
+   * });
+   *
+   * // 0.56
+   * // 0.46
+   * // 0.31
+   * // 0.39
+   * // ...
+   * ```
+   *
    * @returns Observable of focus events - awareness/focus alias
    */
-  public focus(): Observable<any> {
+  public focus(): Observable<Focus> {
     return this.awareness("focus");
   }
 
@@ -245,6 +384,15 @@ export class Notion implements INotion {
   /**
    * Observes last state of `status` and all subsequent `status` changes
    *
+   * ```typescript
+   * notion.status().subscribe(status => {
+   *   console.log(status.state);
+   * });
+   *
+   * // "online"
+   * // ...
+   * ```
+   *
    * @returns Observable of `status` metric events
    */
   public status(): Observable<any> {
@@ -274,14 +422,40 @@ export class Notion implements INotion {
     });
   }
 
+  /**
+   * Changes device settings programatically. These settings can be
+   * also changed from the developer console under device settings.
+   *
+   * Available settings [[ChangeSettings]]
+   *
+   * Example
+   * ```typescript
+   * notion.changeSettings({
+   *   lsl: true
+   * });
+   * ```
+   */
   public changeSettings(settings: ChangeSettings): Promise<void> {
     return this.api.changeSettings(settings);
   }
 
   /**
+   *
+   * ```typescript
+   * notion.training.record({
+   *   metric: "kinesis",
+   *   label: "push"
+   * });
+   *
+   * notion.training.stop({
+   *   metric: "kinesis",
+   *   label: "push"
+   * });
+   * ```
+   *
    * @returns Training methods
    */
-  public get training() {
+  public get training(): Training {
     return {
       record: training => {
         const userId =
@@ -322,13 +496,15 @@ export class Notion implements INotion {
 
   /**
    * @internal
+   * Proof of Concept for Skills - Not user facing yet
+   *
    * Accesses a skill by Bundle ID. Additionally, allows to observe
    * and push skill metrics
    *
    * @param bundleId Bundle ID of skill
    * @returns Skill isntance
    */
-  public async skill(bundleId: string): Promise<ISkillInstance> {
+  public async skill(bundleId: string): Promise<SkillInstance> {
     const skillData = await this.api.skills.get(bundleId);
 
     if (skillData === null) {
@@ -343,7 +519,7 @@ export class Notion implements INotion {
       metric: (label: string) => {
         const metricName = `skill~${skillData.id}~${label}`;
         const subscription = new Observable(observer => {
-          const subscription: ISubscription = this.api.metrics.subscribe(
+          const subscription: Subscription = this.api.metrics.subscribe(
             {
               metric: metricName,
               labels: [label],
@@ -376,5 +552,3 @@ export class Notion implements INotion {
     };
   }
 }
-
-export default Notion;

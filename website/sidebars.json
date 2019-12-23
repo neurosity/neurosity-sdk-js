@@ -34,6 +34,16 @@
     ],
     "Classes": [
       "reference/classes/notion"
+    ],
+    "Interfaces": [
+      "reference/interfaces/calm",
+      "reference/interfaces/epoch",
+      "reference/interfaces/focus",
+      "reference/interfaces/notionoptions",
+      "reference/interfaces/psd",
+      "reference/interfaces/powerbyband",
+      "reference/interfaces/settings",
+      "reference/interfaces/trainingrecording"
     ]
   }
 }

@@ -1,7 +1,10 @@
-export type Settings = {
+export interface Settings {
   lsl: boolean;
-};
+}
 
-export type ChangeSettings = {
+/**
+ * @internal
+ */
+export interface ChangeSettings {
   lsl?: boolean;
-};
+}

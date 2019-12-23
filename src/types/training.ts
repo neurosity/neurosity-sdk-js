@@ -1,4 +1,4 @@
-export interface ITrainingRecording {
+export interface TrainingRecording {
   experimentId: string;
   metric: string;
   label: string;
@@ -7,8 +7,11 @@ export interface ITrainingRecording {
   timestamp?: number;
 }
 
-export interface ITraining {
-  record(training: ITrainingRecording): void;
-  stop(training: ITrainingRecording): void;
+/**
+ * @internal
+ */
+export interface Training {
+  record(training: TrainingRecording): void;
+  stop(training: TrainingRecording): void;
   stopAll(): void;
 }

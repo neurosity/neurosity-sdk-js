@@ -2,7 +2,10 @@ import { Observable } from "rxjs";
 
 type SkillProps = { [key: string]: string | number | boolean };
 
-export interface ISkill {
+/**
+ * @internal
+ */
+export interface Skill {
   id: string;
   bundleId: string;
   spec: string;
@@ -17,7 +20,10 @@ export interface ISkill {
   thumbnail: string;
 }
 
-export interface IDeviceSkill {
+/**
+ * @internal
+ */
+export interface DeviceSkill {
   id: string;
   bundleId: string;
   installedDate: number;
@@ -27,19 +33,31 @@ export interface IDeviceSkill {
 
 type SkillMetric = { [key: string]: any };
 
-interface ISkillMetricNext {
+/**
+ * @internal
+ */
+interface SkillMetricNext {
   next(value: SkillMetric): void;
 }
 
-export interface ISkillInstance {
+/**
+ * @internal
+ */
+export interface SkillInstance {
   props?: SkillProps;
-  metric(metric: string): Observable<SkillMetric> | ISkillMetricNext;
+  metric(metric: string): Observable<SkillMetric> | SkillMetricNext;
 }
 
-export interface ISkillSubscription {
+/**
+ * @internal
+ */
+export interface SkillSubscription {
   unsubscribe(): void;
 }
 
-export interface ISkillsClient {
-  get: (id: string) => Promise<IDeviceSkill>;
+/**
+ * @internal
+ */
+export interface SkillsClient {
+  get: (id: string) => Promise<DeviceSkill>;
 }
