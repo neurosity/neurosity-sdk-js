@@ -1,10 +1,17 @@
 import { Skill } from "./skill";
 
+/**
+ * @internal
+ */
 export interface NotionOptions {
   deviceId: string;
   timesync?: boolean;
-  // @hidden
+  /**
+   * @internal
+   */
   skill?: Skill;
-  // @hidden
+  /**
+   * @internal
+   */
   onDeviceSocketUrl?: string;
 }

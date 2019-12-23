@@ -68,6 +68,14 @@
         "title": "Calm",
         "sidebar_label": "Calm"
       },
+      "reference/interfaces/deviceinfo": {
+        "title": "DeviceInfo",
+        "sidebar_label": "DeviceInfo"
+      },
+      "reference/interfaces/devicestatus": {
+        "title": "DeviceStatus",
+        "sidebar_label": "DeviceStatus"
+      },
       "reference/interfaces/epoch": {
         "title": "Epoch",
         "sidebar_label": "Epoch"
@@ -76,9 +84,9 @@
         "title": "Focus",
         "sidebar_label": "Focus"
       },
-      "reference/interfaces/notionoptions": {
-        "title": "NotionOptions",
-        "sidebar_label": "NotionOptions"
+      "reference/interfaces/kinesis": {
+        "title": "Kinesis",
+        "sidebar_label": "Kinesis"
       },
       "reference/interfaces/powerbyband": {
         "title": "PowerByBand",
@@ -91,10 +99,6 @@
       "reference/interfaces/settings": {
         "title": "Settings",
         "sidebar_label": "Settings"
-      },
-      "reference/interfaces/trainingrecording": {
-        "title": "TrainingRecording",
-        "sidebar_label": "TrainingRecording"
       },
       "resources": {
         "title": "Resources"

@@ -8,6 +8,7 @@ import { Training } from "./types/training";
 import { SkillInstance } from "./types/skill";
 import { Credentials } from "./types/credentials";
 import { Settings, ChangeSettings } from "./types/settings";
+import { Kinesis } from "./types/kinesis";
 import { Calm } from "./types/calm";
 import { Focus } from "./types/focus";
 import {
@@ -16,6 +17,9 @@ import {
   PowerByBand,
   PSD
 } from "./types/brainwaves";
+import { DeviceInfo } from "./types/info";
+import { DeviceStatus } from "./types/status";
+import { Action } from "./types/actions";
 
 /**
  * Example
@@ -82,10 +86,14 @@ export class Notion {
    * ```
    *
    */
-  public async logout() {
+  public async logout(): Promise<void> {
     return await this.api.logout();
   }
 
+  /**
+   * @internal
+   * Not user facing yet
+   */
   public onAuthStateChanged(): Observable<any> {
     return this.api.onAuthStateChanged();
   }
@@ -95,7 +103,7 @@ export class Notion {
    * const info = await notion.getInfo();
    * ```
    */
-  public async getInfo() {
+  public async getInfo(): Promise<DeviceInfo> {
     return await this.api.getInfo();
   }
 
@@ -112,6 +120,7 @@ export class Notion {
 
   /**
    * @internal
+   * Not user facing
    */
   protected getMetric = (
     subscription: Subscription
@@ -163,6 +172,14 @@ export class Notion {
   };
 
   /**
+   * @internal
+   * Not user facing
+   */
+  private dispatchAction(action: Action): Promise<Action> | void {
+    return this.api.actions.dispatch(action);
+  }
+
+  /**
    * Injects an EEG marker to data stream
    *
    * ```typescript
@@ -180,7 +197,7 @@ export class Notion {
       throw new Error("Notion: a label is required for addMarker");
     }
 
-    this.api.actions.dispatch({
+    this.dispatchAction({
       command: "marker",
       action: "add",
       message: {
@@ -358,7 +375,7 @@ export class Notion {
   public kinesis(
     label: string,
     ...otherLabels: string[]
-  ): Observable<any> {
+  ): Observable<Kinesis> {
     return this.getMetric({
       metric: "kinesis",
       labels: label ? [label, ...otherLabels] : [],
@@ -395,7 +412,7 @@ export class Notion {
    *
    * @returns Observable of `status` metric events
    */
-  public status(): Observable<any> {
+  public status(): Observable<DeviceStatus> {
     const namespace = "status";
     const updateStatusInterval = 2000;
 
@@ -423,6 +440,9 @@ export class Notion {
   }
 
   /**
+   * @internal
+   * Not user facing yet
+   *
    * Changes device settings programatically. These settings can be
    * also changed from the developer console under device settings.
    *
