@@ -1,3 +1,8 @@
+# v4.0.0
+
+- Added types
+- Improved documentation (Reference)
+
 # v3.10.0
 
 - Added periodic device status update call while subscribed to status
