@@ -1,4 +1,4 @@
-# NotionJS API
+# NotionJS
 
 ## The Repository
 
