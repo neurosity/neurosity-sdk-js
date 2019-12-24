@@ -1,13 +1,9 @@
 # NotionJS
 
-## The Repository
-
 This repository is where [Neurosity](https://neurosity.co) develops the [Notion](https://neurosity.co) API. This source code is available to everyone under the standard [MIT license]
 Thank you for visiting this repository.
 
-## NotionJS
-
-This document (the README file) is a hub to give you some information about the NotionJS API. At a high-level we seek to use NotionJS to provide the following solutions:
+This README file is a hub to give you some information about the NotionJS API. At a high-level we seek to use NotionJS to provide the following solutions:
 
 - Universal JavaScript support: Node/Browser/Electron
 - Event-driven multi-client real-time architecture
