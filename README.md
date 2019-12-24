@@ -2,19 +2,16 @@
 
 ## The Repository
 
-This repository is where we ([Neurosity](https://neurosity.co) develop the [Notion](https://neurosity.co) API. Not only do we work on code and issues here, but we also publish our [roadmap](https://github.com/neurosity/notion-js/blob/master/ROADMAP.md). This source code is available to everyone under the standard [MIT license]
-Thank you for visiting the NotionJS repository.
+This repository is where [Neurosity](https://neurosity.co) develops the [Notion](https://neurosity.co) API. This source code is available to everyone under the standard [MIT license]
+Thank you for visiting this repository.
 
 ## NotionJS
 
 This document (the README file) is a hub to give you some information about the NotionJS API. At a high-level we seek to use NotionJS to provide the following solutions:
 
 - Universal JavaScript support: Node/Browser/Electron
-- Firebase + Custom Metric Subscriber
 - Event-driven multi-client real-time architecture
 - Time synchronize clients to Notions
-
-Using NotionJS allows you to quickly integrate Notion so you can begin extending the capabilities of your Notion.
 
 ## Contributing
 
@@ -39,7 +36,7 @@ please see the document [How to Contribute](https://github.com/Neurosity/notion-
 - Discuss a new feature on our [community](https://support.neurosity.co/hc/en-us/community/topics)
 - Up vote [popular feature requests](https://github.com/neurosity/notion-js/issues?q=is%3Aopen+is%3Aissue+label%3Afeature-request+sort%3Areactions-%2B1-desc)
 - [File an issue](https://github.com/neurosity/notion-js/issues)
-- Follow [@neurosity](https://twitter.com/code) and let us know what you think!
+- Follow [@neurosity](https://twitter.com/neurosity) and let us know what you think!
 
 ## Code of Conduct
 
