@@ -1,8 +1,5 @@
 import { Skill } from "./skill";
 
-/**
- * @internal
- */
 export interface NotionOptions {
   deviceId: string;
   timesync?: boolean;

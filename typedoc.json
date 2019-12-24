@@ -10,7 +10,7 @@
     "**/utils/**/*.ts"
   ],
   "excludeExternals": true,
-  "excludeNotExported": true,
+  "excludeNotExported": false,
   "excludePrivate": true,
   "excludeProtected": true,
   "readme": "none",

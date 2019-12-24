@@ -5,12 +5,12 @@ import {
 } from "./NotionOnDevice";
 import { SkillInstance, SkillSubscription } from "../types/skill";
 
-type ISkillApp = (
+type SkillApp = (
   notion: NotionOnDevice,
   skill: SkillInstance
 ) => () => Promise<void>;
 
-export function createSkill(app: ISkillApp) {
+export function createSkill(app: SkillApp) {
   return {
     subscribe: async (
       options: OnDeviceOptions

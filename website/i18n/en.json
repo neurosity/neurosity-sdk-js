@@ -88,6 +88,10 @@
         "title": "Kinesis",
         "sidebar_label": "Kinesis"
       },
+      "reference/interfaces/notionoptions": {
+        "title": "NotionOptions",
+        "sidebar_label": "NotionOptions"
+      },
       "reference/interfaces/powerbyband": {
         "title": "PowerByBand",
         "sidebar_label": "PowerByBand"
@@ -99,6 +103,10 @@
       "reference/interfaces/settings": {
         "title": "Settings",
         "sidebar_label": "Settings"
+      },
+      "reference/interfaces/signalquality": {
+        "title": "SignalQuality",
+        "sidebar_label": "SignalQuality"
       },
       "resources": {
         "title": "Resources"
