@@ -1,5 +1,8 @@
 import { Subscription } from "./subscription";
 
+/**
+ * @internal
+ */
 type SubscriptionListener = Function;
 
 /**

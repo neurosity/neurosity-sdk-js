@@ -42,9 +42,11 @@
       "reference/interfaces/epoch",
       "reference/interfaces/focus",
       "reference/interfaces/kinesis",
+      "reference/interfaces/notionoptions",
       "reference/interfaces/psd",
       "reference/interfaces/powerbyband",
-      "reference/interfaces/settings"
+      "reference/interfaces/settings",
+      "reference/interfaces/signalquality"
     ]
   }
 }

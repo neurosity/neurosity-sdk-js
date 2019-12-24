@@ -8,6 +8,8 @@ import { Training } from "./types/training";
 import { SkillInstance } from "./types/skill";
 import { Credentials } from "./types/credentials";
 import { Settings, ChangeSettings } from "./types/settings";
+import { AwarenessLabels } from "./types/awareness";
+import { SignalQuality } from "./types/signalQuality";
 import { Kinesis } from "./types/kinesis";
 import { Calm } from "./types/calm";
 import { Focus } from "./types/focus";
@@ -208,12 +210,14 @@ export class Notion {
   }
 
   /**
+   * @internal
+   *
    * @param labels Name of metric properties to filter by
    * @returns Observable of awareness metric events
    */
   public awareness(
-    label: string,
-    ...otherLabels: string[]
+    label: AwarenessLabels,
+    ...otherLabels: AwarenessLabels[]
   ): Observable<any> {
     return this.getMetric({
       metric: "awareness",
@@ -294,7 +298,7 @@ export class Notion {
    *
    * @returns Observable of signalQuality metric events
    */
-  public signalQuality(): Observable<any> {
+  public signalQuality(): Observable<SignalQuality> {
     const metric = "signalQuality";
     return this.getMetric({
       metric,
@@ -477,6 +481,10 @@ export class Notion {
    */
   public get training(): Training {
     return {
+      /**
+       * Records a training for a metric/label pair
+       * @category Training
+       */
       record: training => {
         const userId =
           this.api.user && "uid" in this.api.user
@@ -495,6 +503,10 @@ export class Notion {
           message
         });
       },
+      /**
+       * Stops the training for a metric/label pair
+       * @category Training
+       */
       stop: training => {
         this.api.actions.dispatch({
           command: "training",
@@ -504,6 +516,10 @@ export class Notion {
           }
         });
       },
+      /**
+       * Stops all trainings
+       * @category Training
+       */
       stopAll: () => {
         this.api.actions.dispatch({
           command: "training",

@@ -48,9 +48,9 @@ const siteConfig = {
   headerLinks: [
     { doc: "getting-started", label: "Docs" },
     { doc: "reference/classes/notion", label: "Reference" },
-    { href: repoUrl, label: "GitHub" },
+    { href: repoUrl, label: "GitHub", external: true },
     // { blog: true, label: "Blog" },
-    { href: helpUrl, label: "Need Help?" }
+    { href: helpUrl, label: "Need Help?", external: true }
     // { search: true }
   ],
 

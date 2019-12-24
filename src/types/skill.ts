@@ -1,5 +1,8 @@
 import { Observable } from "rxjs";
 
+/**
+ * @internal
+ */
 type SkillProps = { [key: string]: string | number | boolean };
 
 /**
@@ -31,6 +34,9 @@ export interface DeviceSkill {
   status: string;
 }
 
+/**
+ * @internal
+ */
 type SkillMetric = { [key: string]: any };
 
 /**
