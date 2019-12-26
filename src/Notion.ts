@@ -418,7 +418,7 @@ export class Notion {
    */
   public status(): Observable<DeviceStatus> {
     const namespace = "status";
-    const updateStatusInterval = 2000;
+    const updateStatusInterval = 1000;
 
     return new Observable(observer => {
       const updateStatusSubscription = timer(
