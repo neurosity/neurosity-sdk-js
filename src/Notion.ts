@@ -96,6 +96,14 @@ export class Notion {
    * @internal
    * Not user facing yet
    */
+  public auth() {
+    return this.api.auth();
+  }
+
+  /**
+   * @internal
+   * Not user facing yet
+   */
   public onAuthStateChanged(): Observable<any> {
     return this.api.onAuthStateChanged();
   }

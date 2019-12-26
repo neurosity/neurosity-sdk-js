@@ -75,6 +75,10 @@ export class ApiClient implements Client {
     return await this.firebase.logout();
   }
 
+  public auth() {
+    return this.firebase.auth();
+  }
+
   public onAuthStateChanged() {
     return this.firebase.onAuthStateChanged();
   }

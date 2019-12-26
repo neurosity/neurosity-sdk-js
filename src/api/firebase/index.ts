@@ -41,6 +41,10 @@ export class FirebaseClient {
     });
   }
 
+  public auth() {
+    return this.app.auth();
+  }
+
   onAuthStateChanged(): Observable<User | null> {
     return new Observable(observer => {
       this.app.auth().onAuthStateChanged((user: User | null) => {
