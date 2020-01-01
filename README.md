@@ -35,7 +35,7 @@ please see the document [How to Contribute](https://github.com/Neurosity/notion-
 
 ## Code of Conduct
 
-This project has adopted a [Code of Conduct](https://github.com/neurosity/notion-js/blob/master/CODE_OF_CONDUCT.md). Contact [opencode@neurosity.co](mailto:opencode@neurosity.co) with any additional questions or comments.
+This project has adopted a [Code of Conduct](https://github.com/neurosity/notion-js/blob/master/CODE_OF_CONDUCT.md). Contact [opensource@neurosity.co](mailto:opensource@neurosity.co) with any additional questions or comments.
 
 ## License
 
