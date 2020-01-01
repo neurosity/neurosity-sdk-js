@@ -274,6 +274,27 @@ Then run the program with `npm start` in the CLI. If all worked, then you should
   <img alt="Made a function that authenticated with Notion" src="assets/images/tutorial/vscode-main-logged-in.png">
 </p>
 
+## Add Calm Subscription
+
+Now that you have authenticated, let's print out hello world when you're calm increases passed 0.3, a significant number.
+
+Add the following code to your main() function after login.
+
+```js
+notion.calm().subscribe((calm) => {
+  if (calm.probability > 0.3) {
+    console.log("Hello World!");
+  }
+});
+```
+
+Your index.js file is now ready to print `Hello World!`
+
+<p align="center">
+  <img alt="Add code to subscribe to Notion calm score" src="assets/images/tutorial/vscode-main-calm-subscribe.png">
+</p>
+
+
 ## Dive right into development
 
 You'll want to [learn how to train](/api/training) with Notion.
