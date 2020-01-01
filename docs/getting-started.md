@@ -169,13 +169,13 @@ Your `package.json` will look like below once added:
 
 ### Run the project from the CLI
 
-Navigate back to the terminal and run `npm start` to make sure the project runs with out any errors.
+Navigate back to the terminal and run `npm start` to make sure the project runs without any errors.
 
 ```bash
 npm start
 ```
 
-You should see the program run and exit successfully
+You should see the program run and exit successfully.
 
 <p align="center">
   <img alt="Ran our node program with no errors" src="assets/images/tutorial/vscode-run-empty-program.png">
@@ -212,7 +212,7 @@ verifyEnvs(email, password, deviceId);
 console.log(`${email} attempting to authenticate to ${deviceId}`);
 ```
 
-Now if we run our program, we should see an error print out! Run with `npm start` from the CLI.
+Now, if we run our program, we should see an error print out! Run with `npm start` from the CLI.
 
 <p align="center">
   <img alt="Ran our node program with no errors" src="assets/images/tutorial/vscode-no-env-found.png">
@@ -220,7 +220,7 @@ Now if we run our program, we should see an error print out! Run with `npm start
 
 ### Add `.env` file
 
-Next we'll add an `.env` to store our deviceId, login, and password. Add a new file called `.env` and add your deviceId, email and password. Learn how to [find your device ID](https://support.neurosity.co/hc/en-us/articles/360037198152-Get-Notion-Device-ID).
+Next, we'll add a `.env` to store our deviceId, login, and password. Add a new file called `.env` and add your deviceId, email, and password. Learn how to [find your device ID](https://support.neurosity.co/hc/en-us/articles/360037198152-Get-Notion-Device-ID).
 
 ```.env
 DEVICE_ID=442333d1bcea35533daba9b51234abcd
@@ -232,7 +232,7 @@ PASSWORD=Password#1!
   <img alt="Created a new file called .env" src="assets/images/tutorial/vscode-env-file.png">
 </p>
 
-Now if we run our program, we should see a success message print out, informing us that our variables have been extracted successfully.
+Now, if we run our program, we should see a success message print out, informing us that our variables have been extracted successfully.
 
 <p align="center">
   <img alt="Pulled out three variables from .env" src="assets/images/tutorial/vscode-got-env-variables.png">
@@ -250,7 +250,7 @@ const notion = new Notion({
 
 ### Add async login
 
-We need to use an [`async/await`](https://javascript.info/async-await) paradigm for authenticating to the device. Go ahead and create an async functinon called `main` to the `index.js` file.
+We need to use an [`async/await`](https://javascript.info/async-await) paradigm for authenticating to the device. Go ahead and create an async function called `main` to the `index.js` file.
 
 ```js
 const main = async () => {
@@ -260,7 +260,7 @@ const main = async () => {
   })
   .catch(error => {
     console.log(error);
-    process.exit(1);
+    throw new Error(error);
   });
   console.log("Logged in");
 }
@@ -276,7 +276,7 @@ Then run the program with `npm start` in the CLI. If all worked, then you should
 
 ## Add Calm Subscription
 
-Now that you have authenticated, let's print out hello world when you're calm increases passed 0.3, a significant number.
+Now that you are authenticated, print out hello world when you're calm increases past 0.3, a significant number.
 
 Add the following code to your main() function after login.
 
@@ -293,7 +293,6 @@ Your index.js file is now ready to print `Hello World!`
 <p align="center">
   <img alt="Add code to subscribe to Notion calm score" src="assets/images/tutorial/vscode-main-calm-subscribe.png">
 </p>
-
 
 ## Dive right into development
 
