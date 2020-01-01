@@ -16,6 +16,12 @@ const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
 /**
  * @hidden
  */
+export const credentialWithLink =
+  firebase.auth.EmailAuthProvider.credentialWithLink;
+
+/**
+ * @hidden
+ */
 export class FirebaseClient {
   public serverType = "firebase";
   protected standalone: boolean;
