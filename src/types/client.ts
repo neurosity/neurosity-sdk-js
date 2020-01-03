@@ -6,7 +6,7 @@ import { Credentials } from "./credentials";
 import { ChangeSettings } from "./settings";
 
 /**
- * @internal
+ * @hidden
  */
 export interface Client {
   user: User | null;

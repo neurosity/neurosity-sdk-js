@@ -1,5 +1,5 @@
 /**
- * @internal
+ * @hidden
  */
 export interface Action {
   command: string;
@@ -9,7 +9,7 @@ export interface Action {
 }
 
 /**
- * @internal
+ * @hidden
  */
 export interface Actions {
   dispatch(action: Action): Promise<any>;

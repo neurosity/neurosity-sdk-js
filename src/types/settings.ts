@@ -3,7 +3,7 @@ export interface Settings {
 }
 
 /**
- * @internal
+ * @hidden
  */
 export interface ChangeSettings {
   lsl?: boolean;
