@@ -1,5 +1,5 @@
 /**
- * @internal
+ * @hidden
  */
 export interface Subscription {
   metric: string;

@@ -4,11 +4,11 @@ export interface NotionOptions {
   deviceId: string;
   timesync?: boolean;
   /**
-   * @internal
+   * @hidden
    */
   skill?: Skill;
   /**
-   * @internal
+   * @hidden
    */
   onDeviceSocketUrl?: string;
 }
