@@ -1,12 +1,12 @@
 import { Subscription } from "./subscription";
 
 /**
- * @internal
+ * @hidden
  */
 type SubscriptionListener = Function;
 
 /**
- * @internal
+ * @hidden
  */
 export interface Metrics {
   next(metricName: string, metricValue: { [label: string]: any }): void;
