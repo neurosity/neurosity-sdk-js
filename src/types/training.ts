@@ -1,5 +1,5 @@
 /**
- * @internal
+ * @hidden
  */
 export interface TrainingRecording {
   experimentId: string;
@@ -11,7 +11,7 @@ export interface TrainingRecording {
 }
 
 /**
- * @internal
+ * @hidden
  */
 export interface Training {
   record(training: TrainingRecording): void;
