@@ -22,6 +22,13 @@ export const credentialWithLink =
 /**
  * @hidden
  */
+export function createUser(...args) {
+  return new (firebase as any).User(...args);
+}
+
+/**
+ * @hidden
+ */
 export class FirebaseClient {
   public serverType = "firebase";
   protected standalone: boolean;

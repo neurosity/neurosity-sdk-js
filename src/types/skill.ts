@@ -1,12 +1,12 @@
 import { Observable } from "rxjs";
 
 /**
- * @internal
+ * @hidden
  */
 type SkillProps = { [key: string]: string | number | boolean };
 
 /**
- * @internal
+ * @hidden
  */
 export interface Skill {
   id: string;
@@ -24,7 +24,7 @@ export interface Skill {
 }
 
 /**
- * @internal
+ * @hidden
  */
 export interface DeviceSkill {
   id: string;
@@ -35,19 +35,19 @@ export interface DeviceSkill {
 }
 
 /**
- * @internal
+ * @hidden
  */
 type SkillMetric = { [key: string]: any };
 
 /**
- * @internal
+ * @hidden
  */
 interface SkillMetricNext {
   next(value: SkillMetric): void;
 }
 
 /**
- * @internal
+ * @hidden
  */
 export interface SkillInstance {
   props?: SkillProps;
@@ -55,14 +55,14 @@ export interface SkillInstance {
 }
 
 /**
- * @internal
+ * @hidden
  */
 export interface SkillSubscription {
   unsubscribe(): void;
 }
 
 /**
- * @internal
+ * @hidden
  */
 export interface SkillsClient {
   get: (id: string) => Promise<DeviceSkill>;

@@ -1,6 +1,6 @@
 import { Observable, throwError, timer } from "rxjs";
 import { map } from "rxjs/operators";
-import { ApiClient, credentialWithLink } from "./api/index";
+import { ApiClient, credentialWithLink, createUser } from "./api/index";
 import { getLabels, validate } from "./utils/subscription";
 import { NotionOptions } from "./types/options";
 import { Subscription } from "./types/subscription";
@@ -49,6 +49,12 @@ export class Notion {
    * @hidden
    */
   static credentialWithLink = credentialWithLink;
+
+  /**
+   *
+   * @hidden
+   */
+  static createUser = createUser;
 
   /**
    * Creates new instance of Notion

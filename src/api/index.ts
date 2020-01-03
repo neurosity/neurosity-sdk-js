@@ -13,7 +13,7 @@ import { ChangeSettings } from "../types/settings";
 const isNotionMetric = (metric: string): boolean =>
   Object.keys(metrics).includes(metric);
 
-export { credentialWithLink } from "./firebase";
+export { credentialWithLink, createUser } from "./firebase";
 
 /**
  * @hidden
