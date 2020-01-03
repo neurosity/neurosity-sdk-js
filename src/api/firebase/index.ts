@@ -16,7 +16,7 @@ const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
 /**
  * @hidden
  */
-export const credentialWithLink =
+export const credentialWithLink: Function =
   firebase.auth.EmailAuthProvider.credentialWithLink;
 
 /**
