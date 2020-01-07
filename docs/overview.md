@@ -14,12 +14,12 @@ This documentation describes:
 
 Here are some examples of what you can achieve with NotionJS:
 
-* Authenticate and access a Notion - [Authentication](docs/api/authenticate)
-* Query device status - [Info](docs/api/info) or [Status](docs/api/status)
-* Check signal quality - [Signal Quality](docs/api/signal-quality)
-* Peer into mental states of a person - [Calm](docs/api/calm) or [Focus](docs/api/focus)
+* Authenticate and access a Notion - [Authentication](api/authenticate)
+* Query device status - [Info](api/info) or [Status](api/status)
+* Check signal quality - [Signal Quality](api/signal-quality)
+* Peer into mental states of a person - [Calm](api/calm) or [Focus](api/focus)
 * Train a new thought - [Training](guides/training)
-* Use a trained thought for control - [Kinesis](docs/api/kinesis)
+* Use a trained thought for control - [Kinesis](api/kinesis)
 
 ## How to use NotionJS?
 
