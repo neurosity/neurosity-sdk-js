@@ -14,7 +14,7 @@ This documentation describes:
 
 Here are some examples of what you can achieve with NotionJS:
 
-* Authenticate and access a Notion - [Authentication](api/authenticate)
+* Authenticate and access a Notion - [Authentication](api/authentication)
 * Query device status - [Info](api/info) or [Status](api/status)
 * Check signal quality - [Signal Quality](api/signal-quality)
 * Peer into mental states of a person - [Calm](api/calm) or [Focus](api/focus)
