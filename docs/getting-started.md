@@ -298,4 +298,4 @@ Your index.js file is now ready to print `Hello World!`
 
 You'll want to [learn how to train](https://support.neurosity.co/hc/en-us/articles/360036344012-Imagined-thought-training) with Notion.
 
-If you're looking for exact API references, check out the [API section](/reference) of these docs!
+If you're looking for exact API references, check out the [API section](/docs/reference) of these docs!
