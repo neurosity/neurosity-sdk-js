@@ -121,9 +121,7 @@ export const createDeviceStore = (
     lastOfChildValue,
     onNamespace: (namespace: string, callback: Function): Function => {
       return on("value", namespace, (data: any) => {
-        if (data !== null) {
-          callback(data);
-        }
+        callback(data);
       });
     },
     offNamespace: (namespace: string, listener: Function): void => {

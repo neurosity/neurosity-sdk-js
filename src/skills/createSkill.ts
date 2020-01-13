@@ -15,7 +15,10 @@ export function createSkill(app: SkillApp) {
     subscribe: async (
       options: OnDeviceOptions
     ): Promise<SkillSubscription> => {
-      const [notion, skill] = await createNotionOnDevice(options);
+      const [notion, skill] = await createNotionOnDevice({
+        ...options,
+        transport: "offline"
+      });
       const teardown = app(notion, skill);
 
       return {

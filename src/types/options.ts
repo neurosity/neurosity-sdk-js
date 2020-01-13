@@ -3,6 +3,7 @@ import { SubscriptionManager } from "../subscriptions/SubscriptionManager";
 
 export interface NotionOptions {
   deviceId: string;
+  transport: "online" | "offline";
   timesync?: boolean;
   /**
    * @hidden
