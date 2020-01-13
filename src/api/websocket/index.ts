@@ -4,7 +4,7 @@ import io from "socket.io-client";
  * @hidden
  */
 export class WebsocketClient {
-  public serverType: string = "websocket";
+  static serverType: string = "websocket";
   protected socket;
   options;
 
@@ -18,6 +18,10 @@ export class WebsocketClient {
 
   public onMetric(subscription, callback) {
     return this.socket.on(`metrics/${subscription.id}`, callback);
+  }
+
+  public removeMetricListener(subscription, listener): void {
+    this.socket.off(`metrics/${subscription.id}`, listener);
   }
 
   private init(): void {
