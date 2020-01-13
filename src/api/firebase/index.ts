@@ -29,7 +29,7 @@ export function createUser(...args) {
  * @hidden
  */
 export class FirebaseClient {
-  public serverType = "firebase";
+  static serverType = "firebase";
   protected standalone: boolean;
   protected app;
   protected deviceStore;
@@ -219,11 +219,23 @@ export class FirebaseClient {
    * Removes subscription in path:
    * /devices/:deviceId/subscriptions/:subscriptionId
    *
-   * @param metric
-   * @param subscriptionId
+   * @param subscription
    */
-  public unsubscribeFromMetric(subscription, listener: Function): void {
-    this.deviceStore.unsubscribeFromMetric(subscription, listener);
+  public unsubscribeFromMetric(subscription): void {
+    this.deviceStore.unsubscribeFromMetric(subscription);
+  }
+
+  /**
+   * Removes metric listener
+   * /devices/:deviceId/metric
+   * or
+   * /devices/:deviceId/metric/label
+   *
+   * @param subscription
+   * @param listener
+   */
+  public removeMetricListener(subscription, listener: Function): void {
+    this.deviceStore.removeMetricListener(subscription, listener);
   }
 
   public get timestamp(): any {
