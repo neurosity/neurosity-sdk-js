@@ -23,9 +23,10 @@ export class ApiClient implements Client {
   public user;
   protected options: NotionOptions;
   protected firebase: FirebaseClient;
-  protected onDeviceSocket: WebsocketClient;
+  protected websocket: WebsocketClient;
   protected timesync: Timesync;
   protected subscriptionManager: SubscriptionManager;
+  private teardownFunctions: Array<() => void> = [];
 
   constructor(options: NotionOptions) {
     this.options = options;
@@ -46,12 +47,53 @@ export class ApiClient implements Client {
       });
     }
 
-    if (options.onDeviceSocketUrl) {
-      this.onDeviceSocket = new WebsocketClient({
-        deviceId: options.deviceId,
-        socketUrl: options.onDeviceSocketUrl
-      });
+    this.initWebsocket();
+  }
+
+  private initWebsocket() {
+    if (this.options.transport !== "offline") {
+      return;
     }
+
+    if (this.options.onDeviceSocketUrl) {
+      this.websocket = new WebsocketClient({
+        deviceId: this.options.deviceId,
+        socketUrl: this.options.onDeviceSocketUrl
+      });
+      return;
+    }
+
+    const socketUrlPath = "status/socketUrl";
+    const socketUrlListener = this.onNamespace(
+      socketUrlPath,
+      (socketUrl: string) => {
+        if (!socketUrl) {
+          throw new Error(
+            "Your device's OS does not support `offline` transport. Please update your OS to the latest version."
+          );
+        }
+
+        if (this.websocket) {
+          this.websocket.disconnect();
+        }
+
+        this.websocket = new WebsocketClient({
+          deviceId: this.options.deviceId,
+          socketUrl
+        });
+      }
+    );
+
+    const socketUrlTeardown = (): void => {
+      if (socketUrlListener) {
+        this.offNamespace(socketUrlPath, socketUrlListener);
+      }
+    };
+
+    this.teardownFunctions = [
+      ...this.teardownFunctions,
+      socketUrlTeardown
+    ];
   }
 
   public get actions(): Actions {
@@ -63,9 +105,14 @@ export class ApiClient implements Client {
   }
 
   public async disconnect(): Promise<any> {
-    if (this.onDeviceSocket) {
-      this.onDeviceSocket.disconnect();
+    this.teardownFunctions.forEach((teardown: () => void) => {
+      teardown();
+    });
+
+    if (this.websocket) {
+      this.websocket.disconnect();
     }
+
     return this.firebase.disconnect();
   }
 
@@ -99,22 +146,23 @@ export class ApiClient implements Client {
   }
 
   public get metrics(): Metrics {
-    const shouldRerouteToDevice = (metric: string): boolean =>
-      this.onDeviceSocket && isNotionMetric(metric);
+    const isOfflineMetric = (metric: string): boolean =>
+      this.options.transport === "offline" && isNotionMetric(metric);
+
     return {
       next: (metricName, metricValue): void => {
         this.firebase.nextMetric(metricName, metricValue);
       },
       on: (subscription, callback) => {
-        if (shouldRerouteToDevice(subscription.metric)) {
-          return this.onDeviceSocket.onMetric(subscription, callback);
+        if (isOfflineMetric(subscription.metric)) {
+          return this.websocket.onMetric(subscription, callback);
         } else {
           return this.firebase.onMetric(subscription, callback);
         }
       },
       subscribe: subscription => {
-        const serverType = shouldRerouteToDevice(subscription.metric)
-          ? this.onDeviceSocket.serverType
+        const serverType = isOfflineMetric(subscription.metric)
+          ? this.websocket.serverType
           : this.firebase.serverType;
 
         const subscriptionCreated = this.firebase.subscribeToMetric({
