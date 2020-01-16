@@ -10,6 +10,7 @@ import { NotionOptions } from "../types/options";
 import { SkillsClient, DeviceSkill } from "../types/skill";
 import { Credentials } from "../types/credentials";
 import { ChangeSettings } from "../types/settings";
+import { Subscription } from "../types/subscriptions";
 
 const isNotionMetric = (metric: string): boolean =>
   Object.keys(metrics).includes(metric);
@@ -26,7 +27,6 @@ export class ApiClient implements Client {
   protected websocket: WebsocketClient;
   protected timesync: Timesync;
   protected subscriptionManager: SubscriptionManager;
-  private teardownFunctions: Array<() => void> = [];
 
   constructor(options: NotionOptions) {
     this.options = options;
@@ -61,37 +61,24 @@ export class ApiClient implements Client {
       return;
     }
 
-    const socketUrlPath = "status/socketUrl";
-    const socketUrlListener = this.onNamespace(
-      socketUrlPath,
-      (socketUrl: string) => {
-        if (!socketUrl) {
-          throw new Error(
-            "Your device's OS does not support `offline` transport. Please update your OS to the latest version."
-          );
-        }
+    // this.websocket = new WebsocketClient({
+    //   deviceId: this.options.deviceId
+    // });
 
-        if (this.websocket) {
-          this.websocket.disconnect();
-        }
+    this.onNamespace("status/socketUrl", (socketUrl: string | null) => {
+      console.log("set socket is now", socketUrl);
 
-        this.websocket = new WebsocketClient({
-          deviceId: this.options.deviceId,
-          socketUrl
-        });
+      if (!socketUrl) {
+        throw new Error(
+          "Your device's OS does not support `offline` transport. Please update your OS to the latest version."
+        );
       }
-    );
 
-    const socketUrlTeardown = (): void => {
-      if (socketUrlListener) {
-        this.offNamespace(socketUrlPath, socketUrlListener);
-      }
-    };
-
-    this.teardownFunctions = [
-      ...this.teardownFunctions,
-      socketUrlTeardown
-    ];
+      this.websocket = new WebsocketClient({
+        deviceId: this.options.deviceId,
+        socketUrl: socketUrl
+      });
+    });
   }
 
   public get actions(): Actions {
@@ -103,10 +90,6 @@ export class ApiClient implements Client {
   }
 
   public async disconnect(): Promise<any> {
-    this.teardownFunctions.forEach((teardown: () => void) => {
-      teardown();
-    });
-
     if (this.websocket) {
       this.websocket.disconnect();
     }
@@ -148,17 +131,20 @@ export class ApiClient implements Client {
       this.options.transport === "offline" && isNotionMetric(metric);
 
     return {
-      next: (metricName, metricValue): void => {
+      next: (metricName: string, metricValue: any): void => {
         this.firebase.nextMetric(metricName, metricValue);
       },
-      on: (subscription, callback) => {
+      on: (
+        subscription: Subscription,
+        callback: Function
+      ): Function => {
         if (isOfflineMetric(subscription.metric)) {
           return this.websocket.onMetric(subscription, callback);
         } else {
           return this.firebase.onMetric(subscription, callback);
         }
       },
-      subscribe: subscription => {
+      subscribe: (subscription: Subscription): Subscription => {
         const serverType = isOfflineMetric(subscription.metric)
           ? WebsocketClient.serverType
           : FirebaseClient.serverType;
@@ -171,9 +157,11 @@ export class ApiClient implements Client {
         this.subscriptionManager.add(subscriptionCreated);
         return subscriptionCreated;
       },
-      unsubscribe: (subscription, listener): void => {
+      unsubscribe: (
+        subscription: Subscription,
+        listener: Function
+      ): void => {
         this.subscriptionManager.remove(subscription);
-        this.firebase.unsubscribeFromMetric(subscription, listener);
 
         if (isOfflineMetric(subscription.metric)) {
           this.websocket.removeMetricListener(subscription, listener);

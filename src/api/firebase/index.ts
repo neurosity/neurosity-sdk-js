@@ -31,7 +31,7 @@ export function createUser(...args) {
 export class FirebaseClient {
   static serverType = "firebase";
   protected standalone: boolean;
-  protected app;
+  protected app: firebase.app.App;
   protected deviceStore;
   public user: User | null;
 
@@ -196,8 +196,8 @@ export class FirebaseClient {
    * Listens for metrics in path:
    * /devices/:deviceId/metrics/:metricName
    */
-  public onMetric(subscription, callback): void {
-    this.deviceStore.onMetric(subscription, callback);
+  public onMetric(subscription, callback): Function {
+    return this.deviceStore.onMetric(subscription, callback);
   }
 
   /**

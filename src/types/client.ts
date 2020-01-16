@@ -13,7 +13,7 @@ export interface Client {
   actions: Actions;
   disconnect(): Promise<any>;
   getInfo(): Promise<any>;
-  login?(credentails: Credentials): Promise<any>;
+  login?(credentials: Credentials): Promise<any>;
   onNamespace(namespace: string, callback: Function): Function;
   offNamespace(namespace: string, listener: Function): void;
   metrics: Metrics;

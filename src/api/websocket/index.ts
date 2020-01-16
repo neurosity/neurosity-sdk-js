@@ -1,33 +1,50 @@
 import io from "socket.io-client";
+import { Subscription } from "../../types/subscriptions";
+
+/**
+ * @hidden
+ */
+type WebsocketOptions = {
+  deviceId: string;
+  socketUrl?: string;
+  secure?: boolean;
+};
+
+const defaultOptions = {
+  secure: true
+};
 
 /**
  * @hidden
  */
 export class WebsocketClient {
   static serverType: string = "websocket";
+  private options: WebsocketOptions;
   protected socket;
-  options;
 
-  constructor(options) {
-    this.socket = io(options.socketUrl, {
-      path: `/${options.deviceId}`
+  constructor(options: WebsocketOptions) {
+    this.options = Object.freeze({
+      ...defaultOptions,
+      ...options
     });
 
-    this.init();
+    this.socket = io(this.options.socketUrl, {
+      path: `/${this.options.deviceId}`
+    });
   }
 
-  public onMetric(subscription, callback) {
+  public onMetric(
+    subscription: Subscription,
+    callback: Function
+  ): Function {
     return this.socket.on(`metrics/${subscription.id}`, callback);
   }
 
-  public removeMetricListener(subscription, listener): void {
+  public removeMetricListener(
+    subscription: Subscription,
+    listener: Function
+  ): void {
     this.socket.off(`metrics/${subscription.id}`, listener);
-  }
-
-  private init(): void {
-    if (!this.socket.connected) {
-      this.socket.connect();
-    }
   }
 
   public disconnect(): void {
