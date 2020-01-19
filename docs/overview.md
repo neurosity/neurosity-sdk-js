@@ -10,6 +10,8 @@ This documentation describes:
 * How to take advantage of Neurosity's NotionJS
 * Where to find guides and code samples to help get you started
 
+Jump right over to [building your first application with Notion](getting-started).
+
 ## What can NotionJS do?
 
 Here are some examples of what you can achieve with NotionJS:
