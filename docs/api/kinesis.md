@@ -3,7 +3,7 @@ id: kinesis
 title: Kinesis
 ---
 
-The Kinesis API is based on the Motor Imagery BCI method. Fires when a user attempts to trigger a side effect from defined thoughts. E.g. motor imagery, etc.
+The [Kinesis API](reference/interfaces/kinesis) is based on the Motor Imagery BCI method. Fires when a user attempts to trigger a side effect from defined thoughts. E.g. motor imagery, etc.
 
 Kinesis implements a spike detection algorithm over the [predictions](/docs/api/predictions) observable.
 
