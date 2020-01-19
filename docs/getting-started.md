@@ -274,7 +274,9 @@ Then run the program with `npm start` in the CLI. If all worked, then you should
   <img alt="Made a function that authenticated with Notion" src="assets/images/tutorial/vscode-main-logged-in.png">
 </p>
 
-## Add Calm Subscription
+## Add Subscriptions
+
+### Calm Subscription
 
 Now that you are authenticated, print out hello world when you're calm increases past 0.3, a significant number.
 
@@ -294,8 +296,36 @@ Your index.js file is now ready to print `Hello World!`
   <img alt="Add code to subscribe to Notion calm score" src="assets/images/tutorial/vscode-main-calm-subscribe.png">
 </p>
 
-## Dive right into development
+### Kinesis Training
 
-You'll want to [learn how to train](https://support.neurosity.co/hc/en-us/articles/360036344012-Imagined-thought-training) with Notion.
+Head over to the [Developer Console](console.neurosity.co) and train Left Hand Pinch. [Learn how to train an imagined movement thought](https://support.neurosity.co/hc/en-us/articles/360036344012-Imagined-thought-training). Do at least 15 trials.
+
+When we write code to interact with Notion, we use camel case, so Left Hand Pinch in code is `leftHandPinch`. 
+
+Now that the `leftHandPinch` thought is trained, you'll be able to use load it into your Notion for use. 
+
+### Kinesis Subscription
+
+In the `index.js` file we can remove the `calm` subscription from above and replace it with the code below. 
+
+Check out the [Kinesis guide](https://docs.neurosity.co/docs/api/kinesis) or [Kinesis API docs](https://docs.neurosity.co/docs/reference/interfaces/kinesis).
+
+```js
+notion.kinesis("leftHandPinch").subscribe((intent) => {
+  console.log("Hello World!");
+});
+```
+
+<p align="center">
+  <img alt="Add kinesis code to index.js" src="assets/images/tutorial/vscode-hello-kinesis.png">
+</p>
+
+## Conclusion
+
+Developing with Neurosity Notion can be a lot of fun! There are two main types of thought processes that Notion detects, intent and background. The forground we consider to be the `kinesis()` where you're intending to do something and the background is `calm()` or `focus()` that occurs in the background of the mind.
+
+### Dive into development
+
+We're looking for great developers to help us better and better trainings, so head over to the [training guide](https://docs.neurosity.co/docs/guides/training) to learn how to build your own training application. 
 
 If you're looking for exact API references, check out the [API section](/docs/reference) of these docs!
