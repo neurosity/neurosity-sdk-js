@@ -298,7 +298,7 @@ Your index.js file is now ready to print `Hello World!`
 
 ### Kinesis Training
 
-Head over to the [Developer Console](console.neurosity.co) and train Left Hand Pinch. [Learn how to train an imagined movement thought](https://support.neurosity.co/hc/en-us/articles/360036344012-Imagined-thought-training). Do at least 15 trials.
+Head over to the [Developer Console](https://console.neurosity.co) and train Left Hand Pinch. [Learn how to train an imagined movement thought](https://support.neurosity.co/hc/en-us/articles/360036344012-Imagined-thought-training). Do at least 15 trials.
 
 When we write code to interact with Notion, we use camel case, so Left Hand Pinch in code is `leftHandPinch`. 
 
@@ -315,6 +315,8 @@ notion.kinesis("leftHandPinch").subscribe((intent) => {
   console.log("Hello World!");
 });
 ```
+
+Your `index.js` file should look like:
 
 <p align="center">
   <img alt="Add kinesis code to index.js" src="assets/images/tutorial/vscode-hello-kinesis.png">
