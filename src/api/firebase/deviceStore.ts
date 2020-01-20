@@ -60,8 +60,8 @@ export const createDeviceStore = (app, deviceId, SERVER_TIMESTAMP) => {
     }
   };
 
-  const once = async namespace => {
-    const snapshot = await deviceRef.child(namespace).once("value");
+  const once = async (namespace, eventType = "value") => {
+    const snapshot = await deviceRef.child(namespace).once(eventType);
     return snapshot.val();
   };
 
@@ -119,18 +119,19 @@ export const createDeviceStore = (app, deviceId, SERVER_TIMESTAMP) => {
       snapshot.onDisconnect().remove();
 
       if (action.responseRequired) {
-        const reponseTimeout = action.responseTimeout || 600000; // defaults to 10 minutes
+        const responseTimeout = action.responseTimeout || 600000; // defaults to 10 minutes
         const timeout = new Promise((_, reject) => {
           const id = setTimeout(() => {
             clearTimeout(id);
-            reject(`Action response timed out in ${reponseTimeout}ms.`);
-          }, reponseTimeout);
+            snapshot.remove();
+            reject(
+              `Action response timed out in ${responseTimeout}ms.`
+            );
+          }, responseTimeout);
         });
 
-        const response = new Promise((resolve, reject) => {
-          const error = new Error("Action removed");
+        const response = new Promise(resolve => {
           bindListener("value", `${actionPath}/response`, resolve);
-          bindListener("child_removed", actionPath, reject, error);
         });
 
         return Promise.race([response, timeout]);
