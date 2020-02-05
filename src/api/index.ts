@@ -2,6 +2,7 @@ import { metrics } from "@neurosity/ipk";
 import { FirebaseClient } from "./firebase/index";
 import { WebsocketClient } from "./websocket";
 import { Timesync } from "../timesync";
+import { SubscriptionManager } from "../subscriptions/SubscriptionManager";
 import { Client } from "../types/client";
 import { Actions } from "../types/actions";
 import { Metrics } from "../types/metrics";
@@ -24,10 +25,14 @@ export class ApiClient implements Client {
   protected firebase: FirebaseClient;
   protected onDeviceSocket: WebsocketClient;
   protected timesync: Timesync;
+  protected subscriptionManager: SubscriptionManager;
 
   constructor(options: NotionOptions) {
     this.options = options;
-    this.firebase = new FirebaseClient(options);
+    this.subscriptionManager = new SubscriptionManager();
+    this.firebase = new FirebaseClient(options, {
+      subscriptionManager: this.subscriptionManager
+    });
 
     this.firebase.onAuthStateChanged().subscribe(user => {
       this.user = user;
@@ -116,10 +121,13 @@ export class ApiClient implements Client {
           ...subscription,
           serverType
         });
+
+        this.subscriptionManager.add(subscriptionCreated);
         return subscriptionCreated;
       },
       unsubscribe: (subscription, listener): void => {
-        this.firebase.unsubscribFromMetric(subscription, listener);
+        this.subscriptionManager.remove(subscription);
+        this.firebase.unsubscribeFromMetric(subscription, listener);
       }
     };
   }
@@ -142,5 +150,13 @@ export class ApiClient implements Client {
 
   public changeSettings(settings: ChangeSettings): Promise<void> {
     return this.firebase.changeSettings(settings);
+  }
+
+  public goOffline() {
+    this.firebase.goOffline();
+  }
+
+  public goOnline() {
+    this.firebase.goOnline();
   }
 }

@@ -8,7 +8,7 @@ import { User } from "@firebase/auth-types";
 
 import { config } from "./config";
 import { createDeviceStore } from "./deviceStore";
-import { NotionOptions } from "../../types/options";
+import { NotionOptions, NotionDependencies } from "../../types/options";
 import { Credentials } from "../../types/credentials";
 
 const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
@@ -36,17 +36,24 @@ export class FirebaseClient {
   protected deviceStore;
   public user: User | null;
 
-  constructor(options: NotionOptions) {
-    this.init(options);
+  constructor(
+    options: NotionOptions,
+    dependencies: NotionDependencies
+  ) {
+    this.init(options, dependencies);
   }
 
-  private init(options: NotionOptions) {
+  private init(
+    options: NotionOptions,
+    dependencies: NotionDependencies
+  ) {
     this.app = this.getApp(options.deviceId);
     this.standalone = this.app.name === options.deviceId;
     this.deviceStore = createDeviceStore(
       this.app,
       options.deviceId,
-      SERVER_TIMESTAMP
+      SERVER_TIMESTAMP,
+      dependencies.subscriptionManager
     );
 
     this.app.auth().onAuthStateChanged((user: User | null) => {
@@ -103,6 +110,14 @@ export class FirebaseClient {
 
   logout() {
     return this.app.auth().signOut();
+  }
+
+  goOffline() {
+    this.app.database().goOffline();
+  }
+
+  goOnline() {
+    this.app.database().goOnline();
   }
 
   private getApp(deviceId: string) {
@@ -212,8 +227,8 @@ export class FirebaseClient {
    * @param metric
    * @param subscriptionId
    */
-  public unsubscribFromMetric(subscription, listener: Function): void {
-    this.deviceStore.unsubscribFromMetric(subscription, listener);
+  public unsubscribeFromMetric(subscription, listener: Function): void {
+    this.deviceStore.unsubscribeFromMetric(subscription, listener);
   }
 
   public get timestamp(): any {
