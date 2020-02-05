@@ -3,7 +3,6 @@ import { map } from "rxjs/operators";
 import { ApiClient, credentialWithLink, createUser } from "./api/index";
 import { getLabels, validate } from "./utils/subscription";
 import { NotionOptions } from "./types/options";
-import { Subscription } from "./types/subscription";
 import { Training } from "./types/training";
 import { SkillInstance } from "./types/skill";
 import { Credentials } from "./types/credentials";
@@ -13,6 +12,10 @@ import { SignalQuality } from "./types/signalQuality";
 import { Kinesis } from "./types/kinesis";
 import { Calm } from "./types/calm";
 import { Focus } from "./types/focus";
+import {
+  PendingSubscription,
+  Subscription
+} from "./types/subscriptions";
 import {
   BrainwavesLabel,
   Epoch,
@@ -146,7 +149,7 @@ export class Notion {
    * Not user facing
    */
   protected getMetric = (
-    subscription: Subscription
+    subscription: PendingSubscription
   ): Observable<any> => {
     const { metric, labels, atomic } = subscription;
 
@@ -549,6 +552,22 @@ export class Notion {
         });
       }
     };
+  }
+
+  /**
+   * @internal
+   * Proof of Concept for disconnecting db
+   */
+  public goOffline(): void {
+    this.api.goOffline();
+  }
+
+  /**
+   * @internal
+   * Proof of Concept for resuming db connection
+   */
+  public goOnline(): void {
+    this.api.goOnline();
   }
 
   /**

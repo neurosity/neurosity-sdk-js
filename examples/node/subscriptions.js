@@ -19,27 +19,27 @@ const notion2 = new Notion({
     password: process.env.NEUROSITY_PASSWORD
   });
 
-  const signalQuality = notion
-    .signalQuality()
-    .subscribe(signalQuality => {
-      console.log("signalQuality", signalQuality);
-    });
-
-  const signalQuality2 = notion
-    .signalQuality()
-    .subscribe(signalQuality => {
-      console.log("signalQuality", signalQuality);
-    });
-
-  const kinesis = notion2.kinesis("push").subscribe(kinesis => {
-    console.log("kinesis", kinesis);
-  });
-
-  console.log("subscribed to signalQuality");
-  console.log("subscribed to kinesis");
+  const sub1 = notion.signalQuality().subscribe();
+  const sub2 = notion.calm().subscribe();
+  const sub3 = notion.focus().subscribe();
+  const sub4 = notion2.focus().subscribe();
 
   setTimeout(() => {
-    signalQuality.unsubscribe();
-    console.log("unsubscribed from signalQuality");
-  }, 4000);
+    sub2.unsubscribe();
+  }, 2000);
+
+  setTimeout(() => {
+    notion.goOffline();
+    setTimeout(() => {
+      sub1.unsubscribe();
+    }, 100);
+  }, 6000);
+
+  setTimeout(() => {
+    notion.goOnline();
+
+    setTimeout(() => {
+      sub3.unsubscribe();
+    }, 6000);
+  }, 10000);
 })();

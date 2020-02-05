@@ -8,27 +8,15 @@ export interface IDevice {
 /**
  * @hidden
  */
-export const createDeviceStore = (app, deviceId, SERVER_TIMESTAMP) => {
+export const createDeviceStore = (
+  app,
+  deviceId,
+  SERVER_TIMESTAMP,
+  subscriptionManager
+) => {
   const deviceRef = app.database().ref(`devices/${deviceId}`);
   const clientId = deviceRef.child("subscriptions").push().key;
   const clientRef = deviceRef.child(`clients/${clientId}`);
-
-  // Add client connections to db and remove them when offline
-  app
-    .database()
-    .ref(".info/connected")
-    .on("value", snapshot => {
-      if (!snapshot.val()) {
-        return;
-      }
-
-      clientRef
-        .onDisconnect()
-        .remove()
-        .then(() => {
-          clientRef.set(SERVER_TIMESTAMP);
-        });
-    });
 
   const child = namespace => {
     return deviceRef.child(namespace);
@@ -43,7 +31,7 @@ export const createDeviceStore = (app, deviceId, SERVER_TIMESTAMP) => {
   };
 
   const update = (namespace, payload) => {
-    deviceRef.child(namespace).update(payload);
+    return deviceRef.child(namespace).update(payload);
   };
 
   const on = (eventType: any = "value", namespace, callback) => {
@@ -95,6 +83,36 @@ export const createDeviceStore = (app, deviceId, SERVER_TIMESTAMP) => {
     const [match] = Object.values(results || {});
     return match || null;
   };
+
+  // Add client connections and subscriptions to db and remove them when offline
+  app
+    .database()
+    .ref(".info/connected")
+    .on("value", snapshot => {
+      if (!snapshot.val()) {
+        return;
+      }
+
+      clientRef
+        .onDisconnect()
+        .remove()
+        .then(() => {
+          clientRef.set(SERVER_TIMESTAMP);
+
+          // NOTION-115: Re-subscribe when internet connection is lost and regained
+          update("subscriptions", subscriptionManager.get()).then(
+            () => {
+              subscriptionManager.toList().forEach(subscription => {
+                const childPath = `subscriptions/${subscription.id}`;
+                deviceRef
+                  .child(childPath)
+                  .onDisconnect()
+                  .remove();
+              });
+            }
+          );
+        });
+    });
 
   return {
     set,
@@ -173,7 +191,7 @@ export const createDeviceStore = (app, deviceId, SERVER_TIMESTAMP) => {
 
       return subscriptionCreated;
     },
-    unsubscribFromMetric: (subscription, listener: Function) => {
+    unsubscribeFromMetric: (subscription, listener: Function) => {
       off("value", listener);
       remove(`subscriptions/${subscription.id}`);
     }

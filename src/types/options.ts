@@ -1,4 +1,5 @@
 import { Skill } from "./skill";
+import { SubscriptionManager } from "../subscriptions/SubscriptionManager";
 
 export interface NotionOptions {
   deviceId: string;
@@ -11,4 +12,11 @@ export interface NotionOptions {
    * @hidden
    */
   onDeviceSocketUrl?: string;
+}
+
+/**
+ * @hidden
+ */
+export interface NotionDependencies {
+  subscriptionManager: SubscriptionManager;
 }

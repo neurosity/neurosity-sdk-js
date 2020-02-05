@@ -1,4 +1,4 @@
-import { Subscription } from "./subscription";
+import { PendingSubscription, Subscription } from "./subscriptions";
 
 /**
  * @hidden
@@ -11,10 +11,10 @@ type SubscriptionListener = Function;
 export interface Metrics {
   next(metricName: string, metricValue: { [label: string]: any }): void;
   on(
-    subscription: Subscription,
+    subscription: PendingSubscription,
     callback: Function
   ): SubscriptionListener;
-  subscribe(subscription: Subscription): Subscription;
+  subscribe(subscription: PendingSubscription): Subscription;
   unsubscribe(
     subscription: Subscription,
     listener: SubscriptionListener
