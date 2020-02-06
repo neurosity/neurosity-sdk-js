@@ -423,7 +423,7 @@ This is the fun part. This is where we get to access brain data and map it to th
 
 By subscribing to `notion.calm()`, we get a new `calm` score approximately every second. So, let's add a page to display the calm score.
 
-> The calm score is derived from your passive cognitive state. This metric based on the [alpha wave](https://en.wikipedia.org/wiki/Alpha_wave). The calm score ranges from `0.0` to `1.0`. The higher the score, the higher the probability a _calm_ feeling is detected. Getting a calm score over `0.3` is significant. Things that can help increase the calm score include closing your eyes, keeping still, breathing deeply, or meditating.
+> 💡 Learn more about the [calm score](../api/calm).
 
 ```jsx
 // src/pages/Calm.js
