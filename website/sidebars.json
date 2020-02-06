@@ -1,19 +1,18 @@
 {
   "docs": {
-    "Overview": [
-      "overview"
-    ],
-    "GET STARTED": [
+    "Overview": ["overview"],
+    "Get Started": [
       "getting-started",
+      "tutorials/your-first-web-app",
       "resources"
     ],
-    "WORKING WITH NOTION": [
+    "Working with Notion": [
       "guides/ethics",
       "guides/importing",
       "guides/signal",
       "guides/training"
     ],
-    "API GUIDES": [
+    "API Guides": [
       "api/authentication",
       "api/brainwaves",
       "api/calm",
@@ -29,12 +28,8 @@
     ]
   },
   "@neurosity/notion": {
-    "Introduction": [
-      "reference/index"
-    ],
-    "Classes": [
-      "reference/classes/notion"
-    ],
+    "Introduction": ["reference/index"],
+    "Classes": ["reference/classes/notion"],
     "Interfaces": [
       "reference/interfaces/calm",
       "reference/interfaces/deviceinfo",

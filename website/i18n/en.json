@@ -39,7 +39,7 @@
         "title": "Device Status"
       },
       "getting-started": {
-        "title": "Your First Application"
+        "title": "Your First Node App"
       },
       "guides/ethics": {
         "title": "Ethics"
@@ -110,6 +110,9 @@
       },
       "resources": {
         "title": "Resources"
+      },
+      "tutorials/your-first-web-app": {
+        "title": "Your First Web App"
       }
     },
     "links": {
@@ -120,9 +123,9 @@
     },
     "categories": {
       "Overview": "Overview",
-      "GET STARTED": "GET STARTED",
-      "WORKING WITH NOTION": "WORKING WITH NOTION",
-      "API GUIDES": "API GUIDES",
+      "Get Started": "Get Started",
+      "Working with Notion": "Working with Notion",
+      "API Guides": "API Guides",
       "Introduction": "Introduction",
       "Classes": "Classes",
       "Interfaces": "Interfaces"
