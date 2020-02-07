@@ -3,7 +3,7 @@ id: getting-started
 title: Your First Node App
 ---
 
-Welcome to Neurosity's NotionJS documentation side. To begin, you'll need to set up an account one time with Neurosity via [console.neurosity.co](consle.neurosity.co). Learn how to [create an account with Neurosity Developer Console](https://support.neurosity.co/hc/en-us/articles/360036196792).
+Welcome to Neurosity's NotionJS documentation side. To begin, you'll need to set up an account one time with Neurosity via [console.neurosity.co](console.neurosity.co). Learn how to [create an account with Neurosity Developer Console](https://support.neurosity.co/hc/en-us/articles/360036196792).
 
 ## Prerequisites
 
@@ -105,7 +105,7 @@ On MacOS, we'll go ahead and add another commonly ignored file:
 ```
 
 <p align="center">
-  <img alt="Created a new file called index.js" src="assets/images/tutorial/vscode-gitignore.png">
+  <img alt="Add a .gitignore file with node_modules" src="assets/images/tutorial/vscode-gitignore.png">
 </p>
 
 Adding `node_modules` will help VS Code run a little bit better because we're telling it that we don't need to track anything in that folder.
@@ -119,7 +119,7 @@ npm install @neurosity/notion dotenv
 ```
 
 <p align="center">
-  <img alt="Created a new file called index.js" src="assets/images/tutorial/vscode-install-dependencies.png">
+  <img alt="Install dependencies using npm install in the terminal" src="assets/images/tutorial/vscode-install-dependencies.png">
 </p>
 
 ### Add Dependencies to `index.js`
@@ -132,7 +132,7 @@ require("dotenv").config();
 ```
 
 <p align="center">
-  <img alt="Created a new file called index.js" src="assets/images/tutorial/vscode-add-dependencies-to-index.png">
+  <img alt="Add dependencies to the index.js file" src="assets/images/tutorial/vscode-add-dependencies-to-index.png">
 </p>
 
 ### Add start script to package.json
@@ -221,7 +221,7 @@ console.log(`${email} attempting to authenticate to ${deviceId}`);
 Now, if we run our program, we should see an error print out! Run with `npm start` from the CLI.
 
 <p align="center">
-  <img alt="Ran our node program with no errors" src="assets/images/tutorial/vscode-no-env-found.png">
+  <img alt="Ran our node program with no envs found error" src="assets/images/tutorial/vscode-no-env-found.png">
 </p>
 
 ### Add `.env` file
