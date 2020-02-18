@@ -2,7 +2,7 @@
 id: signal-quality
 title: Signal Quality
 ---
-Impedance based signal quality metrics.
+Standard deviation based signal quality metrics. See [`SignalQuality`](https://docs.neurosity.co/docs/reference/interfaces/signalquality) for using in code.
 
 ```js
 import { Notion } from "@neurosity/notion";
