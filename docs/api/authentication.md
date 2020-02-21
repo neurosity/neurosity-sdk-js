@@ -8,7 +8,7 @@ There are two ways to authenticate with Notion: Email and password and ID Token
 
 ### Email and Password
 
-When you sign up for an account on [console.neurosity.co](console.neurosity.co) and claim a device you have three new important items: `deviceId`, `email`, and `password`. If your device is claimed by another user, you will not be able to authenticate with it. If your device is unclaimed, you will not be able to authenticate with it, you will need to claim it on [console.neurosity.co](console.neurosity.co).
+When you sign up for an account on [console.neurosity.co](https://console.neurosity.co/) and claim a device you have three new important items: `deviceId`, `email`, and `password`. If your device is claimed by another user, you will not be able to authenticate with it. If your device is unclaimed, you will not be able to authenticate with it, you will need to claim it on [console.neurosity.co](https://console.neurosity.co/).
 
 ```js
 import { Notion } from "@neurosity/notion";
