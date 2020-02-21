@@ -7,7 +7,7 @@ The [Kinesis API](/docs/reference/interfaces/kinesis) is based on the Motor Imag
 
 Kinesis implements a spike detection algorithm over the [predictions](/docs/api/predictions) observable.
 
-To train a Kinesis command, use [console.neurosity.co](console.neurosity.co) and use the corresponding label for the `Active` classifier. Learn how to train a new command [here](https://support.neurosity.co/hc/en-us/articles/360036344012-Imagined-thought-training). To make your own custom training, see [guides/training](/docs/guides/training).
+To train a Kinesis command, use [console.neurosity.co](https://console.neurosity.co/) and use the corresponding label for the `Active` classifier. Learn how to train a new command [here](https://support.neurosity.co/hc/en-us/articles/360036344012-Imagined-thought-training). To make your own custom training, see [guides/training](/docs/guides/training).
 
 ```js
 const mind = new Notion();

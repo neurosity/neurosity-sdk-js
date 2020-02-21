@@ -3,7 +3,7 @@ id: getting-started
 title: Your First Node App
 ---
 
-Welcome to Neurosity's NotionJS documentation side. To begin, you'll need to set up an account one time with Neurosity via [console.neurosity.co](console.neurosity.co). Learn how to [create an account with Neurosity Developer Console](https://support.neurosity.co/hc/en-us/articles/360036196792).
+Welcome to Neurosity's NotionJS documentation side. To begin, you'll need to set up an account one time with Neurosity via [console.neurosity.co](https://console.neurosity.co/). Learn how to [create an account with Neurosity Developer Console](https://support.neurosity.co/hc/en-us/articles/360036196792).
 
 ## Prerequisites
 
