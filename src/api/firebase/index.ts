@@ -121,7 +121,7 @@ export class FirebaseClient {
   }
 
   private getApp(deviceId: string) {
-    const notionAppName = `${deviceId}-${Date.now()}`;
+    const notionAppName = deviceId;
     const moduleApps = firebase.apps;
     const browserApps =
       typeof window !== "undefined" &&
