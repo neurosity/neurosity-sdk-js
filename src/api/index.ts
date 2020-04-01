@@ -132,10 +132,6 @@ export class ApiClient implements Client {
     };
   }
 
-  public httpsCallable(functionName: string, data: object) {
-    return this.firebase.httpsCallable(functionName, data);
-  }
-
   public get skills(): SkillsClient {
     return {
       get: async (bundleId: string): Promise<DeviceSkill> => {
