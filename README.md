@@ -1,6 +1,8 @@
 # NotionJS
 
-This repository is where [Neurosity](https://neurosity.co) develops the [Notion](https://neurosity.co) API. This source code is available to everyone under the standard [MIT license](./LICENSE) and the documentation is can be found on [docs.neurosity.co](https://docs.neurosity.co/). Thank you for visiting this repository.
+The Notion software processes and manages the data produced by the [Notion headset](https://neurosity.co) which measures, tracks and monitors EEG brainwaves.
+
+This repository is where [Neurosity](https://neurosity.co) develops the Notion API. This source code is available to everyone under the standard [MIT license](./LICENSE) and the documentation is can be found on [docs.neurosity.co](https://docs.neurosity.co/). Thank you for visiting this repository.
 
 This README file is a hub to give you some information about the NotionJS API. At a high-level we seek to use NotionJS to provide the following solutions:
 

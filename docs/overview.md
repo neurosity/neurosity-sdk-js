@@ -3,6 +3,8 @@ id: overview
 title: NotionJS
 ---
 
+The Notion software processes and manages the data produced by the [Notion headset](https://neurosity.co) which measures, tracks and monitors EEG brainwaves.
+
 NotionJS is built with privacy and simplicity in mind. Our mission is to build the next major computing platform. A platform that learns from you. The first step in building this platform is to make applications that add value to people's lives.
 
 We've created NotionJS to empower developers to build neuro-driven and accessible apps, quickly and easily.
