@@ -1,6 +1,6 @@
 ---
 id: overview
-title: NotionJS
+title: Notion JS
 ---
 
 The Notion software processes and manages the data produced by the [Notion headset](https://neurosity.co) which measures, tracks and monitors EEG brainwaves.
