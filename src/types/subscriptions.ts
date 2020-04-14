@@ -5,6 +5,7 @@ export interface PendingSubscription {
   metric: string;
   labels: string[];
   atomic: boolean;
+  serverType?: string;
 }
 
 /**

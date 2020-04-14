@@ -48,6 +48,7 @@ export class WebsocketClient {
   }
 
   public disconnect(): void {
+    this.socket.removeAllListeners();
     if (this.socket.connected) {
       this.socket.disconnect();
     }

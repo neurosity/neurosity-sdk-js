@@ -1,5 +1,5 @@
-import { Observable, throwError } from "rxjs";
-import { map } from "rxjs/operators";
+import { Observable, BehaviorSubject, throwError } from "rxjs";
+import { map, share, switchMap } from "rxjs/operators";
 import { ApiClient, credentialWithLink, createUser } from "./api/index";
 import { getLabels, validate } from "./utils/subscription";
 import { NotionOptions } from "./types/options";
@@ -27,7 +27,7 @@ import { DeviceStatus } from "./types/status";
 import { Action } from "./types/actions";
 
 const defaultOptions = {
-  transport: "online"
+  timesync: false
 };
 
 /**
@@ -50,6 +50,13 @@ export class Notion {
    * @hidden
    */
   protected api: ApiClient;
+
+  /**
+   * @internal
+   */
+  private _incognitoModeSubject: BehaviorSubject<
+    boolean
+  > = new BehaviorSubject(false);
 
   /**
    *
@@ -141,6 +148,35 @@ export class Notion {
   }
 
   /**
+   * ```typescript
+   * notion.isIncognitoMode().subscribe(isIncognito => {
+   *  console.log(isIncognito);
+   * });
+   * ```
+   */
+  public isIncognitoMode(): Observable<boolean> {
+    return this._incognitoModeSubject.asObservable().pipe(share());
+  }
+
+  /**
+   * ```typescript
+   * await notion.enableIncognitoMode(true);
+   * ```
+   */
+  public async enableIncognitoMode(
+    shouldEnable: boolean
+  ): Promise<void> {
+    if (typeof shouldEnable !== "boolean") {
+      return Promise.reject(
+        new Error("enableIncognitoMode can only accept a boolean")
+      );
+    }
+
+    const isEnabled = await this.api.enableIncognitoMode(shouldEnable);
+    this._incognitoModeSubject.next(isEnabled);
+  }
+
+  /**
    * Ends database connection
    *
    * ```typescript
@@ -165,43 +201,54 @@ export class Notion {
       return throwError(error);
     }
 
-    return new Observable(observer => {
-      const subscriptions: Subscription[] = atomic
-        ? [
-            this.api.metrics.subscribe({
-              metric: metric,
-              labels: labels,
-              atomic: atomic
-            })
-          ]
-        : labels.map(label => {
-            return this.api.metrics.subscribe({
-              metric: metric,
-              labels: [label],
-              atomic: atomic
+    const subscribeTo = (serverType: string) =>
+      new Observable((observer) => {
+        const subscriptions: Subscription[] = atomic
+          ? [
+              this.api.metrics.subscribe({
+                metric: metric,
+                labels: labels,
+                atomic: atomic,
+                serverType: serverType
+              })
+            ]
+          : labels.map((label) => {
+              return this.api.metrics.subscribe({
+                metric: metric,
+                labels: [label],
+                atomic: atomic,
+                serverType: serverType
+              });
             });
-          });
 
-      const subscriptionWithListeners = subscriptions.map(
-        subscription => ({
-          subscription,
-          listener: this.api.metrics.on(
+        const subscriptionWithListeners = subscriptions.map(
+          (subscription) => ({
             subscription,
-            (...data: any) => {
-              observer.next(...data);
-            }
-          )
-        })
-      );
-
-      return () => {
-        subscriptionWithListeners.forEach(
-          ({ subscription, listener }) => {
-            this.api.metrics.unsubscribe(subscription, listener);
-          }
+            listener: this.api.metrics.on(
+              subscription,
+              (...data: any) => {
+                observer.next(...data);
+              }
+            )
+          })
         );
-      };
-    });
+
+        return () => {
+          subscriptionWithListeners.forEach(
+            ({ subscription, listener }) => {
+              this.api.metrics.unsubscribe(subscription, listener);
+            }
+          );
+        };
+      });
+
+    return this.isIncognitoMode().pipe(
+      switchMap((isIncognitoMode) =>
+        isIncognitoMode
+          ? subscribeTo(this.api.incognitoModeServerType)
+          : subscribeTo(this.api.defaultServerType)
+      )
+    );
   };
 
   /**
@@ -371,7 +418,7 @@ export class Notion {
    */
   public settings(): Observable<Settings> {
     const namespace = "settings";
-    return new Observable(observer => {
+    return new Observable((observer) => {
       const listener = this.api.onNamespace(
         namespace,
         (settings: Settings) => {
@@ -449,8 +496,8 @@ export class Notion {
    */
   public status(): Observable<DeviceStatus> {
     const namespace = "status";
-    return new Observable(observer => {
-      const listener = this.api.onNamespace(namespace, status => {
+    return new Observable((observer) => {
+      const listener = this.api.onNamespace(namespace, (status) => {
         observer.next(status);
       });
 
@@ -500,7 +547,7 @@ export class Notion {
        * Records a training for a metric/label pair
        * @category Training
        */
-      record: training => {
+      record: (training) => {
         const userId =
           this.api.user && "uid" in this.api.user
             ? this.api.user.uid
@@ -522,7 +569,7 @@ export class Notion {
        * Stops the training for a metric/label pair
        * @category Training
        */
-      stop: training => {
+      stop: (training) => {
         this.api.actions.dispatch({
           command: "training",
           action: "stop",
@@ -585,7 +632,7 @@ export class Notion {
     return {
       metric: (label: string) => {
         const metricName = `skill~${skillData.id}~${label}`;
-        const subscription = new Observable(observer => {
+        const subscription = new Observable((observer) => {
           const subscription: Subscription = this.api.metrics.subscribe(
             {
               metric: metricName,
@@ -604,7 +651,7 @@ export class Notion {
           return () => {
             this.api.metrics.unsubscribe(subscription, listener);
           };
-        }).pipe(map(metric => metric[label]));
+        }).pipe(map((metric) => metric[label]));
 
         Object.defineProperty(subscription, "next", {
           value: (metricValue: { [label: string]: any }): void => {
