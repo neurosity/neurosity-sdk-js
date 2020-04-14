@@ -27,6 +27,8 @@ export class ApiClient implements Client {
   protected websocket: WebsocketClient;
   protected timesync: Timesync;
   protected subscriptionManager: SubscriptionManager;
+  public defaultServerType: string = FirebaseClient.serverType;
+  public incognitoModeServerType: string = WebsocketClient.serverType;
 
   constructor(options: NotionOptions) {
     this.options = options;
@@ -35,7 +37,7 @@ export class ApiClient implements Client {
       subscriptionManager: this.subscriptionManager
     });
 
-    this.firebase.onAuthStateChanged().subscribe(user => {
+    this.firebase.onAuthStateChanged().subscribe((user) => {
       this.user = user;
     });
 
@@ -46,44 +48,49 @@ export class ApiClient implements Client {
         });
       });
     }
-
-    if (this.options.transport === "offline") {
-      this.initWebsocket();
-    }
   }
 
-  private initWebsocket() {
-    if (this.options.onDeviceSocketUrl) {
-      this.websocket = new WebsocketClient({
-        deviceId: this.options.deviceId,
-        socketUrl: this.options.onDeviceSocketUrl
+  public enableIncognitoMode(shouldEnable: boolean): Promise<boolean> {
+    const { deviceId, onDeviceSocketUrl } = this.options;
+
+    const setWebsocket = (socketUrl: string): void => {
+      this.websocket = new WebsocketClient({ deviceId, socketUrl });
+    };
+
+    const unsetWebsocket = (): void => {
+      this.websocket.disconnect();
+      this.websocket = null;
+    };
+
+    if (!shouldEnable) {
+      return new Promise((resolve) => {
+        unsetWebsocket();
+        resolve(false);
       });
-      return;
     }
 
-    // this.websocket = new WebsocketClient({
-    //   deviceId: this.options.deviceId
-    // });
-
-    this.onNamespace("status/socketUrl", (socketUrl: string | null) => {
-      console.log("set socket is now", socketUrl);
-
-      if (!socketUrl) {
-        throw new Error(
-          "Your device's OS does not support `offline` transport. Please update your OS to the latest version."
-        );
+    return new Promise((resolve, reject) => {
+      if (onDeviceSocketUrl) {
+        setWebsocket(onDeviceSocketUrl);
+        resolve(true);
       }
 
-      this.websocket = new WebsocketClient({
-        deviceId: this.options.deviceId,
-        socketUrl: socketUrl
+      type SocketUrl = string | null;
+      this.onNamespace("context/socketUrl", (socketUrl: SocketUrl) => {
+        if (!socketUrl) {
+          const error = `Your device's OS does not support incognitoMode. Try updating to the latest OS.`;
+          reject(new Error(error));
+        }
+
+        setWebsocket(socketUrl);
+        resolve(true);
       });
     });
   }
 
   public get actions(): Actions {
     return {
-      dispatch: action => {
+      dispatch: (action) => {
         return this.firebase.dispatchAction(action);
       }
     };
@@ -127,8 +134,9 @@ export class ApiClient implements Client {
   }
 
   public get metrics(): Metrics {
-    const isOfflineMetric = (metric: string): boolean =>
-      this.options.transport === "offline" && isNotionMetric(metric);
+    const isWebsocketMetric = (subscription: Subscription): boolean =>
+      subscription.serverType === WebsocketClient.serverType &&
+      isNotionMetric(subscription.metric);
 
     return {
       next: (metricName: string, metricValue: any): void => {
@@ -138,22 +146,16 @@ export class ApiClient implements Client {
         subscription: Subscription,
         callback: Function
       ): Function => {
-        if (isOfflineMetric(subscription.metric)) {
+        if (isWebsocketMetric(subscription)) {
           return this.websocket.onMetric(subscription, callback);
         } else {
           return this.firebase.onMetric(subscription, callback);
         }
       },
       subscribe: (subscription: Subscription): Subscription => {
-        const serverType = isOfflineMetric(subscription.metric)
-          ? WebsocketClient.serverType
-          : FirebaseClient.serverType;
-
-        const subscriptionCreated = this.firebase.subscribeToMetric({
-          ...subscription,
-          serverType
-        });
-
+        const subscriptionCreated = this.firebase.subscribeToMetric(
+          subscription
+        );
         this.subscriptionManager.add(subscriptionCreated);
         return subscriptionCreated;
       },
@@ -162,9 +164,12 @@ export class ApiClient implements Client {
         listener: Function
       ): void => {
         this.subscriptionManager.remove(subscription);
+        this.firebase.unsubscribeFromMetric(subscription);
 
-        if (isOfflineMetric(subscription.metric)) {
-          this.websocket.removeMetricListener(subscription, listener);
+        if (isWebsocketMetric(subscription)) {
+          if (this.websocket) {
+            this.websocket.removeMetricListener(subscription, listener);
+          }
         } else {
           this.firebase.removeMetricListener(subscription, listener);
         }

@@ -16,9 +16,13 @@ export function createSkill(app: SkillApp) {
       options: OnDeviceOptions
     ): Promise<SkillSubscription> => {
       const [notion, skill] = await createNotionOnDevice({
-        ...options,
-        transport: "offline"
+        ...options
       });
+
+      await notion
+        .enableIncognitoMode(true)
+        .catch((error) => console.error(error.message));
+
       const teardown = app(notion, skill);
 
       return {
