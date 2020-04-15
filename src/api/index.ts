@@ -1,4 +1,3 @@
-import { metrics } from "@neurosity/ipk";
 import { FirebaseClient } from "./firebase/index";
 import { WebsocketClient } from "./websocket";
 import { Timesync } from "../timesync";
@@ -11,9 +10,6 @@ import { SkillsClient, DeviceSkill } from "../types/skill";
 import { Credentials } from "../types/credentials";
 import { ChangeSettings } from "../types/settings";
 import { Subscription } from "../types/subscriptions";
-
-const isNotionMetric = (metric: string): boolean =>
-  Object.keys(metrics).includes(metric);
 
 export { credentialWithLink, createUser } from "./firebase";
 
@@ -28,7 +24,7 @@ export class ApiClient implements Client {
   protected timesync: Timesync;
   protected subscriptionManager: SubscriptionManager;
   public defaultServerType: string = FirebaseClient.serverType;
-  public incognitoModeServerType: string = WebsocketClient.serverType;
+  public localServerType: string = WebsocketClient.serverType;
 
   constructor(options: NotionOptions) {
     this.options = options;
@@ -50,42 +46,16 @@ export class ApiClient implements Client {
     }
   }
 
-  public enableIncognitoMode(shouldEnable: boolean): Promise<boolean> {
-    const { deviceId, onDeviceSocketUrl } = this.options;
+  public setWebsocket(socketUrl: string): void {
+    const { deviceId } = this.options;
+    this.websocket = new WebsocketClient({ deviceId, socketUrl });
+  }
 
-    const setWebsocket = (socketUrl: string): void => {
-      this.websocket = new WebsocketClient({ deviceId, socketUrl });
-    };
-
-    const unsetWebsocket = (): void => {
+  public unsetWebsocket(): void {
+    if (this.websocket) {
       this.websocket.disconnect();
       this.websocket = null;
-    };
-
-    if (!shouldEnable) {
-      return new Promise((resolve) => {
-        unsetWebsocket();
-        resolve(false);
-      });
     }
-
-    return new Promise((resolve, reject) => {
-      if (onDeviceSocketUrl) {
-        setWebsocket(onDeviceSocketUrl);
-        resolve(true);
-      }
-
-      type SocketUrl = string | null;
-      this.onNamespace("context/socketUrl", (socketUrl: SocketUrl) => {
-        if (!socketUrl) {
-          const error = `Your device's OS does not support incognitoMode. Try updating to the latest OS.`;
-          reject(new Error(error));
-        }
-
-        setWebsocket(socketUrl);
-        resolve(true);
-      });
-    });
   }
 
   public get actions(): Actions {
@@ -129,14 +99,17 @@ export class ApiClient implements Client {
     return this.firebase.onNamespace(namespace, callback);
   }
 
+  public async onceNamespace(namespace: string): Promise<any> {
+    return await this.firebase.onceNamespace(namespace);
+  }
+
   public offNamespace(namespace: string, listener: Function): void {
     this.firebase.offNamespace(namespace, listener);
   }
 
   public get metrics(): Metrics {
     const isWebsocketMetric = (subscription: Subscription): boolean =>
-      subscription.serverType === WebsocketClient.serverType &&
-      isNotionMetric(subscription.metric);
+      subscription.serverType === WebsocketClient.serverType;
 
     return {
       next: (metricName: string, metricValue: any): void => {

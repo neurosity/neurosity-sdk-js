@@ -65,7 +65,7 @@ export class FirebaseClient {
   }
 
   onAuthStateChanged(): Observable<User | null> {
-    return new Observable(observer => {
+    return new Observable((observer) => {
       this.app.auth().onAuthStateChanged((user: User | null) => {
         observer.next(user);
       });
@@ -73,7 +73,7 @@ export class FirebaseClient {
   }
 
   onLogin(): Observable<User> {
-    return new Observable(observer => {
+    return new Observable((observer) => {
       const unsubscribe = this.app
         .auth()
         .onAuthStateChanged((user: User) => {
@@ -140,7 +140,7 @@ export class FirebaseClient {
     }
 
     const notionApp = moduleApps.find(
-      app => app.name === notionAppName
+      (app) => app.name === notionAppName
     );
     return notionApp
       ? notionApp
@@ -165,6 +165,10 @@ export class FirebaseClient {
 
   public onNamespace(namespace: string, callback: Function): Function {
     return this.deviceStore.onNamespace(namespace, callback);
+  }
+
+  public async onceNamespace(namespace: string): Promise<any> {
+    return await this.deviceStore.once(namespace);
   }
 
   public offNamespace(namespace: string, listener: Function): void {

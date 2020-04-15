@@ -20,7 +20,7 @@ export function createSkill(app: SkillApp) {
       });
 
       await notion
-        .enableIncognitoMode(true)
+        .enableLocalMode(true)
         .catch((error) => console.error(error.message));
 
       const teardown = app(notion, skill);

@@ -1,7 +1,6 @@
-import { Observable, BehaviorSubject, throwError } from "rxjs";
-import { map, share, switchMap } from "rxjs/operators";
+import { Observable, BehaviorSubject, throwError, of } from "rxjs";
+import { map, share, switchMap, tap } from "rxjs/operators";
 import { ApiClient, credentialWithLink, createUser } from "./api/index";
-import { getLabels, validate } from "./utils/subscription";
 import { NotionOptions } from "./types/options";
 import { Training } from "./types/training";
 import { SkillInstance } from "./types/skill";
@@ -12,6 +11,11 @@ import { SignalQuality } from "./types/signalQuality";
 import { Kinesis } from "./types/kinesis";
 import { Calm } from "./types/calm";
 import { Focus } from "./types/focus";
+import {
+  getLabels,
+  validate,
+  isNotionMetric
+} from "./utils/subscription";
 import {
   PendingSubscription,
   Subscription
@@ -54,7 +58,7 @@ export class Notion {
   /**
    * @internal
    */
-  private _incognitoModeSubject: BehaviorSubject<
+  private _localModeSubject: BehaviorSubject<
     boolean
   > = new BehaviorSubject(false);
 
@@ -148,32 +152,68 @@ export class Notion {
   }
 
   /**
+   * Observes Local Mode changes
+   *
    * ```typescript
-   * notion.isIncognitoMode().subscribe(isIncognito => {
-   *  console.log(isIncognito);
+   * notion.isLocalMode().subscribe(isLocalMode => {
+   *  console.log(isLocalMode);
    * });
    * ```
    */
-  public isIncognitoMode(): Observable<boolean> {
-    return this._incognitoModeSubject.asObservable().pipe(share());
+  public isLocalMode(): Observable<boolean> {
+    return this._localModeSubject.asObservable().pipe(share());
   }
 
   /**
+   * Enables and Disables Local Mode
+   * With local mode, device metrics like brainwaves, calm, focus, etc will stream
+   * via your local WiFi network and not the default cloud server.
+   *
+   * Local Mode is disabled by default, to enable it:
+   *
    * ```typescript
-   * await notion.enableIncognitoMode(true);
+   * await notion.enableLocalMode(true);
    * ```
+   *
+   * Keep in mind:
+   *  - Activity Logging will <em>not work</em> while this setting is enabled.
+   *  - Your Notion must be connected to the same WiFi network as this device to establish communication.
+   *  - For encryption to work, you must be connected to a private network.
+   *  - Some WiFi networks may block IP ranges that might include your Notion's IP address.
+   *  - This setting is not global and needs to be set for every Notion app you wish to affect.
    */
-  public async enableIncognitoMode(
+  public async enableLocalMode(
     shouldEnable: boolean
-  ): Promise<void> {
+  ): Promise<boolean> {
     if (typeof shouldEnable !== "boolean") {
       return Promise.reject(
-        new Error("enableIncognitoMode can only accept a boolean")
+        new TypeError("enableLocalMode can only accept a boolean")
       );
     }
 
-    const isEnabled = await this.api.enableIncognitoMode(shouldEnable);
-    this._incognitoModeSubject.next(isEnabled);
+    if (!shouldEnable) {
+      this._localModeSubject.next(shouldEnable);
+      return shouldEnable;
+    }
+
+    const [localModeSupported, error] = await this.api
+      .onceNamespace("context/socketUrl")
+      .then((socketUrl) => {
+        if (!socketUrl) {
+          const error = `Your device's OS does not support localMode. Try updating to the latest OS.`;
+          return [false, new Error(error)];
+        }
+        return [true, null];
+      })
+      .catch((error) => [false, error]);
+
+    if (!localModeSupported) {
+      return Promise.reject(error);
+    }
+
+    this._localModeSubject.next(shouldEnable);
+
+    return shouldEnable;
   }
 
   /**
@@ -185,6 +225,30 @@ export class Notion {
    */
   public async disconnect(): Promise<void> {
     return await this.api.disconnect();
+  }
+
+  /**
+   * @internal
+   * Not user facing
+   */
+  protected socketUrl(): Observable<string> {
+    const { onDeviceSocketUrl } = this.options;
+
+    if (onDeviceSocketUrl) {
+      return of(onDeviceSocketUrl);
+    }
+
+    const namespace = "context/socketUrl";
+    return new Observable((observer) => {
+      const listener = this.api.onNamespace(
+        namespace,
+        (socketUrl: string) => {
+          observer.next(socketUrl);
+        }
+      );
+
+      return () => this.api.offNamespace(namespace, listener);
+    });
   }
 
   /**
@@ -242,12 +306,20 @@ export class Notion {
         };
       });
 
-    return this.isIncognitoMode().pipe(
-      switchMap((isIncognitoMode) =>
-        isIncognitoMode
-          ? subscribeTo(this.api.incognitoModeServerType)
-          : subscribeTo(this.api.defaultServerType)
-      )
+    return this.isLocalMode().pipe(
+      switchMap((isLocalMode) => {
+        if (isLocalMode && isNotionMetric(metric)) {
+          return this.socketUrl().pipe(
+            tap((socketUrl) => {
+              this.api.setWebsocket(socketUrl);
+            }),
+            switchMap(() => subscribeTo(this.api.localServerType))
+          );
+        }
+
+        this.api.unsetWebsocket();
+        return subscribeTo(this.api.defaultServerType);
+      })
     );
   };
 
@@ -509,7 +581,7 @@ export class Notion {
    * @internal
    * Not user facing yet
    *
-   * Changes device settings programatically. These settings can be
+   * Changes device settings programmatically. These settings can be
    * also changed from the developer console under device settings.
    *
    * Available settings [[ChangeSettings]]
@@ -616,7 +688,7 @@ export class Notion {
    * and push skill metrics
    *
    * @param bundleId Bundle ID of skill
-   * @returns Skill isntance
+   * @returns Skill instance
    */
   public async skill(bundleId: string): Promise<SkillInstance> {
     const skillData = await this.api.skills.get(bundleId);

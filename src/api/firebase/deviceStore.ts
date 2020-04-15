@@ -18,7 +18,7 @@ export const createDeviceStore = (
   const clientId = deviceRef.child("subscriptions").push().key;
   const clientRef = deviceRef.child(`clients/${clientId}`);
 
-  const child = namespace => {
+  const child = (namespace) => {
     return deviceRef.child(namespace);
   };
 
@@ -35,7 +35,7 @@ export const createDeviceStore = (
   };
 
   const on = (eventType: any = "value", namespace, callback) => {
-    return deviceRef.child(namespace).on(eventType, snapshot => {
+    return deviceRef.child(namespace).on(eventType, (snapshot) => {
       callback(snapshot.val(), snapshot);
     });
   };
@@ -53,7 +53,7 @@ export const createDeviceStore = (
     return snapshot.val();
   };
 
-  const remove = namespace => {
+  const remove = (namespace) => {
     deviceRef.child(namespace).remove();
   };
 
@@ -63,7 +63,7 @@ export const createDeviceStore = (
     callback: (res: any) => void,
     overrideResponse?: any
   ) => {
-    on(eventType, namespace, data => {
+    on(eventType, namespace, (data) => {
       if (data !== null) {
         off(namespace, eventType);
         const response = overrideResponse ? overrideResponse : data;
@@ -88,7 +88,7 @@ export const createDeviceStore = (
   app
     .database()
     .ref(".info/connected")
-    .on("value", snapshot => {
+    .on("value", (snapshot) => {
       if (!snapshot.val()) {
         return;
       }
@@ -102,12 +102,9 @@ export const createDeviceStore = (
           // NOTION-115: Re-subscribe when internet connection is lost and regained
           update("subscriptions", subscriptionManager.get()).then(
             () => {
-              subscriptionManager.toList().forEach(subscription => {
+              subscriptionManager.toList().forEach((subscription) => {
                 const childPath = `subscriptions/${subscription.id}`;
-                deviceRef
-                  .child(childPath)
-                  .onDisconnect()
-                  .remove();
+                deviceRef.child(childPath).onDisconnect().remove();
               });
             }
           );
@@ -127,7 +124,7 @@ export const createDeviceStore = (
     offNamespace: (namespace: string, listener: Function): void => {
       off(namespace, "value", listener);
     },
-    dispatchAction: async action => {
+    dispatchAction: async (action) => {
       const snapshot = await push("actions", action);
       const actionId = snapshot.key;
       const actionPath = `actions/${actionId}`;
@@ -146,7 +143,7 @@ export const createDeviceStore = (
           }, responseTimeout);
         });
 
-        const response = new Promise(resolve => {
+        const response = new Promise((resolve) => {
           bindListener("value", `${actionPath}/response`, resolve);
         });
 
@@ -166,13 +163,13 @@ export const createDeviceStore = (
       const child = atomic
         ? `metrics/${metric}`
         : `metrics/${metric}/${labels[0]}`;
-      return on("value", child, data => {
+      return on("value", child, (data) => {
         if (data !== null) {
           callback(data);
         }
       });
     },
-    subscribeToMetric: subscription => {
+    subscribeToMetric: (subscription) => {
       const id = deviceRef.child("subscriptions").push().key;
       const childPath = `subscriptions/${id}`;
       const subscriptionCreated = {
@@ -182,14 +179,11 @@ export const createDeviceStore = (
       };
       set(childPath, subscriptionCreated);
 
-      deviceRef
-        .child(childPath)
-        .onDisconnect()
-        .remove();
+      deviceRef.child(childPath).onDisconnect().remove();
 
       return subscriptionCreated;
     },
-    unsubscribeFromMetric: subscription => {
+    unsubscribeFromMetric: (subscription) => {
       remove(`subscriptions/${subscription.id}`);
     },
     removeMetricListener(subscription, listener: Function) {

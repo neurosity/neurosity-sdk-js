@@ -1,6 +1,9 @@
 import { metrics } from "@neurosity/ipk";
 import { NotionOptions } from "../types/options";
 
+export const isNotionMetric = (metric: string): boolean =>
+  Object.keys(metrics).includes(metric);
+
 export const getLabels = (metric: string): string[] =>
   Object.keys(metrics[metric]);
 
@@ -9,7 +12,7 @@ export const hasInvalidLabels = (
   labels: string[]
 ): boolean => {
   const validLabels = getLabels(metric);
-  return !labels.every(label => validLabels.includes(label));
+  return !labels.every((label) => validLabels.includes(label));
 };
 
 export const isMetricDisallowed = (
