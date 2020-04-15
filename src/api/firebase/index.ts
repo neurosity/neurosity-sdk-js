@@ -1,6 +1,7 @@
 import { Observable } from "rxjs";
 import firebase from "firebase/app";
 import "firebase/database";
+import "firebase/firestore";
 import "firebase/auth";
 
 import { User } from "@firebase/auth-types";
