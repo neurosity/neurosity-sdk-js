@@ -165,7 +165,8 @@ export class Notion {
   }
 
   /**
-   * Enables and Disables Local Mode
+   * Enables/disables local mode
+   *
    * With local mode, device metrics like brainwaves, calm, focus, etc will stream
    * via your local WiFi network and not the default cloud server.
    *
@@ -175,11 +176,18 @@ export class Notion {
    * await notion.enableLocalMode(true);
    * ```
    *
+   * To disable it:
+   *
+   * ```typescript
+   * await notion.enableLocalMode(false);
+   * ```
+   *
    * Keep in mind:
    *  - Activity Logging will <em>not work</em> while this setting is enabled.
    *  - Your Notion must be connected to the same WiFi network as this device to establish communication.
    *  - For encryption to work, you must be connected to a private network.
    *  - Some WiFi networks may block IP ranges that might include your Notion's IP address.
+   *  - An internet connection is still needed to authenticate, get device status and add metric subscriptions.
    *  - This setting is not global and needs to be set for every Notion app you wish to affect.
    */
   public async enableLocalMode(
