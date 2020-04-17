@@ -1,5 +1,7 @@
 export interface Settings {
   lsl: boolean;
+  supportAccess: boolean;
+  activityLogging: boolean;
 }
 
 /**
@@ -7,4 +9,6 @@ export interface Settings {
  */
 export interface ChangeSettings {
   lsl?: boolean;
+  supportAccess?: boolean;
+  activityLogging?: boolean;
 }
