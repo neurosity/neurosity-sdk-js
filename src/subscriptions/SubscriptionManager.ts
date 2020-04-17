@@ -1,5 +1,8 @@
 import { Subscription, Subscriptions } from "../types/subscriptions";
 
+/**
+ * @hidden
+ */
 export class SubscriptionManager {
   private _subscriptions: Subscriptions = {};
 
