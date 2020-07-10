@@ -1,3 +1,7 @@
+import firebase from "firebase/app";
+
+const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
+
 export interface IDevice {
   info: any;
   status: any;
@@ -11,7 +15,6 @@ export interface IDevice {
 export const createDeviceStore = (
   app,
   deviceId,
-  SERVER_TIMESTAMP,
   subscriptionManager
 ) => {
   const deviceRef = app.database().ref(`devices/${deviceId}`);

@@ -11,6 +11,7 @@ import { SignalQuality } from "./types/signalQuality";
 import { Kinesis } from "./types/kinesis";
 import { Calm } from "./types/calm";
 import { Focus } from "./types/focus";
+import { Device } from "./types/device";
 import {
   getLabels,
   validate,
@@ -29,9 +30,11 @@ import {
 import { DeviceInfo } from "./types/info";
 import { DeviceStatus } from "./types/status";
 import { Action } from "./types/actions";
+import * as errors from "./utils/errors";
 
 const defaultOptions = {
-  timesync: false
+  timesync: false,
+  autoSelectDevice: true
 };
 
 /**
@@ -39,9 +42,7 @@ const defaultOptions = {
  * ```typescript
  * import { Notion } from "@neurosity/notion";
  *
- * const notion = new Notion({
- *   deviceId: "..."
- * });
+ * const notion = new Notion();
  * ```
  */
 export class Notion {
@@ -78,9 +79,7 @@ export class Notion {
    * Creates new instance of Notion
    * 
    * ```typescript
-   * const notion = new Notion({
-   *   deviceId: "..."
-   * });
+   * const notion = new Notion();
    * ```
 
    * @param options
@@ -90,11 +89,8 @@ export class Notion {
       ...defaultOptions,
       ...options
     });
-    this.api = new ApiClient(this.options);
 
-    if (!this.options.deviceId) {
-      throw new Error("Notion: deviceId is mandatory");
-    }
+    this.api = new ApiClient(this.options);
   }
 
   /**
@@ -143,11 +139,53 @@ export class Notion {
   }
 
   /**
+   * Get user devices
+   *
+   * ```typescript
+   * const devices = await notion.getDevices();
+   * console.log(devices);
+   * ```
+   */
+  public async getDevices(): Promise<Device[]> {
+    return await this.api.getDevices();
+  }
+
+  /**
+   * Select device
+   *
+   * ```typescript
+   * const devices = await notion.selectDevice();
+   * console.log(devices);
+   * ```
+   */
+  public async selectDevice(
+    deviceSelector: (devices: Device[]) => Device
+  ): Promise<Device> {
+    return await this.api.selectDevice(deviceSelector);
+  }
+
+  /**
+   * Get selected device
+   *
+   * ```typescript
+   * const selectedDevice = await notion.getSelectedDevice();
+   * console.log(selectedDevice);
+   * ```
+   */
+  public async getSelectedDevice(): Promise<Device> {
+    return await this.api.getSelectedDevice();
+  }
+
+  /**
    * ```typescript
    * const info = await notion.getInfo();
    * ```
    */
   public async getInfo(): Promise<DeviceInfo> {
+    if (!this.api.didSelectDevice()) {
+      return Promise.reject(errors.mustSelectDevice);
+    }
+
     return await this.api.getInfo();
   }
 
@@ -264,6 +302,10 @@ export class Notion {
   protected getMetric = (
     subscription: PendingSubscription
   ): Observable<any> => {
+    if (!this.api.didSelectDevice()) {
+      return throwError(errors.mustSelectDevice);
+    }
+
     const { metric, labels, atomic } = subscription;
 
     const error = validate(metric, labels, this.options);
@@ -334,6 +376,10 @@ export class Notion {
    * Not user facing
    */
   private dispatchAction(action: Action): Promise<Action> | void {
+    if (!this.api.didSelectDevice()) {
+      return Promise.reject(errors.mustSelectDevice);
+    }
+
     return this.api.actions.dispatch(action);
   }
 
@@ -351,6 +397,10 @@ export class Notion {
    * @param label Name the label to inject
    */
   public addMarker(label: string): void {
+    if (!this.api.didSelectDevice()) {
+      throw errors.mustSelectDevice;
+    }
+
     if (!label) {
       throw new Error("Notion: a label is required for addMarker");
     }
@@ -495,6 +545,10 @@ export class Notion {
    * @returns Observable of `settings` metric events
    */
   public settings(): Observable<Settings> {
+    if (!this.api.didSelectDevice()) {
+      return throwError(errors.mustSelectDevice);
+    }
+
     const namespace = "settings";
     return new Observable((observer) => {
       const listener = this.api.onNamespace(
@@ -573,6 +627,10 @@ export class Notion {
    * @returns Observable of `status` metric events
    */
   public status(): Observable<DeviceStatus> {
+    if (!this.api.didSelectDevice()) {
+      return throwError(errors.mustSelectDevice);
+    }
+
     const namespace = "status";
     return new Observable((observer) => {
       const listener = this.api.onNamespace(namespace, (status) => {
@@ -600,6 +658,10 @@ export class Notion {
    * ```
    */
   public changeSettings(settings: ChangeSettings): Promise<void> {
+    if (!this.api.didSelectDevice()) {
+      return Promise.reject(errors.mustSelectDevice);
+    }
+
     return this.api.changeSettings(settings);
   }
 
@@ -626,6 +688,10 @@ export class Notion {
        * @category Training
        */
       record: (training) => {
+        if (!this.api.didSelectDevice()) {
+          throw errors.mustSelectDevice;
+        }
+
         const userId =
           this.api.user && "uid" in this.api.user
             ? this.api.user.uid
@@ -648,6 +714,10 @@ export class Notion {
        * @category Training
        */
       stop: (training) => {
+        if (!this.api.didSelectDevice()) {
+          throw errors.mustSelectDevice;
+        }
+
         this.api.actions.dispatch({
           command: "training",
           action: "stop",
@@ -661,6 +731,10 @@ export class Notion {
        * @category Training
        */
       stopAll: () => {
+        if (!this.api.didSelectDevice()) {
+          throw errors.mustSelectDevice;
+        }
+
         this.api.actions.dispatch({
           command: "training",
           action: "stopAll",
@@ -697,6 +771,10 @@ export class Notion {
    * @returns Skill instance
    */
   public async skill(bundleId: string): Promise<SkillInstance> {
+    if (!this.api.didSelectDevice()) {
+      return Promise.reject(errors.mustSelectDevice);
+    }
+
     const skillData = await this.api.skills.get(bundleId);
 
     if (skillData === null) {

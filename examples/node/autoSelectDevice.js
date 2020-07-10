@@ -1,0 +1,20 @@
+const { Notion } = require("../..");
+
+// Note: when deviceId is not passed,
+// Notion will auto select the first claimed device
+const notion = new Notion();
+
+(async () => {
+  await notion
+    .login({
+      email: process.env.NEUROSITY_EMAIL,
+      password: process.env.NEUROSITY_PASSWORD
+    })
+    .catch((error) => {
+      console.log("error", error);
+    });
+
+  notion.status().subscribe((status) => {
+    console.log("status", status);
+  });
+})();

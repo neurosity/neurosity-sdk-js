@@ -2,7 +2,8 @@ import { Skill } from "./skill";
 import { SubscriptionManager } from "../subscriptions/SubscriptionManager";
 
 export interface NotionOptions {
-  deviceId: string;
+  deviceId?: string;
+  autoSelectDevice?: boolean;
   timesync?: boolean;
   /**
    * @hidden

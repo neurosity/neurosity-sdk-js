@@ -5,7 +5,6 @@ import { Subscription } from "../../types/subscriptions";
  * @hidden
  */
 type WebsocketOptions = {
-  deviceId: string;
   socketUrl?: string;
   secure?: boolean;
 };
@@ -28,9 +27,7 @@ export class WebsocketClient {
       ...options
     });
 
-    this.socket = io(this.options.socketUrl, {
-      path: `/${this.options.deviceId}`
-    });
+    this.socket = io(this.options.socketUrl);
   }
 
   public onMetric(
