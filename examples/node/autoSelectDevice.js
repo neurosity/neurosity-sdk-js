@@ -5,7 +5,7 @@ const { Notion } = require("../..");
 const notion = new Notion();
 
 (async () => {
-  await notion
+  const response = await notion
     .login({
       email: process.env.NEUROSITY_EMAIL,
       password: process.env.NEUROSITY_PASSWORD
@@ -13,6 +13,8 @@ const notion = new Notion();
     .catch((error) => {
       console.log("error", error);
     });
+
+  console.log("response", response);
 
   notion.status().subscribe((status) => {
     console.log("status", status);

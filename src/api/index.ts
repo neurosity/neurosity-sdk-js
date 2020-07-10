@@ -60,7 +60,7 @@ export class ApiClient implements Client {
 
     // Select based on `deviceId` passed
     if (this.options.deviceId) {
-      await this.selectDevice((devices) => {
+      return await this.selectDevice((devices) => {
         return devices.find(
           (device) => device.id === this.options.deviceId
         );
@@ -69,7 +69,7 @@ export class ApiClient implements Client {
 
     // Auto select device
     if (!this.options.deviceId && this.options.autoSelectDevice) {
-      await this.selectDevice((devices) => {
+      return await this.selectDevice((devices) => {
         // Auto select first device
         return devices[0];
       });
@@ -112,9 +112,23 @@ export class ApiClient implements Client {
       return Promise.reject(`Already logged in.`);
     }
 
-    const user = await this.firebaseUser.login(credentials);
-    await this.runAutoOperations();
-    return user;
+    const auth = await this.firebaseUser.login(credentials);
+    const selectedDevice = await this.runAutoOperations();
+
+    if (auth && selectedDevice) {
+      return {
+        auth,
+        selectedDevice
+      };
+    }
+
+    if (auth) {
+      return {
+        auth
+      };
+    }
+
+    return Promise.reject(`Failed to log in.`);
   }
 
   public async logout(): Promise<any> {

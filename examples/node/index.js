@@ -7,7 +7,7 @@ const deviceId = process.env.NEUROSITY_DEVICE_ID;
 
 const choices = fs
   .readdirSync("./examples/node")
-  .filter(fileName => fileName !== "index.js");
+  .filter((fileName) => fileName !== "index.js");
 
 const questions = [
   {
