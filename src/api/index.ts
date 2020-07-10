@@ -1,4 +1,5 @@
-import { FirebaseClient } from "./firebase/index";
+import { BehaviorSubject } from "rxjs";
+import { FirebaseApp, FirebaseUser, FirebaseDevice } from "./firebase";
 import { WebsocketClient } from "./websocket";
 import { Timesync } from "../timesync";
 import { SubscriptionManager } from "../subscriptions/SubscriptionManager";
@@ -10,6 +11,7 @@ import { SkillsClient, DeviceSkill } from "../types/skill";
 import { Credentials } from "../types/credentials";
 import { ChangeSettings } from "../types/settings";
 import { Subscription } from "../types/subscriptions";
+import { Device } from "../types/device";
 
 export { credentialWithLink, createUser } from "./firebase";
 
@@ -19,36 +21,63 @@ export { credentialWithLink, createUser } from "./firebase";
 export class ApiClient implements Client {
   public user;
   protected options: NotionOptions;
-  protected firebase: FirebaseClient;
+  protected firebaseApp: FirebaseApp;
+  protected firebaseUser: FirebaseUser;
+  protected firebaseDevice: FirebaseDevice;
   protected websocket: WebsocketClient;
   protected timesync: Timesync;
   protected subscriptionManager: SubscriptionManager;
-  public defaultServerType: string = FirebaseClient.serverType;
+  public defaultServerType: string = FirebaseDevice.serverType;
   public localServerType: string = WebsocketClient.serverType;
+
+  /**
+   * @internal
+   */
+  private _selectedDeviceId: BehaviorSubject<
+    string | null
+  > = new BehaviorSubject(null);
 
   constructor(options: NotionOptions) {
     this.options = options;
     this.subscriptionManager = new SubscriptionManager();
-    this.firebase = new FirebaseClient(options, {
-      subscriptionManager: this.subscriptionManager
-    });
-
-    this.firebase.onAuthStateChanged().subscribe((user) => {
+    this.firebaseApp = new FirebaseApp(options);
+    this.firebaseUser = new FirebaseUser(this.firebaseApp);
+    this.firebaseUser.onAuthStateChanged().subscribe((user) => {
       this.user = user;
     });
+  }
 
+  // Operations to automatically run when user logs in
+  private async runAutoOperations() {
+    // Timesync
     if (this.options.timesync) {
-      this.firebase.onLogin().subscribe(() => {
-        this.timesync = new Timesync({
-          getTimesync: this.firebase.getTimesync.bind(this.firebase)
-        });
+      this.timesync = new Timesync({
+        getTimesync: this.firebaseDevice.getTimesync.bind(
+          this.firebaseDevice
+        )
+      });
+    }
+
+    // Select based on `deviceId` passed
+    if (this.options.deviceId) {
+      await this.selectDevice((devices) => {
+        return devices.find(
+          (device) => device.id === this.options.deviceId
+        );
+      });
+    }
+
+    // Auto select device
+    if (!this.options.deviceId && this.options.autoSelectDevice) {
+      await this.selectDevice((devices) => {
+        // Auto select first device
+        return devices[0];
       });
     }
   }
 
   public setWebsocket(socketUrl: string): void {
-    const { deviceId } = this.options;
-    this.websocket = new WebsocketClient({ deviceId, socketUrl });
+    this.websocket = new WebsocketClient({ socketUrl });
   }
 
   public unsetWebsocket(): void {
@@ -61,7 +90,7 @@ export class ApiClient implements Client {
   public get actions(): Actions {
     return {
       dispatch: (action) => {
-        return this.firebase.dispatchAction(action);
+        return this.firebaseDevice.dispatchAction(action);
       }
     };
   }
@@ -71,40 +100,111 @@ export class ApiClient implements Client {
       this.websocket.disconnect();
     }
 
-    return this.firebase.disconnect();
+    return this.firebaseApp.disconnect();
   }
 
   public async getInfo(): Promise<any> {
-    return await this.firebase.getInfo();
+    return await this.firebaseDevice.getInfo();
   }
 
   public async login(credentials: Credentials): Promise<any> {
-    const user = await this.firebase.login(credentials);
+    if (this.user) {
+      return Promise.reject(`Already logged in.`);
+    }
+
+    const user = await this.firebaseUser.login(credentials);
+    await this.runAutoOperations();
     return user;
   }
 
   public async logout(): Promise<any> {
-    return await this.firebase.logout();
+    return await this.firebaseUser.logout();
   }
 
   public auth() {
-    return this.firebase.auth();
+    return this.firebaseUser.auth();
   }
 
   public onAuthStateChanged() {
-    return this.firebase.onAuthStateChanged();
+    return this.firebaseUser.onAuthStateChanged();
+  }
+
+  public getDevices() {
+    return this.firebaseUser.getDevices();
+  }
+
+  public didSelectDevice(): boolean {
+    return !!this._selectedDeviceId.getValue();
+  }
+
+  public async selectDevice(
+    deviceSelector: (devices: Device[]) => Device
+  ): Promise<Device> {
+    if (this.didSelectDevice()) {
+      return Promise.reject(`There is a device already selected.`);
+    }
+
+    const devices = await this.getDevices();
+
+    if (!devices) {
+      return Promise.reject(
+        `Did not find any devices for this user. Make sure your device is claimed by your Neurosity account.`
+      );
+    }
+
+    const device = deviceSelector(devices);
+
+    if (!device) {
+      return Promise.reject(
+        `A device was not provided. Try returning a device from the devicesList provided in the callback.`
+      );
+    }
+
+    if (!devices.includes(device)) {
+      return Promise.reject(`Invalid device provided.`);
+    }
+
+    this._selectedDeviceId.next(device.id);
+
+    this.firebaseDevice = new FirebaseDevice({
+      deviceId: device.id,
+      firebaseApp: this.firebaseApp,
+      dependencies: {
+        subscriptionManager: this.subscriptionManager
+      }
+    });
+
+    return device;
+  }
+
+  public async getSelectedDevice(): Promise<Device> {
+    const selectedDeviceId = this._selectedDeviceId.getValue();
+
+    if (!selectedDeviceId) {
+      return Promise.reject(`There is no device currently selected.`);
+    }
+
+    const devices = await this.getDevices();
+
+    if (!devices) {
+      return Promise.reject(
+        `Did not find any devices for this user. Make sure your device is claimed by your Neurosity account.`
+      );
+    }
+
+    return devices.find((device) => device.id === selectedDeviceId);
   }
 
   public onNamespace(namespace: string, callback: Function): Function {
-    return this.firebase.onNamespace(namespace, callback);
+    return this.firebaseDevice.onNamespace(namespace, callback);
   }
 
   public async onceNamespace(namespace: string): Promise<any> {
-    return await this.firebase.onceNamespace(namespace);
+    return await this.firebaseDevice.onceNamespace(namespace);
   }
 
   public offNamespace(namespace: string, listener: Function): void {
-    this.firebase.offNamespace(namespace, listener);
+    this.firebaseDevice.offNamespace(namespace, listener);
   }
 
   public get metrics(): Metrics {
@@ -113,7 +213,7 @@ export class ApiClient implements Client {
 
     return {
       next: (metricName: string, metricValue: any): void => {
-        this.firebase.nextMetric(metricName, metricValue);
+        this.firebaseDevice.nextMetric(metricName, metricValue);
       },
       on: (
         subscription: Subscription,
@@ -122,11 +222,11 @@ export class ApiClient implements Client {
         if (isWebsocketMetric(subscription)) {
           return this.websocket.onMetric(subscription, callback);
         } else {
-          return this.firebase.onMetric(subscription, callback);
+          return this.firebaseDevice.onMetric(subscription, callback);
         }
       },
       subscribe: (subscription: Subscription): Subscription => {
-        const subscriptionCreated = this.firebase.subscribeToMetric(
+        const subscriptionCreated = this.firebaseDevice.subscribeToMetric(
           subscription
         );
         this.subscriptionManager.add(subscriptionCreated);
@@ -137,14 +237,17 @@ export class ApiClient implements Client {
         listener: Function
       ): void => {
         this.subscriptionManager.remove(subscription);
-        this.firebase.unsubscribeFromMetric(subscription);
+        this.firebaseDevice.unsubscribeFromMetric(subscription);
 
         if (isWebsocketMetric(subscription)) {
           if (this.websocket) {
             this.websocket.removeMetricListener(subscription, listener);
           }
         } else {
-          this.firebase.removeMetricListener(subscription, listener);
+          this.firebaseDevice.removeMetricListener(
+            subscription,
+            listener
+          );
         }
       }
     };
@@ -153,7 +256,7 @@ export class ApiClient implements Client {
   public get skills(): SkillsClient {
     return {
       get: async (bundleId: string): Promise<DeviceSkill> => {
-        return this.firebase.getSkill(bundleId);
+        return this.firebaseDevice.getSkill(bundleId);
       }
     };
   }
@@ -163,14 +266,14 @@ export class ApiClient implements Client {
   }
 
   public changeSettings(settings: ChangeSettings): Promise<void> {
-    return this.firebase.changeSettings(settings);
+    return this.firebaseDevice.changeSettings(settings);
   }
 
   public goOffline() {
-    this.firebase.goOffline();
+    this.firebaseApp.goOffline();
   }
 
   public goOnline() {
-    this.firebase.goOnline();
+    this.firebaseApp.goOnline();
   }
 }
