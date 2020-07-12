@@ -4,6 +4,7 @@ import { User } from "@firebase/auth-types";
 
 import { FirebaseApp } from "./FirebaseApp";
 import { Credentials } from "../../types/credentials";
+import { DeviceInfo, UserDevices, Device } from "../../types/device";
 
 /**
  * @hidden
@@ -96,17 +97,27 @@ export class FirebaseUser {
       .ref(`/users/${userId}/devices`)
       .once("value");
 
-    const devices = snapshot.val();
+    const devices: UserDevices | null = snapshot.val();
 
-    const hasDevices = devices && Object.keys(devices).length;
+    const hasDevices: boolean = !!Object.keys(devices ?? {}).length;
 
     if (!hasDevices) {
       return Promise.reject(`No devices found.`);
     }
 
-    return Object.entries(devices).map(([id, { claimedOn }]: any) => ({
-      id,
-      claimedOn
-    }));
+    const devicesInfoSnapshots = Object.keys(devices).map((deviceId) =>
+      this.app.database().ref(`/devices/${deviceId}/info`).once("value")
+    );
+
+    const devicesInfo: DeviceInfo[] = await Promise.all(
+      devicesInfoSnapshots
+    ).then((snapshots) => snapshots.map((snapshot) => snapshot.val()));
+
+    return devicesInfo.map(
+      (deviceInfo: DeviceInfo): Device => ({
+        ...deviceInfo,
+        ...devices[deviceInfo.deviceId]
+      })
+    );
   }
 }

@@ -62,7 +62,7 @@ export class ApiClient implements Client {
     if (this.options.deviceId) {
       return await this.selectDevice((devices) => {
         return devices.find(
-          (device) => device.id === this.options.deviceId
+          (device) => device.deviceId === this.options.deviceId
         );
       });
     }
@@ -178,10 +178,10 @@ export class ApiClient implements Client {
       return Promise.reject(`Invalid device provided.`);
     }
 
-    this._selectedDeviceId.next(device.id);
+    this._selectedDeviceId.next(device.deviceId);
 
     this.firebaseDevice = new FirebaseDevice({
-      deviceId: device.id,
+      deviceId: device.deviceId,
       firebaseApp: this.firebaseApp,
       dependencies: {
         subscriptionManager: this.subscriptionManager
@@ -206,7 +206,9 @@ export class ApiClient implements Client {
       );
     }
 
-    return devices.find((device) => device.id === selectedDeviceId);
+    return devices.find(
+      (device) => device.deviceId === selectedDeviceId
+    );
   }
 
   public onNamespace(namespace: string, callback: Function): Function {
