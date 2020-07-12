@@ -8,8 +8,13 @@ type SubscriptionListener = Function;
 /**
  * @hidden
  */
+export type MetricValue = { [label: string]: any };
+
+/**
+ * @hidden
+ */
 export interface Metrics {
-  next(metricName: string, metricValue: { [label: string]: any }): void;
+  next(metricName: string, metricValue: MetricValue): void;
   on(
     subscription: PendingSubscription,
     callback: Function
