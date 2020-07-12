@@ -1,6 +1,7 @@
 import { Observable, BehaviorSubject, throwError, of } from "rxjs";
 import { map, share, switchMap, tap } from "rxjs/operators";
 import { ApiClient, credentialWithLink, createUser } from "./api/index";
+import { whileOnline } from "./utils/whileOnline";
 import { NotionOptions } from "./types/options";
 import { Training } from "./types/training";
 import { SkillInstance } from "./types/skill";
@@ -367,7 +368,8 @@ export class Notion {
 
         this.api.unsetWebsocket();
         return subscribeTo(this.api.defaultServerType);
-      })
+      }),
+      whileOnline(this.status())
     );
   };
 
