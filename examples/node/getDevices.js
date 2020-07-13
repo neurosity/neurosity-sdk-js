@@ -23,13 +23,4 @@ const notion = new Notion();
     .catch((error) => {
       console.error("devices catch", error);
     });
-
-  notion
-    .getSelectedDevice()
-    .then((selectedDevice) => {
-      console.log("selected device", selectedDevice);
-    })
-    .catch((error) => {
-      console.error("selected device catch", error);
-    });
 })();

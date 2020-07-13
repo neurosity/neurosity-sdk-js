@@ -12,7 +12,6 @@ import { SignalQuality } from "./types/signalQuality";
 import { Kinesis } from "./types/kinesis";
 import { Calm } from "./types/calm";
 import { Focus } from "./types/focus";
-import { Device } from "./types/device";
 import {
   getLabels,
   validate,
@@ -28,7 +27,7 @@ import {
   PowerByBand,
   PSD
 } from "./types/brainwaves";
-import { DeviceInfo } from "./types/info";
+import { DeviceInfo } from "./types/deviceInfo";
 import { DeviceStatus } from "./types/status";
 import { Action } from "./types/actions";
 import * as errors from "./utils/errors";
@@ -142,39 +141,46 @@ export class Notion {
   /**
    * Get user devices
    *
+   * Returns a list of devices claimed by the user authenticated.
+   *
    * ```typescript
    * const devices = await notion.getDevices();
    * console.log(devices);
    * ```
    */
-  public async getDevices(): Promise<Device[]> {
+  public async getDevices(): Promise<DeviceInfo[]> {
     return await this.api.getDevices();
   }
 
   /**
-   * Select device
+   * Select Device
+   *
+   * Rarely necessary, but useful when the user owns multiple devices.
+   *    *
+   * A common use case for manually selecting a device is when you wish to build a device dropdown a user can select from, instead of collecting the Device Id from the user ahead of time.
+   *
+   * The 3 steps to manually selecting a device are:
+   *
+   * - Set `autoSelectDevice` to false when instantiating `Notion`.
+   * - Authenticate with your Neurosity account to access your devices by calling the `notion.login(...)` function.
+   * - Call the `notion.selectDevice(...)` function with a device selector function.
    *
    * ```typescript
-   * const devices = await notion.selectDevice();
+   * const devices = await notion.selectDevice((devices) =>
+   *   devices.find((device) => device.deviceNickname === "Notion-A1B")
+   * );
+   *
    * console.log(devices);
    * ```
+   *
+   * > If you own multiple devices, and don't pass `autoSelectDevice`, then the first device on the list will be automatically selected.
+   *
+   * For more info, check out the "Device Selection" guide.
    */
   public async selectDevice(
-    deviceSelector: (devices: Device[]) => Device
-  ): Promise<Device> {
+    deviceSelector: (devices: DeviceInfo[]) => DeviceInfo
+  ): Promise<DeviceInfo> {
     return await this.api.selectDevice(deviceSelector);
-  }
-
-  /**
-   * Get selected device
-   *
-   * ```typescript
-   * const selectedDevice = await notion.getSelectedDevice();
-   * console.log(selectedDevice);
-   * ```
-   */
-  public async getSelectedDevice(): Promise<Device> {
-    return await this.api.getSelectedDevice();
   }
 
   /**

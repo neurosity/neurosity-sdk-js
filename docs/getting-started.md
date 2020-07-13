@@ -199,7 +199,7 @@ To verify that the variables are not blank, we could add a function to check for
 
 ```js
 const verifyEnvs = (email, password, deviceId) => {
-  const invalidEnv = env => {
+  const invalidEnv = (env) => {
     return env === "" || env === 0;
   };
   if (
@@ -244,9 +244,9 @@ Now, if we run our program, we should see a success message print out, informing
   <img alt="Pulled out three variables from .env" src="assets/images/tutorial/vscode-got-env-variables.png">
 </p>
 
-### Instantiate a Notion Session
+### Instantiate a Notion
 
-We can then use the `deviceId` to instantiate a new Notion session by adding the following line to our file.
+We can then use the `deviceId` to instantiate a new Notion by adding the following line to our file.
 
 ```js
 const notion = new Notion({
@@ -265,7 +265,7 @@ const main = async () => {
       email,
       password
     })
-    .catch(error => {
+    .catch((error) => {
       console.log(error);
       throw new Error(error);
     });
@@ -290,7 +290,7 @@ Now that you are authenticated, print out hello world when you're calm increases
 Add the following code to your main() function after login.
 
 ```js
-notion.calm().subscribe(calm => {
+notion.calm().subscribe((calm) => {
   if (calm.probability > 0.3) {
     console.log("Hello World!");
   }
@@ -318,7 +318,7 @@ In the `index.js` file we can remove the `calm` subscription from above and repl
 Check out the [Kinesis guide](https://docs.neurosity.co/docs/api/kinesis) or [Kinesis API docs](https://docs.neurosity.co/docs/reference/interfaces/kinesis).
 
 ```js
-notion.kinesis("leftHandPinch").subscribe(intent => {
+notion.kinesis("leftHandPinch").subscribe((intent) => {
   console.log("Hello World!");
 });
 ```
