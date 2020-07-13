@@ -1,3 +1,14 @@
+# v5.0.0
+
+- FEAT: Auto & manual device selection via `notion.selectDevice(...)` method
+- FEAT: new methods: `notion.getDevices()` and `notion.getSelectedDevice()`
+- FIX: #46 Notion sends 1 packet of data even though it is asleep
+- FIX: only send timesync actions if and when device is online
+
+### Breaking changes:
+
+- Local mode now requires Brain OS v14.1.0+
+
 # v4.0.0
 
 - Added types
