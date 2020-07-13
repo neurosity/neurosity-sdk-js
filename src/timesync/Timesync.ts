@@ -1,10 +1,14 @@
-import { timer, pipe, range } from "rxjs";
-import { map, concat } from "rxjs/operators";
-import { bufferCount, concatMap } from "rxjs/operators";
+import { timer, pipe, range, Observable } from "rxjs";
+import { map, concat, filter, take } from "rxjs/operators";
+import { bufferCount, concatMap, switchMap } from "rxjs/operators";
 import outliers from "outliers";
+
+import { whileOnline } from "../utils/whileOnline";
+import { DeviceStatus } from "../types/status";
 
 type Options = {
   getTimesync: () => Promise<number>;
+  status$: Observable<DeviceStatus>;
   bufferSize?: number;
   updateInterval?: number;
 };
@@ -24,25 +28,39 @@ export class Timesync {
       ...options
     };
 
-    this.starTimer();
+    this.start();
   }
 
-  private starTimer(): void {
-    const { bufferSize, updateInterval } = this.options;
+  public start(): void {
+    const { bufferSize, updateInterval, status$ } = this.options;
+
     const burst$ = range(0, bufferSize);
     const timer$ = timer(updateInterval, updateInterval).pipe(
-      map(i => bufferSize + i)
+      map((i) => bufferSize + i),
+      whileOnline({
+        status$,
+        allowWhileOnSleepMode: true
+      })
     );
 
-    burst$
+    const firstTimeDeviceIsOnline$ = status$.pipe(
+      filter((status: DeviceStatus) => status.state === "online"),
+      take(1)
+    );
+
+    firstTimeDeviceIsOnline$
       .pipe(
-        concat(timer$),
-        this.toOffset(),
-        bufferCount(bufferSize, 1),
-        this.filterOutliers(),
-        map(list => this.average(list))
+        switchMap(() => {
+          return burst$.pipe(
+            concat(timer$),
+            this.toOffset(),
+            bufferCount(bufferSize, 1),
+            this.filterOutliers(),
+            map((list) => this.average(list))
+          );
+        })
       )
-      .subscribe(offset => {
+      .subscribe((offset) => {
         this._offset = offset;
       });
   }
@@ -61,17 +79,17 @@ export class Timesync {
       concatMap(async () => {
         const requestStartTime = Date.now();
         const [error, serverTime] = await getTimesync()
-          .then(offset => [null, offset])
-          .catch(error => [error]);
+          .then((offset) => [null, offset])
+          .catch((error) => [error]);
 
         if (error) {
           console.log(error);
           return 0;
         }
 
-        const responseEndtime = Date.now();
-        const oneWayDuration = (responseEndtime - requestStartTime) / 2;
-        const offset = responseEndtime - oneWayDuration - serverTime;
+        const responseEndTime = Date.now();
+        const oneWayDuration = (responseEndTime - requestStartTime) / 2;
+        const offset = responseEndTime - oneWayDuration - serverTime;
         return offset;
       })
     );

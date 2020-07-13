@@ -1,5 +1,5 @@
-module.exports = async function(notion) {
-  notion.api.actions.dispatch({
+module.exports = async function (notion) {
+  notion.dispatchAction({
     command: "random",
     action: "send",
     responseRequired: true,

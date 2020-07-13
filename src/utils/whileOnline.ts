@@ -1,17 +1,32 @@
 import { pipe, of, empty, Observable } from "rxjs";
 import { flatMap, withLatestFrom } from "rxjs/operators";
 import { DeviceStatus } from "../types/status";
-import { MetricValue } from "../types/metrics";
 
-export function whileOnline(status$: Observable<DeviceStatus>) {
+type Options = {
+  status$: Observable<DeviceStatus>;
+  allowWhileOnSleepMode: boolean;
+};
+
+export function whileOnline({
+  status$,
+  allowWhileOnSleepMode
+}: Options) {
   return pipe(
     withLatestFrom(status$),
-    flatMap(([metric, status]: [MetricValue, DeviceStatus]) =>
-      shouldAllowMetrics(status) ? of(metric) : empty()
+    flatMap(([value, status]: [any, DeviceStatus]) =>
+      shouldAllowMetrics(status, allowWhileOnSleepMode)
+        ? of(value)
+        : empty()
     )
   );
 }
 
-function shouldAllowMetrics(status: DeviceStatus) {
-  return status.state === "online" && !status.sleepMode;
+function shouldAllowMetrics(
+  status: DeviceStatus,
+  allowWhileOnSleepMode: boolean
+) {
+  return (
+    status.state === "online" &&
+    (allowWhileOnSleepMode ? true : !status.sleepMode)
+  );
 }

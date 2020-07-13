@@ -1,4 +1,4 @@
-import { BehaviorSubject } from "rxjs";
+import { Observable, BehaviorSubject, throwError } from "rxjs";
 import { FirebaseApp, FirebaseUser, FirebaseDevice } from "./firebase";
 import { WebsocketClient } from "./websocket";
 import { Timesync } from "../timesync";
@@ -11,7 +11,9 @@ import { SkillsClient, DeviceSkill } from "../types/skill";
 import { Credentials } from "../types/credentials";
 import { ChangeSettings } from "../types/settings";
 import { Subscription } from "../types/subscriptions";
+import { DeviceStatus } from "../types/status";
 import { Device } from "../types/device";
+import * as errors from "../utils/errors";
 
 export { credentialWithLink, createUser } from "./firebase";
 
@@ -47,17 +49,8 @@ export class ApiClient implements Client {
     });
   }
 
-  // Operations to automatically run when user logs in
-  private async runAutoOperations() {
-    // Timesync
-    if (this.options.timesync) {
-      this.timesync = new Timesync({
-        getTimesync: this.firebaseDevice.getTimesync.bind(
-          this.firebaseDevice
-        )
-      });
-    }
-
+  // Automatically select device when user logs in
+  private async autoSelectDevice() {
     // Select based on `deviceId` passed
     if (this.options.deviceId) {
       return await this.selectDevice((devices) => {
@@ -113,7 +106,7 @@ export class ApiClient implements Client {
     }
 
     const auth = await this.firebaseUser.login(credentials);
-    const selectedDevice = await this.runAutoOperations();
+    const selectedDevice = await this.autoSelectDevice();
 
     if (auth && selectedDevice) {
       return {
@@ -188,6 +181,15 @@ export class ApiClient implements Client {
       }
     });
 
+    if (this.options.timesync) {
+      this.timesync = new Timesync({
+        status$: this.status(),
+        getTimesync: this.firebaseDevice.getTimesync.bind(
+          this.firebaseDevice
+        )
+      });
+    }
+
     return device;
   }
 
@@ -209,6 +211,24 @@ export class ApiClient implements Client {
     return devices.find(
       (device) => device.deviceId === selectedDeviceId
     );
+  }
+
+  public status(): Observable<DeviceStatus> {
+    if (!this.didSelectDevice()) {
+      return throwError(errors.mustSelectDevice);
+    }
+
+    const namespace = "status";
+    return new Observable((observer) => {
+      const listener = this.onNamespace(
+        namespace,
+        (status: DeviceStatus) => {
+          observer.next(status);
+        }
+      );
+
+      return () => this.offNamespace(namespace, listener);
+    });
   }
 
   public onNamespace(namespace: string, callback: Function): Function {
