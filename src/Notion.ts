@@ -156,7 +156,7 @@ export class Notion {
    * Select Device
    *
    * Rarely necessary, but useful when the user owns multiple devices.
-   *    *
+   *
    * A common use case for manually selecting a device is when you wish to build a device dropdown a user can select from, instead of collecting the Device Id from the user ahead of time.
    *
    * The 3 steps to manually selecting a device are:
