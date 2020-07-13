@@ -369,7 +369,10 @@ export class Notion {
         this.api.unsetWebsocket();
         return subscribeTo(this.api.defaultServerType);
       }),
-      whileOnline(this.status())
+      whileOnline({
+        status$: this.status(),
+        allowWhileOnSleepMode: false
+      })
     );
   };
 
@@ -629,18 +632,7 @@ export class Notion {
    * @returns Observable of `status` metric events
    */
   public status(): Observable<DeviceStatus> {
-    if (!this.api.didSelectDevice()) {
-      return throwError(errors.mustSelectDevice);
-    }
-
-    const namespace = "status";
-    return new Observable((observer) => {
-      const listener = this.api.onNamespace(namespace, (status) => {
-        observer.next(status);
-      });
-
-      return () => this.api.offNamespace(namespace, listener);
-    });
+    return this.api.status();
   }
 
   /**
