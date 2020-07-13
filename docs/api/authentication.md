@@ -2,9 +2,10 @@
 id: authentication
 title: Authentication
 ---
+
 We take data privacy very seriously at Neurosity. Should you find a bug or vulnerability, please [submit a request](support.neurosity.co), and we will take your inquiry seriously and work as fast as possible to fix the issue for all.
 
-There are two ways to authenticate with Notion: Email and password and ID Token 
+There are two ways to authenticate with Notion: Email and password and ID Token
 
 ### Email and Password
 
@@ -16,32 +17,34 @@ import { Notion } from "@neurosity/notion";
 main();
 
 async function main() {
-  const notion = new Notion({
-    deviceId: "123...XYZ"
-  });
+  const notion = new Notion();
 
-  await notion.login({
-    email: "hans.berger@neurosity.co",
-    password: "eegDisc0verer!"
-  })
-    .catch(error => {
+  const user = await notion
+    .login({
+      email: "hans.berger@neurosity.co",
+      password: "eegDisc0verer!"
+    })
+    .catch((error) => {
       console.log("Log in error", error);
     });
 
-  console.log("logged in!");
+  if (user) {
+    console.log("logged in!");
+  } else {
+    return;
+  }
 
-  await notion.logout()
-    .catch(error => {
-      console.log("Log out error", error);
-    })
-  
+  await notion.logout().catch((error) => {
+    console.log("Log out error", error);
+  });
+
   console.log("logged out!");
 }
 ```
 
 ### ID Token
 
-There are times when you will want to ID Token to authenticate a Notion device. 
+There are times when you will want to ID Token to authenticate a Notion device.
 
 ```js
 import { Notion } from "@neurosity/notion";
@@ -49,16 +52,14 @@ import { Notion } from "@neurosity/notion";
 main();
 
 async function main() {
-  const notion = new Notion({
-    deviceId: "123...XYZ"
-  });
+  const notion = new Notion();
 
   await notion
     .login({
       idToken: process.env.NEUROSITY_ID_TOKEN,
       providerId: process.env.NEUROSITY_PROVIDER_ID
     })
-    .catch(error => {
+    .catch((error) => {
       console.log("error", error);
     });
   // logged in!

@@ -12,7 +12,7 @@ import { Credentials } from "../types/credentials";
 import { ChangeSettings } from "../types/settings";
 import { Subscription } from "../types/subscriptions";
 import { DeviceStatus } from "../types/status";
-import { Device } from "../types/device";
+import { DeviceInfo } from "../types/deviceInfo";
 import * as errors from "../utils/errors";
 
 export { credentialWithLink, createUser } from "./firebase";
@@ -145,8 +145,8 @@ export class ApiClient implements Client {
   }
 
   public async selectDevice(
-    deviceSelector: (devices: Device[]) => Device
-  ): Promise<Device> {
+    deviceSelector: (devices: DeviceInfo[]) => DeviceInfo
+  ): Promise<DeviceInfo> {
     if (this.didSelectDevice()) {
       return Promise.reject(`There is a device already selected.`);
     }
@@ -191,26 +191,6 @@ export class ApiClient implements Client {
     }
 
     return device;
-  }
-
-  public async getSelectedDevice(): Promise<Device> {
-    const selectedDeviceId = this._selectedDeviceId.getValue();
-
-    if (!selectedDeviceId) {
-      return Promise.reject(`There is no device currently selected.`);
-    }
-
-    const devices = await this.getDevices();
-
-    if (!devices) {
-      return Promise.reject(
-        `Did not find any devices for this user. Make sure your device is claimed by your Neurosity account.`
-      );
-    }
-
-    return devices.find(
-      (device) => device.deviceId === selectedDeviceId
-    );
   }
 
   public status(): Observable<DeviceStatus> {

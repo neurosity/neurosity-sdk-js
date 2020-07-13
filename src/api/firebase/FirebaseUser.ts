@@ -4,7 +4,8 @@ import { User } from "@firebase/auth-types";
 
 import { FirebaseApp } from "./FirebaseApp";
 import { Credentials } from "../../types/credentials";
-import { DeviceInfo, UserDevices, Device } from "../../types/device";
+import { UserDevices } from "../../types/user";
+import { DeviceInfo } from "../../types/deviceInfo";
 
 /**
  * @hidden
@@ -109,15 +110,10 @@ export class FirebaseUser {
       this.app.database().ref(`/devices/${deviceId}/info`).once("value")
     );
 
-    const devicesInfo: DeviceInfo[] = await Promise.all(
+    const devicesList: DeviceInfo[] = await Promise.all(
       devicesInfoSnapshots
     ).then((snapshots) => snapshots.map((snapshot) => snapshot.val()));
 
-    return devicesInfo.map(
-      (deviceInfo: DeviceInfo): Device => ({
-        ...deviceInfo,
-        ...devices[deviceInfo.deviceId]
-      })
-    );
+    return devicesList;
   }
 }

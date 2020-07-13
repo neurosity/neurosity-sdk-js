@@ -14,6 +14,9 @@
       "api/calm": {
         "title": "Calm"
       },
+      "api/device-selection": {
+        "title": "Device Selection"
+      },
       "api/disconnect": {
         "title": "Disconnect"
       },

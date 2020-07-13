@@ -15,6 +15,7 @@
       "guides/training"
     ],
     "API Guides": [
+      "api/device-selection",
       "api/authentication",
       "api/brainwaves",
       "api/calm",
