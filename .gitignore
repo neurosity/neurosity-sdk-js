@@ -1,6 +1,7 @@
 dist
 build
 node_modules
+node_modules_bak
 .cache
 .env
 .DS_Store
