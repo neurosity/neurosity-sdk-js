@@ -1,4 +1,4 @@
-import { Observable, BehaviorSubject, throwError, of } from "rxjs";
+import { Observable, BehaviorSubject, throwError } from "rxjs";
 import { FirebaseApp, FirebaseUser, FirebaseDevice } from "./firebase";
 import { WebsocketClient } from "./websocket";
 import { Timesync } from "../timesync";
@@ -68,6 +68,8 @@ export class ApiClient implements Client {
         return devices[0];
       });
     }
+
+    return null;
   }
 
   public setWebsocket(socketUrl: string): void {
@@ -109,20 +111,10 @@ export class ApiClient implements Client {
     const auth = await this.firebaseUser.login(credentials);
     const selectedDevice = await this.setAutoSelectedDevice();
 
-    if (auth && selectedDevice) {
-      return {
-        auth,
-        selectedDevice
-      };
-    }
-
-    if (auth) {
-      return {
-        auth
-      };
-    }
-
-    return Promise.reject(`Failed to log in.`);
+    return {
+      ...auth,
+      selectedDevice
+    };
   }
 
   public async logout(): Promise<any> {
@@ -137,26 +129,17 @@ export class ApiClient implements Client {
     return this.firebaseUser.onAuthStateChanged().pipe(
       switchMap(async (user) => {
         if (!user) {
-          return of({
-            user,
-            selectedDevice: null
-          });
+          return null;
         }
 
-        if (!this.didSelectDevice()) {
-          const selectedDevice = await this.setAutoSelectedDevice();
-          return of({
-            user,
-            selectedDevice
-          });
-        }
+        const selectedDevice = this.didSelectDevice()
+          ? await this.getSelectedDevice()
+          : await this.setAutoSelectedDevice();
 
-        const selectedDevice = await this.getSelectedDevice();
-
-        return of({
-          user,
+        return {
+          ...user,
           selectedDevice
-        });
+        };
       })
     );
   }
