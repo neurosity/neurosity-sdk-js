@@ -1,4 +1,4 @@
-import { Observable, BehaviorSubject, throwError } from "rxjs";
+import { Observable, BehaviorSubject, throwError, of } from "rxjs";
 import { FirebaseApp, FirebaseUser, FirebaseDevice } from "./firebase";
 import { WebsocketClient } from "./websocket";
 import { Timesync } from "../timesync";
@@ -14,6 +14,7 @@ import { Subscription } from "../types/subscriptions";
 import { DeviceStatus } from "../types/status";
 import { DeviceInfo } from "../types/deviceInfo";
 import * as errors from "../utils/errors";
+import { switchMap } from "rxjs/operators";
 
 export { credentialWithLink, createUser } from "./firebase";
 
@@ -50,7 +51,7 @@ export class ApiClient implements Client {
   }
 
   // Automatically select device when user logs in
-  private async autoSelectDevice() {
+  private async setAutoSelectedDevice(): Promise<DeviceInfo | null> {
     // Select based on `deviceId` passed
     if (this.options.deviceId) {
       return await this.selectDevice((devices) => {
@@ -106,7 +107,7 @@ export class ApiClient implements Client {
     }
 
     const auth = await this.firebaseUser.login(credentials);
-    const selectedDevice = await this.autoSelectDevice();
+    const selectedDevice = await this.setAutoSelectedDevice();
 
     if (auth && selectedDevice) {
       return {
@@ -133,7 +134,31 @@ export class ApiClient implements Client {
   }
 
   public onAuthStateChanged() {
-    return this.firebaseUser.onAuthStateChanged();
+    return this.firebaseUser.onAuthStateChanged().pipe(
+      switchMap(async (user) => {
+        if (!user) {
+          return of({
+            user,
+            selectedDevice: null
+          });
+        }
+
+        if (!this.didSelectDevice()) {
+          const selectedDevice = await this.setAutoSelectedDevice();
+          return of({
+            user,
+            selectedDevice
+          });
+        }
+
+        const selectedDevice = await this.getSelectedDevice();
+
+        return of({
+          user,
+          selectedDevice
+        });
+      })
+    );
   }
 
   public getDevices() {
@@ -191,6 +216,26 @@ export class ApiClient implements Client {
     }
 
     return device;
+  }
+
+  public async getSelectedDevice(): Promise<DeviceInfo> {
+    const selectedDeviceId = this._selectedDeviceId.getValue();
+
+    if (!selectedDeviceId) {
+      return Promise.reject(`There is no device currently selected.`);
+    }
+
+    const devices = await this.getDevices();
+
+    if (!devices) {
+      return Promise.reject(
+        `Did not find any devices for this user. Make sure your device is claimed by your Neurosity account.`
+      );
+    }
+
+    return devices.find(
+      (device) => device.deviceId === selectedDeviceId
+    );
   }
 
   public status(): Observable<DeviceStatus> {
