@@ -184,6 +184,19 @@ export class Notion {
   }
 
   /**
+   * Get selected device
+   *
+   * ```typescript
+   * const selectedDevice = await notion.getSelectedDevice();
+   * console.log(selectedDevice);
+   * ```
+   */
+
+  public async getSelectedDevice(): Promise<DeviceInfo> {
+    return await this.api.getSelectedDevice();
+  }
+
+  /**
    * ```typescript
    * const info = await notion.getInfo();
    * ```
