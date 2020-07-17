@@ -124,10 +124,10 @@ export class Notion {
 
   /**
    * @internal
-   * Not user facing yet
+   * Not user facing.
    */
-  public auth() {
-    return this.api.auth();
+  public __getApp() {
+    return this.api.__getApp();
   }
 
   /**

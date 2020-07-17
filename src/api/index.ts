@@ -121,10 +121,6 @@ export class ApiClient implements Client {
     return await this.firebaseUser.logout();
   }
 
-  public auth() {
-    return this.firebaseUser.auth();
-  }
-
   public onAuthStateChanged() {
     return this.firebaseUser.onAuthStateChanged().pipe(
       switchMap(async (user) => {
@@ -319,5 +315,12 @@ export class ApiClient implements Client {
 
   public goOnline() {
     this.firebaseApp.goOnline();
+  }
+
+  /**
+   * @internal
+   */
+  public __getApp() {
+    return this.firebaseApp.app;
   }
 }
