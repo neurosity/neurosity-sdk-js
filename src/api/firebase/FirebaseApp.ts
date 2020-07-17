@@ -1,6 +1,8 @@
 import firebase from "firebase/app";
 import "firebase/database";
 import "firebase/auth";
+import "firebase/functions";
+import "firebase/firestore";
 
 import { config } from "./config";
 import { NotionOptions } from "../../types/options";
