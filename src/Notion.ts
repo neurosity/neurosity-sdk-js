@@ -1,5 +1,5 @@
 import { Observable, BehaviorSubject, throwError, of } from "rxjs";
-import { map, share, switchMap, tap } from "rxjs/operators";
+import { map, share, switchMap } from "rxjs/operators";
 import { ApiClient, credentialWithLink, createUser } from "./api/index";
 import { whileOnline } from "./utils/whileOnline";
 import { NotionOptions } from "./types/options";
@@ -378,9 +378,7 @@ export class Notion {
       switchMap((isLocalMode) => {
         if (isLocalMode && isNotionMetric(metric)) {
           return this.socketUrl().pipe(
-            tap((socketUrl) => {
-              this.api.setWebsocket(socketUrl);
-            }),
+            switchMap((socketUrl) => this.api.setWebsocket(socketUrl)),
             switchMap(() => subscribeTo(this.api.localServerType))
           );
         }
