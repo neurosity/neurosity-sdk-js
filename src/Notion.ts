@@ -84,7 +84,7 @@ export class Notion {
 
    * @param options
    */
-  constructor(options: NotionOptions) {
+  constructor(options: NotionOptions = {}) {
     this.options = Object.freeze({
       ...defaultOptions,
       ...options
