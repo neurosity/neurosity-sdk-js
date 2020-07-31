@@ -72,8 +72,14 @@ export class ApiClient implements Client {
     return null;
   }
 
-  public setWebsocket(socketUrl: string): void {
-    this.websocket = new WebsocketClient({ socketUrl });
+  public async setWebsocket(socketUrl: string): Promise<void> {
+    const selectedDevice = await this.getSelectedDevice();
+    if (!selectedDevice) {
+      return Promise.reject(`No device selected.`);
+    }
+
+    const { deviceId } = selectedDevice;
+    this.websocket = new WebsocketClient({ socketUrl, deviceId });
   }
 
   public unsetWebsocket(): void {

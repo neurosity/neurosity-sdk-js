@@ -6,4 +6,8 @@ module.exports = async function (notion) {
   notion.brainwaves("powerByBand").subscribe((powerByBand) => {
     console.log("powerByBand", powerByBand.data);
   });
+
+  setTimeout(() => {
+    notion.enableLocalMode(false);
+  }, 8000);
 };
