@@ -98,21 +98,30 @@ export class FirebaseUser {
       .ref(`/users/${userId}/devices`)
       .once("value");
 
-    const devices: UserDevices | null = snapshot.val();
+    const userDevices: UserDevices | null = snapshot.val();
 
-    const hasDevices: boolean = !!Object.keys(devices ?? {}).length;
+    const hasDevices: boolean = !!Object.keys(userDevices ?? {}).length;
 
     if (!hasDevices) {
       return Promise.reject(`No devices found.`);
     }
 
-    const devicesInfoSnapshots = Object.keys(devices).map((deviceId) =>
+    const devicesInfoSnapshots = Object.keys(
+      userDevices
+    ).map((deviceId) =>
       this.app.database().ref(`/devices/${deviceId}/info`).once("value")
     );
 
     const devicesList: DeviceInfo[] = await Promise.all(
       devicesInfoSnapshots
     ).then((snapshots) => snapshots.map((snapshot) => snapshot.val()));
+
+    devicesList.sort((a, b) => {
+      return (
+        userDevices[a.deviceId].claimedOn -
+        userDevices[b.deviceId].claimedOn
+      );
+    });
 
     return devicesList;
   }
