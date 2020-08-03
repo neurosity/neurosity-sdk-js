@@ -252,10 +252,6 @@ export class ApiClient implements Client {
   }
 
   public status(): Observable<DeviceStatus> {
-    if (!this.didSelectDevice()) {
-      return throwError(errors.mustSelectDevice);
-    }
-
     return this.observeNamespace("status");
   }
 

@@ -325,10 +325,6 @@ export class Notion {
   protected getMetric = (
     subscription: PendingSubscription
   ): Observable<any> => {
-    if (!this.api.didSelectDevice()) {
-      return throwError(errors.mustSelectDevice);
-    }
-
     const { metric, labels, atomic } = subscription;
 
     const error = validate(metric, labels, this.options);
@@ -578,10 +574,6 @@ export class Notion {
    * @returns Observable of `settings` metric events
    */
   public settings(): Observable<Settings> {
-    if (!this.api.didSelectDevice()) {
-      return throwError(errors.mustSelectDevice);
-    }
-
     return this.api.observeNamespace("settings");
   }
 
