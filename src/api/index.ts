@@ -1,4 +1,9 @@
-import { Observable, BehaviorSubject, throwError } from "rxjs";
+import {
+  Observable,
+  BehaviorSubject,
+  throwError,
+  fromEventPattern
+} from "rxjs";
 import { FirebaseApp, FirebaseUser, FirebaseDevice } from "./firebase";
 import { WebsocketClient } from "./websocket";
 import { Timesync } from "../timesync";
@@ -12,9 +17,9 @@ import { Credentials } from "../types/credentials";
 import { ChangeSettings } from "../types/settings";
 import { Subscription } from "../types/subscriptions";
 import { DeviceStatus } from "../types/status";
-import { DeviceInfo } from "../types/deviceInfo";
+import { DeviceInfo, DeviceSelector } from "../types/deviceInfo";
 import * as errors from "../utils/errors";
-import { switchMap } from "rxjs/operators";
+import { switchMap, share, filter } from "rxjs/operators";
 
 export { credentialWithLink, createUser } from "./firebase";
 
@@ -36,18 +41,49 @@ export class ApiClient implements Client {
   /**
    * @internal
    */
-  private _selectedDeviceId: BehaviorSubject<
-    string | null
-  > = new BehaviorSubject(null);
+  private _selectedDevice: BehaviorSubject<DeviceInfo | null> = new BehaviorSubject(
+    null
+  );
 
   constructor(options: NotionOptions) {
     this.options = options;
     this.subscriptionManager = new SubscriptionManager();
     this.firebaseApp = new FirebaseApp(options);
     this.firebaseUser = new FirebaseUser(this.firebaseApp);
+
     this.firebaseUser.onAuthStateChanged().subscribe((user) => {
       this.user = user;
     });
+
+    this.onDeviceChange().subscribe((device) => {
+      if (this.firebaseDevice) {
+        this.firebaseDevice.disconnect();
+      }
+
+      this.firebaseDevice = new FirebaseDevice({
+        deviceId: device.deviceId,
+        firebaseApp: this.firebaseApp,
+        dependencies: {
+          subscriptionManager: this.subscriptionManager
+        }
+      });
+
+      if (this.options.timesync) {
+        this.timesync = new Timesync({
+          status$: this.status(),
+          getTimesync: this.firebaseDevice.getTimesync.bind(
+            this.firebaseDevice
+          )
+        });
+      }
+    });
+  }
+
+  public onDeviceChange(): Observable<DeviceInfo> {
+    return this._selectedDevice.asObservable().pipe(
+      share(),
+      filter((device) => !!device)
+    );
   }
 
   // Automatically select device when user logs in
@@ -61,7 +97,7 @@ export class ApiClient implements Client {
       });
     }
 
-    // Auto select device
+    // Auto select first-claimed device
     if (!this.options.deviceId && this.options.autoSelectDevice) {
       return await this.selectDevice((devices) => {
         // Auto select first device
@@ -72,13 +108,10 @@ export class ApiClient implements Client {
     return null;
   }
 
-  public async setWebsocket(socketUrl: string): Promise<void> {
-    const selectedDevice = await this.getSelectedDevice();
-    if (!selectedDevice) {
-      return Promise.reject(`No device selected.`);
-    }
-
-    const { deviceId } = selectedDevice;
+  public async setWebsocket(
+    socketUrl: string,
+    deviceId: string
+  ): Promise<void> {
     this.websocket = new WebsocketClient({ socketUrl, deviceId });
   }
 
@@ -151,16 +184,12 @@ export class ApiClient implements Client {
   }
 
   public didSelectDevice(): boolean {
-    return !!this._selectedDeviceId.getValue();
+    return !!this._selectedDevice.getValue();
   }
 
   public async selectDevice(
-    deviceSelector: (devices: DeviceInfo[]) => DeviceInfo
+    deviceSelector: DeviceSelector
   ): Promise<DeviceInfo> {
-    if (this.didSelectDevice()) {
-      return Promise.reject(`There is a device already selected.`);
-    }
-
     const devices = await this.getDevices();
 
     if (!devices) {
@@ -169,7 +198,23 @@ export class ApiClient implements Client {
       );
     }
 
-    const device = deviceSelector(devices);
+    const deviceTupleSelector = (devices: DeviceInfo[]) =>
+      devices.find((device) => {
+        if (!Array.isArray(deviceSelector)) {
+          return false;
+        }
+
+        const [deviceKey, deviceValue] = deviceSelector;
+        return (
+          JSON.stringify(device?.[deviceKey]) ===
+          JSON.stringify(deviceValue)
+        );
+      });
+
+    const device =
+      typeof deviceSelector === "function"
+        ? deviceSelector(devices)
+        : deviceTupleSelector(devices);
 
     if (!device) {
       return Promise.reject(
@@ -181,32 +226,15 @@ export class ApiClient implements Client {
       return Promise.reject(`Invalid device provided.`);
     }
 
-    this._selectedDeviceId.next(device.deviceId);
-
-    this.firebaseDevice = new FirebaseDevice({
-      deviceId: device.deviceId,
-      firebaseApp: this.firebaseApp,
-      dependencies: {
-        subscriptionManager: this.subscriptionManager
-      }
-    });
-
-    if (this.options.timesync) {
-      this.timesync = new Timesync({
-        status$: this.status(),
-        getTimesync: this.firebaseDevice.getTimesync.bind(
-          this.firebaseDevice
-        )
-      });
-    }
+    this._selectedDevice.next(device);
 
     return device;
   }
 
   public async getSelectedDevice(): Promise<DeviceInfo> {
-    const selectedDeviceId = this._selectedDeviceId.getValue();
+    const selectedDevice = this._selectedDevice.getValue();
 
-    if (!selectedDeviceId) {
+    if (!selectedDevice) {
       return Promise.reject(`There is no device currently selected.`);
     }
 
@@ -219,7 +247,7 @@ export class ApiClient implements Client {
     }
 
     return devices.find(
-      (device) => device.deviceId === selectedDeviceId
+      (device) => device.deviceId === selectedDevice.deviceId
     );
   }
 
@@ -228,29 +256,22 @@ export class ApiClient implements Client {
       return throwError(errors.mustSelectDevice);
     }
 
-    const namespace = "status";
-    return new Observable((observer) => {
-      const listener = this.onNamespace(
-        namespace,
-        (status: DeviceStatus) => {
-          observer.next(status);
-        }
-      );
-
-      return () => this.offNamespace(namespace, listener);
-    });
+    return this.observeNamespace("status");
   }
 
-  public onNamespace(namespace: string, callback: Function): Function {
-    return this.firebaseDevice.onNamespace(namespace, callback);
+  public observeNamespace(namespace: string): Observable<any> {
+    const namespaceValues$ = fromEventPattern(
+      (handler) => this.firebaseDevice.onNamespace(namespace, handler),
+      (handler) => this.firebaseDevice.offNamespace(namespace, handler)
+    );
+
+    return this.onDeviceChange().pipe(
+      switchMap(() => namespaceValues$)
+    );
   }
 
   public async onceNamespace(namespace: string): Promise<any> {
     return await this.firebaseDevice.onceNamespace(namespace);
-  }
-
-  public offNamespace(namespace: string, listener: Function): void {
-    this.firebaseDevice.offNamespace(namespace, listener);
   }
 
   public get metrics(): Metrics {
