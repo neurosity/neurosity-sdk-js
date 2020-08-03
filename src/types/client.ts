@@ -1,3 +1,4 @@
+import { Observable } from "rxjs";
 import { User } from "@firebase/auth-types";
 import { Actions } from "./actions";
 import { Metrics } from "./metrics";
@@ -14,8 +15,7 @@ export interface Client {
   disconnect(): Promise<any>;
   getInfo(): Promise<any>;
   login?(credentials: Credentials): Promise<any>;
-  onNamespace(namespace: string, callback: Function): Function;
-  offNamespace(namespace: string, listener: Function): void;
+  observeNamespace(namespace: string): Observable<any>;
   metrics: Metrics;
   skills: SkillsClient;
   timestamp: number;

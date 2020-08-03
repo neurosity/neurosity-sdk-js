@@ -20,10 +20,7 @@ export const createDeviceStore = (
   const deviceRef = app.database().ref(`devices/${deviceId}`);
   const clientId = deviceRef.child("subscriptions").push().key;
   const clientRef = deviceRef.child(`clients/${clientId}`);
-
-  const child = (namespace) => {
-    return deviceRef.child(namespace);
-  };
+  let listenersToRemove = [];
 
   const set = (namespace, payload) => {
     return deviceRef.child(namespace).set(payload);
@@ -38,16 +35,24 @@ export const createDeviceStore = (
   };
 
   const on = (eventType: any = "value", namespace, callback) => {
-    return deviceRef.child(namespace).on(eventType, (snapshot) => {
-      callback(snapshot.val(), snapshot);
+    const listener = deviceRef
+      .child(namespace)
+      .on(eventType, (snapshot) => {
+        callback(snapshot.val(), snapshot);
+      });
+
+    listenersToRemove.push(() => {
+      deviceRef.child(namespace).off(eventType, listener);
     });
+
+    return listener;
   };
 
-  const off = (childName, eventType, listener?) => {
+  const off = (namespace, eventType, listener?) => {
     if (listener) {
-      deviceRef.child(childName).off(eventType, listener);
+      deviceRef.child(namespace).off(eventType, listener);
     } else {
-      deviceRef.child(childName).off(eventType);
+      deviceRef.child(namespace).off(eventType);
     }
   };
 
@@ -88,7 +93,7 @@ export const createDeviceStore = (
   };
 
   // Add client connections and subscriptions to db and remove them when offline
-  app
+  const connectedListener = app
     .database()
     .ref(".info/connected")
     .on("value", (snapshot) => {
@@ -113,6 +118,13 @@ export const createDeviceStore = (
           );
         });
     });
+
+  listenersToRemove.push(() => {
+    app
+      .database()
+      .ref(".info/connected")
+      .off("value", connectedListener);
+  });
 
   return {
     set,
@@ -195,6 +207,19 @@ export const createDeviceStore = (
         ? `metrics/${metric}`
         : `metrics/${metric}/${labels[0]}`;
       off(child, "value", listener);
+    },
+    disconnect() {
+      clientRef.remove();
+      listenersToRemove.forEach((removeListener) => {
+        removeListener();
+      });
+      subscriptionManager
+        .toList()
+        .filter((subscription) => subscription.clientId === clientId)
+        .forEach((subscription) => {
+          const childPath = `subscriptions/${subscription.id}`;
+          deviceRef.child(childPath).remove();
+        });
     }
   };
 };

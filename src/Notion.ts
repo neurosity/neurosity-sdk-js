@@ -223,6 +223,19 @@ export class Notion {
   }
 
   /**
+   * Observes selected device
+   *
+   * ```typescript
+   * notion.onDeviceChange().subscribe(device => {
+   *  console.log(device);
+   * });
+   * ```
+   */
+  public onDeviceChange(): Observable<DeviceInfo> {
+    return this.api.onDeviceChange();
+  }
+
+  /**
    * Enables/disables local mode
    *
    * With local mode, device metrics like brainwaves, calm, focus, etc will stream
@@ -302,17 +315,7 @@ export class Notion {
       return of(onDeviceSocketUrl);
     }
 
-    const namespace = "context/socketUrl";
-    return new Observable((observer) => {
-      const listener = this.api.onNamespace(
-        namespace,
-        (socketUrl: string) => {
-          observer.next(socketUrl);
-        }
-      );
-
-      return () => this.api.offNamespace(namespace, listener);
-    });
+    return this.api.observeNamespace("context/socketUrl");
   }
 
   /**
@@ -374,17 +377,25 @@ export class Notion {
         };
       });
 
-    return this.isLocalMode().pipe(
-      switchMap((isLocalMode) => {
-        if (isLocalMode && isNotionMetric(metric)) {
-          return this.socketUrl().pipe(
-            switchMap((socketUrl) => this.api.setWebsocket(socketUrl)),
-            switchMap(() => subscribeTo(this.api.localServerType))
-          );
-        }
+    return this.onDeviceChange().pipe(
+      switchMap((device) => {
+        const { deviceId } = device;
 
-        this.api.unsetWebsocket();
-        return subscribeTo(this.api.defaultServerType);
+        return this.isLocalMode().pipe(
+          switchMap((isLocalMode) => {
+            if (isLocalMode && isNotionMetric(metric)) {
+              return this.socketUrl().pipe(
+                switchMap((socketUrl) =>
+                  this.api.setWebsocket(socketUrl, deviceId)
+                ),
+                switchMap(() => subscribeTo(this.api.localServerType))
+              );
+            }
+
+            this.api.unsetWebsocket();
+            return subscribeTo(this.api.defaultServerType);
+          })
+        );
       }),
       whileOnline({
         status$: this.status(),
@@ -571,17 +582,7 @@ export class Notion {
       return throwError(errors.mustSelectDevice);
     }
 
-    const namespace = "settings";
-    return new Observable((observer) => {
-      const listener = this.api.onNamespace(
-        namespace,
-        (settings: Settings) => {
-          observer.next(settings);
-        }
-      );
-
-      return () => this.api.offNamespace(namespace, listener);
-    });
+    return this.api.observeNamespace("settings");
   }
 
   /**

@@ -135,4 +135,8 @@ export class FirebaseDevice {
       bundleId
     );
   }
+
+  public disconnect() {
+    this.deviceStore.disconnect();
+  }
 }

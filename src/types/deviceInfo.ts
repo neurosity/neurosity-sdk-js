@@ -10,3 +10,10 @@ export interface DeviceInfo {
   osVersion: string;
   apiVersion: string;
 }
+
+type DeviceSelectorKeyValue = [string, string | number | string[]];
+type DeviceSelectorFunction = (devices: DeviceInfo[]) => DeviceInfo;
+
+export type DeviceSelector =
+  | DeviceSelectorKeyValue
+  | DeviceSelectorFunction;
