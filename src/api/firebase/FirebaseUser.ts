@@ -116,13 +116,15 @@ export class FirebaseUser {
       devicesInfoSnapshots
     ).then((snapshots) => snapshots.map((snapshot) => snapshot.val()));
 
-    devicesList.sort((a, b) => {
+    const validDevices = devicesList.filter((device) => !!device);
+
+    validDevices.sort((a, b) => {
       return (
         userDevices[a.deviceId].claimedOn -
         userDevices[b.deviceId].claimedOn
       );
     });
 
-    return devicesList;
+    return validDevices;
   }
 }
