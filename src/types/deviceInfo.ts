@@ -5,8 +5,9 @@ export interface DeviceInfo {
   channels: number;
   samplingRate: number;
   manufacturer: string;
+  model: string;
   modelName: string;
-  modelId: string;
+  modelVersion: string;
   osVersion: string;
   apiVersion: string;
 }
