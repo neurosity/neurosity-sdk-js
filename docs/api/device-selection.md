@@ -76,7 +76,9 @@ type DeviceInfo = {
   deviceId: string;
   deviceNickname: string;
   manufacturer: string;
+  model: string;
   modelName: string;
+  modelVersion: string;
   osVersion: string;
   samplingRate: number;
 };
