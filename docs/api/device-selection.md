@@ -21,7 +21,7 @@ const notion = new Notion();
 
 ### Ahead Of Time Device Selection
 
-This method is especially useful if you have your Device ID on had. Simply pass it as an option when instantiating `Notion`.
+This method is especially useful if you have your Device ID available. Simply pass it as an option when instantiating `Notion`.
 
 ```js
 import { Notion } from "@neurosity/notion";
@@ -33,15 +33,15 @@ const notion = new Notion({
 
 ### Manual Device Selection
 
-Selecting a device manually is the way to go when the user owns multiple devices.
+Selecting a device manually is the way to go when the user owns multiple devices. It's also the recommended approach when building Neurosity apps for other people to use.
 
 A common use case for manually selecting a device is when you wish to build a device dropdown a user can select from, instead of collecting the `Device ID` from the user ahead of time.
 
 The 3 steps to manually selecting a device are:
 
-- Set `autoSelectDevice` to false when instantiating `Notion`.
+- Set `autoSelectDevice` to `false` when instantiating `Notion`.
 - Authenticate with your Neurosity account to access your devices by calling the `notion.login(...)` function.
-- Call the `notion.selectDevice(...)` function with a device selector function.
+- Call the `notion.selectDevice(...)` function with a device selector function or field/value combination.
 
 ```js
 import { Notion } from "@neurosity/notion";
@@ -56,13 +56,17 @@ import { Notion } from "@neurosity/notion";
     password: "..."
   });
 
+  // select via field/value
+  await notion.selectDevice(["deviceNickname", "Notion-A1B"]);
+
+  // or select via selector function
   await notion.selectDevice((devices) =>
     devices.find((device) => device.deviceNickname === "Notion-A1B")
   );
 })();
 ```
 
-The devices list contains all claimed devices by the user account Notion is authenticated with. The shape of `DeviceInfo` is:
+The devices list contains all claimed devices by the user account Notion is authenticated with. The shape of each device is called `DeviceInfo`, and it contains the following attributes:
 
 ```ts
 type DeviceInfo = {
@@ -78,7 +82,7 @@ type DeviceInfo = {
 };
 ```
 
-You can select a device based on any attribute. For example, you could select a device based on the `osVersion`.
+You can select a device based on any attribute. For example, you could select a device based on the `model`. The following example selects the earliest claimed Notion 2 device.
 
 ```js
 import { Notion } from "@neurosity/notion";
@@ -94,7 +98,7 @@ import { Notion } from "@neurosity/notion";
   });
 
   await notion.selectDevice((devices) =>
-    devices.find((device) => device.osVersion === "14.0.0")
+    devices.find((device) => device.model === "Notion 2")
   );
 })();
 ```
@@ -114,6 +118,7 @@ import { Notion } from "@neurosity/notion";
     password: "..."
   });
 
+  // Devices are ordered by `claimedOn` date asc
   const devices = await notion.getDevices();
 })();
 ```
@@ -133,17 +138,21 @@ import { Notion } from "@neurosity/notion";
     password: "..."
   });
 
+  // Access device when selecting
   const selectedDevice = await notion.selectDevice((devices) =>
     devices.find((device) => device.deviceNickname === "Notion-B1C")
   );
 
-  // Or later...
-
-  const deviceInfo = await notion.getInfo();
+  // Or every time the device selection changes
+  const selectedDevice = notion
+    .onDeviceChange()
+    .subscribe((selectedDevice) => {
+      console.log(selectedDevice);
+    });
 })();
 ```
 
-> If you own multiple devices, and don't set `autoSelectDevice` to false, then the first device on the list will be automatically selected.
+> If you own multiple devices, and don't set `autoSelectDevice` to false, then the earliest claimed device on the list will be automatically selected.
 
 ### Switching devices
 
