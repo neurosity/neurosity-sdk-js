@@ -6,8 +6,14 @@ const notion = new Notion({
 });
 
 (async () => {
-  await notion.login({
-    email: process.env.NEUROSITY_EMAIL,
-    password: process.env.NEUROSITY_PASSWORD
-  });
+  await notion
+    .login({
+      email: process.env.NEUROSITY_EMAIL,
+      password: process.env.NEUROSITY_PASSWORD
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+  process.stdin.resume();
 })();

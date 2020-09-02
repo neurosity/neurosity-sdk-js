@@ -83,7 +83,6 @@ export class Timesync {
           .catch((error) => [error]);
 
         if (error) {
-          console.log(error);
           return 0;
         }
 
