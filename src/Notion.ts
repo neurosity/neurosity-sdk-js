@@ -1,4 +1,10 @@
-import { Observable, BehaviorSubject, throwError, of } from "rxjs";
+import {
+  Observable,
+  BehaviorSubject,
+  throwError,
+  of,
+  empty
+} from "rxjs";
 import { map, share, switchMap } from "rxjs/operators";
 import { ApiClient, credentialWithLink, createUser } from "./api/index";
 import { whileOnline } from "./utils/whileOnline";
@@ -391,6 +397,10 @@ export class Notion {
 
     return this.onDeviceChange().pipe(
       switchMap((device) => {
+        if (!device) {
+          return empty();
+        }
+
         const { deviceId } = device;
 
         return this.isLocalMode().pipe(
