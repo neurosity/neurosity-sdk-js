@@ -201,7 +201,7 @@ export class FirebaseUser {
     if (
       !deviceId ||
       deviceId.length !== 32 ||
-      hexRegEx.test(deviceId)
+      !hexRegEx.test(deviceId)
     ) {
       return Promise.reject("The device id is incorrectly formatted.");
     }
