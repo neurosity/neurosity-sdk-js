@@ -1,8 +1,8 @@
 import {
   Observable,
   BehaviorSubject,
-  throwError,
-  fromEventPattern
+  fromEventPattern,
+  empty
 } from "rxjs";
 import { FirebaseApp, FirebaseUser, FirebaseDevice } from "./firebase";
 import { WebsocketClient } from "./websocket";
@@ -18,8 +18,7 @@ import { ChangeSettings } from "../types/settings";
 import { Subscription } from "../types/subscriptions";
 import { DeviceStatus } from "../types/status";
 import { DeviceInfo, DeviceSelector } from "../types/deviceInfo";
-import * as errors from "../utils/errors";
-import { switchMap, share, filter } from "rxjs/operators";
+import { switchMap, share, skip } from "rxjs/operators";
 
 export { credentialWithLink, createUser } from "./firebase";
 
@@ -60,6 +59,10 @@ export class ApiClient implements Client {
         this.firebaseDevice.disconnect();
       }
 
+      if (!device) {
+        return;
+      }
+
       this.firebaseDevice = new FirebaseDevice({
         deviceId: device.deviceId,
         firebaseApp: this.firebaseApp,
@@ -80,10 +83,7 @@ export class ApiClient implements Client {
   }
 
   public onDeviceChange(): Observable<DeviceInfo> {
-    return this._selectedDevice.asObservable().pipe(
-      share(),
-      filter((device) => !!device)
-    );
+    return this._selectedDevice.asObservable().pipe(share(), skip(1));
   }
 
   // Automatically select device when user logs in
@@ -187,8 +187,21 @@ export class ApiClient implements Client {
     return this.firebaseUser.addDevice(deviceId);
   }
 
-  public removeDevice(deviceId: string): Promise<void> {
-    return this.firebaseUser.removeDevice(deviceId);
+  public async removeDevice(deviceId: string): Promise<void> {
+    const [hasError, errorMessage] = await this.firebaseUser
+      .removeDevice(deviceId)
+      .then(() => [false])
+      .catch((error) => [true, error]);
+
+    if (hasError) {
+      return Promise.reject(errorMessage);
+    }
+
+    const selectedDevice = this._selectedDevice.getValue();
+
+    if (selectedDevice?.deviceId === deviceId) {
+      this._selectedDevice.next(null);
+    }
   }
 
   public didSelectDevice(): boolean {
@@ -270,7 +283,7 @@ export class ApiClient implements Client {
     );
 
     return this.onDeviceChange().pipe(
-      switchMap(() => namespaceValues$)
+      switchMap((device) => (device ? namespaceValues$ : empty()))
     );
   }
 
