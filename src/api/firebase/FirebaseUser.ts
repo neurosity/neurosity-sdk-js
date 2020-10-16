@@ -7,6 +7,8 @@ import { Credentials } from "../../types/credentials";
 import { UserDevices } from "../../types/user";
 import { DeviceInfo } from "../../types/deviceInfo";
 
+const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
+
 /**
  * @hidden
  */
@@ -95,7 +97,7 @@ export class FirebaseUser {
 
     const snapshot = await this.app
       .database()
-      .ref(`/users/${userId}/devices`)
+      .ref(this.getUserDevicesPath())
       .once("value");
 
     const userDevices: UserDevices | null = snapshot.val();
@@ -109,7 +111,10 @@ export class FirebaseUser {
     const devicesInfoSnapshots = Object.keys(
       userDevices
     ).map((deviceId) =>
-      this.app.database().ref(`/devices/${deviceId}/info`).once("value")
+      this.app
+        .database()
+        .ref(this.getDeviceInfoPath(deviceId))
+        .once("value")
     );
 
     const devicesList: DeviceInfo[] = await Promise.all(
@@ -126,5 +131,110 @@ export class FirebaseUser {
     });
 
     return validDevices;
+  }
+
+  async addDevice(deviceId: string): Promise<void> {
+    const userId = this.user?.uid;
+
+    if (!userId) {
+      return Promise.reject(`Please login.`);
+    }
+
+    const [isValid, invalidErrorMessage] = await this.isDeviceIdValid(
+      deviceId
+    )
+      .then((isValid) => [isValid])
+      .catch((error) => [false, error.message]);
+
+    if (!isValid) {
+      return Promise.reject(invalidErrorMessage);
+    }
+
+    const claimedByPath = this.getDeviceClaimedByPath(deviceId);
+    const userDevicePath = this.getUserClaimedDevicePath(deviceId);
+
+    const [hasError, errorMessage] = await this.app
+      .database()
+      .ref()
+      .update({
+        [claimedByPath]: userId,
+        [userDevicePath]: {
+          claimedOn: SERVER_TIMESTAMP
+        }
+      })
+      .then(() => [false])
+      .catch((error) => [true, error.message]);
+
+    if (hasError) {
+      return Promise.reject(errorMessage);
+    }
+  }
+
+  async removeDevice(deviceId: string): Promise<void> {
+    const userId = this.user?.uid;
+
+    if (!userId) {
+      return Promise.reject(`Please login.`);
+    }
+
+    const claimedByPath = this.getDeviceClaimedByPath(deviceId);
+    const userDevicePath = this.getUserClaimedDevicePath(deviceId);
+
+    const claimedByRef = this.app.database().ref(claimedByPath);
+    const userDeviceRef = this.app.database().ref(userDevicePath);
+
+    const [hasError, errorMessage] = await Promise.all([
+      claimedByRef.remove(),
+      userDeviceRef.remove()
+    ])
+      .then(() => [false])
+      .catch((error) => [true, error.message]);
+
+    if (hasError) {
+      return Promise.reject(errorMessage);
+    }
+  }
+
+  async isDeviceIdValid(deviceId: string): Promise<boolean> {
+    // hex string of 32 characters
+    const hexRegEx = /[0-9A-Fa-f]{32}/g;
+    if (
+      !deviceId ||
+      deviceId.length !== 32 ||
+      hexRegEx.test(deviceId)
+    ) {
+      return Promise.reject("The device id is incorrectly formatted.");
+    }
+
+    const claimedByPath = this.getDeviceClaimedByPath(deviceId);
+    const claimedByRef = this.app.database().ref(claimedByPath);
+
+    const claimedBySnapshot = await claimedByRef
+      .once("value")
+      .catch(() => null);
+
+    if (!claimedBySnapshot || claimedBySnapshot.exists()) {
+      return Promise.reject("The device has already been claimed.");
+    }
+
+    return true;
+  }
+
+  private getDeviceClaimedByPath(deviceId: string): string {
+    return `devices/${deviceId}/status/claimedBy`;
+  }
+
+  private getUserClaimedDevicePath(deviceId: string): string {
+    const userId = this.user.uid;
+    return `users/${userId}/devices/${deviceId}`;
+  }
+
+  private getUserDevicesPath(): string {
+    const userId = this.user.uid;
+    return `users/${userId}/devices`;
+  }
+
+  private getDeviceInfoPath(deviceId: string): string {
+    return `devices/${deviceId}/info`;
   }
 }
