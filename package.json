@@ -49,7 +49,7 @@
   "homepage": "https://docs.neurosity.co",
   "dependencies": {
     "@neurosity/ipk": "^2.0.0",
-    "firebase": "^7.14.0",
+    "firebase": "^7.24.0",
     "outliers": "0.0.3",
     "rxjs": "^6.5.1",
     "socket.io-client": "^2.2.0"
