@@ -144,7 +144,7 @@ export class FirebaseUser {
       deviceId
     )
       .then((isValid) => [isValid])
-      .catch((error) => [false, error.message]);
+      .catch((error) => [false, error]);
 
     if (!isValid) {
       return Promise.reject(invalidErrorMessage);
@@ -163,7 +163,7 @@ export class FirebaseUser {
         }
       })
       .then(() => [false])
-      .catch((error) => [true, error.message]);
+      .catch((error) => [true, error]);
 
     if (hasError) {
       return Promise.reject(errorMessage);
@@ -188,7 +188,7 @@ export class FirebaseUser {
       userDeviceRef.remove()
     ])
       .then(() => [false])
-      .catch((error) => [true, error.message]);
+      .catch((error) => [true, error]);
 
     if (hasError) {
       return Promise.reject(errorMessage);
