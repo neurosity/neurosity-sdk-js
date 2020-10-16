@@ -18,7 +18,7 @@ import { ChangeSettings } from "../types/settings";
 import { Subscription } from "../types/subscriptions";
 import { DeviceStatus } from "../types/status";
 import { DeviceInfo, DeviceSelector } from "../types/deviceInfo";
-import { switchMap, shareReplay } from "rxjs/operators";
+import { map, switchMap, shareReplay } from "rxjs/operators";
 
 export { credentialWithLink, createUser } from "./firebase";
 
@@ -273,7 +273,21 @@ export class ApiClient implements Client {
   }
 
   public status(): Observable<DeviceStatus> {
-    return this.observeNamespace("status");
+    return this.observeNamespace("status").pipe(
+      map((status) => {
+        if (!status) {
+          return status;
+        }
+
+        // remove internal properties that start with "__"
+        return Object.entries(status).reduce((acc, [key, value]) => {
+          if (!key.startsWith("__")) {
+            acc[key] = value;
+          }
+          return acc;
+        }, {});
+      })
+    );
   }
 
   public observeNamespace(namespace: string): Observable<any> {
