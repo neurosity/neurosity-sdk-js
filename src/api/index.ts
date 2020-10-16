@@ -204,6 +204,10 @@ export class ApiClient implements Client {
     }
   }
 
+  public onUserDevicesChange(): Observable<DeviceInfo[]> {
+    return this.firebaseUser.onUserDevicesChange();
+  }
+
   public didSelectDevice(): boolean {
     return !!this._selectedDevice.getValue();
   }

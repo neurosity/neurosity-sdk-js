@@ -1,4 +1,5 @@
-import { Observable } from "rxjs";
+import { Observable, fromEventPattern, from } from "rxjs";
+import { map, switchMap } from "rxjs/operators";
 import firebase from "firebase/app";
 import { User } from "@firebase/auth-types";
 
@@ -108,29 +109,7 @@ export class FirebaseUser {
       return Promise.reject(`No devices found.`);
     }
 
-    const devicesInfoSnapshots = Object.keys(
-      userDevices
-    ).map((deviceId) =>
-      this.app
-        .database()
-        .ref(this.getDeviceInfoPath(deviceId))
-        .once("value")
-    );
-
-    const devicesList: DeviceInfo[] = await Promise.all(
-      devicesInfoSnapshots
-    ).then((snapshots) => snapshots.map((snapshot) => snapshot.val()));
-
-    const validDevices = devicesList.filter((device) => !!device);
-
-    validDevices.sort((a, b) => {
-      return (
-        userDevices[a.deviceId].claimedOn -
-        userDevices[b.deviceId].claimedOn
-      );
-    });
-
-    return validDevices;
+    return this.userDevicesToDeviceInfoList(userDevices);
   }
 
   async addDevice(deviceId: string): Promise<void> {
@@ -218,6 +197,49 @@ export class FirebaseUser {
     }
 
     return true;
+  }
+
+  onUserDevicesChange(): Observable<DeviceInfo[]> {
+    const userDevicesPath = this.getUserDevicesPath();
+    const userDevicesRef = this.app.database().ref(userDevicesPath);
+
+    return fromEventPattern(
+      (handler) => userDevicesRef.on("value", handler),
+      (handler) => userDevicesRef.off("value", handler)
+    ).pipe(
+      map((snapshot: firebase.database.DataSnapshot) => snapshot.val()),
+      switchMap((userDevices: UserDevices | null) => {
+        return from(this.userDevicesToDeviceInfoList(userDevices));
+      })
+    );
+  }
+
+  private async userDevicesToDeviceInfoList(
+    userDevices: UserDevices | null
+  ): Promise<DeviceInfo[]> {
+    const devicesInfoSnapshots = Object.keys(
+      userDevices ?? {}
+    ).map((deviceId) =>
+      this.app
+        .database()
+        .ref(this.getDeviceInfoPath(deviceId))
+        .once("value")
+    );
+
+    const devicesList: DeviceInfo[] = await Promise.all(
+      devicesInfoSnapshots
+    ).then((snapshots) => snapshots.map((snapshot) => snapshot.val()));
+
+    const validDevices = devicesList.filter((device) => !!device);
+
+    validDevices.sort((a, b) => {
+      return (
+        userDevices[a.deviceId].claimedOn -
+        userDevices[b.deviceId].claimedOn
+      );
+    });
+
+    return validDevices;
   }
 
   private getDeviceClaimedByPath(deviceId: string): string {

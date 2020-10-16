@@ -15,10 +15,14 @@ const notion = new Notion();
       console.log("error", error);
     });
 
+  notion.onUserDevicesChange().subscribe((devices) => {
+    console.log("devices", devices);
+  });
+
   notion
     .getDevices()
     .then((devices) => {
-      console.log("devices", devices);
+      console.log("devices (once)", devices);
     })
     .catch((error) => {
       console.error("devices catch", error);
