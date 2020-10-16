@@ -161,6 +161,14 @@ export class Notion {
   }
 
   /**
+   * @internal
+   * Not user facing yet
+   */
+  public onUserDevicesChange(): Observable<DeviceInfo[]> {
+    return this.api.onUserDevicesChange();
+  }
+
+  /**
    * Get user devices
    *
    * Returns a list of devices claimed by the user authenticated.
