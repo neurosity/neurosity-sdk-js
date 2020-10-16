@@ -139,6 +139,22 @@ export class Notion {
   }
 
   /**
+   * @internal
+   * Not user facing yet
+   */
+  public addDevice(deviceId: string): Promise<void> {
+    return this.api.addDevice(deviceId);
+  }
+
+  /**
+   * @internal
+   * Not user facing yet
+   */
+  public removeDevice(deviceId: string): Promise<void> {
+    return this.api.removeDevice(deviceId);
+  }
+
+  /**
    * Get user devices
    *
    * Returns a list of devices claimed by the user authenticated.

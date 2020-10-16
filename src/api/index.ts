@@ -183,6 +183,14 @@ export class ApiClient implements Client {
     return this.firebaseUser.getDevices();
   }
 
+  public addDevice(deviceId: string): Promise<void> {
+    return this.firebaseUser.addDevice(deviceId);
+  }
+
+  public removeDevice(deviceId: string): Promise<void> {
+    return this.firebaseUser.removeDevice(deviceId);
+  }
+
   public didSelectDevice(): boolean {
     return !!this._selectedDevice.getValue();
   }
