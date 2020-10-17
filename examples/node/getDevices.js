@@ -6,6 +6,10 @@ const { Notion } = require("../..");
 const notion = new Notion();
 
 (async () => {
+  notion.onUserDevicesChange().subscribe((devices) => {
+    console.log("devices", devices);
+  });
+
   await notion
     .login({
       email: process.env.NEUROSITY_EMAIL,
@@ -14,10 +18,6 @@ const notion = new Notion();
     .catch((error) => {
       console.log("error", error);
     });
-
-  notion.onUserDevicesChange().subscribe((devices) => {
-    console.log("devices", devices);
-  });
 
   notion
     .getDevices()

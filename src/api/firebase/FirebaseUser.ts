@@ -1,4 +1,4 @@
-import { Observable, fromEventPattern, from } from "rxjs";
+import { Observable, fromEventPattern, from, empty } from "rxjs";
 import { map, switchMap } from "rxjs/operators";
 import firebase from "firebase/app";
 import { User } from "@firebase/auth-types";
@@ -103,12 +103,6 @@ export class FirebaseUser {
 
     const userDevices: UserDevices | null = snapshot.val();
 
-    const hasDevices: boolean = !!Object.keys(userDevices ?? {}).length;
-
-    if (!hasDevices) {
-      return Promise.reject(`No devices found.`);
-    }
-
     return this.userDevicesToDeviceInfoList(userDevices);
   }
 
@@ -200,16 +194,26 @@ export class FirebaseUser {
   }
 
   onUserDevicesChange(): Observable<DeviceInfo[]> {
-    const userDevicesPath = this.getUserDevicesPath();
-    const userDevicesRef = this.app.database().ref(userDevicesPath);
+    return this.onAuthStateChanged().pipe(
+      switchMap((user) => {
+        if (!user) {
+          return empty();
+        }
 
-    return fromEventPattern(
-      (handler) => userDevicesRef.on("value", handler),
-      (handler) => userDevicesRef.off("value", handler)
-    ).pipe(
-      map((snapshot: firebase.database.DataSnapshot) => snapshot.val()),
-      switchMap((userDevices: UserDevices | null) => {
-        return from(this.userDevicesToDeviceInfoList(userDevices));
+        const userDevicesPath = this.getUserDevicesPath();
+        const userDevicesRef = this.app.database().ref(userDevicesPath);
+
+        return fromEventPattern(
+          (handler) => userDevicesRef.on("value", handler),
+          (handler) => userDevicesRef.off("value", handler)
+        ).pipe(
+          map((snapshot: firebase.database.DataSnapshot) =>
+            snapshot.val()
+          ),
+          switchMap((userDevices: UserDevices | null) => {
+            return from(this.userDevicesToDeviceInfoList(userDevices));
+          })
+        );
       })
     );
   }
