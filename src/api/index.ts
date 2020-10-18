@@ -18,7 +18,7 @@ import { ChangeSettings } from "../types/settings";
 import { Subscription } from "../types/subscriptions";
 import { DeviceStatus } from "../types/status";
 import { DeviceInfo, DeviceSelector } from "../types/deviceInfo";
-import { map, switchMap, skip, shareReplay } from "rxjs/operators";
+import { map, switchMap, filter, shareReplay } from "rxjs/operators";
 
 export { credentialWithLink, createUser } from "./firebase";
 
@@ -41,7 +41,7 @@ export class ApiClient implements Client {
    * @internal
    */
   private _selectedDevice: BehaviorSubject<DeviceInfo | null> = new BehaviorSubject(
-    null
+    undefined
   );
 
   constructor(options: NotionOptions) {
@@ -83,12 +83,10 @@ export class ApiClient implements Client {
   }
 
   public onDeviceChange(): Observable<DeviceInfo> {
-    const { autoSelectDevice } = this.options;
-    return autoSelectDevice
-      ? this._selectedDevice.asObservable().pipe(shareReplay(1))
-      : this._selectedDevice
-          .asObservable()
-          .pipe(shareReplay(1), skip(1));
+    return this._selectedDevice.asObservable().pipe(
+      shareReplay(1),
+      filter((value) => value !== undefined)
+    );
   }
 
   // Automatically select device when user logs in
