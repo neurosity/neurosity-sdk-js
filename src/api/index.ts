@@ -18,7 +18,7 @@ import { ChangeSettings } from "../types/settings";
 import { Subscription } from "../types/subscriptions";
 import { DeviceStatus } from "../types/status";
 import { DeviceInfo, DeviceSelector } from "../types/deviceInfo";
-import { map, switchMap, shareReplay } from "rxjs/operators";
+import { map, switchMap, skip, shareReplay } from "rxjs/operators";
 
 export { credentialWithLink, createUser } from "./firebase";
 
@@ -83,7 +83,12 @@ export class ApiClient implements Client {
   }
 
   public onDeviceChange(): Observable<DeviceInfo> {
-    return this._selectedDevice.asObservable().pipe(shareReplay(1));
+    const { autoSelectDevice } = this.options;
+    return autoSelectDevice
+      ? this._selectedDevice.asObservable().pipe(shareReplay(1))
+      : this._selectedDevice
+          .asObservable()
+          .pipe(shareReplay(1), skip(1));
   }
 
   // Automatically select device when user logs in
