@@ -7,6 +7,8 @@ import "firebase/firestore";
 import { config } from "./config";
 import { NotionOptions } from "../../types/options";
 
+export const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
+
 /**
  * @hidden
  */

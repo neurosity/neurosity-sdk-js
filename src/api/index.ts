@@ -20,7 +20,11 @@ import { DeviceStatus } from "../types/status";
 import { DeviceInfo, DeviceSelector } from "../types/deviceInfo";
 import { map, switchMap, filter, shareReplay } from "rxjs/operators";
 
-export { credentialWithLink, createUser } from "./firebase";
+export {
+  credentialWithLink,
+  createUser,
+  SERVER_TIMESTAMP
+} from "./firebase";
 
 /**
  * @hidden
