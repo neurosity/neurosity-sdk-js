@@ -6,7 +6,12 @@ import {
   empty
 } from "rxjs";
 import { map, share, switchMap } from "rxjs/operators";
-import { ApiClient, credentialWithLink, createUser } from "./api/index";
+import {
+  ApiClient,
+  credentialWithLink,
+  createUser,
+  SERVER_TIMESTAMP
+} from "./api/index";
 import { whileOnline } from "./utils/whileOnline";
 import { NotionOptions } from "./types/options";
 import { Training } from "./types/training";
@@ -80,6 +85,12 @@ export class Notion {
    * @hidden
    */
   static createUser = createUser;
+
+  /**
+   *
+   * @hidden
+   */
+  static SERVER_TIMESTAMP = SERVER_TIMESTAMP;
 
   /**
    * Creates new instance of Notion
