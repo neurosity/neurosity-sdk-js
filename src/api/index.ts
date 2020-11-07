@@ -164,6 +164,10 @@ export class ApiClient implements Client {
   }
 
   public async logout(): Promise<any> {
+    if (this.firebaseDevice) {
+      this.firebaseDevice.disconnect();
+    }
+
     return await this.firebaseUser.logout();
   }
 
