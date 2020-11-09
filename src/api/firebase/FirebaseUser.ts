@@ -246,6 +246,19 @@ export class FirebaseUser {
     return validDevices;
   }
 
+  public async hasDevicePermission(deviceId: string): Promise<boolean> {
+    const deviceInfoPath = this.getDeviceInfoPath(deviceId);
+
+    const hasPermission = await this.app
+      .database()
+      .ref(deviceInfoPath)
+      .once("value")
+      .then(() => true)
+      .catch(() => false);
+
+    return hasPermission;
+  }
+
   private getDeviceClaimedByPath(deviceId: string): string {
     return `devices/${deviceId}/status/claimedBy`;
   }

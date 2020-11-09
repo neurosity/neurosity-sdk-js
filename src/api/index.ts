@@ -258,8 +258,14 @@ export class ApiClient implements Client {
       );
     }
 
-    if (!devices.includes(device)) {
-      return Promise.reject(`Invalid device provided.`);
+    const hasPermission = await this.firebaseUser.hasDevicePermission(
+      device.deviceId
+    );
+
+    if (!hasPermission) {
+      return Promise.reject(
+        `Rejected device access due to permissions.`
+      );
     }
 
     this._selectedDevice.next(device);
