@@ -2,17 +2,14 @@
 id: resources
 title: Resources
 ---
+
 ## Knowledge Base
 
-Read our knowledge base at [support.neurosity.co](support.neurosity.co).
+Read our knowledge base at [https://support.neurosity.co](https://support.neurosity.co).
 
 ## Online Community
 
-Join our [online community here](https://support.neurosity.co/hc/en-us/community/topics) for general discussions and feature requests.
-
-## Real-time Chat
-
-For real-time help, join the chat over at [our discord](https://discord.gg/E4dvX6g).
+For real-time help, discussions, and and feature requests join the chat over at [our discord](https://discord.gg/vDKnG8kUvQ).
 
 ## Support
 

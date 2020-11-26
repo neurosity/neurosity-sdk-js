@@ -45,9 +45,7 @@ Building a good application with NotionJS can take a lot of effort. Here is what
 
 If you have questions for extension development, try asking on:
 
-- [Online community](https://support.neurosity.co/hc/en-us/community/topics): There are general discussions and feature requests taking place here.
-- [Stack Overflow](https://stackoverflow.com/questions/tagged/notion-js): There are no questions yet, but we hope to build a community-driven knowledge base using the `notion-js` tag.
-- [Discord](https://discord.gg/E4dvX6g): Public chatroom for NotionJS developers. Some Neurosity team members chime in conversations.
-- [Knowledge Base](support.neurosity.co): There are over a dozen articles for getting started and developing with NotionJS.
+- [Knowledge Base](https://support.neurosity.co): There are over a dozen articles for getting started and developing with NotionJS.
+- [Discord](https://discord.gg/vDKnG8kUvQ): Public chatroom for NotionJS developers. Some Neurosity team members chime in conversations.
 
 To provide feedback on the documentation, create new issues at [Neurosity/notion-js](https://github.com/neurosity/notion-js). If you have NotionJS questions, or issues with the NotionJS API, please open new issues at [Neurosity/notion-js](https://github.com/neurosity/notion-js) as well.

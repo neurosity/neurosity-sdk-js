@@ -54,14 +54,7 @@ class Footer extends React.Component {
             >
               Knowledge Base
             </a>
-            <a
-              href="https://stackoverflow.com/questions/tagged/notion-js"
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              Stack Overflow
-            </a>
-            <a href="https://discordapp.com/neurosity">Project Chat</a>
+            <a href="https://discord.gg/vDKnG8kUvQ">Project Chat</a>
             <a
               href={`https://twitter.com/${this.props.config.twitterUsername}`}
               target="_blank"
