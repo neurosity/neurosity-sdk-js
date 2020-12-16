@@ -12,12 +12,12 @@ export interface IDevice {
 /**
  * @hidden
  */
-export const createDeviceStore = (
-  app,
+export const createDeviceStore = ({
+  db,
   deviceId,
   subscriptionManager
-) => {
-  const deviceRef = app.database().ref(`devices/${deviceId}`);
+}) => {
+  const deviceRef = db.ref(`devices/${deviceId}`);
   const clientId = deviceRef.child("subscriptions").push().key;
   const clientRef = deviceRef.child(`clients/${clientId}`);
   let listenersToRemove = [];
@@ -93,8 +93,7 @@ export const createDeviceStore = (
   };
 
   // Add client connections and subscriptions to db and remove them when offline
-  const connectedListener = app
-    .database()
+  const connectedListener = db
     .ref(".info/connected")
     .on("value", (snapshot) => {
       if (!snapshot.val()) {
@@ -120,10 +119,7 @@ export const createDeviceStore = (
     });
 
   listenersToRemove.push(() => {
-    app
-      .database()
-      .ref(".info/connected")
-      .off("value", connectedListener);
+    db.ref(".info/connected").off("value", connectedListener);
   });
 
   return {

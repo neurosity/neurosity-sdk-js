@@ -28,10 +28,16 @@ export function createUser(...args) {
  */
 export class FirebaseUser {
   public app: firebase.app.App;
+  public db: firebase.database.Database;
   public user: User | null;
 
   constructor(firebaseApp: FirebaseApp) {
     this.app = firebaseApp.app;
+    this.db = firebaseApp.db;
+
+    if (firebaseApp.isOfflineMode) {
+      this.app.auth().useEmulator(firebaseApp.authURL);
+    }
 
     this.app.auth().onAuthStateChanged((user: User | null) => {
       this.user = user;
@@ -96,8 +102,7 @@ export class FirebaseUser {
       return Promise.reject(`Please login.`);
     }
 
-    const snapshot = await this.app
-      .database()
+    const snapshot = await this.db
       .ref(this.getUserDevicesPath())
       .once("value");
 
@@ -126,8 +131,7 @@ export class FirebaseUser {
     const claimedByPath = this.getDeviceClaimedByPath(deviceId);
     const userDevicePath = this.getUserClaimedDevicePath(deviceId);
 
-    const [hasError, errorMessage] = await this.app
-      .database()
+    const [hasError, errorMessage] = await this.db
       .ref()
       .update({
         [claimedByPath]: userId,
@@ -153,8 +157,8 @@ export class FirebaseUser {
     const claimedByPath = this.getDeviceClaimedByPath(deviceId);
     const userDevicePath = this.getUserClaimedDevicePath(deviceId);
 
-    const claimedByRef = this.app.database().ref(claimedByPath);
-    const userDeviceRef = this.app.database().ref(userDevicePath);
+    const claimedByRef = this.db.ref(claimedByPath);
+    const userDeviceRef = this.db.ref(userDevicePath);
 
     const [hasError, errorMessage] = await Promise.all([
       claimedByRef.remove(),
@@ -180,7 +184,7 @@ export class FirebaseUser {
     }
 
     const claimedByPath = this.getDeviceClaimedByPath(deviceId);
-    const claimedByRef = this.app.database().ref(claimedByPath);
+    const claimedByRef = this.db.ref(claimedByPath);
 
     const claimedBySnapshot = await claimedByRef
       .once("value")
@@ -201,7 +205,7 @@ export class FirebaseUser {
         }
 
         const userDevicesPath = this.getUserDevicesPath();
-        const userDevicesRef = this.app.database().ref(userDevicesPath);
+        const userDevicesRef = this.db.ref(userDevicesPath);
 
         return fromEventPattern(
           (handler) => userDevicesRef.on("value", handler),
@@ -224,10 +228,7 @@ export class FirebaseUser {
     const devicesInfoSnapshots = Object.keys(
       userDevices ?? {}
     ).map((deviceId) =>
-      this.app
-        .database()
-        .ref(this.getDeviceInfoPath(deviceId))
-        .once("value")
+      this.db.ref(this.getDeviceInfoPath(deviceId)).once("value")
     );
 
     const devicesList: DeviceInfo[] = await Promise.all(
@@ -249,8 +250,7 @@ export class FirebaseUser {
   public async hasDevicePermission(deviceId: string): Promise<boolean> {
     const deviceInfoPath = this.getDeviceInfoPath(deviceId);
 
-    const hasPermission = await this.app
-      .database()
+    const hasPermission = await this.db
       .ref(deviceInfoPath)
       .once("value")
       .then(() => true)

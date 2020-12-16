@@ -11,7 +11,7 @@ import { SubscriptionManager } from "../subscriptions/SubscriptionManager";
 import { Client } from "../types/client";
 import { Actions } from "../types/actions";
 import { Metrics } from "../types/metrics";
-import { NotionOptions } from "../types/options";
+import { NotionOptions, StreamingModes } from "../types/options";
 import { SkillsClient, DeviceSkill } from "../types/skill";
 import { Credentials } from "../types/credentials";
 import { ChangeSettings } from "../types/settings";
@@ -39,6 +39,7 @@ export class ApiClient implements Client {
   protected timesync: Timesync;
   protected subscriptionManager: SubscriptionManager;
   public defaultServerType: string = FirebaseDevice.serverType;
+  public offlineServerType: string = FirebaseDevice.offlineServerType;
   public localServerType: string = WebsocketClient.serverType;
 
   /**
@@ -57,6 +58,16 @@ export class ApiClient implements Client {
     this.firebaseUser.onAuthStateChanged().subscribe((user) => {
       this.user = user;
     });
+
+    if (options.mode === StreamingModes.OFFLINE) {
+      this.firebaseDevice = new FirebaseDevice({
+        deviceId: options.deviceId,
+        firebaseApp: this.firebaseApp,
+        dependencies: {
+          subscriptionManager: this.subscriptionManager
+        }
+      });
+    }
 
     this.onDeviceChange().subscribe((device) => {
       if (this.firebaseDevice) {
@@ -97,11 +108,15 @@ export class ApiClient implements Client {
   private async setAutoSelectedDevice(): Promise<DeviceInfo | null> {
     // Select based on `deviceId` passed
     if (this.options.deviceId) {
-      return await this.selectDevice((devices) => {
-        return devices.find(
-          (device) => device.deviceId === this.options.deviceId
-        );
-      });
+      if (this.options.mode === StreamingModes.OFFLINE) {
+        return await this.selectOfflineDevice();
+      } else {
+        return await this.selectDevice((devices) => {
+          return devices.find(
+            (device) => device.deviceId === this.options.deviceId
+          );
+        });
+      }
     }
 
     // Auto select first-claimed device
@@ -113,6 +128,19 @@ export class ApiClient implements Client {
     }
 
     return null;
+  }
+
+  public async selectOfflineDevice(): Promise<DeviceInfo> {
+    // @TODO: override firebase rule to allow getting offline device info while unauthenticated
+    const device = await this.firebaseDevice
+      .getInfo()
+      .catch((error) =>
+        console.log("Failed to get offline device", error)
+      );
+
+    this._selectedDevice.next(device);
+
+    return device;
   }
 
   public async setWebsocket(

@@ -13,7 +13,7 @@ import {
   SERVER_TIMESTAMP
 } from "./api/index";
 import { whileOnline } from "./utils/whileOnline";
-import { NotionOptions } from "./types/options";
+import { NotionOptions, StreamingModes } from "./types/options";
 import { Training } from "./types/training";
 import { SkillInstance } from "./types/skill";
 import { Credentials } from "./types/credentials";
@@ -43,7 +43,8 @@ import { DeviceStatus } from "./types/status";
 import { Action } from "./types/actions";
 import * as errors from "./utils/errors";
 
-const defaultOptions = {
+const defaultOptions: NotionOptions = {
+  mode: StreamingModes.ONLINE,
   timesync: false,
   autoSelectDevice: true
 };
@@ -70,9 +71,9 @@ export class Notion {
   /**
    * @internal
    */
-  private _localModeSubject: BehaviorSubject<
-    boolean
-  > = new BehaviorSubject(false);
+  private _localModeSubject: BehaviorSubject<boolean> = new BehaviorSubject(
+    false
+  );
 
   /**
    *
@@ -424,6 +425,11 @@ export class Notion {
 
         return this.isLocalMode().pipe(
           switchMap((isLocalMode) => {
+            if (this.options.mode === StreamingModes.OFFLINE) {
+              this.api.unsetWebsocket();
+              return subscribeTo(this.api.offlineServerType);
+            }
+
             if (isLocalMode && isNotionMetric(metric)) {
               return this.socketUrl().pipe(
                 switchMap((socketUrl) =>

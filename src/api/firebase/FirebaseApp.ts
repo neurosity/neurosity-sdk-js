@@ -5,7 +5,7 @@ import "firebase/functions";
 import "firebase/firestore";
 
 import { config } from "./config";
-import { NotionOptions } from "../../types/options";
+import { NotionOptions, StreamingModes } from "../../types/options";
 
 export const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
 
@@ -15,22 +15,30 @@ export const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
 export class FirebaseApp {
   protected standalone: boolean;
   public app: firebase.app.App;
+  public db: firebase.database.Database;
+  public isOfflineMode: boolean;
+  public databaseURL: string;
+  public authURL: string;
 
   constructor(options: NotionOptions) {
-    this.app = this.getApp(options.deviceId);
+    this.app = this.getApp(options);
     this.standalone = this.app.name === options.deviceId;
+    this.db = this.app.database();
+    this.isOfflineMode = options.mode === StreamingModes.OFFLINE;
+    this.databaseURL = options.databaseURL;
+    this.authURL = options.authURL;
+
+    if (this.isOfflineMode) {
+      const { hostname, port } = new URL(options.databaseURL);
+      this.db.useEmulator(hostname, Number(port));
+    }
   }
 
-  private getApp(deviceId?: string) {
+  private getApp(options: NotionOptions) {
+    const { deviceId } = options;
     const moduleApps = firebase.apps;
-    const browserApps =
-      typeof window !== "undefined" &&
-      "firebase" in window &&
-      "apps" in window.firebase
-        ? window.firebase.apps
-        : [];
 
-    const neurosityApp = [...moduleApps, ...browserApps].find(
+    const neurosityApp = [...moduleApps].find(
       (app: any) =>
         app.name === "[DEFAULT]" &&
         app.options.databaseURL === config.databaseURL

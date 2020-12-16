@@ -16,8 +16,10 @@ type FirebaseDeviceOptions = {
  * @hidden
  */
 export class FirebaseDevice {
-  static serverType = "firebase";
+  static serverType: string = "firebase";
+  static offlineServerType: string = "offline-firebase";
   protected app: firebase.app.App;
+  protected db: firebase.database.Database;
   protected deviceStore;
 
   constructor({
@@ -26,11 +28,13 @@ export class FirebaseDevice {
     dependencies
   }: FirebaseDeviceOptions) {
     this.app = firebaseApp.app;
-    this.deviceStore = createDeviceStore(
-      this.app,
+    this.db = firebaseApp.db;
+
+    this.deviceStore = createDeviceStore({
+      db: this.db,
       deviceId,
-      dependencies.subscriptionManager
-    );
+      subscriptionManager: dependencies.subscriptionManager
+    });
   }
 
   public get timestamp(): any {

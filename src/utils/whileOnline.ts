@@ -26,7 +26,7 @@ function shouldAllowMetrics(
   allowWhileOnSleepMode: boolean
 ) {
   return (
-    status.state === "online" &&
-    (allowWhileOnSleepMode ? true : !status.sleepMode)
+    status?.state === "online" &&
+    (allowWhileOnSleepMode ? true : !status?.sleepMode)
   );
 }
