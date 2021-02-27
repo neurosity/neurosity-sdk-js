@@ -3,9 +3,16 @@ export type EmailAndPassword = {
   password: string;
 };
 
+export type ApiKeyCredentials = {
+  apiKey: string;
+};
+
 export type OAuthCredentials = {
   idToken: string;
   providerId: string;
 };
 
-export type Credentials = EmailAndPassword | OAuthCredentials;
+export type Credentials =
+  | EmailAndPassword
+  | OAuthCredentials
+  | ApiKeyCredentials;

@@ -67,6 +67,8 @@ export class ApiClient implements Client {
           subscriptionManager: this.subscriptionManager
         }
       });
+
+      this.setAutoSelectedDevice();
     }
 
     this.onDeviceChange().subscribe((device) => {

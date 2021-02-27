@@ -4,7 +4,7 @@ import "firebase/auth";
 import "firebase/functions";
 import "firebase/firestore";
 
-import { config } from "./config";
+import { config as onlineConfig } from "./config";
 import { NotionOptions, StreamingModes } from "../../types/options";
 
 export const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
@@ -18,20 +18,13 @@ export class FirebaseApp {
   public db: firebase.database.Database;
   public isOfflineMode: boolean;
   public databaseURL: string;
-  public authURL: string;
 
   constructor(options: NotionOptions) {
+    this.databaseURL = `ws://localhost:80`;
     this.app = this.getApp(options);
     this.standalone = this.app.name === options.deviceId;
     this.db = this.app.database();
     this.isOfflineMode = options.mode === StreamingModes.OFFLINE;
-    this.databaseURL = options.databaseURL;
-    this.authURL = options.authURL;
-
-    if (this.isOfflineMode) {
-      const { hostname, port } = new URL(options.databaseURL);
-      this.db.useEmulator(hostname, Number(port));
-    }
   }
 
   private getApp(options: NotionOptions) {
@@ -41,8 +34,18 @@ export class FirebaseApp {
     const neurosityApp = [...moduleApps].find(
       (app: any) =>
         app.name === "[DEFAULT]" &&
-        app.options.databaseURL === config.databaseURL
+        this.databaseURL === onlineConfig.databaseURL
     );
+
+    const offlineConfig = {
+      ...onlineConfig,
+      databaseURL: this.databaseURL
+    };
+
+    const selectedConfig =
+      options.mode === StreamingModes.OFFLINE
+        ? offlineConfig
+        : onlineConfig;
 
     if (neurosityApp) {
       return neurosityApp;
@@ -55,10 +58,10 @@ export class FirebaseApp {
       );
       return notionApp
         ? notionApp
-        : firebase.initializeApp(config, notionAppName);
+        : firebase.initializeApp(selectedConfig, notionAppName);
     }
 
-    return firebase.initializeApp(config);
+    return firebase.initializeApp(selectedConfig);
   }
 
   goOnline() {

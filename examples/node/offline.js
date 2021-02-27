@@ -2,30 +2,46 @@ const { Notion } = require("../..");
 
 const notion = new Notion({
   mode: "offline",
-  deviceId: "9aac2601ba7587b32359dba127e5958a", //process.env.NEUROSITY_OFFLINE_DEVICE_ID
-  databaseURL: "http://10.0.0.13:3001", //"http://localhost:9000",
-  authURL: "http://10.0.0.13:3002" //"http://localhost:9099",
+  deviceId: process.env.NEUROSITY_OFFLINE_DEVICE_ID // "9aac2601ba7587b32359dba127e5958a"
 });
 
+// console.log("apiKey", process.env.NEUROSITY_OFFLINE_API_KEY);
+
 (async () => {
-  const response = await notion
-    .login({
-      email: "9aac2601ba7587b32359dba127e5958a@neurosity-device.com", // process.env.NEUROSITY_OFFLINE_EMAIL,
-      password: "123456" // process.env.NEUROSITY_OFFLINE_PASSWORD
-    })
-    .catch((error) => {
-      console.log("error", error);
+  // const response = await notion
+  //   .login({
+  //     apiKey: process.env.NEUROSITY_OFFLINE_API_KEY
+  //   })
+  //   .catch((error) => {
+  //     console.log("error", error);
+  //   });
+
+  // if (!response) {
+  //   console.log("no response");
+  // }
+
+  notion.onDeviceChange().subscribe((selectedDevice) => {
+    console.log("selectedDevice", selectedDevice);
+
+    notion.getInfo().then((info) => {
+      console.log("info", info);
     });
 
-  if (!response) {
-    console.log("no response");
-  }
+    notion.status().subscribe((status) => {
+      console.log("status", status);
+    });
 
-  notion.status().subscribe((status) => {
-    console.log("status", status);
-  });
-
-  notion.brainwaves("raw").subscribe((brainwaves) => {
-    console.log("brainwaves", brainwaves);
+    notion.calm().subscribe((calm) => {
+      console.log("calm", calm);
+    });
   });
 })();
+
+// const response = await notion
+//     .login({
+//       email: "9aac2601ba7587b32359dba127e5958a@neurosity-device.com", // process.env.NEUROSITY_OFFLINE_EMAIL,
+//       password: "123456" // process.env.NEUROSITY_OFFLINE_PASSWORD
+//     })
+//     .catch((error) => {
+//       console.log("error", error);
+//     });

@@ -21,14 +21,6 @@ export interface NotionOptions {
   /**
    * @hidden
    */
-  databaseURL?: string; // @TODO: remove after offline url is predictable
-  /**
-   * @hidden
-   */
-  authURL?: string; // @TODO: remove after offline url is predictable
-  /**
-   * @hidden
-   */
   skill?: Skill;
   /**
    * @hidden

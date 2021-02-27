@@ -18,8 +18,18 @@ const questions = [
   }
 ];
 
-inquirer.prompt(questions).then(async ({ exampleFileName }) => {
-  const exampleFunction = require(`./${exampleFileName}`);
+const fileNameArgument = process.argv[2];
+
+if (fileNameArgument) {
+  runExample(fileNameArgument);
+} else {
+  inquirer.prompt(questions).then(async ({ exampleFileName }) => {
+    runExample(exampleFileName);
+  });
+}
+
+async function runExample(fileName) {
+  const exampleFunction = require(`./${fileName}`);
 
   if (typeof exampleFunction !== "function") {
     return;
@@ -35,4 +45,4 @@ inquirer.prompt(questions).then(async ({ exampleFileName }) => {
   });
 
   await exampleFunction(notion);
-});
+}

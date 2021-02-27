@@ -35,10 +35,6 @@ export class FirebaseUser {
     this.app = firebaseApp.app;
     this.db = firebaseApp.db;
 
-    if (firebaseApp.isOfflineMode) {
-      this.app.auth().useEmulator(firebaseApp.authURL);
-    }
-
     this.app.auth().onAuthStateChanged((user: User | null) => {
       this.user = user;
     });
@@ -71,6 +67,11 @@ export class FirebaseUser {
   }
 
   login(credentials: Credentials) {
+    if ("apiKey" in credentials) {
+      const { apiKey } = credentials;
+      return this.app.auth().signInWithCustomToken(apiKey);
+    }
+
     if ("idToken" in credentials && "providerId" in credentials) {
       const provider = new firebase.auth.OAuthProvider(
         credentials.providerId
