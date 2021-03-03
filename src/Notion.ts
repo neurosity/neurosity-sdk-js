@@ -38,6 +38,7 @@ import {
   PowerByBand,
   PSD
 } from "./types/brainwaves";
+import { Accelerometer } from "./types/accelerometer";
 import { DeviceInfo } from "./types/deviceInfo";
 import { DeviceStatus } from "./types/status";
 import { Action } from "./types/actions";
@@ -486,6 +487,28 @@ export class Notion {
         label,
         timestamp: this.api.timestamp
       }
+    });
+  }
+
+  /**
+   * Observes accelerometer data
+   *
+   * ```typescript
+   * notion.accelerometer().subscribe(accelerometer => {
+   *   console.log(accelerometer);
+   * });
+   *
+   * // { acceleration: ..., inclination: ..., orientation: ..., pitch: ..., roll: ..., x: ..., y: ..., z: ... }
+   * ```
+   *
+   * @returns Observable of accelerometer metric events
+   */
+  public accelerometer(): Observable<Accelerometer> {
+    const metric = "accelerometer";
+    return this.getMetric({
+      metric,
+      labels: getLabels(metric),
+      atomic: true
     });
   }
 
