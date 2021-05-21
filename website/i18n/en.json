@@ -57,7 +57,7 @@
         "title": "Training"
       },
       "overview": {
-        "title": "Notion JS"
+        "title": "Neurosity SDK"
       },
       "reference/classes/notion": {
         "title": "Notion",
@@ -127,7 +127,7 @@
     "categories": {
       "Overview": "Overview",
       "Get Started": "Get Started",
-      "Working with Notion": "Working with Notion",
+      "Working with the SDK": "Working with the SDK",
       "API Guides": "API Guides",
       "Introduction": "Introduction",
       "Classes": "Classes",

@@ -36,7 +36,7 @@ const siteConfig = {
   //   organizationName: 'JoelMarcey'
   repoUrl,
 
-  title: "Notion", // Title for your website.
+  title: "Neurosity SDK", // Title for your website.
   tagline: "Empowering the Mind",
   url: "https://neurosity.co", // Your website URL
   baseUrl: "/", // Base URL for your project */
