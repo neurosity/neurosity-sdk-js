@@ -3,7 +3,8 @@ import {
   BehaviorSubject,
   throwError,
   of,
-  empty
+  empty,
+  from
 } from "rxjs";
 import { map, share, switchMap } from "rxjs/operators";
 import {
@@ -492,6 +493,7 @@ export class Notion {
 
   /**
    * Observes accelerometer data
+   * Supported by Notion 2 and the Crown.
    *
    * ```typescript
    * notion.accelerometer().subscribe(accelerometer => {
@@ -505,11 +507,23 @@ export class Notion {
    */
   public accelerometer(): Observable<Accelerometer> {
     const metric = "accelerometer";
-    return this.getMetric({
-      metric,
-      labels: getLabels(metric),
-      atomic: true
-    });
+
+    return from(this.getSelectedDevice()).pipe(
+      switchMap((selectedDevice) => {
+        const modelVersionWithAccelSupport = 2;
+        const isModelVersion2OrGreater = Number(selectedDevice?.modelVersion) >= modelVersionWithAccelSupport;
+
+        if (!isModelVersion2OrGreater) {
+          return throwError(new Error(`The ${metric} metric is not supported by this device. Model version ${modelVersionWithAccelSupport} or greater required.`));
+        }
+
+        return this.getMetric({
+          metric,
+          labels: getLabels(metric),
+          atomic: true
+        });
+      })
+    )
   }
 
   /**
