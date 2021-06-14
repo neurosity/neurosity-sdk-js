@@ -4,7 +4,11 @@ import firebase from "firebase/app";
 import { User } from "@firebase/auth-types";
 
 import { FirebaseApp } from "./FirebaseApp";
-import { Credentials } from "../../types/credentials";
+import {
+  Credentials,
+  EmailAndPassword,
+  CustomToken
+} from "../../types/credentials";
 import { UserDevices } from "../../types/user";
 import { DeviceInfo } from "../../types/deviceInfo";
 
@@ -42,6 +46,21 @@ export class FirebaseUser {
     return this.app.auth();
   }
 
+  async createAccount(credentials: EmailAndPassword) {
+    const { email, password } = credentials;
+    const [error, user] = await this.app
+      .auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then((user) => [null, user])
+      .catch((error) => [error, null]);
+
+    if (error) {
+      return Promise.reject(error);
+    }
+
+    return user;
+  }
+
   onAuthStateChanged(): Observable<User | null> {
     return new Observable((observer) => {
       this.app.auth().onAuthStateChanged((user: User | null) => {
@@ -65,6 +84,11 @@ export class FirebaseUser {
   }
 
   login(credentials: Credentials) {
+    if ("customToken" in credentials) {
+      const { customToken } = credentials;
+      return this.app.auth().signInWithCustomToken(customToken);
+    }
+
     if ("idToken" in credentials && "providerId" in credentials) {
       const provider = new firebase.auth.OAuthProvider(
         credentials.providerId
@@ -81,12 +105,26 @@ export class FirebaseUser {
     }
 
     throw new Error(
-      `Either email/password or an idToken/providerId is required`
+      `Either {email,password}, {customToken}, or {idToken,providerId} is required`
     );
   }
 
   logout() {
     return this.app.auth().signOut();
+  }
+
+  public async createCustomToken(): Promise<CustomToken> {
+    const [error, customToken] = await this.app
+      .functions()
+      .httpsCallable("createCustomToken")()
+      .then(({ data }) => [null, data])
+      .catch((error) => [error, null]);
+
+    if (error) {
+      return Promise.reject(error);
+    }
+
+    return customToken;
   }
 
   async getDevices() {

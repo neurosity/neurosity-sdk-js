@@ -17,7 +17,11 @@ import { whileOnline } from "./utils/whileOnline";
 import { NotionOptions } from "./types/options";
 import { Training } from "./types/training";
 import { SkillInstance } from "./types/skill";
-import { Credentials } from "./types/credentials";
+import {
+  Credentials,
+  EmailAndPassword,
+  CustomToken
+} from "./types/credentials";
 import { Settings, ChangeSettings } from "./types/settings";
 import { AwarenessLabels } from "./types/awareness";
 import { SignalQuality } from "./types/signalQuality";
@@ -72,9 +76,9 @@ export class Notion {
   /**
    * @internal
    */
-  private _localModeSubject: BehaviorSubject<
-    boolean
-  > = new BehaviorSubject(false);
+  private _localModeSubject: BehaviorSubject<boolean> = new BehaviorSubject(
+    false
+  );
 
   /**
    *
@@ -511,10 +515,16 @@ export class Notion {
     return from(this.getSelectedDevice()).pipe(
       switchMap((selectedDevice) => {
         const modelVersionWithAccelSupport = 2;
-        const isModelVersion2OrGreater = Number(selectedDevice?.modelVersion) >= modelVersionWithAccelSupport;
+        const isModelVersion2OrGreater =
+          Number(selectedDevice?.modelVersion) >=
+          modelVersionWithAccelSupport;
 
         if (!isModelVersion2OrGreater) {
-          return throwError(new Error(`The ${metric} metric is not supported by this device. Model version ${modelVersionWithAccelSupport} or greater required.`));
+          return throwError(
+            new Error(
+              `The ${metric} metric is not supported by this device. Model version ${modelVersionWithAccelSupport} or greater required.`
+            )
+          );
         }
 
         return this.getMetric({
@@ -523,7 +533,7 @@ export class Notion {
           atomic: true
         });
       })
-    )
+    );
   }
 
   /**
@@ -844,6 +854,31 @@ export class Notion {
    */
   public goOnline(): void {
     this.api.goOnline();
+  }
+
+  /**
+   * @internal
+   * Not user facing yet
+   *
+   * Creates user account and automatically signs in with same credentials
+   *
+   * @param emailAndPasswordObject
+   * @returns user credential
+   */
+  public createAccount(credentials: EmailAndPassword) {
+    return this.api.createAccount(credentials);
+  }
+
+  /**
+   * @internal
+   * Not user facing yet
+   *
+   * Creates custom token (JWT) to use to login with `{ customToken }`.
+   *
+   * @returns custom token
+   */
+  public createCustomToken(): Promise<CustomToken> {
+    return this.api.createCustomToken();
   }
 
   /**
