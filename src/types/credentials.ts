@@ -1,3 +1,7 @@
+export type CustomToken = {
+  customToken: string;
+};
+
 export type EmailAndPassword = {
   email: string;
   password: string;
@@ -8,4 +12,7 @@ export type OAuthCredentials = {
   providerId: string;
 };
 
-export type Credentials = EmailAndPassword | OAuthCredentials;
+export type Credentials =
+  | EmailAndPassword
+  | OAuthCredentials
+  | CustomToken;

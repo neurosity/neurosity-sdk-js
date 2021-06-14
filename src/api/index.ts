@@ -13,7 +13,11 @@ import { Actions } from "../types/actions";
 import { Metrics } from "../types/metrics";
 import { NotionOptions } from "../types/options";
 import { SkillsClient, DeviceSkill } from "../types/skill";
-import { Credentials } from "../types/credentials";
+import {
+  Credentials,
+  CustomToken,
+  EmailAndPassword
+} from "../types/credentials";
 import { ChangeSettings } from "../types/settings";
 import { Subscription } from "../types/subscriptions";
 import { DeviceStatus } from "../types/status";
@@ -372,6 +376,14 @@ export class ApiClient implements Client {
         }
       }
     };
+  }
+
+  public createAccount(credentials: EmailAndPassword) {
+    return this.firebaseUser.createAccount(credentials);
+  }
+
+  public createCustomToken(): Promise<CustomToken> {
+    return this.firebaseUser.createCustomToken();
   }
 
   public get skills(): SkillsClient {
