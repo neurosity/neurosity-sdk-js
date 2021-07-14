@@ -382,6 +382,10 @@ export class ApiClient implements Client {
     return this.firebaseUser.createAccount(credentials);
   }
 
+  public deleteAccount() {
+    return this.firebaseUser.deleteAccount();
+  }
+
   public createCustomToken(): Promise<CustomToken> {
     return this.firebaseUser.createCustomToken();
   }

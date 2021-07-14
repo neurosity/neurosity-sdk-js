@@ -873,6 +873,16 @@ export class Notion {
    * @internal
    * Not user facing yet
    *
+   * Removes all devices from an account and then deletes the account
+   */
+  public deleteAccount() {
+    return this.api.deleteAccount();
+  }
+
+  /**
+   * @internal
+   * Not user facing yet
+   *
    * Creates custom token (JWT) to use to login with `{ customToken }`.
    *
    * @returns custom token

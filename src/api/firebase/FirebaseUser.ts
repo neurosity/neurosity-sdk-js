@@ -61,6 +61,40 @@ export class FirebaseUser {
     return user;
   }
 
+  async deleteAccount() {
+    const user = this.app.auth().currentUser;
+
+    if (!user) {
+      return Promise.reject(
+        new Error(
+          `You are trying to delete an account that is not authenticated. To delete an account, the account must have signed in recently.`
+        )
+      );
+    }
+
+    const [devicesError, devices] = await this.getDevices()
+      .then((response) => [null, response])
+      .catch((error) => [error, null]);
+
+    if (devicesError) {
+      return Promise.reject(devicesError);
+    }
+
+    if (devices.length) {
+      const removeDeviceError = await Promise.all(
+        devices.map((device) => this.removeDevice(device.deviceId))
+      )
+        .then(() => null)
+        .catch((error) => error);
+
+      if (removeDeviceError) {
+        return Promise.reject(removeDeviceError);
+      }
+    }
+
+    return user.delete();
+  }
+
   onAuthStateChanged(): Observable<User | null> {
     return new Observable((observer) => {
       this.app.auth().onAuthStateChanged((user: User | null) => {
