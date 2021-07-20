@@ -900,12 +900,14 @@ export class Notion {
    *
    * @returns timesyncOffset
    */
-  public getTimesyncOffset(): number | Error {
+  public getTimesyncOffset(): number {
     if (!this.options.timesync) {
-      return new Error(`options.timesync is not set to true.`);
+      console.warn(
+        `getTimesyncOffset() requires options.timesync to be true.`
+      );
     }
 
-    return this.api.getTimesyncOffset();
+    return this.options.timesync ? this.api.getTimesyncOffset() : 0;
   }
 
   /**
