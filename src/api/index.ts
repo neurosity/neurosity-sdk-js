@@ -402,6 +402,10 @@ export class ApiClient implements Client {
     return this.options.timesync ? this.timesync.timestamp : Date.now();
   }
 
+  public getTimesyncOffset(): number {
+    return this.timesync.offset;
+  }
+
   public changeSettings(settings: ChangeSettings): Promise<void> {
     return this.firebaseDevice.changeSettings(settings);
   }

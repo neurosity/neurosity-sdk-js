@@ -893,6 +893,23 @@ export class Notion {
 
   /**
    * @internal
+   * Not user facing yet
+   *
+   * Gets the offset between the device's clock and the client's clock
+   * Requires option.timesync to be true
+   *
+   * @returns timesyncOffset
+   */
+  public getTimesyncOffset(): number | Error {
+    if (!this.options.timesync) {
+      return new Error(`options.timesync is not set to true.`);
+    }
+
+    return this.api.getTimesyncOffset();
+  }
+
+  /**
+   * @internal
    * Proof of Concept for Skills - Not user facing yet
    *
    * Accesses a skill by Bundle ID. Additionally, allows to observe
