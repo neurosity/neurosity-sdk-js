@@ -96,21 +96,30 @@ export class FirebaseUser {
   }
 
   onAuthStateChanged(): Observable<User | null> {
-    return new Observable((observer) => {
-      this.app.auth().onAuthStateChanged((user: User | null) => {
-        observer.next(user);
-      });
+    return new Observable((subscriber) => {
+      try {
+        this.app.auth().onAuthStateChanged(
+          (user: User | null) => {
+            subscriber.next(user);
+          },
+          (error) => {
+            subscriber.error(error);
+          }
+        );
+      } catch (error) {
+        subscriber.error(error);
+      }
     });
   }
 
   onLogin(): Observable<User> {
-    return new Observable((observer) => {
+    return new Observable((subscriber) => {
       const unsubscribe = this.app
         .auth()
         .onAuthStateChanged((user: User) => {
           if (!!user) {
-            observer.next(user);
-            observer.complete();
+            subscriber.next(user);
+            subscriber.complete();
           }
         });
       return () => unsubscribe();
