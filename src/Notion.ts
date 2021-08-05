@@ -554,6 +554,7 @@ export class Notion {
   }
 
   /**
+   * The `raw` brainwaves parameter emits epochs of 25 samples.
    *
    * Example
    * ```typescript
@@ -562,6 +563,17 @@ export class Notion {
    * });
    * ```
    *
+   * Raw Unfiltered - The `rawUnfiltered` brainwaves parameter emits epochs of 25 samples. 
+
+   * Example
+   * ```typescript
+   * notion.brainwaves("rawUnfiltered").subscribe(brainwaves => {
+   *   console.log(brainwaves);
+   * });
+   * ```
+   *
+   * Power By Band - The `powerByBand` brainwaves parameter emits epochs 4 times a second. Every frequency label (e.g. beta) contains an average power value per channel.
+   * 
    * Example
    * ```typescript
    * notion.brainwaves("powerByBand").subscribe(brainwaves => {
@@ -569,6 +581,8 @@ export class Notion {
    * });
    * ```
    *
+   * Power Spectral Density (PSD) - The `psd` brainwaves parameter emits epochs 4 times a second. Every frequency label (e.g. alpha) contains the computed FFT (Fast Fourier transform) value per channel (see the `psd` property), as well as the frequency ranges (see the `freqs` property).
+   * 
    * Example
    * ```typescript
    * notion.brainwaves("psd").subscribe(brainwaves => {
