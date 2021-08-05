@@ -1,4 +1,8 @@
-export type BrainwavesLabel = "raw" | "powerByBand" | "psd";
+export type BrainwavesLabel =
+  | "raw"
+  | "rawUnfiltered"
+  | "powerByBand"
+  | "psd";
 
 export type AmplitudeByChannel = number[][];
 
