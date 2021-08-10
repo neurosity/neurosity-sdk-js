@@ -194,6 +194,21 @@ export class FirebaseUser {
       return Promise.reject(`Please login.`);
     }
 
+    const devices = await this.getDevices().catch((error) => {
+      console.log(error);
+    });
+
+    const deviceAlreadyInAccount =
+      devices &&
+      devices.length &&
+      devices.map(({ deviceId }) => deviceId).includes(deviceId);
+
+    if (deviceAlreadyInAccount) {
+      return Promise.reject(
+        `The device is already added to this account.`
+      );
+    }
+
     const [isValid, invalidErrorMessage] = await this.isDeviceIdValid(
       deviceId
     )
