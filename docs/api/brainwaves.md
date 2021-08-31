@@ -26,7 +26,7 @@ There are four brainwaves metrics:
 
 ### Raw
 
-The `raw` brainwaves parameter emits events of 25 samples. We call these groups of samples Epochs.
+The `raw` brainwaves parameter emits events of 16 samples for Crown and 25 for Notion 1 and 2. We call these groups of samples Epochs.
 
 ```js
 const mind = new Notion();
@@ -36,7 +36,7 @@ mind.brainwaves("raw").subscribe((brainwaves) => {
 });
 ```
 
-The code above will output new epochs with 25 samples approximately every 100ms (see the `data` property). Here's an example of 1 event:
+The code above will output new epochs of 16 samples approximately every 62.5ms (see the `data` property). Here's an example of 1 event:
 
 ```
 {
@@ -193,7 +193,7 @@ mind.brainwaves("rawUnfiltered").subscribe((brainwaves) => {
 });
 ```
 
-The code above will output new epochs with 25 samples approximately every 100ms (see the `data` property).. Here's an example of 1 event:
+The code above will output new epochs of 16 samples approximately every 62.5ms (see the `data` property).. Here's an example of 1 event:
 
 ```
 {

@@ -554,7 +554,7 @@ export class Notion {
   }
 
   /**
-   * The `raw` brainwaves parameter emits epochs of 25 samples.
+   * The `raw` brainwaves parameter emits epochs of 16 samples for Crown and 25 for Notion 1 and 2.
    *
    * Example
    * ```typescript
@@ -563,7 +563,7 @@ export class Notion {
    * });
    * ```
    *
-   * Raw Unfiltered - The `rawUnfiltered` brainwaves parameter emits epochs of 25 samples. 
+   * Raw Unfiltered - The `rawUnfiltered` brainwaves parameter emits epochs of 16 samples for Crown and 25 for Notion 1 and 2. 
 
    * Example
    * ```typescript
