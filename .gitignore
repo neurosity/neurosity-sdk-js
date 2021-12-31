@@ -6,3 +6,4 @@ node_modules_bak
 .env
 .DS_Store
 docs/reference
+.vscode/launch.json
