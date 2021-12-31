@@ -45,9 +45,12 @@ import {
 } from "./types/brainwaves";
 import { Accelerometer } from "./types/accelerometer";
 import { DeviceInfo } from "./types/deviceInfo";
+import { HapticEffects } from "./types/hapticEffects";
 import { DeviceStatus } from "./types/status";
 import { Action } from "./types/actions";
 import * as errors from "./utils/errors";
+import { hapticCodes } from "./utils/hapticCodes"
+
 
 const defaultOptions = {
   timesync: false,
@@ -494,6 +497,40 @@ export class Notion {
       }
     });
   }
+
+  /**
+ * Activates haptic motors
+ *
+ * ```typescript
+ * notion.haptics({P7: ["tripleClick100"], P8: ["tripleClick100"]});
+ * ```
+ *
+ * @param effects Effects to produce
+ */
+  public haptics(effects: HapticEffects): any {
+    if (!this.api.didSelectDevice()) {
+      return Promise.reject(errors.mustSelectDevice);
+    }
+
+    if (!effects['P7'] || !effects['P8']) {
+      throw new Error("Notion: an object with keys P7 and P8 required");
+    }
+
+    const maxItems = 7;
+    if (effects['P7'].length > maxItems || effects['P8'].length > maxItems) {
+      throw new Error(`Notion: Maximum items in array is ${maxItems}`);
+    }
+    
+    return this.dispatchAction({
+      command: "haptics",
+      action: "queue",
+      responseRequired: true,
+      responseTimeout: 1000,
+      message: {effects}
+    });
+  }
+
+  public getHapticCodes(): any{return hapticCodes;}
 
   /**
    * Observes accelerometer data
