@@ -500,12 +500,13 @@ export class Notion {
 
   /**
  * Activates haptic motors
- *
+ * 
  * ```typescript
  * notion.haptics({P7: ["tripleClick100"], P8: ["tripleClick100"]});
  * ```
  *
- * @param effects Effects to produce
+ * @param effects Effects to produce. Must include both P7 and P8 keys in object. Each key can be an array of up to 7 commands. 
+ *  A list of commands can be found on ./utils/hapticCodes.ts - there are about 127 of them!
  */
   public haptics(effects: HapticEffects): any {
     if (!this.api.didSelectDevice()) {
@@ -529,8 +530,6 @@ export class Notion {
       message: {effects}
     });
   }
-
-  public getHapticCodes(): any{return hapticCodes;}
 
   /**
    * Observes accelerometer data
