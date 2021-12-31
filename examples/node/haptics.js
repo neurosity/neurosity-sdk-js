@@ -2,7 +2,7 @@ module.exports = async function (notion) {
   const info = await notion.getInfo();
   console.log("info", info);
 
-  const effects = notion.hapticEffects;
+  const effects = notion.getHapticEffects();
   const hapticOptions = {
     P7: [effects.strongClick100],
     P8: [
