@@ -45,12 +45,12 @@ import {
 } from "./types/brainwaves";
 import { Accelerometer } from "./types/accelerometer";
 import { DeviceInfo } from "./types/deviceInfo";
-import { HapticEffects } from "./types/hapticEffects";
 import { DeviceStatus } from "./types/status";
 import { Action } from "./types/actions";
+import { HapticEffects } from "./types/hapticEffects";
 import * as errors from "./utils/errors";
-import { hapticCodes } from "./utils/hapticCodes"
-
+import * as platform from "./utils/platform";
+import * as hapticEffects from "./utils/hapticEffects";
 
 const defaultOptions = {
   timesync: false,
@@ -79,9 +79,8 @@ export class Notion {
   /**
    * @internal
    */
-  private _localModeSubject: BehaviorSubject<boolean> = new BehaviorSubject(
-    false
-  );
+  private _localModeSubject: BehaviorSubject<boolean> =
+    new BehaviorSubject(false);
 
   /**
    *
@@ -499,36 +498,87 @@ export class Notion {
   }
 
   /**
- * Activates haptic motors
- * 
- * ```typescript
- * notion.haptics({P7: ["tripleClick100"], P8: ["tripleClick100"]});
- * ```
- *
- * @param effects Effects to produce. Must include both P7 and P8 keys in object. Each key can be an array of up to 7 commands. 
- *  A list of commands can be found on ./utils/hapticCodes.ts - there are about 127 of them!
- */
-  public haptics(effects: HapticEffects): any {
+   * Queue haptic motor commands
+   *
+   * To queue haptic P7 only,
+   * ```typescript
+   * await notion.haptics({
+   *   P7: ["tripleClick100"]
+   * });
+   * ```
+   *
+   * To queue both motors at the same time
+   * ```typescript
+   * await notion.haptics({
+   *   P7: [notion.hapticEffects?.strongClick100],
+   *   P8: [notion.hapticEffects?.strongClick100]
+   * });
+   * ```
+   *
+   * You can queue different commands to the motors too
+   * ```typescript
+   * const effects = notion.hapticEffects;
+   * await notion.haptics({
+   *   P7: [effects.transitionRampUpLongSmooth1_0_to_100,
+   *         effects.transitionRampDownLongSmooth1_100_to_0],
+   *   P8: [effects.strongClick100]
+   * });
+   * ```
+   *
+   * @param effects Effects to queue. The key of the object passed should be the location of the motor
+   *  to queue. Each key can be an array of up to 7 commands. There is no haptic support on model version 1.
+   *  The Haptic motor's location is positioned in reference to the 10-20 EEG system used to label
+   *  the channels of the Crown's EEG sensors. Notion 2 and Crown have haptics at P7 and P8.
+   *  A list of haptic commands can be found on ./utils/hapticCodes.ts - there are about 127 of them!
+   */
+  public async haptics(effects: any): Promise<any> {
+    const metric = "haptics";
     if (!this.api.didSelectDevice()) {
       return Promise.reject(errors.mustSelectDevice);
     }
 
-    if (!effects['P7'] || !effects['P8']) {
-      throw new Error("Notion: an object with keys P7 and P8 required");
+    const modelVersion = (await this.getSelectedDevice()).modelVersion;
+    const supportsHaptics = platform.supportsHaptics(modelVersion);
+
+    if (!supportsHaptics) {
+      return Promise.reject(
+        errors.metricNotSupportedByModel(metric, modelVersion)
+      );
     }
 
-    const maxItems = 7;
-    if (effects['P7'].length > maxItems || effects['P8'].length > maxItems) {
-      throw new Error(`Notion: Maximum items in array is ${maxItems}`);
+    const newPlatformHapticRequest =
+      platform.getPlatformHapticMotors(modelVersion);
+
+    for (const key in effects) {
+      if (!Object.keys(newPlatformHapticRequest).includes(key)) {
+        return Promise.reject(
+          errors.locationNotFound(key, modelVersion)
+        );
+      }
+      const singleMotorEffects: string[] = effects[key];
+      const maxItems = 7;
+      if (singleMotorEffects.length > maxItems) {
+        return Promise.reject(errors.exceededMaxItems(maxItems));
+      }
+      newPlatformHapticRequest[key] = singleMotorEffects;
     }
-    
+
     return this.dispatchAction({
-      command: "haptics",
+      command: metric,
       action: "queue",
       responseRequired: true,
       responseTimeout: 1000,
-      message: {effects}
+      message: { effects: newPlatformHapticRequest }
     });
+  }
+
+  /**
+   * ```typescript
+   * const effects = notion.getHapticEffects();
+   * ```
+   */
+  public getHapticEffects(): HapticEffects {
+    return hapticEffects;
   }
 
   /**
@@ -550,16 +600,13 @@ export class Notion {
 
     return from(this.getSelectedDevice()).pipe(
       switchMap((selectedDevice) => {
-        const modelVersionWithAccelSupport = 2;
-        const isModelVersion2OrGreater =
-          Number(selectedDevice?.modelVersion) >=
-          modelVersionWithAccelSupport;
+        const modelVersion =
+          selectedDevice?.modelVersion || platform.MODEL_VERSION_1;
+        const supportsAccel = platform.supportsAccel(modelVersion);
 
-        if (!isModelVersion2OrGreater) {
+        if (!supportsAccel) {
           return throwError(
-            new Error(
-              `The ${metric} metric is not supported by this device. Model version ${modelVersionWithAccelSupport} or greater required.`
-            )
+            errors.metricNotSupportedByModel(metric, modelVersion)
           );
         }
 
