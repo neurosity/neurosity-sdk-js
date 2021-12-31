@@ -517,7 +517,7 @@ export class Notion {
    *
    * You can queue different commands to the motors too
    * ```typescript
-   * const effects = notion.hapticEffects;
+   * const effects = notion.getHapticEffects();
    * await notion.haptics({
    *   P7: [effects.transitionRampUpLongSmooth1_0_to_100,
    *         effects.transitionRampDownLongSmooth1_100_to_0],
