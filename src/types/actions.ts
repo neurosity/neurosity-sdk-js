@@ -6,6 +6,7 @@ export interface Action {
   action: string;
   message?: any;
   responseRequired?: boolean;
+  responseTimeout?: number;
 }
 
 /**
