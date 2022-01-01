@@ -32,6 +32,7 @@ Here are some examples of what you can achieve with the SDK:
 - Peer into mental states of a person - [Calm](api/calm) or [Focus](api/focus)
 - Train a new thought - [Training](guides/training)
 - Use a trained thought for control - [Kinesis](api/kinesis)
+- Interact with system haptics - [Haptics](api/haptics)
 
 ## How to use the SDK?
 
