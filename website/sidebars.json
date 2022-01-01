@@ -1,8 +1,6 @@
 {
   "docs": {
-    "Overview": [
-      "overview"
-    ],
+    "Overview": ["overview"],
     "Get Started": [
       "getting-started",
       "tutorials/your-first-web-app",
@@ -21,6 +19,7 @@
       "api/calm",
       "api/disconnect",
       "api/info",
+      "api/haptics",
       "api/settings",
       "api/status",
       "api/focus",
@@ -31,12 +30,8 @@
     ]
   },
   "@neurosity/notion": {
-    "Introduction": [
-      "reference/index"
-    ],
-    "Classes": [
-      "reference/classes/notion"
-    ],
+    "Introduction": ["reference/index"],
+    "Classes": ["reference/classes/notion"],
     "Interfaces": [
       "reference/interfaces/calm",
       "reference/interfaces/deviceinfo",

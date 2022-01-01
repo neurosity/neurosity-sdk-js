@@ -510,8 +510,8 @@ export class Notion {
    * To queue both motors at the same time
    * ```typescript
    * await notion.haptics({
-   *   P7: [notion.hapticEffects?.strongClick100],
-   *   P8: [notion.hapticEffects?.strongClick100]
+   *   P7: [notion.getHapticEffects().strongClick100],
+   *   P8: [notion.getHapticEffects().strongClick100]
    * });
    * ```
    *
@@ -526,10 +526,11 @@ export class Notion {
    * ```
    *
    * @param effects Effects to queue. The key of the object passed should be the location of the motor
-   *  to queue. Each key can be an array of up to 7 commands. There is no haptic support on model version 1.
-   *  The Haptic motor's location is positioned in reference to the 10-20 EEG system used to label
-   *  the channels of the Crown's EEG sensors. Notion 2 and Crown have haptics at P7 and P8.
-   *  A list of haptic commands can be found on ./utils/hapticCodes.ts - there are about 127 of them!
+   *  to queue. Each key can be an array of up to 7 commands. There is no haptic support on model
+   *  version 1, Notion DK1. The Haptic motor's location is positioned in reference to the 10-10 EEG
+   *  system used to label the channels of the Crown's EEG sensors. Notion 2 and Crown have haptics
+   *  at P7 and P8. A list of haptic commands can be found on ./utils/hapticCodes.ts - there
+   *  are about 127 of them!
    */
   public async haptics(effects: any): Promise<any> {
     const metric = "haptics";
