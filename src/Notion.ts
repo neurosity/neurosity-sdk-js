@@ -54,7 +54,14 @@ import * as hapticEffects from "./utils/hapticEffects";
 
 const defaultOptions = {
   timesync: false,
-  autoSelectDevice: true
+  autoSelectDevice: true,
+  emulator: false,
+  emulatorHost: "localhost",
+  emulatorAuthPort: 9099,
+  emulatorDatabasePort: 9000,
+  emulatorFunctionsPort: 5001,
+  emulatorFirestorePort: 8080,
+  emulatorOptions: {}
 };
 
 /**
