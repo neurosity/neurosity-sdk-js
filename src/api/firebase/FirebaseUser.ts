@@ -303,7 +303,7 @@ export class FirebaseUser {
           (handler) => userDevicesRef.on("value", handler),
           (handler) => userDevicesRef.off("value", handler)
         ).pipe(
-          map((snapshot: firebase.database.DataSnapshot) =>
+          map(([snapshot]: [firebase.database.DataSnapshot]) =>
             snapshot.val()
           ),
           switchMap((userDevices: UserDevices | null) => {
@@ -317,13 +317,12 @@ export class FirebaseUser {
   private async userDevicesToDeviceInfoList(
     userDevices: UserDevices | null
   ): Promise<DeviceInfo[]> {
-    const devicesInfoSnapshots = Object.keys(
-      userDevices ?? {}
-    ).map((deviceId) =>
-      this.app
-        .database()
-        .ref(this.getDeviceInfoPath(deviceId))
-        .once("value")
+    const devicesInfoSnapshots = Object.keys(userDevices ?? {}).map(
+      (deviceId) =>
+        this.app
+          .database()
+          .ref(this.getDeviceInfoPath(deviceId))
+          .once("value")
     );
 
     const devicesList: DeviceInfo[] = await Promise.all(
