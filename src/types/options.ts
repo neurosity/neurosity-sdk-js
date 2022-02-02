@@ -8,6 +8,36 @@ export interface NotionOptions {
   /**
    * @hidden
    */
+  emulator?: boolean;
+  /**
+   * @hidden
+   */
+  emulatorHost?: string;
+  /**
+   * @hidden
+   */
+  emulatorAuthPort?: number;
+  /**
+   * @hidden
+   */
+  emulatorDatabasePort?: number;
+  /**
+   * @hidden
+   */
+  emulatorOptions?: {
+    mockUserToken?: any;
+  };
+  /**
+   * @hidden
+   */
+  emulatorFunctionsPort?: number;
+  /**
+   * @hidden
+   */
+  emulatorFirestorePort?: number;
+  /**
+   * @hidden
+   */
   skill?: Skill;
   /**
    * @hidden

@@ -19,6 +19,10 @@ export class FirebaseApp {
   constructor(options: NotionOptions) {
     this.app = this.getApp(options.deviceId);
     this.standalone = this.app.name === options.deviceId;
+
+    if (options.emulator) {
+      this.connectEmulators(options);
+    }
   }
 
   private getApp(deviceId?: string) {
@@ -27,7 +31,7 @@ export class FirebaseApp {
       typeof window !== "undefined" &&
       "firebase" in window &&
       "apps" in window.firebase
-        ? window.firebase.apps
+        ? window["firebase"]["apps"]
         : [];
 
     const neurosityApp = [...moduleApps, ...browserApps].find(
@@ -51,6 +55,34 @@ export class FirebaseApp {
     }
 
     return firebase.initializeApp(config);
+  }
+
+  connectEmulators(options: NotionOptions) {
+    const {
+      emulatorHost,
+      emulatorAuthPort,
+      emulatorDatabasePort,
+      emulatorFunctionsPort,
+      emulatorFirestorePort,
+      emulatorOptions
+    } = options;
+
+    this.app
+      .auth()
+      .useEmulator(`http://${emulatorHost}:${emulatorAuthPort}`);
+    this.app
+      .database()
+      .useEmulator(emulatorHost, emulatorDatabasePort, emulatorOptions);
+    this.app
+      .functions()
+      .useEmulator(emulatorHost, emulatorFunctionsPort);
+    this.app
+      .firestore()
+      .useEmulator(
+        emulatorHost,
+        emulatorFirestorePort,
+        emulatorOptions
+      );
   }
 
   goOnline() {
