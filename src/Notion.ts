@@ -51,6 +51,8 @@ import { HapticEffects } from "./types/hapticEffects";
 import * as errors from "./utils/errors";
 import * as platform from "./utils/platform";
 import * as hapticEffects from "./utils/hapticEffects";
+import { createOAuthURL } from "./api/https/createOAuthURL";
+import { OAuthConfig } from "./types/oauth";
 
 const defaultOptions = {
   timesync: false,
@@ -1013,6 +1015,18 @@ export class Notion {
     }
 
     return this.options.timesync ? this.api.getTimesyncOffset() : 0;
+  }
+
+  /**
+   * @internal
+   * Not user facing yet
+   *
+   * Creates client-specific oAuth URL
+   *
+   * @returns custom token
+   */
+  public createOAuthURL(config: OAuthConfig): Promise<string> {
+    return createOAuthURL(config, this.options);
   }
 
   /**
