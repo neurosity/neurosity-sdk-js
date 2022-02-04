@@ -58,6 +58,7 @@ import {
   OAuthQuery,
   OAuthQueryResult
 } from "./types/oauth";
+import { UserClaims } from "./types/user";
 
 const defaultOptions = {
   timesync: false,
@@ -199,6 +200,14 @@ export class Notion {
    */
   public onUserDevicesChange(): Observable<DeviceInfo[]> {
     return this.api.onUserDevicesChange();
+  }
+
+  /**
+   * @internal
+   * Not user facing yet
+   */
+  public onUserClaimsChange(): Observable<UserClaims> {
+    return this.api.onUserClaimsChange();
   }
 
   /**

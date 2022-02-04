@@ -5,3 +5,10 @@ export type UserDevice = {
 export type UserDevices = {
   [deviceId: string]: UserDevice;
 };
+
+/**
+ * @hidden
+ */
+export type UserClaims = {
+  [claimName: string]: boolean | string;
+};
