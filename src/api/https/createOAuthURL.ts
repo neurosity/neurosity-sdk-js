@@ -4,7 +4,7 @@ import { getFunctionsBaseURL } from "./utils";
 import { NotionOptions } from "../../types/options";
 import { OAuthConfig } from "../../types/oauth";
 
-export async function createOAuthURL(
+export function createOAuthURL(
   config: OAuthConfig,
   sdkOptions: NotionOptions
 ): Promise<string> {
@@ -19,17 +19,17 @@ export async function createOAuthURL(
 
   const baseUrl = getFunctionsBaseURL(sdkOptions);
 
-  const response = await axios.get(`${baseUrl}/authorize/entry`, {
-    params: {
-      client_id: clientId,
-      ...(clientSecret ? { client_secret: clientSecret } : {}),
-      response_type: responseType,
-      redirect_uri: redirectUri,
-      scope: scope.join(","),
-      state: state,
-      redirect: "false"
-    }
-  });
-
-  return `${baseUrl}${response.data.url}`;
+  return axios
+    .get(`${baseUrl}/authorize/entry`, {
+      params: {
+        client_id: clientId,
+        ...(clientSecret ? { client_secret: clientSecret } : {}),
+        response_type: responseType,
+        redirect_uri: redirectUri,
+        scope: scope.join(","),
+        state: state,
+        redirect: "false"
+      }
+    })
+    .then((response) => `${baseUrl}${response.data.url}`);
 }
