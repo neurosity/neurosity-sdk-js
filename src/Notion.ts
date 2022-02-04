@@ -52,7 +52,12 @@ import * as errors from "./utils/errors";
 import * as platform from "./utils/platform";
 import * as hapticEffects from "./utils/hapticEffects";
 import { createOAuthURL } from "./api/https/createOAuthURL";
-import { OAuthConfig } from "./types/oauth";
+import { getOAuthToken } from "./api/https/getOAuthToken";
+import {
+  OAuthConfig,
+  OAuthQuery,
+  OAuthQueryResult
+} from "./types/oauth";
 
 const defaultOptions = {
   timesync: false,
@@ -1027,6 +1032,18 @@ export class Notion {
    */
   public createOAuthURL(config: OAuthConfig): Promise<string> {
     return createOAuthURL(config, this.options);
+  }
+
+  /**
+   * @internal
+   * Not user facing yet
+   *
+   * Gets client-specific oAuth token for a given userId
+   *
+   * @returns custom token
+   */
+  public getOAuthToken(query: OAuthQuery): Promise<OAuthQueryResult> {
+    return getOAuthToken(query, this.options);
   }
 
   /**
