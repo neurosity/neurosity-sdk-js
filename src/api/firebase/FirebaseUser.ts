@@ -9,7 +9,7 @@ import {
   EmailAndPassword,
   CustomToken
 } from "../../types/credentials";
-import { UserDevices } from "../../types/user";
+import { UserDevices, UserClaims } from "../../types/user";
 import { DeviceInfo } from "../../types/deviceInfo";
 
 const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
@@ -314,6 +314,67 @@ export class FirebaseUser {
     );
   }
 
+  onUserClaimsChange(): Observable<UserClaims> {
+    return this.onAuthStateChanged().pipe(
+      switchMap((user) => {
+        if (!user) {
+          return empty();
+        }
+
+        const claimsUpdatedOnPath = this.getUserClaimsUpdatedOnPath();
+
+        const claimsUpdatedOnRef = this.app
+          .database()
+          .ref(claimsUpdatedOnPath);
+
+        return fromEventPattern(
+          (handler) => claimsUpdatedOnRef.on("value", handler),
+          (handler) => claimsUpdatedOnRef.off("value", handler)
+        ).pipe(
+          map(([snapshot]: [firebase.database.DataSnapshot]) =>
+            snapshot.val()
+          ),
+          switchMap(() => {
+            // Force refresh of auth id token
+            return from(this.getIdToken(true)).pipe(
+              switchMap(() => from(this.getClaims()))
+            );
+          })
+        );
+      })
+    );
+  }
+
+  async getIdToken(forceRefresh = false): Promise<void> {
+    const user = this.app.auth()?.currentUser;
+
+    if (!user) {
+      return Promise.reject(
+        `getUserIdToken: unable to get currentUser`
+      );
+    }
+
+    await user.getIdToken(forceRefresh).catch((error) => {
+      console.error(error);
+    });
+  }
+
+  getClaims(): Promise<UserClaims> {
+    const user = this.app.auth()?.currentUser;
+
+    if (!user) {
+      return Promise.reject(`getUserClaims: unable to get currentUser`);
+    }
+
+    return user
+      .getIdTokenResult()
+      .then((token) => token.claims)
+      .catch((error) => {
+        console.error(error);
+        return null;
+      });
+  }
+
   private async userDevicesToDeviceInfoList(
     userDevices: UserDevices | null
   ): Promise<DeviceInfo[]> {
@@ -366,6 +427,11 @@ export class FirebaseUser {
   private getUserDevicesPath(): string {
     const userId = this.user.uid;
     return `users/${userId}/devices`;
+  }
+
+  private getUserClaimsUpdatedOnPath(): string {
+    const userId = this.user.uid;
+    return `users/${userId}/claimsUpdatedOn`;
   }
 
   private getDeviceInfoPath(deviceId: string): string {

@@ -4,6 +4,7 @@ import {
   fromEventPattern,
   empty
 } from "rxjs";
+import { map, switchMap, filter, shareReplay } from "rxjs/operators";
 import { FirebaseApp, FirebaseUser, FirebaseDevice } from "./firebase";
 import { WebsocketClient } from "./websocket";
 import { Timesync } from "../timesync";
@@ -22,7 +23,7 @@ import { ChangeSettings } from "../types/settings";
 import { Subscription } from "../types/subscriptions";
 import { DeviceStatus } from "../types/status";
 import { DeviceInfo, DeviceSelector } from "../types/deviceInfo";
-import { map, switchMap, filter, shareReplay } from "rxjs/operators";
+import { UserClaims } from "../types/user";
 
 export {
   credentialWithLink,
@@ -48,9 +49,8 @@ export class ApiClient implements Client {
   /**
    * @internal
    */
-  private _selectedDevice: BehaviorSubject<DeviceInfo | null> = new BehaviorSubject(
-    undefined
-  );
+  private _selectedDevice: BehaviorSubject<DeviceInfo | null> =
+    new BehaviorSubject(undefined);
 
   constructor(options: NotionOptions) {
     this.options = options;
@@ -223,6 +223,10 @@ export class ApiClient implements Client {
     return this.firebaseUser.onUserDevicesChange();
   }
 
+  public onUserClaimsChange(): Observable<UserClaims> {
+    return this.firebaseUser.onUserClaimsChange();
+  }
+
   public didSelectDevice(): boolean {
     return !!this._selectedDevice.getValue();
   }
@@ -351,9 +355,8 @@ export class ApiClient implements Client {
         }
       },
       subscribe: (subscription: Subscription): Subscription => {
-        const subscriptionCreated = this.firebaseDevice.subscribeToMetric(
-          subscription
-        );
+        const subscriptionCreated =
+          this.firebaseDevice.subscribeToMetric(subscription);
         this.subscriptionManager.add(subscriptionCreated);
         return subscriptionCreated;
       },
