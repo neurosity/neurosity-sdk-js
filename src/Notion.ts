@@ -1057,6 +1057,18 @@ export class Notion {
 
   /**
    * @internal
+   * Not user facing yet
+   *
+   * Removes client-specific oAuth token for a given userId
+   *
+   * @returns custom token
+   */
+  public removeOAuthAccess(): Promise<void> {
+    return this.api.removeOAuthAccess();
+  }
+
+  /**
+   * @internal
    * Proof of Concept for Skills - Not user facing yet
    *
    * Accesses a skill by Bundle ID. Additionally, allows to observe

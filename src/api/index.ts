@@ -393,6 +393,10 @@ export class ApiClient implements Client {
     return this.firebaseUser.createCustomToken();
   }
 
+  public removeOAuthAccess(): Promise<void> {
+    return this.firebaseUser.removeOAuthAccess();
+  }
+
   public get skills(): SkillsClient {
     return {
       get: async (bundleId: string): Promise<DeviceSkill> => {
