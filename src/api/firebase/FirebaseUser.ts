@@ -170,6 +170,25 @@ export class FirebaseUser {
     return customToken;
   }
 
+  public async removeOAuthAccess(): Promise<void> {
+    const userId = this.user?.uid;
+
+    if (!userId) {
+      return Promise.reject(
+        `OAuth access can only be removed while logged in via OAuth.`
+      );
+    }
+
+    const removeError = await this.app
+      .functions()
+      .httpsCallable("removeAccessOAuthApp")()
+      .catch((error) => error);
+
+    if (removeError) {
+      return Promise.reject(removeError);
+    }
+  }
+
   async getDevices() {
     const userId = this.user?.uid;
 
