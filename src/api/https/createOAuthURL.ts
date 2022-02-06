@@ -26,7 +26,7 @@ export function createOAuthURL(
         ...(clientSecret ? { client_secret: clientSecret } : {}),
         response_type: responseType,
         redirect_uri: redirectUri,
-        scope: scope.join(","),
+        scope: scope.join(" "),
         state: state,
         redirect: "false"
       }
