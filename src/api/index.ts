@@ -24,6 +24,7 @@ import { Subscription } from "../types/subscriptions";
 import { DeviceStatus } from "../types/status";
 import { DeviceInfo, DeviceSelector } from "../types/deviceInfo";
 import { UserClaims } from "../types/user";
+import { OAuthRemoveResponse } from "../types/oauth";
 
 export {
   credentialWithLink,
@@ -393,7 +394,7 @@ export class ApiClient implements Client {
     return this.firebaseUser.createCustomToken();
   }
 
-  public removeOAuthAccess(): Promise<void> {
+  public removeOAuthAccess(): Promise<OAuthRemoveResponse> {
     return this.firebaseUser.removeOAuthAccess();
   }
 
