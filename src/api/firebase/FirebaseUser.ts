@@ -11,6 +11,7 @@ import {
 } from "../../types/credentials";
 import { UserDevices, UserClaims } from "../../types/user";
 import { DeviceInfo } from "../../types/deviceInfo";
+import { OAuthRemoveResponse } from "../../types/oauth";
 
 const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
 
@@ -170,7 +171,7 @@ export class FirebaseUser {
     return customToken;
   }
 
-  public async removeOAuthAccess(): Promise<void> {
+  public async removeOAuthAccess(): Promise<OAuthRemoveResponse> {
     const userId = this.user?.uid;
 
     if (!userId) {
@@ -179,14 +180,17 @@ export class FirebaseUser {
       );
     }
 
-    const removeError = await this.app
+    const [error, response] = await this.app
       .functions()
       .httpsCallable("removeAccessOAuthApp")()
-      .catch((error) => error);
+      .then(({ data }) => [null, data])
+      .catch((error) => [error, null]);
 
-    if (removeError) {
-      return Promise.reject(removeError);
+    if (error) {
+      return Promise.reject(error);
     }
+
+    return response;
   }
 
   async getDevices() {

@@ -56,7 +56,8 @@ import { getOAuthToken } from "./api/https/getOAuthToken";
 import {
   OAuthConfig,
   OAuthQuery,
-  OAuthQueryResult
+  OAuthQueryResult,
+  OAuthRemoveResponse
 } from "./types/oauth";
 import { UserClaims } from "./types/user";
 
@@ -1063,7 +1064,7 @@ export class Notion {
    *
    * @returns custom token
    */
-  public removeOAuthAccess(): Promise<void> {
+  public removeOAuthAccess(): Promise<OAuthRemoveResponse> {
     return this.api.removeOAuthAccess();
   }
 

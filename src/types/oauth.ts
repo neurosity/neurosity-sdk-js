@@ -17,3 +17,7 @@ export type OAuthQueryResult = {
   customToken: string;
   userId: string;
 };
+
+export type OAuthRemoveResponse = {
+  ok: boolean;
+};
