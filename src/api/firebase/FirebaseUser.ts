@@ -190,6 +190,14 @@ export class FirebaseUser {
       return Promise.reject(error);
     }
 
+    const logoutError = await this.logout()
+      .then(() => false)
+      .catch((error) => error);
+
+    if (logoutError) {
+      return Promise.reject(logoutError);
+    }
+
     return response;
   }
 
