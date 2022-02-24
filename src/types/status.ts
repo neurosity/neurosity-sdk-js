@@ -5,5 +5,6 @@ export interface DeviceStatus {
   sleepMode: boolean;
   sleepModeReason: "updating" | "charging" | null;
   updatingProgress: number;
+  lastHeartbeat: number;
   ssid: string;
 }

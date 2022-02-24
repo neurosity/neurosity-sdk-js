@@ -4,11 +4,13 @@ import {
   fromEventPattern,
   empty
 } from "rxjs";
-import { map, switchMap, filter, shareReplay } from "rxjs/operators";
+import { switchMap, filter, shareReplay } from "rxjs/operators";
 import { FirebaseApp, FirebaseUser, FirebaseDevice } from "./firebase";
 import { WebsocketClient } from "./websocket";
 import { Timesync } from "../timesync";
 import { SubscriptionManager } from "../subscriptions/SubscriptionManager";
+import { offlineIfLostHeartbeat } from "../utils/heartbeat";
+import { filterInternalKeys } from "../utils/filterInternalKeys";
 import { Client } from "../types/client";
 import { Actions } from "../types/actions";
 import { Metrics } from "../types/metrics";
@@ -304,19 +306,8 @@ export class ApiClient implements Client {
 
   public status(): Observable<DeviceStatus> {
     return this.observeNamespace("status").pipe(
-      map((status) => {
-        if (!status) {
-          return status;
-        }
-
-        // remove internal properties that start with "__"
-        return Object.entries(status).reduce((acc, [key, value]) => {
-          if (!key.startsWith("__")) {
-            acc[key] = value;
-          }
-          return acc;
-        }, {});
-      })
+      offlineIfLostHeartbeat(),
+      filterInternalKeys()
     );
   }
 
