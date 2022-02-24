@@ -4,10 +4,23 @@ const inquirer = require("inquirer");
 const fs = require("fs");
 
 const deviceId = process.env.NEUROSITY_DEVICE_ID;
+const choiceName = process.argv[2];
 
 const choices = fs
   .readdirSync("./examples/node")
   .filter((fileName) => fileName !== "index.js");
+
+if (
+  choices
+    .map((choice) => choice.replace(".js", ""))
+    .includes(choiceName)
+) {
+  const exampleFileName = `${choiceName}.js`;
+  runFile(exampleFileName).catch((error) => {
+    console.log("runFile error -> ", error);
+  });
+  return;
+}
 
 const questions = [
   {
@@ -19,6 +32,12 @@ const questions = [
 ];
 
 inquirer.prompt(questions).then(async ({ exampleFileName }) => {
+  runFile(exampleFileName).catch((error) => {
+    console.log("runFile error -> ", error);
+  });
+});
+
+async function runFile(exampleFileName) {
   const exampleFunction = require(`./${exampleFileName}`);
 
   if (typeof exampleFunction !== "function") {
@@ -35,4 +54,4 @@ inquirer.prompt(questions).then(async ({ exampleFileName }) => {
   });
 
   await exampleFunction(notion);
-});
+}
