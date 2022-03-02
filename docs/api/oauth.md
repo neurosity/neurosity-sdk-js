@@ -3,15 +3,15 @@ id: oauth
 title: OAuth
 ---
 
-## Example Project
-
-The quickest way to implement OAuth is to fork the [example project](https://github.com/neurosity/neurosity-oauth-example).
-
-### 1. Registering your app
+## Registering your app
 
 OAuth requires for developers to register their apps with Neurosity. To register you app, please email [support@neurosity.co](mailto:support@neurosity.co).
 
 During the registration process, you'll be asked to specify which scopes you'll like to have access to.
+
+### Example Project
+
+The quickest way to implement OAuth is to fork the [example project](https://github.com/neurosity/neurosity-oauth-example).
 
 ### OAuth Scopes
 
@@ -52,7 +52,7 @@ https://yourwebapp.com/
 http://localhost:3000
 ```
 
-## 2. Implement Cloud Functions
+## Implement Cloud Functions
 
 Implementing OAuth requires two server-side (node.js) enpoints to be implemented. Make sure you have the following environment variables available at runtime for both cloud functions.
 
@@ -136,7 +136,7 @@ exports.handler = async function (event) {
 };
 ```
 
-## 3. Integrate to your User Interface
+## Integrate to your User Interface
 
 Now that your app is registered and the 2 cloud functions are implemented, the last step is to integrate OAuth to your user interface. In this section, the code examples will be using React.
 
