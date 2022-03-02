@@ -65,6 +65,7 @@ import {
   OAuthRemoveResponse
 } from "./types/oauth";
 import { UserClaims } from "./types/user";
+import { isNode } from "./utils/is-node";
 
 const defaultOptions = {
   timesync: false,
@@ -1130,6 +1131,14 @@ export class Notion {
    * @returns custom token
    */
   public createOAuthURL(config: OAuthConfig): Promise<string> {
+    if (!isNode) {
+      return Promise.reject(
+        new Error(
+          `Neurosity: the createOAuthURL method must be used on the server side (node.js) for security reasons.`
+        )
+      );
+    }
+
     return createOAuthURL(config, this.options);
   }
 
@@ -1142,6 +1151,14 @@ export class Notion {
    * @returns custom token
    */
   public getOAuthToken(query: OAuthQuery): Promise<OAuthQueryResult> {
+    if (!isNode) {
+      return Promise.reject(
+        new Error(
+          `Neurosity: the getOAuthToken method must be used on the server side (node.js) for security reasons.`
+        )
+      );
+    }
+
     return getOAuthToken(query, this.options);
   }
 
