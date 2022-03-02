@@ -39,6 +39,7 @@ export {
  */
 export class ApiClient implements Client {
   public user;
+  public userClaims;
   protected options: NotionOptions;
   protected firebaseApp: FirebaseApp;
   protected firebaseUser: FirebaseUser;
@@ -63,6 +64,10 @@ export class ApiClient implements Client {
 
     this.firebaseUser.onAuthStateChanged().subscribe((user) => {
       this.user = user;
+    });
+
+    this.firebaseUser.onUserClaimsChange().subscribe((userClaims) => {
+      this.userClaims = userClaims;
     });
 
     this.onDeviceChange().subscribe((device) => {

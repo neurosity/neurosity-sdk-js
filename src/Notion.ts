@@ -51,6 +51,11 @@ import { HapticEffects } from "./types/hapticEffects";
 import * as errors from "./utils/errors";
 import * as platform from "./utils/platform";
 import * as hapticEffects from "./utils/hapticEffects";
+import {
+  validateOAuthScopeForMetric,
+  validateOAuthScopeForAction,
+  validateOAuthScopeForFunctionName
+} from "./utils/oauth";
 import { createOAuthURL } from "./api/https/createOAuthURL";
 import { getOAuthToken } from "./api/https/getOAuthToken";
 import {
@@ -172,8 +177,15 @@ export class Notion {
   }
 
   /**
-   * @internal
-   * Not user facing yet
+   * Subscribe to auth state changes
+   *
+   * Streams the state of the auth session. If user has logged in, the user object will be set. When logged out, the user object will be null.
+   *
+   * ```typescript
+   * notion.onAuthStateChanged().subscribe((user) => {
+   *   console.log(user);
+   * });
+   * ```
    */
   public onAuthStateChanged(): Observable<any> {
     return this.api.onAuthStateChanged();
@@ -200,6 +212,16 @@ export class Notion {
    * Not user facing yet
    */
   public onUserDevicesChange(): Observable<DeviceInfo[]> {
+    const [hasOAuthError, OAuthError] =
+      validateOAuthScopeForFunctionName(
+        this.api.userClaims,
+        "onUserDevicesChange"
+      );
+
+    if (hasOAuthError) {
+      return throwError(OAuthError);
+    }
+
     return this.api.onUserDevicesChange();
   }
 
@@ -253,6 +275,16 @@ export class Notion {
   public async selectDevice(
     deviceSelector: (devices: DeviceInfo[]) => DeviceInfo
   ): Promise<DeviceInfo> {
+    const [hasOAuthError, OAuthError] =
+      validateOAuthScopeForFunctionName(
+        this.api.userClaims,
+        "selectDevice"
+      );
+
+    if (hasOAuthError) {
+      return Promise.reject(OAuthError);
+    }
+
     return await this.api.selectDevice(deviceSelector);
   }
 
@@ -266,6 +298,16 @@ export class Notion {
    */
 
   public async getSelectedDevice(): Promise<DeviceInfo> {
+    const [hasOAuthError, OAuthError] =
+      validateOAuthScopeForFunctionName(
+        this.api.userClaims,
+        "getSelectedDevice"
+      );
+
+    if (hasOAuthError) {
+      return Promise.reject(OAuthError);
+    }
+
     return await this.api.getSelectedDevice();
   }
 
@@ -277,6 +319,13 @@ export class Notion {
   public async getInfo(): Promise<DeviceInfo> {
     if (!this.api.didSelectDevice()) {
       return Promise.reject(errors.mustSelectDevice);
+    }
+
+    const [hasOAuthError, OAuthError] =
+      validateOAuthScopeForFunctionName(this.api.userClaims, "getInfo");
+
+    if (hasOAuthError) {
+      return Promise.reject(OAuthError);
     }
 
     return await this.api.getInfo();
@@ -305,6 +354,16 @@ export class Notion {
    * ```
    */
   public onDeviceChange(): Observable<DeviceInfo> {
+    const [hasOAuthError, OAuthError] =
+      validateOAuthScopeForFunctionName(
+        this.api.userClaims,
+        "onDeviceChange"
+      );
+
+    if (hasOAuthError) {
+      return throwError(OAuthError);
+    }
+
     return this.api.onDeviceChange();
   }
 
@@ -400,9 +459,19 @@ export class Notion {
   ): Observable<any> => {
     const { metric, labels, atomic } = subscription;
 
-    const error = validate(metric, labels, this.options);
-    if (error) {
-      return throwError(error);
+    const metricError = validate(metric, labels, this.options);
+    if (metricError) {
+      return throwError(metricError);
+    }
+
+    const [hasOAuthError, OAuthError] = validateOAuthScopeForMetric(
+      this.api.userClaims,
+      metric,
+      labels,
+      atomic
+    );
+    if (hasOAuthError) {
+      return throwError(OAuthError);
     }
 
     const subscribeTo = (serverType: string) =>
@@ -481,9 +550,18 @@ export class Notion {
    * @internal
    * Not user facing
    */
-  private dispatchAction(action: Action): Promise<Action> | void {
+  private dispatchAction(action: Action): Promise<Action> {
     if (!this.api.didSelectDevice()) {
       return Promise.reject(errors.mustSelectDevice);
+    }
+
+    const [hasOAuthError, OAuthError] = validateOAuthScopeForAction(
+      this.api.userClaims,
+      action
+    );
+
+    if (hasOAuthError) {
+      return Promise.reject(OAuthError);
     }
 
     return this.api.actions.dispatch(action);
@@ -502,7 +580,7 @@ export class Notion {
    *
    * @param label Name the label to inject
    */
-  public addMarker(label: string): void {
+  public addMarker(label: string): Promise<Action> {
     if (!this.api.didSelectDevice()) {
       throw errors.mustSelectDevice;
     }
@@ -511,7 +589,7 @@ export class Notion {
       throw new Error("Notion: a label is required for addMarker");
     }
 
-    this.dispatchAction({
+    return this.dispatchAction({
       command: "marker",
       action: "add",
       message: {
@@ -757,23 +835,6 @@ export class Notion {
   }
 
   /**
-   * @internal
-   * Proof of Concept for `emotion` - Not user facing yet
-   *
-   * @returns Observable of emotion metric events
-   */
-  public emotion(
-    label: string,
-    ...otherLabels: string[]
-  ): Observable<any> {
-    return this.getMetric({
-      metric: "emotion",
-      labels: label ? [label, ...otherLabels] : [],
-      atomic: false
-    });
-  }
-
-  /**
    * Observes last state of `settings` and all subsequent `settings` changes
    *
    * ```typescript
@@ -788,6 +849,16 @@ export class Notion {
    * @returns Observable of `settings` metric events
    */
   public settings(): Observable<Settings> {
+    const [hasOAuthError, OAuthError] =
+      validateOAuthScopeForFunctionName(
+        this.api.userClaims,
+        "settings"
+      );
+
+    if (hasOAuthError) {
+      return throwError(OAuthError);
+    }
+
     return this.api.observeNamespace("settings");
   }
 
@@ -856,6 +927,13 @@ export class Notion {
    * @returns Observable of `status` metric events
    */
   public status(): Observable<DeviceStatus> {
+    const [hasOAuthError, OAuthError] =
+      validateOAuthScopeForFunctionName(this.api.userClaims, "status");
+
+    if (hasOAuthError) {
+      return throwError(OAuthError);
+    }
+
     return this.api.status();
   }
 
@@ -878,6 +956,16 @@ export class Notion {
   public changeSettings(settings: ChangeSettings): Promise<void> {
     if (!this.api.didSelectDevice()) {
       return Promise.reject(errors.mustSelectDevice);
+    }
+
+    const [hasOAuthError, OAuthError] =
+      validateOAuthScopeForFunctionName(
+        this.api.userClaims,
+        "changeSettings"
+      );
+
+    if (hasOAuthError) {
+      return Promise.reject(OAuthError);
     }
 
     return this.api.changeSettings(settings);
@@ -1034,9 +1122,10 @@ export class Notion {
 
   /**
    * @internal
-   * Not user facing yet
+   * Create OAuth URL
+   * 💡 OAuth requires developers to register their apps with Neurosity
    *
-   * Creates client-specific oAuth URL
+   * Creates client-specific OAuth URL. Use this function to create a URL to start the OAuth workflow. This function is designed to only run on the server side for security reasons, as it requires your client secret.
    *
    * @returns custom token
    */
