@@ -54,7 +54,20 @@ class Footer extends React.Component {
             >
               Knowledge Base
             </a>
-            <a href="https://neurosity.co/discord">Community Chat</a>
+            <a
+              href="https://neurosity.co/discord"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              Community Chat
+            </a>
+            <a
+              href="https://feedback.neurosity.co"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              Feedback Portal
+            </a>
             <a
               href={`https://twitter.com/${this.props.config.twitterUsername}`}
               target="_blank"
@@ -65,7 +78,6 @@ class Footer extends React.Component {
           </div>
           <div>
             <h5>More</h5>
-            <a href={`${this.props.config.baseUrl}blog`}>Blog</a>
             <a href="https://github.com/neurosity">GitHub</a>
             <a
               className="github-button"
