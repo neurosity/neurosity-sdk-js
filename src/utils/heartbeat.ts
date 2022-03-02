@@ -5,7 +5,7 @@ import { DeviceStatus } from "../types/status";
 
 // `lastHeartbeat` is updated every 30 seconds via os
 const lastHeartbeatUpdateInterval = 30000;
-const maxHeartbeatsSkipped = 2;
+const maxHeartbeatsSkipped = 3;
 const gracePeriod = 5000;
 
 // 65 seconds
