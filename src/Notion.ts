@@ -1122,12 +1122,45 @@ export class Notion {
   }
 
   /**
-   * @internal
    * Create OAuth URL
    * 💡 OAuth requires developers to register their apps with Neurosity
+   * [Read full OAuth guide](/docs/oauth)
    *
-   * Creates client-specific OAuth URL. Use this function to create a URL to start the OAuth workflow. This function is designed to only run on the server side for security reasons, as it requires your client secret.
+   * Creates client-specific OAuth URL. This is the first step of the OAuth workflow. Use this function to create a URL you can use to redirect users to the Neurosity sign-in page.
+   * 💡 This function is designed to only run on the server side for security reasons, as it requires your client secret.
    *
+   * ```typescript
+   * const { Notion } = require("@neurosity/notion");
+   *
+   * const notion = new Notion({
+   *   autoSelectDevice: false
+   * });
+   *
+   * exports.handler = async function (event) {
+   *   return notion
+   *     .createOAuthURL({
+   *       clientId: process.env.NEUROSITY_OAUTH_CLIENT_ID,
+   *       clientSecret: process.env.NEUROSITY_OAUTH_CLIENT_SECRET,
+   *       redirectUri: process.env.NEUROSITY_OAUTH_CLIENT_REDIRECT_URI,
+   *       responseType: "token",
+   *       state: Math.random().toString().split(".")[1],
+   *       scope: [
+   *         "read:devices-info",
+   *         "read:devices-status",
+   *         "read:signal-quality",
+   *         "read:brainwaves"
+   *       ]
+   *     })
+   *     .then((url) => ({
+   *       statusCode: 200,
+   *       body: JSON.stringify({ url })
+   *     }))
+   *     .catch((error) => ({
+   *       statusCode: 400,
+   *       body: JSON.stringify(error.response.data)
+   *     }));
+   * };
+   * ```
    * @returns custom token
    */
   public createOAuthURL(config: OAuthConfig): Promise<string> {
@@ -1143,11 +1176,42 @@ export class Notion {
   }
 
   /**
-   * @internal
-   * Not user facing yet
+   * Get OAuth Token
+   * 💡 OAuth requires developers to register their apps with Neurosity
+   * [Read full OAuth guide](/docs/oauth)
    *
-   * Gets client-specific oAuth token for a given userId
+   * Gets client-specific OAuth token for a given userId.
    *
+   * 💡 This function is designed to only run on the server side for security reasons, as it requires your client secret.
+   * Here's an example of a cloud function that receives a `userId` via query params and loads the client id and client secret securely via environment variables.
+   *
+   *
+   * ```typescript
+   * const { Notion } = require("@neurosity/notion");
+   *
+   * const notion = new Notion({
+   *   autoSelectDevice: false
+   * });
+   *
+   * exports.handler = async function (event) {
+   *   const userId = event.queryStringParameters?.userId;
+   *
+   *   return notion
+   *     .getOAuthToken({
+   *       clientId: process.env.NEUROSITY_OAUTH_CLIENT_ID,
+   *       clientSecret: process.env.NEUROSITY_OAUTH_CLIENT_SECRET,
+   *       userId
+   *     })
+   *     .then((token) => ({
+   *       statusCode: 200,
+   *       body: JSON.stringify(token)
+   *     }))
+   *     .catch((error) => ({
+   *       statusCode: 200,
+   *       body: JSON.stringify(error.response.data)
+   *     }));
+   * };
+   * ```
    * @returns custom token
    */
   public getOAuthToken(query: OAuthQuery): Promise<OAuthQueryResult> {
@@ -1163,11 +1227,17 @@ export class Notion {
   }
 
   /**
-   * @internal
-   * Not user facing yet
+   * Remove OAuth Access
+   * 💡 OAuth requires developers to register their apps with Neurosity
+   * [Read full OAuth guide](/docs/oauth)
    *
-   * Removes client-specific oAuth token for a given userId
+   * Removes client-specific OAuth token for a given userId. Requires SDK to be signed in with OAuth custom token.
    *
+   * ```typescript
+   * await notion.removeOAuthAccess().catch((error) => {
+   *   // handle error here...
+   * });
+   * ```
    * @returns custom token
    */
   public removeOAuthAccess(): Promise<OAuthRemoveResponse> {
