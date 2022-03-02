@@ -19,18 +19,19 @@ This documentation describes:
 
 Jump right over to building your first:
 
-- [Node App](getting-started)
 - [Web App](tutorials/your-first-web-app)
+- [Node App](getting-started)
 
 ## What can the SDK do?
 
 Here are some examples of what you can achieve with the SDK:
 
 - Authenticate and access Neurosity devices - [Authentication](api/authentication)
-- Query device status - [Info](api/info) or [Status](api/status)
+- Allow Neurosity users to connect their account to your third-party app - [OAuth](api/oauth)
+- Get device info and status - [Info](api/info) or [Status](api/status)
 - Check signal quality - [Signal Quality](api/signal-quality)
-- Peer into mental states of a person - [Calm](api/calm) or [Focus](api/focus)
-- Train a new thought - [Training](guides/training)
+- Get a persons's mental states metrics - [Calm](api/calm) or [Focus](api/focus)
+- Train a new motor-based thought - [Training](guides/training)
 - Use a trained thought for control - [Kinesis](api/kinesis)
 - Interact with system haptics - [Haptics](api/haptics)
 
@@ -46,7 +47,8 @@ Building a good application with the SDK can take a lot of effort. Here is what 
 
 If you have questions for extension development, try asking on:
 
+- [Discord Community](https://neurosity.co/discord): Public chatroom for Neurosity developers. Some Neurosity team members chime in conversations.
+- [Feedback Portal](https://feedback.neurosity.co): Have a feature request? Found a bug? Submit your feedback to us.
 - [Knowledge Base](https://support.neurosity.co): There are over a dozen articles for getting started and developing with the Neurosity SDK.
-- [Discord](https://discord.gg/vDKnG8kUvQ): Public chatroom for Neurosity developers. Some Neurosity team members chime in conversations.
 
-To provide feedback on the documentation, create new issues at [Neurosity/notion-js](https://github.com/neurosity/notion-js). If you have questions or issues related to the Neurosity SDK, please open new issues at [Neurosity/notion-js](https://github.com/neurosity/notion-js) as well.
+If you have questions or issues related to the Neurosity SDK, please open new issues at [Neurosity/notion-js](https://github.com/neurosity/notion-js) as well.
