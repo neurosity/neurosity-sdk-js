@@ -3,7 +3,7 @@ id: oauth
 title: OAuth
 ---
 
-### Example Project
+## Example Project
 
 The quickest way to implement OAuth is to fork the [example project](https://github.com/neurosity/neurosity-oauth-example).
 
