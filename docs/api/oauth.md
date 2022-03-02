@@ -3,15 +3,11 @@ id: oauth
 title: OAuth
 ---
 
-## Implementing OAuth
+### Example Project
 
-- Step 1: [Register your app](#step1)
-- Step 2: [Implement Cloud Functions](#step2)
-- Step 3: [Integrate to your UI](#step3)
+The quickest way to implement OAuth is to fork the [example project](https://github.com/neurosity/neurosity-oauth-example).
 
-[Fork example project with full OAuth Workflow](https://github.com/neurosity/neurosity-oauth-example)
-
-### <a name="step1"></a>Registering your app
+### 1. Registering your app
 
 OAuth requires for developers to register their apps with Neurosity. To register you app, please email [support@neurosity.co](mailto:support@neurosity.co).
 
@@ -51,12 +47,12 @@ validate the URI the OAuth workflow will use to redirect back to your app after 
 
 Some examples:
 
-```
+```bash
 https://yourwebapp.com/
 http://localhost:3000
 ```
 
-## <a name="step2"></a> Implement Cloud Functions
+## 2. Implement Cloud Functions
 
 Implementing OAuth requires two server-side (node.js) enpoints to be implemented. Make sure you have the following environment variables available at runtime for both cloud functions.
 
@@ -66,7 +62,7 @@ NEUROSITY_OAUTH_CLIENT_SECRET=<your client secret>
 NEUROSITY_OAUTH_CLIENT_REDIRECT_URI=http://localhost:3000
 ```
 
-#### 1. First Cloud Function: createOAuthURL
+### First Cloud Function: createOAuthURL
 
 The first function wraps the [createOAuthURL](/reference/classes/notion#createOAuthURL) SDK method. This method creates client-specific OAuth URL. This is the first step of the OAuth workflow. Use this function to create a URL you can use to redirect users to the Neurosity sign-in page.
 
@@ -105,7 +101,7 @@ exports.handler = async function (event) {
 };
 ```
 
-#### 2. Second Cloud Function: getOAuthToken
+### Second Cloud Function: getOAuthToken
 
 The [getOAuthToken](/reference/classes/notion#getOAuthToken) method retreives the client-specific OAuth token for a given userId.
 
@@ -140,7 +136,7 @@ exports.handler = async function (event) {
 };
 ```
 
-## <a name="step3"></a>Integrate to your User Interface
+## 3. Integrate to your User Interface
 
 Now that your app is registered and the 2 cloud functions are implemented, the last step is to integrate OAuth to your user interface. In this section, the code examples will be using React.
 
