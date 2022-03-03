@@ -1,19 +1,10 @@
+import * as errors from "../utils/errors";
 import { Action } from "../types/actions";
 
 type OAuthClaims = {
   oauth?: true;
   authId?: string;
   scopes?: string;
-};
-
-const scopeRequiredByMetric = {
-  accelerometer: "read:accelerometer",
-  brainwaves: "read:brainwaves",
-  "awareness/calm": "read:calm",
-  "awareness/focus": "read:focus",
-  kinesis: "read:kinesis",
-  predictions: "read:kinesis",
-  signalQuality: "read:signal-quality"
 };
 
 const scopeRequiredByAction = {
@@ -27,6 +18,15 @@ const scopeRequiredByAction = {
 };
 
 const scopeRequiredByFunctionName = {
+  //metrics
+  accelerometer: "read:accelerometer",
+  brainwaves: "read:brainwaves",
+  calm: "read:calm",
+  focus: "read:focus",
+  kinesis: "read:kinesis",
+  predictions: "read:kinesis",
+  signalQuality: "read:signal-quality",
+  // end of metrics
   // device info
   getInfo: "read:devices-info",
   getSelectedDevice: "read:devices-info",
@@ -36,37 +36,10 @@ const scopeRequiredByFunctionName = {
   // end device info
   settings: "read:devices-settings",
   changeSettings: "write:devices-settings",
-  status: "read:devices-status"
+  status: "read:devices-status",
+  addDevice: "write:devices-add",
+  removeDevice: "write:devices-remove"
 };
-
-export function validateOAuthScopeForMetric(
-  userClaims: OAuthClaims,
-  metric: string,
-  labels: string[],
-  atomic: boolean
-): [boolean, Error | null] {
-  const { oauth, scopes: scopesString } = userClaims ?? {};
-
-  if (!oauth) {
-    return [false, null];
-  }
-
-  const scopes = scopesString.split(",");
-
-  const requiredScopes = atomic
-    ? labels.map((label) => scopeRequiredByMetric[`${metric}/${label}`])
-    : [scopeRequiredByMetric[metric]];
-
-  const hasRequireScopes = requiredScopes.every((scope) =>
-    scopes.includes(scope)
-  );
-
-  if (hasRequireScopes) {
-    return [false, null];
-  }
-
-  return [true, getScopeError(...requiredScopes)];
-}
 
 export function validateOAuthScopeForAction(
   userClaims: OAuthClaims,
@@ -116,7 +89,9 @@ export function validateOAuthScopeForFunctionName(
 
 function getScopeError(...requiredScopes: string[]): Error {
   return new Error(
-    `You are trying to access data with an OAuth token without access to the following scopes: ${requiredScopes.join(
+    `${
+      errors.prefix
+    }You are trying to access data with an OAuth token without access to the following scopes: ${requiredScopes.join(
       ", "
     )}.`
   );

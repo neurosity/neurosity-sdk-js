@@ -3,7 +3,6 @@ import {
   BehaviorSubject,
   throwError,
   of,
-  empty,
   from
 } from "rxjs";
 import { map, share, switchMap } from "rxjs/operators";
@@ -13,7 +12,6 @@ import {
   createUser,
   SERVER_TIMESTAMP
 } from "./api/index";
-import { whileOnline } from "./utils/whileOnline";
 import { NotionOptions } from "./types/options";
 import { Training } from "./types/training";
 import { SkillInstance } from "./types/skill";
@@ -23,20 +21,12 @@ import {
   CustomToken
 } from "./types/credentials";
 import { Settings, ChangeSettings } from "./types/settings";
-import { AwarenessLabels } from "./types/awareness";
 import { SignalQuality } from "./types/signalQuality";
 import { Kinesis } from "./types/kinesis";
 import { Calm } from "./types/calm";
 import { Focus } from "./types/focus";
-import {
-  getLabels,
-  validate,
-  isNotionMetric
-} from "./utils/subscription";
-import {
-  PendingSubscription,
-  Subscription
-} from "./types/subscriptions";
+import { getLabels } from "./utils/subscription";
+import { Subscription } from "./types/subscriptions";
 import {
   BrainwavesLabel,
   Epoch,
@@ -52,9 +42,8 @@ import * as errors from "./utils/errors";
 import * as platform from "./utils/platform";
 import * as hapticEffects from "./utils/hapticEffects";
 import {
-  validateOAuthScopeForMetric,
-  validateOAuthScopeForAction,
-  validateOAuthScopeForFunctionName
+  validateOAuthScopeForFunctionName,
+  validateOAuthScopeForAction
 } from "./utils/oauth";
 import { createOAuthURL } from "./api/https/createOAuthURL";
 import { getOAuthToken } from "./api/https/getOAuthToken";
@@ -66,6 +55,7 @@ import {
 } from "./types/oauth";
 import { UserClaims } from "./types/user";
 import { isNode } from "./utils/is-node";
+import { getMetric } from "./utils/metrics";
 
 const defaultOptions = {
   timesync: false,
@@ -141,6 +131,21 @@ export class Notion {
   }
 
   /**
+   *
+   * @hidden
+   */
+  private _getMetricDependencies() {
+    return {
+      options: this.options,
+      api: this.api,
+      onDeviceChange: this.onDeviceChange.bind(this),
+      isLocalMode: this.isLocalMode.bind(this),
+      socketUrl: this.socketUrl.bind(this),
+      status: this.status.bind(this)
+    };
+  }
+
+  /**
    * Starts user session
    *
    * ```typescript
@@ -197,6 +202,16 @@ export class Notion {
    * Not user facing yet
    */
   public addDevice(deviceId: string): Promise<void> {
+    const [hasOAuthError, OAuthError] =
+      validateOAuthScopeForFunctionName(
+        this.api.userClaims,
+        "addDevice"
+      );
+
+    if (hasOAuthError) {
+      return Promise.reject(OAuthError);
+    }
+
     return this.api.addDevice(deviceId);
   }
 
@@ -205,6 +220,16 @@ export class Notion {
    * Not user facing yet
    */
   public removeDevice(deviceId: string): Promise<void> {
+    const [hasOAuthError, OAuthError] =
+      validateOAuthScopeForFunctionName(
+        this.api.userClaims,
+        "removeDevice"
+      );
+
+    if (hasOAuthError) {
+      return Promise.reject(OAuthError);
+    }
+
     return this.api.removeDevice(deviceId);
   }
 
@@ -410,7 +435,7 @@ export class Notion {
       .onceNamespace("context/socketUrl")
       .then((socketUrl) => {
         if (!socketUrl) {
-          const error = `Your device's OS does not support localMode. Try updating to the latest OS.`;
+          const error = `${errors.prefix}Your device's OS does not support localMode. Try updating to the latest OS.`;
           return [false, new Error(error)];
         }
         return [true, null];
@@ -455,102 +480,6 @@ export class Notion {
    * @internal
    * Not user facing
    */
-  protected getMetric = (
-    subscription: PendingSubscription
-  ): Observable<any> => {
-    const { metric, labels, atomic } = subscription;
-
-    const metricError = validate(metric, labels, this.options);
-    if (metricError) {
-      return throwError(metricError);
-    }
-
-    const [hasOAuthError, OAuthError] = validateOAuthScopeForMetric(
-      this.api.userClaims,
-      metric,
-      labels,
-      atomic
-    );
-    if (hasOAuthError) {
-      return throwError(OAuthError);
-    }
-
-    const subscribeTo = (serverType: string) =>
-      new Observable((observer) => {
-        const subscriptions: Subscription[] = atomic
-          ? [
-              this.api.metrics.subscribe({
-                metric: metric,
-                labels: labels,
-                atomic: atomic,
-                serverType: serverType
-              })
-            ]
-          : labels.map((label) => {
-              return this.api.metrics.subscribe({
-                metric: metric,
-                labels: [label],
-                atomic: atomic,
-                serverType: serverType
-              });
-            });
-
-        const subscriptionWithListeners = subscriptions.map(
-          (subscription) => ({
-            subscription,
-            listener: this.api.metrics.on(
-              subscription,
-              (...data: any) => {
-                observer.next(...data);
-              }
-            )
-          })
-        );
-
-        return () => {
-          subscriptionWithListeners.forEach(
-            ({ subscription, listener }) => {
-              this.api.metrics.unsubscribe(subscription, listener);
-            }
-          );
-        };
-      });
-
-    return this.onDeviceChange().pipe(
-      switchMap((device) => {
-        if (!device) {
-          return empty();
-        }
-
-        const { deviceId } = device;
-
-        return this.isLocalMode().pipe(
-          switchMap((isLocalMode) => {
-            if (isLocalMode && isNotionMetric(metric)) {
-              return this.socketUrl().pipe(
-                switchMap((socketUrl) =>
-                  this.api.setWebsocket(socketUrl, deviceId)
-                ),
-                switchMap(() => subscribeTo(this.api.localServerType))
-              );
-            }
-
-            this.api.unsetWebsocket();
-            return subscribeTo(this.api.defaultServerType);
-          })
-        );
-      }),
-      whileOnline({
-        status$: this.status(),
-        allowWhileOnSleepMode: false
-      })
-    );
-  };
-
-  /**
-   * @internal
-   * Not user facing
-   */
   private dispatchAction(action: Action): Promise<Action> {
     if (!this.api.didSelectDevice()) {
       return Promise.reject(errors.mustSelectDevice);
@@ -587,7 +516,9 @@ export class Notion {
     }
 
     if (!label) {
-      throw new Error("Notion: a label is required for addMarker");
+      throw new Error(
+        `${errors.prefix}A label is required for addMarker`
+      );
     }
 
     return this.dispatchAction({
@@ -702,6 +633,13 @@ export class Notion {
   public accelerometer(): Observable<Accelerometer> {
     const metric = "accelerometer";
 
+    const [hasOAuthError, OAuthError] =
+      validateOAuthScopeForFunctionName(this.api.userClaims, metric);
+
+    if (hasOAuthError) {
+      return throwError(OAuthError);
+    }
+
     return from(this.getSelectedDevice()).pipe(
       switchMap((selectedDevice) => {
         const modelVersion =
@@ -714,30 +652,13 @@ export class Notion {
           );
         }
 
-        return this.getMetric({
+        return getMetric(this._getMetricDependencies(), {
           metric,
           labels: getLabels(metric),
           atomic: true
         });
       })
     );
-  }
-
-  /**
-   * @internal
-   *
-   * @param labels Name of metric properties to filter by
-   * @returns Observable of awareness metric events
-   */
-  public awareness(
-    label: AwarenessLabels,
-    ...otherLabels: AwarenessLabels[]
-  ): Observable<any> {
-    return this.getMetric({
-      metric: "awareness",
-      labels: label ? [label, ...otherLabels] : [],
-      atomic: false
-    });
   }
 
   /**
@@ -784,7 +705,17 @@ export class Notion {
     label: BrainwavesLabel,
     ...otherLabels: BrainwavesLabel[]
   ): Observable<Epoch | PowerByBand | PSD> {
-    return this.getMetric({
+    const [hasOAuthError, OAuthError] =
+      validateOAuthScopeForFunctionName(
+        this.api.userClaims,
+        "brainwaves"
+      );
+
+    if (hasOAuthError) {
+      return throwError(OAuthError);
+    }
+
+    return getMetric(this._getMetricDependencies(), {
       metric: "brainwaves",
       labels: label ? [label, ...otherLabels] : [],
       atomic: false
@@ -808,7 +739,18 @@ export class Notion {
    * @returns Observable of calm events - awareness/calm alias
    */
   public calm(): Observable<Calm> {
-    return this.awareness("calm");
+    const [hasOAuthError, OAuthError] =
+      validateOAuthScopeForFunctionName(this.api.userClaims, "calm");
+
+    if (hasOAuthError) {
+      return throwError(OAuthError);
+    }
+
+    return getMetric(this._getMetricDependencies(), {
+      metric: "awareness",
+      labels: ["calm"],
+      atomic: false
+    });
   }
 
   /**
@@ -828,7 +770,15 @@ export class Notion {
    */
   public signalQuality(): Observable<SignalQuality> {
     const metric = "signalQuality";
-    return this.getMetric({
+
+    const [hasOAuthError, OAuthError] =
+      validateOAuthScopeForFunctionName(this.api.userClaims, metric);
+
+    if (hasOAuthError) {
+      return throwError(OAuthError);
+    }
+
+    return getMetric(this._getMetricDependencies(), {
       metric,
       labels: getLabels(metric),
       atomic: true
@@ -880,7 +830,18 @@ export class Notion {
    * @returns Observable of focus events - awareness/focus alias
    */
   public focus(): Observable<Focus> {
-    return this.awareness("focus");
+    const [hasOAuthError, OAuthError] =
+      validateOAuthScopeForFunctionName(this.api.userClaims, "focus");
+
+    if (hasOAuthError) {
+      return throwError(OAuthError);
+    }
+
+    return getMetric(this._getMetricDependencies(), {
+      metric: "awareness",
+      labels: ["focus"],
+      atomic: false
+    });
   }
 
   /**
@@ -891,8 +852,17 @@ export class Notion {
     label: string,
     ...otherLabels: string[]
   ): Observable<Kinesis> {
-    return this.getMetric({
-      metric: "kinesis",
+    const metric = "kinesis";
+
+    const [hasOAuthError, OAuthError] =
+      validateOAuthScopeForFunctionName(this.api.userClaims, metric);
+
+    if (hasOAuthError) {
+      return throwError(OAuthError);
+    }
+
+    return getMetric(this._getMetricDependencies(), {
+      metric,
       labels: label ? [label, ...otherLabels] : [],
       atomic: false
     });
@@ -906,8 +876,17 @@ export class Notion {
     label: string,
     ...otherLabels: string[]
   ): Observable<any> {
-    return this.getMetric({
-      metric: "predictions",
+    const metric = "predictions";
+
+    const [hasOAuthError, OAuthError] =
+      validateOAuthScopeForFunctionName(this.api.userClaims, metric);
+
+    if (hasOAuthError) {
+      return throwError(OAuthError);
+    }
+
+    return getMetric(this._getMetricDependencies(), {
+      metric,
       labels: label ? [label, ...otherLabels] : [],
       atomic: false
     });
@@ -1167,7 +1146,7 @@ export class Notion {
     if (!isNode) {
       return Promise.reject(
         new Error(
-          `Neurosity: the createOAuthURL method must be used on the server side (node.js) for security reasons.`
+          `${errors.prefix}the createOAuthURL method must be used on the server side (node.js) for security reasons.`
         )
       );
     }
@@ -1218,7 +1197,7 @@ export class Notion {
     if (!isNode) {
       return Promise.reject(
         new Error(
-          `Neurosity: the getOAuthToken method must be used on the server side (node.js) for security reasons.`
+          `${errors.prefix}the getOAuthToken method must be used on the server side (node.js) for security reasons.`
         )
       );
     }
@@ -1264,7 +1243,7 @@ export class Notion {
     if (skillData === null) {
       return Promise.reject(
         new Error(
-          `Access denied for: ${bundleId}. Make sure the skill is installed.`
+          `${errors.prefix}Access denied for: ${bundleId}. Make sure the skill is installed.`
         )
       );
     }
