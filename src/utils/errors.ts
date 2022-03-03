@@ -1,4 +1,4 @@
-const prefix = "Neurosity: ";
+export const prefix = "Neurosity SDK: ";
 export const mustSelectDevice = new Error(
   `${prefix}A device must be selected. Make sure to call "notion.selectDevice()"`
 );

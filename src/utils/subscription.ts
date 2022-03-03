@@ -1,4 +1,6 @@
 import { metrics } from "@neurosity/ipk";
+
+import * as errors from "../utils/errors";
 import { NotionOptions } from "../types/options";
 
 export const isNotionMetric = (metric: string): boolean =>
@@ -32,19 +34,19 @@ export const validate = (
 
   if (!labels.length) {
     return new Error(
-      `At least one label is required for ${metric} metric. Please add one of the following labels: ${validLabels}`
+      `${errors.prefix}At least one label is required for ${metric} metric. Please add one of the following labels: ${validLabels}`
     );
   }
 
   if (isMetricDisallowed(metric, options)) {
     return new Error(
-      `No permission to access the ${metric} metric. To access this metric, edit the skill's permissions`
+      `${errors.prefix}No permission to access the ${metric} metric. To access this metric, edit the skill's permissions`
     );
   }
 
   if (hasInvalidLabels(metric, labels)) {
     return new Error(
-      `One ore more labels provided to ${metric} are invalid. The valid labels for ${metric} are ${validLabels}`
+      `${errors.prefix}One ore more labels provided to ${metric} are invalid. The valid labels for ${metric} are ${validLabels}`
     );
   }
 
