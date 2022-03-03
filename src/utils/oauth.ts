@@ -47,11 +47,11 @@ export function validateOAuthScopeForMetric(
 ): [boolean, Error | null] {
   const { oauth, scopes: scopesString } = userClaims ?? {};
 
-  const scopes = scopesString.split(",");
-
   if (!oauth) {
     return [false, null];
   }
+
+  const scopes = scopesString.split(",");
 
   const requiredScopes = atomic
     ? labels.map((label) => scopeRequiredByMetric[`${metric}/${label}`])
@@ -74,11 +74,11 @@ export function validateOAuthScopeForAction(
 ): [boolean, Error | null] {
   const { oauth, scopes: scopesString } = userClaims ?? {};
 
-  const scopes = scopesString.split(",");
-
   if (!oauth) {
     return [false, null];
   }
+
+  const scopes = scopesString.split(",");
 
   const { command, action: actionName } = action;
   const requiredScope =
@@ -98,11 +98,11 @@ export function validateOAuthScopeForFunctionName(
 ): [boolean, Error | null] {
   const { oauth, scopes: scopesString } = userClaims ?? {};
 
-  const scopes = scopesString.split(",");
-
   if (!oauth) {
     return [false, null];
   }
+
+  const scopes = scopesString.split(",");
 
   const requiredScope = scopeRequiredByFunctionName[functionName];
   const hasRequireScopes = scopes.includes(requiredScope);
