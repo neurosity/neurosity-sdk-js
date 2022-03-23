@@ -1,5 +1,9 @@
 import { pipe, interval } from "rxjs";
-import { distinctUntilChanged, map, switchMap } from "rxjs/operators";
+import {
+  map,
+  distinctUntilChanged,
+  withLatestFrom
+} from "rxjs/operators";
 
 import { DeviceStatus } from "../types/status";
 
@@ -12,37 +16,15 @@ const gracePeriod = 5000;
 const lostHeartbeatThreshold =
   lastHeartbeatUpdateInterval * maxHeartbeatsSkipped + gracePeriod;
 
+const heartbeatChecker$ = interval(lostHeartbeatThreshold);
+
 export function offlineIfLostHeartbeat() {
   return pipe(
-    switchMap((status: DeviceStatus) => {
-      console.log(
-        "************ offlineIfLostHeartbeat switchMap() ************",
-        status
-      );
-
-      return interval(lostHeartbeatThreshold).pipe(
-        map(() => {
-          console.log(
-            "************ offlineIfLostHeartbeat map() ************",
-            status
-          );
-          if (deviceHasLostHeartbeat(status)) {
-            console.log(
-              "************ deviceHasLostHeartbeat() ************",
-              deviceHasLostHeartbeat(status)
-            );
-            return {
-              ...status,
-              state: "offline"
-            };
-          }
-
-          console.log("************ no override ************", status);
-
-          return status;
-        })
-      );
-    }),
+    withLatestFrom(heartbeatChecker$),
+    map(([status, _]: [DeviceStatus, number]) => ({
+      ...status,
+      state: deviceHasLostHeartbeat(status) ? "offline" : status.state
+    })),
     distinctUntilChanged(didObjectChange)
   );
 }
