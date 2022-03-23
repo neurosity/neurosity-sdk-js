@@ -1,4 +1,4 @@
-import { MonoTypeOperatorFunction, pipe, timer } from "rxjs";
+import { pipe, timer } from "rxjs";
 import { distinctUntilChanged, map, switchMap } from "rxjs/operators";
 
 import { DeviceStatus } from "../types/status";
@@ -47,7 +47,7 @@ export function offlineIfLostHeartbeat() {
 }
 
 export function deviceHasLostHeartbeat(status: DeviceStatus): boolean {
-  if (!("lastHeartbeat" in status)) {
+  if (!status?.lastHeartbeat) {
     return false;
   }
 
