@@ -14,20 +14,34 @@ const lostHeartbeatThreshold =
 
 export function offlineIfLostHeartbeat() {
   return pipe(
-    switchMap((status: DeviceStatus) =>
-      timer(0, lostHeartbeatThreshold).pipe(
+    switchMap((status: DeviceStatus) => {
+      console.log(
+        "************ offlineIfLostHeartbeat switchMap() ************",
+        status
+      );
+      return timer(0, lostHeartbeatThreshold).pipe(
         map(() => {
+          console.log(
+            "************ offlineIfLostHeartbeat map() ************",
+            status
+          );
           if (deviceHasLostHeartbeat(status)) {
+            console.log(
+              "************ deviceHasLostHeartbeat() ************",
+              deviceHasLostHeartbeat(status)
+            );
             return {
               ...status,
               state: "offline"
             };
           }
 
+          console.log("************ no override ************", status);
+
           return status;
         })
-      )
-    ),
+      );
+    }),
     distinctUntilChanged(didObjectChange)
   );
 }
