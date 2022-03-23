@@ -1,4 +1,4 @@
-import { pipe, timer, asapScheduler } from "rxjs";
+import { pipe, interval } from "rxjs";
 import { distinctUntilChanged, map, switchMap } from "rxjs/operators";
 
 import { DeviceStatus } from "../types/status";
@@ -20,7 +20,7 @@ export function offlineIfLostHeartbeat() {
         status
       );
 
-      return timer(0, lostHeartbeatThreshold, asapScheduler).pipe(
+      return interval(lostHeartbeatThreshold).pipe(
         map(() => {
           console.log(
             "************ offlineIfLostHeartbeat map() ************",
