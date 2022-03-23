@@ -12,7 +12,7 @@ const gracePeriod = 5000;
 const lostHeartbeatThreshold =
   lastHeartbeatUpdateInterval * maxHeartbeatsSkipped + gracePeriod;
 
-export function offlineIfLostHeartbeat(): MonoTypeOperatorFunction<DeviceStatus> {
+export function offlineIfLostHeartbeat() {
   return pipe(
     switchMap((status: DeviceStatus) =>
       timer(0, lostHeartbeatThreshold).pipe(
