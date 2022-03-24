@@ -641,7 +641,7 @@ export class Notion {
     }
 
     return from(this.getSelectedDevice()).pipe(
-      switchMap((selectedDevice) => {
+      switchMap((selectedDevice: any) => {
         const modelVersion =
           selectedDevice?.modelVersion || platform.MODEL_VERSION_1;
         const supportsAccel = platform.supportsAccel(modelVersion);

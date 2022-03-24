@@ -36,7 +36,7 @@ export class Timesync {
 
     const burst$ = range(0, bufferSize);
     const timer$ = timer(updateInterval, updateInterval).pipe(
-      map((i) => bufferSize + i),
+      map((i: number) => bufferSize + i),
       whileOnline({
         status$,
         allowWhileOnSleepMode: true
@@ -56,7 +56,7 @@ export class Timesync {
             this.toOffset(),
             bufferCount(bufferSize, 1),
             this.filterOutliers(),
-            map((list) => this.average(list))
+            map((list: number[]) => this.average(list))
           );
         })
       )

@@ -185,7 +185,7 @@ export class ApiClient implements Client {
 
   public onAuthStateChanged() {
     return this.firebaseUser.onAuthStateChanged().pipe(
-      switchMap(async (user) => {
+      switchMap(async (user: any) => {
         if (!user) {
           return null;
         }
