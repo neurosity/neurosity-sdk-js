@@ -1,22 +1,30 @@
 const { Notion } = require("../..");
 
-const notion = new Notion();
+const notion = new Notion({
+  autoSelectDevice: false
+});
 
-(async () => {
+main();
+
+async function main() {
   await notion
     .login({
-      customToken: process.env.NEUROSITY_CUSTOM_TOKEN
+      email: process.env.NEUROSITY_EMAIL,
+      password: process.env.NEUROSITY_PASSWORD
     })
     .catch((error) => {
-      console.log("error", error);
+      console.log("login error", error.response);
     });
 
-  await notion.selectDevice([
-    "deviceId",
-    process.env.NEUROSITY_DEVICE_ID
-  ]);
+  const token = await notion
+    .getOAuthToken({
+      clientId: process.env.NEUROSITY_OAUTH_CLIENT_ID,
+      clientSecret: process.env.NEUROSITY_OAUTH_CLIENT_SECRET,
+      userId: process.env.NEUROSITY_OAUTH_USER_ID
+    })
+    .catch((error) => {
+      console.log("oauth error", error.response);
+    });
 
-  notion.signalQuality().subscribe((data) => {
-    console.log("data", data);
-  });
-})();
+  console.log("token", token);
+}
