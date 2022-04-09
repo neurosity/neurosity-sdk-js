@@ -311,7 +311,7 @@ export class ApiClient implements Client {
 
   public status(): Observable<DeviceStatus> {
     return this.observeNamespace("status").pipe(
-      // offlineIfLostHeartbeat(),
+      offlineIfLostHeartbeat(),
       filterInternalKeys()
     );
   }
