@@ -1,6 +1,6 @@
 const { Notion } = require("../..");
-const firebase = require("firebase/app");
-require("firebase/auth");
+const firebase = require("firebase/compat/app");
+require("firebase/compat/auth");
 
 const config = {
   apiKey: "AIzaSyB0TkZ83Fj0CIzn8AAmE-Osc92s3ER8hy8",
@@ -21,7 +21,7 @@ firebase.initializeApp(config);
       process.env.NEUROSITY_PASSWORD
     );
 
-  firebase.auth().onAuthStateChanged(user => {
+  firebase.auth().onAuthStateChanged((user) => {
     console.log("app user", user ? user.uid : null);
   });
 
@@ -35,7 +35,7 @@ firebase.initializeApp(config);
   const info = await notion.getInfo();
   console.log("info", info);
 
-  notion.status().subscribe(status => {
+  notion.status().subscribe((status) => {
     console.log("status", status);
   });
 })();

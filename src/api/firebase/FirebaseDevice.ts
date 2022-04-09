@@ -1,4 +1,4 @@
-import firebase from "firebase/app";
+import firebase from "firebase/compat/app";
 
 import { FirebaseApp } from "./FirebaseApp";
 import { createDeviceStore } from "./deviceStore";
@@ -95,9 +95,8 @@ export class FirebaseDevice {
    * @returns subscriptionId
    */
   public subscribeToMetric(subscription) {
-    const subscriptionId = this.deviceStore.subscribeToMetric(
-      subscription
-    );
+    const subscriptionId =
+      this.deviceStore.subscribeToMetric(subscription);
     return subscriptionId;
   }
 
