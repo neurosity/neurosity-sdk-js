@@ -27,6 +27,7 @@ import { DeviceStatus } from "../types/status";
 import { DeviceInfo, DeviceSelector } from "../types/deviceInfo";
 import { UserClaims } from "../types/user";
 import { OAuthRemoveResponse } from "../types/oauth";
+import { Experiment } from "../types/experiment";
 
 export {
   credentialWithLink,
@@ -392,6 +393,14 @@ export class ApiClient implements Client {
 
   public removeOAuthAccess(): Promise<OAuthRemoveResponse> {
     return this.firebaseUser.removeOAuthAccess();
+  }
+
+  public onUserExperiments(): Observable<Experiment[]> {
+    return this.firebaseUser.onUserExperiments();
+  }
+
+  public deleteUserExperiment(experimentId: string): Promise<void> {
+    return this.firebaseUser.deleteUserExperiment(experimentId);
   }
 
   public get skills(): SkillsClient {
