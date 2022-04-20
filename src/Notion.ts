@@ -1317,7 +1317,7 @@ export class Notion {
    * Deletes a specific experiment provided an experiment ID
    *
    * ```typescript
-   * await notion.deleteUserExperiment();
+   * await notion.deleteUserExperiment(experiment.id);
    * ```
    *
    * @param experimentId The ID of the Experiment
