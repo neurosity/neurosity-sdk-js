@@ -56,6 +56,7 @@ import {
 import { UserClaims } from "./types/user";
 import { isNode } from "./utils/is-node";
 import { getMetric } from "./utils/metrics";
+import { Experiment } from "./types/experiment";
 
 const defaultOptions = {
   timesync: false,
@@ -1283,5 +1284,46 @@ export class Notion {
         return subscription;
       }
     };
+  }
+
+  /**
+   * Observes and returns a list of all Kinesis `experiments` and all subsequent experiment changes.
+   * Here's an example of how to get a list of all Kinesis labels that have been trained:
+   *
+   * ```typescript
+   *
+   * const getUniqueLabels = (experiments) => {
+   *   const labels = experiments.flatMap((experiment) => experiment.labels);
+   *   // only return unique labels
+   *   return [...new Set(labels)];
+   * }
+   *
+   * notion.onUserExperiments().subscribe((experiments) => {
+   *   console.log(experiments);
+   *   console.log("labels", getUniqueLabels(experiments));
+   * });
+   *
+   * // [{ id: '...', deviceId: '...', labels: [ 'drop' ], name: 'Lightgray cheetah', timestamp: 1577908381552, totalTrials: 16, userId: '...' }]
+   * // ["drop", "lift", "push"]
+   * ```
+   *
+   * @returns Observable of `experiments` events
+   */
+  public onUserExperiments(): Observable<Experiment[]> {
+    return this.api.onUserExperiments();
+  }
+
+  /**
+   * Deletes a specific experiment provided an experiment ID
+   *
+   * ```typescript
+   * await notion.deleteUserExperiment();
+   * ```
+   *
+   * @param experimentId The ID of the Experiment
+   * @returns void
+   */
+  public deleteUserExperiment(experimentId: string): Promise<void> {
+    return this.api.deleteUserExperiment(experimentId);
   }
 }

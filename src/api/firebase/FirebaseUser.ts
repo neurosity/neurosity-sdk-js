@@ -12,6 +12,7 @@ import {
 import { UserDevices, UserClaims } from "../../types/user";
 import { DeviceInfo } from "../../types/deviceInfo";
 import { OAuthRemoveResponse } from "../../types/oauth";
+import { Experiment } from "../../types/experiment";
 
 const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
 
@@ -467,5 +468,73 @@ export class FirebaseUser {
 
   private getDeviceInfoPath(deviceId: string): string {
     return `devices/${deviceId}/info`;
+  }
+
+  onUserExperiments(): Observable<Experiment[]> {
+    return this.onAuthStateChanged().pipe(
+      switchMap((user) => {
+        if (!user) {
+          return empty();
+        }
+
+        const userId = this.user.uid;
+
+        const userExperimentsRef = this.app
+          .database()
+          .ref("experiments")
+          .orderByChild("userId")
+          .equalTo(userId)
+          .limitToFirst(100);
+
+        return fromEventPattern(
+          (handler) => userExperimentsRef.on("value", handler),
+          (handler) => userExperimentsRef.off("value", handler)
+        ).pipe(
+          map(([snapshot]: [firebase.database.DataSnapshot]) =>
+            snapshot.val()
+          ),
+          // transform experiments map into sorted list
+          map((experimentsMaps): Experiment[] => {
+            return Object.entries(experimentsMaps ?? {})
+              .map(([id, value]: any) => ({
+                id: value?.id ?? id,
+                ...value
+              }))
+              .sort(
+                (a: any, b: any): any =>
+                  new Date(b?.timestamp).getTime() -
+                  new Date(a?.timestamp).getTime()
+              );
+          })
+        );
+      })
+    );
+  }
+
+  async deleteUserExperiment(experimentId: string): Promise<void> {
+    if (!experimentId) {
+      return Promise.reject(
+        `deleteUserExperiment: please provide an experiment id`
+      );
+    }
+
+    const removeExperiment = (experimentId: string) => {
+      return this.app
+        .database()
+        .ref("experiments")
+        .child(experimentId)
+        .remove();
+    };
+
+    const removeRelations = (experimentId: string) => {
+      return this.app.functions().httpsCallable("removeRelations")({
+        experimentId
+      });
+    };
+
+    await Promise.all([
+      removeExperiment(experimentId),
+      removeRelations(experimentId)
+    ]).catch(() => {});
   }
 }
