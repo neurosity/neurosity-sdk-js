@@ -38,7 +38,8 @@ const scopeRequiredByFunctionName = {
   changeSettings: "write:devices-settings",
   status: "read:devices-status",
   addDevice: "write:devices-add",
-  removeDevice: "write:devices-remove"
+  removeDevice: "write:devices-remove",
+  transferDevice: "write:devices-remove"
 };
 
 export function validateOAuthScopeForAction(

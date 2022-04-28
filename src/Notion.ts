@@ -238,6 +238,33 @@ export class Notion {
    * @internal
    * Not user facing yet
    */
+  public transferDevice({
+    recipientsEmail,
+    deviceId
+  }: {
+    recipientsEmail: string;
+    deviceId: string;
+  }): Promise<void> {
+    const [hasOAuthError, OAuthError] =
+      validateOAuthScopeForFunctionName(
+        this.api.userClaims,
+        "transferDevice"
+      );
+
+    if (hasOAuthError) {
+      return Promise.reject(OAuthError);
+    }
+
+    return this.api.transferDevice({
+      recipientsEmail,
+      deviceId
+    });
+  }
+
+  /**
+   * @internal
+   * Not user facing yet
+   */
   public onUserDevicesChange(): Observable<DeviceInfo[]> {
     const [hasOAuthError, OAuthError] =
       validateOAuthScopeForFunctionName(

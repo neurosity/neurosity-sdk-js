@@ -296,6 +296,47 @@ export class FirebaseUser {
     }
   }
 
+  public async transferDevice({
+    recipientsEmail,
+    deviceId
+  }: {
+    recipientsEmail: string;
+    deviceId: string;
+  }): Promise<void> {
+    const userId = this.user?.uid;
+
+    if (!userId) {
+      return Promise.reject(
+        new Error(`transferDevice: auth is required.`)
+      );
+    }
+
+    if (!recipientsEmail) {
+      return Promise.reject(
+        new Error(`transferDevice: a recipientsEmail is required.`)
+      );
+    }
+
+    if (!deviceId) {
+      return Promise.reject(
+        new Error(`transferDevice: a deviceId is required.`)
+      );
+    }
+
+    const [error, response] = await this.app
+      .functions()
+      .httpsCallable("transferDeviceOwnership")({
+        recipientsEmail,
+        deviceId
+      })
+      .then(({ data }) => [null, data])
+      .catch((error) => [error, null]);
+
+    if (error) {
+      return Promise.reject(error);
+    }
+  }
+
   async isDeviceIdValid(deviceId: string): Promise<boolean> {
     // hex string of 32 characters
     const hexRegEx = /[0-9A-Fa-f]{32}/g;

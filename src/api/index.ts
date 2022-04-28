@@ -228,6 +228,29 @@ export class ApiClient implements Client {
     }
   }
 
+  public async transferDevice({
+    recipientsEmail,
+    deviceId
+  }: {
+    recipientsEmail: string;
+    deviceId: string;
+  }): Promise<void> {
+    const [hasError, error] = await this.firebaseUser
+      .transferDevice({ recipientsEmail, deviceId })
+      .then(() => [false])
+      .catch((error) => [true, error]);
+
+    if (hasError) {
+      return Promise.reject(error);
+    }
+
+    const selectedDevice = this._selectedDevice.getValue();
+
+    if (selectedDevice?.deviceId === deviceId) {
+      this._selectedDevice.next(null);
+    }
+  }
+
   public onUserDevicesChange(): Observable<DeviceInfo[]> {
     return this.firebaseUser.onUserDevicesChange();
   }
