@@ -28,6 +28,7 @@ import { DeviceInfo, DeviceSelector } from "../types/deviceInfo";
 import { UserClaims } from "../types/user";
 import { OAuthRemoveResponse } from "../types/oauth";
 import { Experiment } from "../types/experiment";
+import { TransferDeviceOptions } from "../utils/transferDevice";
 
 export {
   credentialWithLink,
@@ -228,15 +229,11 @@ export class ApiClient implements Client {
     }
   }
 
-  public async transferDevice({
-    recipientsEmail,
-    deviceId
-  }: {
-    recipientsEmail: string;
-    deviceId: string;
-  }): Promise<void> {
+  public async transferDevice(
+    options: TransferDeviceOptions
+  ): Promise<void> {
     const [hasError, error] = await this.firebaseUser
-      .transferDevice({ recipientsEmail, deviceId })
+      .transferDevice(options)
       .then(() => [false])
       .catch((error) => [true, error]);
 
@@ -246,7 +243,7 @@ export class ApiClient implements Client {
 
     const selectedDevice = this._selectedDevice.getValue();
 
-    if (selectedDevice?.deviceId === deviceId) {
+    if (selectedDevice?.deviceId === options.deviceId) {
       this._selectedDevice.next(null);
     }
   }

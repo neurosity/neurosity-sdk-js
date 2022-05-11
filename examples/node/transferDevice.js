@@ -23,8 +23,9 @@ const notion = new Notion({
 
   notion
     .transferDevice({
-      recipientsEmail: "test@testemail.com",
-      deviceId: "fa1de52ce93994f0e71c151e614f54bb"
+      // recipientsEmail: "test@testemail.com",
+      recipientsUserId: "L4orwrLG9hVNLTYBmIzYwKkENLGT",
+      deviceId: "994f0e7ce93994f0e71c151e614f54bb"
     })
     .then(() => {
       console.log("success");

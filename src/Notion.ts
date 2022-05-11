@@ -57,6 +57,7 @@ import { UserClaims } from "./types/user";
 import { isNode } from "./utils/is-node";
 import { getMetric } from "./utils/metrics";
 import { Experiment } from "./types/experiment";
+import { TransferDeviceOptions } from "./utils/transferDevice";
 
 const defaultOptions = {
   timesync: false,
@@ -238,13 +239,7 @@ export class Notion {
    * @internal
    * Not user facing yet
    */
-  public transferDevice({
-    recipientsEmail,
-    deviceId
-  }: {
-    recipientsEmail: string;
-    deviceId: string;
-  }): Promise<void> {
+  public transferDevice(options: TransferDeviceOptions): Promise<void> {
     const [hasOAuthError, OAuthError] =
       validateOAuthScopeForFunctionName(
         this.api.userClaims,
@@ -255,10 +250,7 @@ export class Notion {
       return Promise.reject(OAuthError);
     }
 
-    return this.api.transferDevice({
-      recipientsEmail,
-      deviceId
-    });
+    return this.api.transferDevice(options);
   }
 
   /**

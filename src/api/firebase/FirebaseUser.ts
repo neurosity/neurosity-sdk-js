@@ -13,6 +13,7 @@ import { UserDevices, UserClaims } from "../../types/user";
 import { DeviceInfo } from "../../types/deviceInfo";
 import { OAuthRemoveResponse } from "../../types/oauth";
 import { Experiment } from "../../types/experiment";
+import { TransferDeviceOptions } from "../../utils/transferDevice";
 
 const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
 
@@ -296,13 +297,9 @@ export class FirebaseUser {
     }
   }
 
-  public async transferDevice({
-    recipientsEmail,
-    deviceId
-  }: {
-    recipientsEmail: string;
-    deviceId: string;
-  }): Promise<void> {
+  public async transferDevice(
+    options: TransferDeviceOptions
+  ): Promise<void> {
     const userId = this.user?.uid;
 
     if (!userId) {
@@ -311,13 +308,18 @@ export class FirebaseUser {
       );
     }
 
-    if (!recipientsEmail) {
+    if (
+      !("recipientsEmail" in options) &&
+      !("recipientsUserId" in options)
+    ) {
       return Promise.reject(
-        new Error(`transferDevice: a recipientsEmail is required.`)
+        new Error(
+          `transferDevice: either 'recipientsEmail' or 'recipientsUserId' key is required.`
+        )
       );
     }
 
-    if (!deviceId) {
+    if (!options?.deviceId) {
       return Promise.reject(
         new Error(`transferDevice: a deviceId is required.`)
       );
@@ -325,10 +327,7 @@ export class FirebaseUser {
 
     const [error, response] = await this.app
       .functions()
-      .httpsCallable("transferDeviceOwnership")({
-        recipientsEmail,
-        deviceId
-      })
+      .httpsCallable("transferDeviceOwnership")(options)
       .then(({ data }) => [null, data])
       .catch((error) => [error, null]);
 
