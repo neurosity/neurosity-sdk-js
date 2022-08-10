@@ -9,11 +9,11 @@ The brainwaves API is what we always wished for when it came to inventing the fu
 
 The sampling rate will vary depending on the model of your device.
 
-- Crown -> 256Hz
-- Notion 2 -> 250Hz
-- Notion 1 -> 250Hz
+- Crown -> `256Hz`
+- Notion 2 -> `250Hz`
+- Notion 1 -> `250Hz`
 
-A sampling rate of 250Hz means the data contains 250 samples per second.
+A sampling rate of `250Hz` means the data contains `250` samples per second.
 
 ## Metrics
 
@@ -520,7 +520,7 @@ Here's an example of 1 event:
 }
 ```
 
-Please note this data is pre-filtered using the same filters described under the `raw` data parameter: notch and bandpass. Therefore PSD values below 2 Hz and above 45 Hz will be attenuated.
+Please note this data is pre-filtered using the same filters described under the `raw` data parameter: notch and bandpass. Therefore PSD values below `2Hz` and above `45Hz` will be attenuated.
 
 ### Power By Band
 
@@ -541,7 +541,7 @@ The code above will output new epochs 4 times a second. Every frequency label (e
   alpha: [7.5, 12.5],
   beta: [12.5, 30],
   gamma: [30, 100] // NOTE: Bandpass attenuates signal above 45 Hz
-};
+}
 ```
 
 Here's an example of 1 event:
@@ -604,4 +604,4 @@ Here's an example of 1 event:
 }
 ```
 
-Please note this data is pre-filtered using the same filters described under the `raw` brainwaves parameter: notch and bandpass. Therefore, PowerByBand `alpha` usable range is 2 Hz to 4 Hz, and the `gamma` functional range is 30 Hz to 45 Hz.
+Please note this data is pre-filtered using the same filters described under the `raw` brainwaves parameter: notch and bandpass. Therefore, PowerByBand `alpha` usable range is `2Hz` to `4Hz`, and the `gamma` functional range is `30Hz` to `45Hz`.
