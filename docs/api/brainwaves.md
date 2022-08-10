@@ -140,7 +140,7 @@ The code above will output new epochs of 16 samples approximately every 62.5ms (
 Epochs are pre-filtered on the device's Operating System to give you the cleanest data possible with maximum performance. These filters include:
 
 - Notch of `50Hz` or `60Hz` and a bandwidth of `1`.
-- Band Pass with cutoff between `2Hz` and `45Hz`.
+- Bandpass with cutoff between `2Hz` and `45Hz`.
 
 The order of these filters is set to `2`, and the characteristic used is `butterworth`.
 
@@ -520,7 +520,7 @@ Here's an example of 1 event:
 }
 ```
 
-Please note this data is pre-filtered using the same filters describe under the `raw` data parameter: notch and band pass.
+Please note this data is pre-filtered using the same filters described under the `raw` data parameter: notch and bandpass. Therefore PSD values below 2 Hz and above 45 Hz will be attenuated.
 
 ### Power By Band
 
@@ -532,7 +532,17 @@ mind.brainwaves("powerByBand").subscribe((brainwaves) => {
 });
 ```
 
-The code above will output new epochs 4 times a second. Every frequency label (e.g. beta) contains an average power value per channel.
+The code above will output new epochs 4 times a second. Every frequency label (e.g. beta) contains an average power value per channel. The band ranges are defined as:
+
+```
+{
+  delta: [0.1, 4], // NOTE: Bandpass attenuates signal below 2 Hz
+  theta: [4, 7.5],
+  alpha: [7.5, 12.5],
+  beta: [12.5, 30],
+  gamma: [30, 100] // NOTE: Bandpass attenuates signal above 45 Hz
+};
+```
 
 Here's an example of 1 event:
 
@@ -594,4 +604,4 @@ Here's an example of 1 event:
 }
 ```
 
-Please note this data is pre-filtered using the same filters describe under the `raw` brainwaves parameter: notch and band pass.
+Please note this data is pre-filtered using the same filters described under the `raw` brainwaves parameter: notch and bandpass. Therefore, PowerByBand `alpha` usable range is 2 Hz to 4 Hz, and the `gamma` functional range is 30 Hz to 45 Hz.
