@@ -48,7 +48,7 @@
   },
   "homepage": "https://docs.neurosity.co",
   "dependencies": {
-    "@neurosity/ipk": "^2.2.0",
+    "@neurosity/ipk": "^2.9.0",
     "axios": "^0.25.0",
     "firebase": "^8.10.0",
     "outliers": "0.0.3",
@@ -57,6 +57,7 @@
   },
   "devDependencies": {
     "@types/node": "^12.0.4",
+    "@types/web-bluetooth": "0.0.15",
     "copyfiles": "^2.3.0",
     "del-cli": "^1.1.0",
     "dotenv": "^6.0.0",
@@ -70,6 +71,6 @@
     "typedoc": "^0.17.4",
     "typedoc-plugin-internal-external": "^2.0.2",
     "typedoc-plugin-markdown": "^2.2.17",
-    "typescript": "^3.8.3"
+    "typescript": "^3.9.10"
   }
 }
