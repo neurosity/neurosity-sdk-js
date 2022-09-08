@@ -1,5 +1,5 @@
 import { defer, Observable } from "rxjs";
-import { switchMap, tap } from "rxjs/operators";
+import { switchMap, take, tap } from "rxjs/operators";
 
 import { WebBluetoothClient } from "./WebBluetoothClient";
 import { csvBufferToEpoch } from "./csvBufferToEpoch";
@@ -102,6 +102,7 @@ export class WebBluetoothSDK {
         .subscribeToCharacteristic({
           characteristicName: "deviceInfo"
         })
+        .pipe(take(1))
         .toPromise();
 
       this.deviceInfo = deviceInfo;
