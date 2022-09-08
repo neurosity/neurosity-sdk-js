@@ -3,10 +3,11 @@ import { BLUETOOTH_PRIMARY_SERVICE_UUID_HEX } from "@neurosity/ipk";
 import { BLUETOOTH_CHUNK_DELIMITER } from "@neurosity/ipk";
 import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
 import { BLUETOOTH_COMPANY_IDENTIFIER_HEX } from "@neurosity/ipk";
-import { BehaviorSubject, Subject, timer } from "rxjs";
+import { BehaviorSubject, defer, Subject, timer } from "rxjs";
 import { from, fromEventPattern, Observable, NEVER } from "rxjs";
-import { switchMap, mergeMap, map, filter, take } from "rxjs/operators";
+import { switchMap, mergeMap, map, filter } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged } from "rxjs/operators";
+import { take, share } from "rxjs/operators";
 
 import { stitchChunks } from "./stitch";
 
@@ -53,20 +54,49 @@ export class WebBluetoothClient {
     [name: string]: BluetoothRemoteGATTCharacteristic;
   } = {};
 
-  logs: Subject<string> = new Subject();
-  status$: BehaviorSubject<STATUS> = new BehaviorSubject(
-    STATUS.DISCONNECTED
+  status$ = new BehaviorSubject<STATUS>(STATUS.DISCONNECTED);
+  autoReconnectEnabled$ = new BehaviorSubject<boolean>(true);
+  pendingActions$ = new BehaviorSubject<any[]>([]);
+  logs$ = new Subject<string>();
+  onDisconnected$: Observable<void> = this._onDisconnected().pipe(
+    share()
   );
-  pendingActions$: BehaviorSubject<any[]> = new BehaviorSubject([]);
+  connectionStatus$: Observable<STATUS> = this.status$
+    .asObservable()
+    .pipe(
+      filter((status) => !!status),
+      distinctUntilChanged(),
+      shareReplay(1)
+    );
 
   constructor() {
+    if (!("bluetooth" in navigator)) {
+      const errorMessage = "Web Bluetooth is not supported";
+      this.addLog(errorMessage);
+      throw new Error(errorMessage);
+    }
+
     this.status$.asObservable().subscribe((status) => {
       this.addLog(`status is ${status}`);
     });
+
+    this.onDisconnected$.subscribe(() => {
+      this.status$.next(STATUS.DISCONNECTED);
+    });
+
+    this.onDisconnected$.subscribe(() => {
+      // only auto-reconnect if disconnected action not started by the user
+      if (this.autoReconnectEnabled$.getValue()) {
+        this.addLog(`Attempting to reconnect...`);
+        this.getServerServiceAndCharacteristics();
+      }
+    });
+
+    this._autoToggleActionNotifications();
   }
 
   addLog(log: string) {
-    this.logs.next(log);
+    this.logs$.next(log);
   }
 
   isConnected() {
@@ -75,20 +105,22 @@ export class WebBluetoothClient {
   }
 
   connectionStatus(): Observable<STATUS> {
-    return this.status$.asObservable().pipe(
-      filter((status) => !!status),
-      distinctUntilChanged(),
-      shareReplay(1)
-    );
+    return this.connectionStatus$;
   }
 
   async connect(): Promise<void> {
-    if (!("bluetooth" in navigator)) {
-      const errorMessage = "Web Bluetooth is not supported";
-      this.addLog(errorMessage);
-      return Promise.reject(errorMessage);
-    }
+    try {
+      // requires user gesture
+      this.addLog("Requesting Bluetooth Device...");
+      this.device = await this.requestDevice();
 
+      await this.getServerServiceAndCharacteristics();
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+  async requestDevice() {
     try {
       this.addLog("Requesting Bluetooth Device...");
 
@@ -106,6 +138,14 @@ export class WebBluetoothClient {
         optionalServices: [BLUETOOTH_PRIMARY_SERVICE_UUID_HEX]
       });
 
+      return this.device;
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+  async getServerServiceAndCharacteristics() {
+    try {
       this.status$.next(STATUS.CONNECTING);
 
       this.server = await this.device.gatt.connect();
@@ -131,37 +171,40 @@ export class WebBluetoothClient {
       );
 
       this.status$.next(STATUS.CONNECTED);
-
-      this.onDisconnected().subscribe(() => {
-        this.status$.next(STATUS.DISCONNECTED);
-      });
-
-      this._autoToggleActionNotifications();
     } catch (error) {
       return Promise.reject(error);
     }
   }
 
-  onDisconnected() {
-    return fromEventPattern(
-      (addHandler) => {
-        this.device.addEventListener(
-          "gattserverdisconnected",
-          addHandler
-        );
-      },
-      (removeHandler) => {
-        this.device.removeEventListener(
-          "gattserverdisconnected",
-          removeHandler
-        );
-      }
+  _onDisconnected(): Observable<any> {
+    return this.status$.asObservable().pipe(
+      switchMap((status) =>
+        status === STATUS.CONNECTED
+          ? fromEventPattern(
+              (addHandler) => {
+                this.device.addEventListener(
+                  "gattserverdisconnected",
+                  addHandler
+                );
+              },
+              (removeHandler) => {
+                this.device.removeEventListener(
+                  "gattserverdisconnected",
+                  removeHandler
+                );
+              }
+            )
+          : NEVER
+      )
     );
   }
 
   disconnect(): void {
-    if (this?.device?.gatt && this.device.gatt.connected) {
-      this.device.gatt?.disconnect();
+    const isDeviceConnected = this?.device?.gatt?.connected;
+    if (isDeviceConnected) {
+      this.autoReconnectEnabled$.next(false);
+      this.device.gatt.disconnect();
+      this.autoReconnectEnabled$.next(true);
     }
   }
 
@@ -275,25 +318,37 @@ export class WebBluetoothClient {
   }
 
   async _autoToggleActionNotifications() {
-    const actionsCharacteristic = await this.getCharacteristicByName(
-      "actions"
-    );
+    let actionsCharacteristic: BluetoothRemoteGATTCharacteristic;
+    let started: boolean = false;
 
-    let started = false;
+    this.status$
+      .asObservable()
+      .pipe(
+        take(1),
+        switchMap(() =>
+          this.isConnected()
+            ? defer(() => this.getCharacteristicByName("actions")).pipe(
+                switchMap((characteristic) => {
+                  actionsCharacteristic = characteristic;
+                  return this.pendingActions$;
+                })
+              )
+            : NEVER
+        )
+      )
+      .subscribe(async (pendingActions: string[]) => {
+        const hasPendingActions = !!pendingActions.length;
 
-    this.pendingActions$.subscribe(async (pendingActions: string[]) => {
-      const hasPendingActions = !!pendingActions.length;
+        if (this.isConnected() && hasPendingActions && !started) {
+          await actionsCharacteristic.startNotifications();
+          started = true;
+        }
 
-      if (this.isConnected() && hasPendingActions && !started) {
-        await actionsCharacteristic.startNotifications();
-        started = true;
-      }
-
-      if (this.isConnected() && !hasPendingActions && started) {
-        await actionsCharacteristic.stopNotifications();
-        started = false;
-      }
-    });
+        if (this.isConnected() && !hasPendingActions && started) {
+          await actionsCharacteristic.stopNotifications();
+          started = false;
+        }
+      });
   }
 
   async dispatchAction({

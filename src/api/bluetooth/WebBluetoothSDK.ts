@@ -13,6 +13,10 @@ export class WebBluetoothSDK {
     return this.bleClient.connect();
   }
 
+  disconnect() {
+    return this.bleClient.disconnect();
+  }
+
   connectionStatus() {
     return this.bleClient.connectionStatus();
   }
