@@ -5,7 +5,7 @@ import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
 import { BLUETOOTH_COMPANY_IDENTIFIER_HEX } from "@neurosity/ipk";
 import { BehaviorSubject, defer, Subject, timer } from "rxjs";
 import { from, fromEventPattern, Observable, NEVER } from "rxjs";
-import { switchMap, mergeMap, map, filter } from "rxjs/operators";
+import { switchMap, mergeMap, map, filter, tap } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged } from "rxjs/operators";
 import { take, share } from "rxjs/operators";
 
@@ -111,7 +111,6 @@ export class WebBluetoothClient {
   async connect(): Promise<void> {
     try {
       // requires user gesture
-      this.addLog("Requesting Bluetooth Device...");
       this.device = await this.requestDevice();
 
       await this.getServerServiceAndCharacteristics();
@@ -225,12 +224,17 @@ export class WebBluetoothClient {
     characteristicName,
     manageNotifications = true
   }: SubscribeOptions): Observable<any> {
+    this.addLog(`Subscribed to characteristic: ${characteristicName}`);
+
     const data$ = from(
       this.getCharacteristicByName(characteristicName)
     ).pipe(
       mergeMap(
         async (characteristic: BluetoothRemoteGATTCharacteristic) => {
           if (this.isConnected() && manageNotifications) {
+            this.addLog(
+              `Started notifications for ${characteristicName} characteristic`
+            );
             await characteristic.startNotifications();
           }
 
@@ -247,6 +251,9 @@ export class WebBluetoothClient {
           },
           async (removeHandler) => {
             if (this.isConnected() && manageNotifications) {
+              this.addLog(
+                `Stopped notifications for ${characteristicName} characteristic`
+              );
               await characteristic.stopNotifications();
             }
 
@@ -268,6 +275,15 @@ export class WebBluetoothClient {
         } catch (_) {
           return payload;
         }
+      }),
+      tap((data) => {
+        this.addLog(
+          `Received data for ${characteristicName} characteristic: \n${JSON.stringify(
+            data,
+            null,
+            2
+          )}`
+        );
       })
     );
 
@@ -282,10 +298,14 @@ export class WebBluetoothClient {
     characteristicName: string,
     parse: boolean = false
   ): Promise<any> {
+    this.addLog(`Reading characteristic: ${characteristicName}`);
+
     const characteristic: BluetoothRemoteGATTCharacteristic =
       await this.getCharacteristicByName(characteristicName);
 
     if (!characteristic) {
+      this.addLog(`Did not fund ${characteristicName} characteristic`);
+
       return Promise.reject(
         `Did not find characteristic by the name: ${characteristicName}`
       );
@@ -294,12 +314,13 @@ export class WebBluetoothClient {
     try {
       const value = await characteristic.readValue();
       const decodedValue = decoder.decode(value);
+      const data = parse ? JSON.parse(decodedValue) : decodedValue;
 
-      if (parse) {
-        return JSON.parse(decodedValue);
-      }
+      this.addLog(
+        `Received read data for ${characteristicName} characteristic: \n${data}`
+      );
 
-      return decodedValue;
+      return data;
     } catch (error) {
       return Promise.reject(error.message);
     }
@@ -341,11 +362,17 @@ export class WebBluetoothClient {
 
         if (this.isConnected() && hasPendingActions && !started) {
           await actionsCharacteristic.startNotifications();
+          this.addLog(
+            `Started notifications for actions characteristic`
+          );
           started = true;
         }
 
         if (this.isConnected() && !hasPendingActions && started) {
           await actionsCharacteristic.stopNotifications();
+          this.addLog(
+            `Stopped notifications for actions characteristic`
+          );
           started = false;
         }
       });
