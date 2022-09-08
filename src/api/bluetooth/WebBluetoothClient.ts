@@ -226,7 +226,7 @@ export class WebBluetoothClient {
   }: SubscribeOptions): Observable<any> {
     this.addLog(`Subscribed to characteristic: ${characteristicName}`);
 
-    const data$ = from(
+    const data$ = defer(() =>
       this.getCharacteristicByName(characteristicName)
     ).pipe(
       mergeMap(
@@ -275,16 +275,17 @@ export class WebBluetoothClient {
         } catch (_) {
           return payload;
         }
-      }),
-      tap((data) => {
-        this.addLog(
-          `Received data for ${characteristicName} characteristic: \n${JSON.stringify(
-            data,
-            null,
-            2
-          )}`
-        );
       })
+      // when streaming at ultra-low latency, the logs will slow down rendering
+      // tap((data) => {
+      //   this.addLog(
+      //     `Received data for ${characteristicName} characteristic: \n${JSON.stringify(
+      //       data,
+      //       null,
+      //       2
+      //     )}`
+      //   );
+      // })
     );
 
     return this.status$.pipe(
