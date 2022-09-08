@@ -1,9 +1,14 @@
-import { Observable } from "rxjs";
+import { defer, Observable } from "rxjs";
+import { switchMap, tap } from "rxjs/operators";
 
 import { WebBluetoothClient } from "./WebBluetoothClient";
+import { csvBufferToEpoch } from "./csvBufferToEpoch";
+import { DeviceInfo } from "../../types/deviceInfo";
+import { Epoch } from "../../types/epoch";
 
 export class WebBluetoothSDK {
   bleClient: WebBluetoothClient;
+  deviceInfo: DeviceInfo;
 
   constructor() {
     this.bleClient = new WebBluetoothClient();
@@ -22,7 +27,7 @@ export class WebBluetoothSDK {
   }
 
   logs() {
-    return this.bleClient.logs.asObservable();
+    return this.bleClient.logs$.asObservable();
   }
 
   getDeviceId() {
@@ -47,10 +52,25 @@ export class WebBluetoothSDK {
     });
   }
 
-  brainwaves(label: string) {
-    return this.bleClient.subscribeToCharacteristic({
-      characteristicName: label
-    });
+  brainwaves(label: string): Observable<Epoch | any> {
+    switch (label) {
+      case "raw":
+      case "rawUnfiltered":
+        return defer(() => this.getInfo()).pipe(
+          tap((info) => console.log("info", info)),
+          switchMap((deviceInfo) =>
+            this.bleClient
+              .subscribeToCharacteristic({
+                characteristicName: label
+              })
+              .pipe(csvBufferToEpoch(deviceInfo))
+          )
+        );
+      default:
+        return this.bleClient.subscribeToCharacteristic({
+          characteristicName: label
+        });
+    }
   }
 
   signalQuality() {
@@ -71,12 +91,26 @@ export class WebBluetoothSDK {
   }
 
   // Tested
-  getInfo(): Promise<any> {
-    return this.bleClient
-      .subscribeToCharacteristic({
-        characteristicName: "deviceInfo"
-      })
-      .toPromise();
+  async getInfo(): Promise<DeviceInfo> {
+    // cache for later
+    if (this.deviceInfo) {
+      return Promise.resolve(this.deviceInfo);
+    }
+
+    try {
+      const deviceInfo = await this.bleClient
+        .subscribeToCharacteristic({
+          characteristicName: "deviceInfo"
+        })
+        .toPromise();
+
+      this.deviceInfo = deviceInfo;
+
+      return deviceInfo;
+    } catch (error) {
+      console.log("getinfo error", error);
+      return Promise.reject(error?.message);
+    }
   }
 
   // Tested
