@@ -4,11 +4,12 @@ import { BLUETOOTH_CHUNK_DELIMITER } from "@neurosity/ipk";
 import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
 import { BLUETOOTH_COMPANY_IDENTIFIER_HEX } from "@neurosity/ipk";
 import { BehaviorSubject, defer, Subject, timer } from "rxjs";
-import { from, fromEventPattern, Observable, NEVER } from "rxjs";
-import { switchMap, mergeMap, map, filter, tap } from "rxjs/operators";
+import { fromEventPattern, Observable, NEVER } from "rxjs";
+import { switchMap, mergeMap, map, filter } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged } from "rxjs/operators";
 import { take, share } from "rxjs/operators";
 
+import { isWebBluetoothSupported } from "./isWebBluetoothSupported";
 import { stitchChunks } from "./stitch";
 
 const namePrefixes = BLUETOOTH_DEVICE_NAME_PREFIXES.map(
@@ -70,7 +71,7 @@ export class WebBluetoothClient {
     );
 
   constructor() {
-    if (!("bluetooth" in navigator)) {
+    if (!isWebBluetoothSupported()) {
       const errorMessage = "Web Bluetooth is not supported";
       this.addLog(errorMessage);
       throw new Error(errorMessage);
@@ -123,7 +124,7 @@ export class WebBluetoothClient {
     try {
       this.addLog("Requesting Bluetooth Device...");
 
-      this.device = await navigator.bluetooth.requestDevice({
+      this.device = await window.navigator.bluetooth.requestDevice({
         filters: [
           ...namePrefixes,
           {
