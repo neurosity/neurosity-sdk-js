@@ -152,7 +152,7 @@ export class WebBluetoothSDK {
       action: metric,
       command: "queue",
       responseRequired: true,
-      responseTimeout: 2000,
+      responseTimeout: 4000,
       //  @TODO: implement validation logic as per SDK
       message: { effects }
     });
@@ -211,7 +211,7 @@ export class WebBluetoothSDK {
           action: "wifi",
           command: "current-network",
           responseRequired: true,
-          responseTimeout: 1000 * 3 // 3 seconds
+          responseTimeout: 1000 * 10 // 10 seconds
         });
       },
 

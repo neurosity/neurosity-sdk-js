@@ -10,6 +10,7 @@ import { shareReplay, distinctUntilChanged } from "rxjs/operators";
 import { take, share } from "rxjs/operators";
 
 import { isWebBluetoothSupported } from "./isWebBluetoothSupported";
+import { create6DigitPin } from "./create6DigitPin";
 import { stitchChunks } from "./stitch";
 
 const namePrefixes = BLUETOOTH_DEVICE_NAME_PREFIXES.map(
@@ -225,24 +226,30 @@ export class WebBluetoothClient {
     characteristicName,
     manageNotifications = true
   }: SubscribeOptions): Observable<any> {
-    this.addLog(`Subscribed to characteristic: ${characteristicName}`);
-
     const data$ = defer(() =>
       this.getCharacteristicByName(characteristicName)
     ).pipe(
-      mergeMap(
+      switchMap(
         async (characteristic: BluetoothRemoteGATTCharacteristic) => {
           if (this.isConnected() && manageNotifications) {
-            this.addLog(
-              `Started notifications for ${characteristicName} characteristic`
-            );
-            await characteristic.startNotifications();
+            try {
+              await characteristic.startNotifications();
+              this.addLog(
+                `Started notifications for ${characteristicName} characteristic`
+              );
+            } catch (error) {
+              this.addLog(
+                `Attemped to stop notifications for ${characteristicName} characteristic: ${
+                  error?.message ?? error
+                }`
+              );
+            }
           }
 
           return characteristic;
         }
       ),
-      mergeMap((characteristic: BluetoothRemoteGATTCharacteristic) => {
+      switchMap((characteristic: BluetoothRemoteGATTCharacteristic) => {
         return fromEventPattern(
           (addHandler) => {
             characteristic.addEventListener(
@@ -252,10 +259,18 @@ export class WebBluetoothClient {
           },
           async (removeHandler) => {
             if (this.isConnected() && manageNotifications) {
-              this.addLog(
-                `Stopped notifications for ${characteristicName} characteristic`
-              );
-              await characteristic.stopNotifications();
+              try {
+                await characteristic.stopNotifications();
+                this.addLog(
+                  `Stopped notifications for ${characteristicName} characteristic`
+                );
+              } catch (error) {
+                this.addLog(
+                  `Attemped to stop notifications for ${characteristicName} characteristic: ${
+                    error?.message ?? error
+                  }`
+                );
+              }
             }
 
             characteristic.removeEventListener(
@@ -328,15 +343,15 @@ export class WebBluetoothClient {
     }
   }
 
-  _addPendingAction(actionId: string): void {
+  _addPendingAction(actionId: number): void {
     const actions = this.pendingActions$.getValue();
     this.pendingActions$.next([...actions, actionId]);
   }
 
-  _removePendingAction(actionId: string): void {
+  _removePendingAction(actionId: number): void {
     const actions = this.pendingActions$.getValue();
     this.pendingActions$.next(
-      actions.filter((id: string): boolean => id !== actionId)
+      actions.filter((id: number): boolean => id !== actionId)
     );
   }
 
@@ -347,9 +362,8 @@ export class WebBluetoothClient {
     this.status$
       .asObservable()
       .pipe(
-        take(1),
-        switchMap(() =>
-          this.isConnected()
+        switchMap((status) =>
+          status === STATUS.CONNECTED
             ? defer(() => this.getCharacteristicByName("actions")).pipe(
                 switchMap((characteristic) => {
                   actionsCharacteristic = characteristic;
@@ -362,20 +376,36 @@ export class WebBluetoothClient {
       .subscribe(async (pendingActions: string[]) => {
         const hasPendingActions = !!pendingActions.length;
 
-        if (this.isConnected() && hasPendingActions && !started) {
-          await actionsCharacteristic.startNotifications();
-          this.addLog(
-            `Started notifications for actions characteristic`
-          );
+        if (hasPendingActions && !started) {
           started = true;
+          try {
+            await actionsCharacteristic.startNotifications();
+            this.addLog(
+              `Started notifications for [actions] characteristic`
+            );
+          } catch (error) {
+            this.addLog(
+              `Attemped to start notifications for [actions] characteristic: ${
+                error?.message ?? error
+              }`
+            );
+          }
         }
 
-        if (this.isConnected() && !hasPendingActions && started) {
-          await actionsCharacteristic.stopNotifications();
-          this.addLog(
-            `Stopped notifications for actions characteristic`
-          );
+        if (!hasPendingActions && started) {
           started = false;
+          try {
+            await actionsCharacteristic.stopNotifications();
+            this.addLog(
+              `Stopped notifications for actions characteristic`
+            );
+          } catch (error) {
+            this.addLog(
+              `Attemped to stop notifications for [actions] characteristic: ${
+                error?.message ?? error
+              }`
+            );
+          }
         }
       });
   }
@@ -403,10 +433,12 @@ export class WebBluetoothClient {
         return;
       }
 
-      const actionId = Date.now().toString(); // use to later identify and filter response
+      const actionId: number = create6DigitPin(); // use to later identify and filter response
       const payload = encoder.encode(
         JSON.stringify({ actionId, ...action })
       ); // add the response id to the action
+
+      this.addLog(`Dispatched action with id ${actionId}`);
 
       if (responseRequired && responseTimeout) {
         this._addPendingAction(actionId);
