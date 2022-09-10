@@ -162,7 +162,12 @@ export class WebBluetoothSDK {
     return {
       nearbyNetworks: (): Observable<any> =>
         this.bleClient.subscribeToCharacteristic({
-          characteristicName: "nearbyWifiNetworks"
+          characteristicName: "wifiNearbyNetworks"
+        }),
+
+      connections: (): Observable<any> =>
+        this.bleClient.subscribeToCharacteristic({
+          characteristicName: "wifiConnections"
         }),
 
       connect: (ssid: string, password?: string) => {
@@ -195,24 +200,6 @@ export class WebBluetoothSDK {
           message: {
             ssid
           }
-        });
-      },
-
-      getCurrentNetwork: (): Promise<any> => {
-        return this.dispatchAction({
-          action: "wifi",
-          command: "current-network",
-          responseRequired: true,
-          responseTimeout: 1000 * 10 // 10 seconds
-        });
-      },
-
-      listConnections: (): Promise<any> => {
-        return this.dispatchAction({
-          action: "wifi",
-          command: "list-connections",
-          responseRequired: true,
-          responseTimeout: 1000 * 10 // 10 seconds
         });
       },
 
