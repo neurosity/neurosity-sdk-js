@@ -160,19 +160,13 @@ export class WebBluetoothSDK {
 
   get wifi() {
     return {
-      // @TODO: not working yet
       nearbyNetworks: (): Observable<any> =>
         this.bleClient.subscribeToCharacteristic({
           characteristicName: "nearbyWifiNetworks"
         }),
 
-      // @TODO: not working yet
-      connect: (ssid: string, password: string) => {
+      connect: (ssid: string, password?: string) => {
         if (!ssid) {
-          return Promise.reject(`Missing ssid`);
-        }
-
-        if (!password) {
           return Promise.reject(`Missing ssid`);
         }
 
@@ -183,12 +177,11 @@ export class WebBluetoothSDK {
           responseTimeout: 1000 * 60 * 2, // 2 minutes
           message: {
             ssid,
-            password
+            password: password ?? null
           }
         });
       },
 
-      // @TODO: not working yet
       forgetNetwork: (ssid: string): Promise<any> => {
         if (!ssid) {
           return Promise.reject(`Missing ssid`);
@@ -205,7 +198,6 @@ export class WebBluetoothSDK {
         });
       },
 
-      // @TODO: not working yet
       getCurrentNetwork: (): Promise<any> => {
         return this.dispatchAction({
           action: "wifi",
@@ -215,7 +207,6 @@ export class WebBluetoothSDK {
         });
       },
 
-      // @TODO: not working yet
       listConnections: (): Promise<any> => {
         return this.dispatchAction({
           action: "wifi",
