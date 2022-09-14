@@ -121,7 +121,6 @@ export class WebBluetoothSDK {
     });
   }
 
-  // Tested
   dispatchAction(action) {
     return this.bleClient.dispatchAction({
       characteristicName: "actions",
@@ -129,14 +128,13 @@ export class WebBluetoothSDK {
     });
   }
 
-  // @TODO: no backend yet
   settings() {
     return this.bleClient.subscribeToCharacteristic({
       characteristicName: "settings"
     });
   }
 
-  // @TODO: no backend yet
+  // @TODO: no backend yet - will support in future versions
   changeSettings(settings) {
     return this.bleClient.dispatchAction({
       characteristicName: "settings",
@@ -144,7 +142,6 @@ export class WebBluetoothSDK {
     });
   }
 
-  // Only works once - not resolving response
   haptics(effects) {
     const metric = "haptics";
 
@@ -187,16 +184,16 @@ export class WebBluetoothSDK {
         });
       },
 
-      forgetNetwork: (ssid: string): Promise<any> => {
+      forgetConnection: (ssid: string): Promise<any> => {
         if (!ssid) {
           return Promise.reject(`Missing ssid`);
         }
 
         return this.dispatchAction({
           action: "wifi",
-          command: "forget-network",
+          command: "forget-connection",
           responseRequired: true,
-          responseTimeout: 1000 * 10, // 10 seconds
+          responseTimeout: 1000 * 15, // 15 seconds
           message: {
             ssid
           }
