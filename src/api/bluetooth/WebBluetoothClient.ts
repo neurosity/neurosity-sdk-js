@@ -5,7 +5,7 @@ import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
 import { BLUETOOTH_COMPANY_IDENTIFIER_HEX } from "@neurosity/ipk";
 import { BehaviorSubject, defer, Subject, timer } from "rxjs";
 import { fromEventPattern, Observable, NEVER } from "rxjs";
-import { switchMap, mergeMap, map, filter } from "rxjs/operators";
+import { switchMap, map, filter } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged } from "rxjs/operators";
 import { take, share } from "rxjs/operators";
 
@@ -89,8 +89,8 @@ export class WebBluetoothClient {
     this.onDisconnected$.subscribe(() => {
       // only auto-reconnect if disconnected action not started by the user
       if (this.autoReconnectEnabled$.getValue()) {
-        this.addLog(`Attempting to reconnect...`);
-        this.getServerServiceAndCharacteristics();
+        // this.addLog(`Attempting to reconnect...`);
+        //this.getServerServiceAndCharacteristics();
       }
     });
 
