@@ -51,6 +51,7 @@
     "@neurosity/ipk": "^2.10.0",
     "@neurosity/pipes": "^4.7.0",
     "axios": "^0.25.0",
+    "buffer": "^6.0.3",
     "firebase": "^8.10.0",
     "outliers": "0.0.3",
     "rxjs": "^6.6.7",

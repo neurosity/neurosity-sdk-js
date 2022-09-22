@@ -2,18 +2,20 @@ import { defer, Observable } from "rxjs";
 import { switchMap, take, tap } from "rxjs/operators";
 
 import { WebBluetoothTransport } from "./web/WebBluetoothTransport";
+import { ReactNativeTransport } from "./react-native/ReactNativeTransport";
 import { csvBufferToEpoch } from "./utils/csvBufferToEpoch";
 import { DeviceInfo } from "../../types/deviceInfo";
 import { Epoch } from "../../types/epoch";
+import { Peripheral } from "./react-native/types/BleManagerTypes";
 
-type BluetoothTransport = WebBluetoothTransport;
+type BluetoothTransport = WebBluetoothTransport | ReactNativeTransport;
 
 type Options = {
   transport: BluetoothTransport;
 };
 
 export class BluetoothSDK {
-  bleClient: BluetoothTransport;
+  transport: BluetoothTransport;
   deviceInfo: DeviceInfo;
 
   constructor(options: Options) {
@@ -23,43 +25,63 @@ export class BluetoothSDK {
       throw new Error(`No bluetooth transport provided.`);
     }
 
-    this.bleClient = transport;
+    this.transport = transport;
   }
 
-  connect() {
-    return this.bleClient.connect();
+  // Method for React Native only
+  scan() {
+    if (this.transport instanceof ReactNativeTransport) {
+      return this.transport.scan();
+    }
+
+    if (this.transport instanceof WebBluetoothTransport) {
+      throw new Error(
+        `scan method is compatibly with the React Native transport only`
+      );
+    }
+  }
+
+  // Argument for React Native only
+  connect(peripheral?: Peripheral) {
+    if (this.transport instanceof ReactNativeTransport) {
+      return this.transport.connect(peripheral);
+    }
+
+    if (this.transport instanceof WebBluetoothTransport) {
+      return this.transport.connect();
+    }
   }
 
   disconnect() {
-    return this.bleClient.disconnect();
+    return this.transport.disconnect();
   }
 
   connectionStatus() {
-    return this.bleClient.connectionStatus();
+    return this.transport.connectionStatus();
   }
 
   logs() {
-    return this.bleClient.logs$.asObservable();
+    return this.transport.logs$.asObservable();
   }
 
   getDeviceId() {
-    return this.bleClient.readCharacteristic("deviceId");
+    return this.transport.readCharacteristic("deviceId");
   }
 
   focus() {
-    return this.bleClient.subscribeToCharacteristic({
+    return this.transport.subscribeToCharacteristic({
       characteristicName: "focus"
     });
   }
 
   calm() {
-    return this.bleClient.subscribeToCharacteristic({
+    return this.transport.subscribeToCharacteristic({
       characteristicName: "calm"
     });
   }
 
   accelerometer() {
-    return this.bleClient.subscribeToCharacteristic({
+    return this.transport.subscribeToCharacteristic({
       characteristicName: "accelerometer"
     });
   }
@@ -71,7 +93,7 @@ export class BluetoothSDK {
         return defer(() => this.getInfo()).pipe(
           tap((info) => console.log("info", info)),
           switchMap((deviceInfo) =>
-            this.bleClient
+            this.transport
               .subscribeToCharacteristic({
                 characteristicName: label
               })
@@ -79,14 +101,14 @@ export class BluetoothSDK {
           )
         );
       default:
-        return this.bleClient.subscribeToCharacteristic({
+        return this.transport.subscribeToCharacteristic({
           characteristicName: label
         });
     }
   }
 
   signalQuality() {
-    return this.bleClient.subscribeToCharacteristic({
+    return this.transport.subscribeToCharacteristic({
       characteristicName: "signalQuality"
     });
   }
@@ -110,7 +132,7 @@ export class BluetoothSDK {
     }
 
     try {
-      const deviceInfo = await this.bleClient
+      const deviceInfo = await this.transport
         .subscribeToCharacteristic({
           characteristicName: "deviceInfo"
         })
@@ -128,27 +150,27 @@ export class BluetoothSDK {
 
   // Tested
   status() {
-    return this.bleClient.subscribeToCharacteristic({
+    return this.transport.subscribeToCharacteristic({
       characteristicName: "status"
     });
   }
 
   dispatchAction(action) {
-    return this.bleClient.dispatchAction({
+    return this.transport.dispatchAction({
       characteristicName: "actions",
       action
     });
   }
 
   settings() {
-    return this.bleClient.subscribeToCharacteristic({
+    return this.transport.subscribeToCharacteristic({
       characteristicName: "settings"
     });
   }
 
   // @TODO: no backend yet - will support in future versions
   changeSettings(settings) {
-    return this.bleClient.dispatchAction({
+    return this.transport.dispatchAction({
       characteristicName: "settings",
       action: settings
     });
@@ -170,12 +192,12 @@ export class BluetoothSDK {
   get wifi() {
     return {
       nearbyNetworks: (): Observable<any> =>
-        this.bleClient.subscribeToCharacteristic({
+        this.transport.subscribeToCharacteristic({
           characteristicName: "wifiNearbyNetworks"
         }),
 
       connections: (): Observable<any> =>
-        this.bleClient.subscribeToCharacteristic({
+        this.transport.subscribeToCharacteristic({
           characteristicName: "wifiConnections"
         }),
 

@@ -14,21 +14,8 @@ import { create6DigitPin } from "../utils/create6DigitPin";
 import { stitchChunks } from "../utils/stitch";
 import { encoder, decoder } from "../utils/encoding";
 import { ActionOptions, SubscribeOptions, STATUS } from "../types";
-
-const namePrefixes = BLUETOOTH_DEVICE_NAME_PREFIXES.map(
-  (namePrefix) => ({
-    namePrefix
-  })
-);
-
-const DEFAULT_ACTION_RESPONSE_TIMEOUT = 1000 * 60; // 1 minute
-
-// Reverse BLUETOOTH_CHARACTERISTICS key/values for easy lookup
-const characteristicsUUIDsToNames = Object.fromEntries(
-  Object.entries(BLUETOOTH_CHARACTERISTICS).map((entries) =>
-    entries.reverse()
-  )
-);
+import { DEFAULT_ACTION_RESPONSE_TIMEOUT } from "../constants";
+import { CHARACTERISTIC_UUIDS_TO_NAMES } from "../constants";
 
 export class WebBluetoothTransport {
   device: BluetoothDevice;
@@ -107,6 +94,12 @@ export class WebBluetoothTransport {
     try {
       this.addLog("Requesting Bluetooth Device...");
 
+      const namePrefixes = BLUETOOTH_DEVICE_NAME_PREFIXES.map(
+        (namePrefix) => ({
+          namePrefix
+        })
+      );
+
       this.device = await window.navigator.bluetooth.requestDevice({
         filters: [
           ...namePrefixes,
@@ -148,7 +141,7 @@ export class WebBluetoothTransport {
 
       this.characteristicsByName = Object.fromEntries(
         characteristicsList.map((characteristic) => [
-          characteristicsUUIDsToNames[characteristic.uuid],
+          CHARACTERISTIC_UUIDS_TO_NAMES[characteristic.uuid],
           characteristic
         ])
       );
