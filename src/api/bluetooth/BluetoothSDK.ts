@@ -12,7 +12,7 @@ type Options = {
   transport: BluetoothTransport;
 };
 
-export class WebBluetoothSDK {
+export class BluetoothSDK {
   bleClient: BluetoothTransport;
   deviceInfo: DeviceInfo;
 
