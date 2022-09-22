@@ -12,6 +12,7 @@ import { take, share } from "rxjs/operators";
 import { isWebBluetoothSupported } from "./isWebBluetoothSupported";
 import { create6DigitPin } from "../utils/create6DigitPin";
 import { stitchChunks } from "../utils/stitch";
+import { ActionOptions, SubscribeOptions, STATUS } from "../types";
 
 const namePrefixes = BLUETOOTH_DEVICE_NAME_PREFIXES.map(
   (namePrefix) => ({
@@ -30,23 +31,6 @@ const characteristicsUUIDsToNames = Object.fromEntries(
     entries.reverse()
   )
 );
-
-type ActionOptions = {
-  characteristicName: string;
-  action: any;
-};
-
-type SubscribeOptions = {
-  characteristicName: string;
-  manageNotifications?: boolean;
-};
-
-export enum STATUS {
-  CONNECTED = "connected",
-  CONNECTING = "connecting",
-  DISCONNECTING = "disconnecting",
-  DISCONNECTED = "disconnected"
-}
 
 export class WebBluetoothTransport {
   device: BluetoothDevice;
