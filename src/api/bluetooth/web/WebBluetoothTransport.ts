@@ -12,6 +12,7 @@ import { take, share } from "rxjs/operators";
 import { isWebBluetoothSupported } from "./isWebBluetoothSupported";
 import { create6DigitPin } from "../utils/create6DigitPin";
 import { stitchChunks } from "../utils/stitch";
+import { encoder, decoder } from "../utils/encoding";
 import { ActionOptions, SubscribeOptions, STATUS } from "../types";
 
 const namePrefixes = BLUETOOTH_DEVICE_NAME_PREFIXES.map(
@@ -19,9 +20,6 @@ const namePrefixes = BLUETOOTH_DEVICE_NAME_PREFIXES.map(
     namePrefix
   })
 );
-
-const encoder = new TextEncoder();
-const decoder = new TextDecoder("utf-8");
 
 const DEFAULT_ACTION_RESPONSE_TIMEOUT = 1000 * 60; // 1 minute
 
