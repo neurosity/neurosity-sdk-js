@@ -212,6 +212,15 @@ export class WebBluetoothSDK {
             respondOnSuccess: true
           }
         });
+      },
+
+      speedTest: () => {
+        return this.dispatchAction({
+          action: "wifi",
+          command: "speed-test",
+          responseRequired: true,
+          responseTimeout: 1000 * 60 * 1 // 1 minute
+        });
       }
     };
   }
