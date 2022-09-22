@@ -1,17 +1,29 @@
 import { defer, Observable } from "rxjs";
 import { switchMap, take, tap } from "rxjs/operators";
 
-import { WebBluetoothClient } from "./WebBluetoothClient";
-import { csvBufferToEpoch } from "./csvBufferToEpoch";
+import { WebBluetoothTransport } from "./web/WebBluetoothTransport";
+import { csvBufferToEpoch } from "./utils/csvBufferToEpoch";
 import { DeviceInfo } from "../../types/deviceInfo";
 import { Epoch } from "../../types/epoch";
 
+type BluetoothTransport = WebBluetoothTransport;
+
+type Options = {
+  transport: BluetoothTransport;
+};
+
 export class WebBluetoothSDK {
-  bleClient: WebBluetoothClient;
+  bleClient: BluetoothTransport;
   deviceInfo: DeviceInfo;
 
-  constructor() {
-    this.bleClient = new WebBluetoothClient();
+  constructor(options: Options) {
+    const { transport } = options;
+
+    if (!transport) {
+      throw new Error(`No bluetooth transport provided.`);
+    }
+
+    this.bleClient = transport;
   }
 
   connect() {

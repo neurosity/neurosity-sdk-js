@@ -1,1 +1,2 @@
-export * from "./WebBluetoothSDK";
+export * from "./BluetoothSDK";
+export * from "./web/WebBluetoothTransport";
