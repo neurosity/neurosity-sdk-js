@@ -10,8 +10,8 @@ import { shareReplay, distinctUntilChanged } from "rxjs/operators";
 import { take, share } from "rxjs/operators";
 
 import { isWebBluetoothSupported } from "./isWebBluetoothSupported";
-import { create6DigitPin } from "./create6DigitPin";
-import { stitchChunks } from "./stitch";
+import { create6DigitPin } from "../utils/create6DigitPin";
+import { stitchChunks } from "../utils/stitch";
 
 const namePrefixes = BLUETOOTH_DEVICE_NAME_PREFIXES.map(
   (namePrefix) => ({
@@ -48,7 +48,7 @@ export enum STATUS {
   DISCONNECTED = "disconnected"
 }
 
-export class WebBluetoothClient {
+export class WebBluetoothTransport {
   device: BluetoothDevice;
   server: BluetoothRemoteGATTServer;
   service: BluetoothRemoteGATTService;

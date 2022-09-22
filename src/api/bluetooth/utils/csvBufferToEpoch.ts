@@ -2,9 +2,9 @@ import { pipe, from, Observable, UnaryFunction } from "rxjs";
 import { mergeMap, map } from "rxjs/operators";
 import { epoch, addInfo } from "@neurosity/pipes";
 
-import { Sample, CSVSample } from "../../types/sample";
-import { Epoch } from "../../types/epoch";
-import { DeviceInfo } from "../../types/deviceInfo";
+import { Sample, CSVSample } from "../../../types/sample";
+import { Epoch } from "../../../types/epoch";
+import { DeviceInfo } from "../../../types/deviceInfo";
 
 const EPOCH_BUFFER_SIZE = 16;
 const SAMPLING_RATE_FALLBACK = 256; // Crown's sampling rate
