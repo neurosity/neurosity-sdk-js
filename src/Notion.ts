@@ -265,7 +265,7 @@ export class Notion {
       );
 
     if (hasOAuthError) {
-      return throwError(OAuthError);
+      return throwError(() => OAuthError);
     }
 
     return this.api.onUserDevicesChange();
@@ -407,7 +407,7 @@ export class Notion {
       );
 
     if (hasOAuthError) {
-      return throwError(OAuthError);
+      return throwError(() => OAuthError);
     }
 
     return this.api.onDeviceChange();
@@ -657,17 +657,17 @@ export class Notion {
       validateOAuthScopeForFunctionName(this.api.userClaims, metric);
 
     if (hasOAuthError) {
-      return throwError(OAuthError);
+      return throwError(() => OAuthError);
     }
 
     return from(this.getSelectedDevice()).pipe(
-      switchMap((selectedDevice) => {
+      switchMap((selectedDevice: DeviceInfo) => {
         const modelVersion =
           selectedDevice?.modelVersion || platform.MODEL_VERSION_1;
         const supportsAccel = platform.supportsAccel(modelVersion);
 
         if (!supportsAccel) {
-          return throwError(
+          return throwError(() =>
             errors.metricNotSupportedByModel(metric, modelVersion)
           );
         }
@@ -732,7 +732,7 @@ export class Notion {
       );
 
     if (hasOAuthError) {
-      return throwError(OAuthError);
+      return throwError(() => OAuthError);
     }
 
     return getMetric(this._getMetricDependencies(), {
@@ -763,7 +763,7 @@ export class Notion {
       validateOAuthScopeForFunctionName(this.api.userClaims, "calm");
 
     if (hasOAuthError) {
-      return throwError(OAuthError);
+      return throwError(() => OAuthError);
     }
 
     return getMetric(this._getMetricDependencies(), {
@@ -795,7 +795,7 @@ export class Notion {
       validateOAuthScopeForFunctionName(this.api.userClaims, metric);
 
     if (hasOAuthError) {
-      return throwError(OAuthError);
+      return throwError(() => OAuthError);
     }
 
     return getMetric(this._getMetricDependencies(), {
@@ -827,7 +827,7 @@ export class Notion {
       );
 
     if (hasOAuthError) {
-      return throwError(OAuthError);
+      return throwError(() => OAuthError);
     }
 
     return this.api.observeNamespace("settings");
@@ -854,7 +854,7 @@ export class Notion {
       validateOAuthScopeForFunctionName(this.api.userClaims, "focus");
 
     if (hasOAuthError) {
-      return throwError(OAuthError);
+      return throwError(() => OAuthError);
     }
 
     return getMetric(this._getMetricDependencies(), {
@@ -878,7 +878,7 @@ export class Notion {
       validateOAuthScopeForFunctionName(this.api.userClaims, metric);
 
     if (hasOAuthError) {
-      return throwError(OAuthError);
+      return throwError(() => OAuthError);
     }
 
     return getMetric(this._getMetricDependencies(), {
@@ -902,7 +902,7 @@ export class Notion {
       validateOAuthScopeForFunctionName(this.api.userClaims, metric);
 
     if (hasOAuthError) {
-      return throwError(OAuthError);
+      return throwError(() => OAuthError);
     }
 
     return getMetric(this._getMetricDependencies(), {
@@ -931,7 +931,7 @@ export class Notion {
       validateOAuthScopeForFunctionName(this.api.userClaims, "status");
 
     if (hasOAuthError) {
-      return throwError(OAuthError);
+      return throwError(() => OAuthError);
     }
 
     return this.api.status();

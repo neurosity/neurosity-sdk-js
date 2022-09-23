@@ -2,7 +2,7 @@ import {
   Observable,
   BehaviorSubject,
   fromEventPattern,
-  empty
+  EMPTY
 } from "rxjs";
 import { switchMap, filter, shareReplay } from "rxjs/operators";
 import { FirebaseApp, FirebaseUser, FirebaseDevice } from "./firebase";
@@ -345,7 +345,7 @@ export class ApiClient implements Client {
 
     return this.onDeviceChange().pipe(
       switchMap((selectedDevice) => {
-        return selectedDevice ? namespaceValues$ : empty();
+        return selectedDevice ? namespaceValues$ : EMPTY;
       })
     );
   }

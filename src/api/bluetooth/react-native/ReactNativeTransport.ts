@@ -162,8 +162,8 @@ export class ReactNativeTransport {
         )
       ),
       // Filter out devices that are not Neurosity devices
-      filter((peripheral) => {
-        const peripheralName = peripheral?.advertising?.localName ?? "";
+      filter((peripheral: Peripheral) => {
+        const peripheralName = peripheral.advertising?.localName ?? "";
 
         if (!peripheralName) {
           return false;

@@ -1,5 +1,5 @@
 const { Notion } = require("../..");
-const { empty } = require("rxjs");
+const { EMPTY } = require("rxjs");
 const { switchMap, map } = require("rxjs/operators");
 
 // Note: when `deviceId` is not passed, and `autoSelectDevice`
@@ -34,7 +34,7 @@ const notion = new Notion({
                   [deviceId]: status
                 }))
               )
-            : empty()
+            : EMPTY
         )
       )
       .subscribe((status) => {

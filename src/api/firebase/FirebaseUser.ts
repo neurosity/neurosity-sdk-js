@@ -1,4 +1,4 @@
-import { Observable, fromEventPattern, from, empty } from "rxjs";
+import { Observable, fromEventPattern, from, EMPTY } from "rxjs";
 import { map, switchMap } from "rxjs/operators";
 import firebase from "firebase/app";
 import { User } from "@firebase/auth-types";
@@ -365,7 +365,7 @@ export class FirebaseUser {
     return this.onAuthStateChanged().pipe(
       switchMap((user) => {
         if (!user) {
-          return empty();
+          return EMPTY;
         }
 
         const userDevicesPath = this.getUserDevicesPath();
@@ -390,7 +390,7 @@ export class FirebaseUser {
     return this.onAuthStateChanged().pipe(
       switchMap((user) => {
         if (!user) {
-          return empty();
+          return EMPTY;
         }
 
         const claimsUpdatedOnPath = this.getUserClaimsUpdatedOnPath();
@@ -514,7 +514,7 @@ export class FirebaseUser {
     return this.onAuthStateChanged().pipe(
       switchMap((user) => {
         if (!user) {
-          return empty();
+          return EMPTY;
         }
 
         const userId = this.user.uid;

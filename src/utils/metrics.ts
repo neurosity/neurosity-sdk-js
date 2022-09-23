@@ -1,4 +1,4 @@
-import { Observable, throwError, empty } from "rxjs";
+import { Observable, throwError, EMPTY } from "rxjs";
 import { switchMap } from "rxjs/operators";
 import { whileOnline } from "./whileOnline";
 
@@ -29,7 +29,7 @@ export function getMetric(
 
   const metricError = validate(metric, labels, options);
   if (metricError) {
-    return throwError(metricError);
+    return throwError(() => metricError);
   }
 
   const subscribeTo = (serverType: string) =>
@@ -73,7 +73,7 @@ export function getMetric(
   return onDeviceChange().pipe(
     switchMap((device: DeviceInfo) => {
       if (!device) {
-        return empty();
+        return EMPTY;
       }
 
       const { deviceId } = device;

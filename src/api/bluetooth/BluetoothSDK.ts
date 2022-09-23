@@ -1,5 +1,5 @@
-import { defer, Observable } from "rxjs";
-import { switchMap, take, tap } from "rxjs/operators";
+import { defer, Observable, firstValueFrom } from "rxjs";
+import { switchMap, tap } from "rxjs/operators";
 
 import { WebBluetoothTransport } from "./web/WebBluetoothTransport";
 import { ReactNativeTransport } from "./react-native/ReactNativeTransport";
@@ -92,7 +92,7 @@ export class BluetoothSDK {
       case "rawUnfiltered":
         return defer(() => this.getInfo()).pipe(
           tap((info) => console.log("info", info)),
-          switchMap((deviceInfo) =>
+          switchMap((deviceInfo: DeviceInfo) =>
             this.transport
               .subscribeToCharacteristic({
                 characteristicName: label
@@ -132,12 +132,11 @@ export class BluetoothSDK {
     }
 
     try {
-      const deviceInfo = await this.transport
-        .subscribeToCharacteristic({
+      const deviceInfo = await firstValueFrom(
+        this.transport.subscribeToCharacteristic({
           characteristicName: "deviceInfo"
         })
-        .pipe(take(1))
-        .toPromise();
+      );
 
       this.deviceInfo = deviceInfo;
 
