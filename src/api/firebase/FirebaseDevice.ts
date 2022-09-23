@@ -95,9 +95,10 @@ export class FirebaseDevice {
    * @returns subscriptionId
    */
   public subscribeToMetric(subscription) {
-    const subscriptionId = this.deviceStore.subscribeToMetric(
-      subscription
-    );
+    const subscriptionId = this.deviceStore.subscribeToMetric({
+      ...subscription,
+      serverType: FirebaseDevice.serverType // @deprecated
+    });
     return subscriptionId;
   }
 

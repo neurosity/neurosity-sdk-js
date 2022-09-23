@@ -5,7 +5,6 @@ import { Skill, SkillInstance } from "../types/skill";
 export type NotionOnDevice = Omit<Notion, "skill">;
 
 export interface OnDeviceOptions extends NotionOptions {
-  onDeviceSocketUrl: string;
   skill: Skill;
 }
 

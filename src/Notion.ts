@@ -91,12 +91,6 @@ export class Notion {
   protected api: ApiClient;
 
   /**
-   * @internal
-   */
-  private _localModeSubject: BehaviorSubject<boolean> =
-    new BehaviorSubject(false);
-
-  /**
    *
    * @hidden
    */
@@ -140,9 +134,6 @@ export class Notion {
     return {
       options: this.options,
       api: this.api,
-      onDeviceChange: this.onDeviceChange.bind(this),
-      isLocalMode: this.isLocalMode.bind(this),
-      socketUrl: this.socketUrl.bind(this),
       status: this.status.bind(this)
     };
   }
@@ -378,19 +369,6 @@ export class Notion {
   }
 
   /**
-   * Observes Local Mode changes
-   *
-   * ```typescript
-   * notion.isLocalMode().subscribe(isLocalMode => {
-   *  console.log(isLocalMode);
-   * });
-   * ```
-   */
-  public isLocalMode(): Observable<boolean> {
-    return this._localModeSubject.asObservable().pipe(share());
-  }
-
-  /**
    * Observes selected device
    *
    * ```typescript
@@ -414,64 +392,6 @@ export class Notion {
   }
 
   /**
-   * Enables/disables local mode
-   *
-   * With local mode, device metrics like brainwaves, calm, focus, etc will stream
-   * via your local WiFi network and not the default cloud server.
-   *
-   * Local Mode is disabled by default, to enable it:
-   *
-   * ```typescript
-   * await notion.enableLocalMode(true);
-   * ```
-   *
-   * To disable it:
-   *
-   * ```typescript
-   * await notion.enableLocalMode(false);
-   * ```
-   *
-   * Keep in mind:
-   *  - Activity Logging will <em>not work</em> while this setting is enabled.
-   *  - Your Notion must be connected to the same WiFi network as this device to establish communication.
-   *  - An internet connection is still needed to authenticate, get device status and add metric subscriptions.
-   *  - This setting is not global and needs to be set for every Notion app you wish to affect.
-   */
-  public async enableLocalMode(
-    shouldEnable: boolean
-  ): Promise<boolean> {
-    if (typeof shouldEnable !== "boolean") {
-      return Promise.reject(
-        new TypeError("enableLocalMode can only accept a boolean")
-      );
-    }
-
-    if (!shouldEnable) {
-      this._localModeSubject.next(shouldEnable);
-      return shouldEnable;
-    }
-
-    const [localModeSupported, error] = await this.api
-      .onceNamespace("context/socketUrl")
-      .then((socketUrl) => {
-        if (!socketUrl) {
-          const error = `${errors.prefix}Your device's OS does not support localMode. Try updating to the latest OS.`;
-          return [false, new Error(error)];
-        }
-        return [true, null];
-      })
-      .catch((error) => [false, error]);
-
-    if (!localModeSupported) {
-      return Promise.reject(error);
-    }
-
-    this._localModeSubject.next(shouldEnable);
-
-    return shouldEnable;
-  }
-
-  /**
    * Ends database connection
    *
    * ```typescript
@@ -480,20 +400,6 @@ export class Notion {
    */
   public async disconnect(): Promise<void> {
     return await this.api.disconnect();
-  }
-
-  /**
-   * @internal
-   * Not user facing
-   */
-  protected socketUrl(): Observable<string> {
-    const { onDeviceSocketUrl } = this.options;
-
-    if (onDeviceSocketUrl) {
-      return of(onDeviceSocketUrl);
-    }
-
-    return this.api.observeNamespace("context/socketUrl");
   }
 
   /**

@@ -54,8 +54,7 @@
     "buffer": "^6.0.3",
     "firebase": "^8.10.0",
     "outliers": "0.0.3",
-    "rxjs": "^7.5.6",
-    "socket.io-client": "^2.2.0"
+    "rxjs": "^7.5.6"
   },
   "devDependencies": {
     "@types/node": "^12.0.4",
