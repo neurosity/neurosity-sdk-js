@@ -1,4 +1,3 @@
-import { BLUETOOTH_CHARACTERISTICS } from "@neurosity/ipk";
 import { BLUETOOTH_PRIMARY_SERVICE_UUID_HEX } from "@neurosity/ipk";
 import { BLUETOOTH_CHUNK_DELIMITER } from "@neurosity/ipk";
 import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
@@ -340,10 +339,14 @@ export class WebBluetoothTransport {
         switchMap((status) =>
           status === STATUS.CONNECTED
             ? defer(() => this.getCharacteristicByName("actions")).pipe(
-                switchMap((characteristic) => {
-                  actionsCharacteristic = characteristic;
-                  return this.pendingActions$;
-                })
+                switchMap(
+                  (
+                    characteristic: BluetoothRemoteGATTCharacteristic
+                  ) => {
+                    actionsCharacteristic = characteristic;
+                    return this.pendingActions$;
+                  }
+                )
               )
             : NEVER
         )

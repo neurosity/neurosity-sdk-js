@@ -4,7 +4,7 @@ import { DeviceStatus } from "../types/status";
 
 export function filterInternalKeys(): MonoTypeOperatorFunction<DeviceStatus> {
   return pipe(
-    map((status): DeviceStatus => {
+    map((status: DeviceStatus): DeviceStatus => {
       if (!status) {
         return status;
       }

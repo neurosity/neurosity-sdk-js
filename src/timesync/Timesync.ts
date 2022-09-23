@@ -1,5 +1,5 @@
 import { timer, pipe, range, Observable } from "rxjs";
-import { map, concat, filter, take } from "rxjs/operators";
+import { map, concatWith, filter, take } from "rxjs/operators";
 import { bufferCount, concatMap, switchMap } from "rxjs/operators";
 import outliers from "outliers";
 
@@ -36,7 +36,7 @@ export class Timesync {
 
     const burst$ = range(0, bufferSize);
     const timer$ = timer(updateInterval, updateInterval).pipe(
-      map((i) => bufferSize + i),
+      map((i: number) => bufferSize + i),
       whileOnline({
         status$,
         allowWhileOnSleepMode: true
@@ -52,11 +52,11 @@ export class Timesync {
       .pipe(
         switchMap(() => {
           return burst$.pipe(
-            concat(timer$),
+            concatWith(timer$),
             this.toOffset(),
             bufferCount(bufferSize, 1),
             this.filterOutliers(),
-            map((list) => this.average(list))
+            map((list: number[]) => this.average(list))
           );
         })
       )

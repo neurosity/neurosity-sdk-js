@@ -1,5 +1,5 @@
-import { pipe, of, empty, Observable } from "rxjs";
-import { flatMap, withLatestFrom } from "rxjs/operators";
+import { pipe, of, EMPTY, Observable } from "rxjs";
+import { mergeMap, withLatestFrom } from "rxjs/operators";
 import { DeviceStatus } from "../types/status";
 
 type Options = {
@@ -13,10 +13,10 @@ export function whileOnline({
 }: Options) {
   return pipe(
     withLatestFrom(status$),
-    flatMap(([value, status]: [any, DeviceStatus]) =>
+    mergeMap(([value, status]: [any, DeviceStatus]) =>
       shouldAllowMetrics(status, allowWhileOnSleepMode)
         ? of(value)
-        : empty()
+        : EMPTY
     )
   );
 }
