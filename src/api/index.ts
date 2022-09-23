@@ -6,7 +6,6 @@ import {
 } from "rxjs";
 import { switchMap, filter, shareReplay } from "rxjs/operators";
 import { FirebaseApp, FirebaseUser, FirebaseDevice } from "./firebase";
-import { WebsocketClient } from "./websocket";
 import { Timesync } from "../timesync";
 import { SubscriptionManager } from "../subscriptions/SubscriptionManager";
 import { offlineIfLostHeartbeat } from "../utils/heartbeat";
@@ -46,11 +45,8 @@ export class ApiClient implements Client {
   protected firebaseApp: FirebaseApp;
   protected firebaseUser: FirebaseUser;
   protected firebaseDevice: FirebaseDevice;
-  protected websocket: WebsocketClient;
   protected timesync: Timesync;
   protected subscriptionManager: SubscriptionManager;
-  public defaultServerType: string = FirebaseDevice.serverType;
-  public localServerType: string = WebsocketClient.serverType;
 
   /**
    * @internal
@@ -129,20 +125,6 @@ export class ApiClient implements Client {
     return null;
   }
 
-  public async setWebsocket(
-    socketUrl: string,
-    deviceId: string
-  ): Promise<void> {
-    this.websocket = new WebsocketClient({ socketUrl, deviceId });
-  }
-
-  public unsetWebsocket(): void {
-    if (this.websocket) {
-      this.websocket.disconnect();
-      this.websocket = null;
-    }
-  }
-
   public get actions(): Actions {
     return {
       dispatch: (action) => {
@@ -152,10 +134,6 @@ export class ApiClient implements Client {
   }
 
   public async disconnect(): Promise<any> {
-    if (this.websocket) {
-      this.websocket.disconnect();
-    }
-
     return this.firebaseApp.disconnect();
   }
 
@@ -355,9 +333,6 @@ export class ApiClient implements Client {
   }
 
   public get metrics(): Metrics {
-    const isWebsocketMetric = (subscription: Subscription): boolean =>
-      subscription.serverType === WebsocketClient.serverType;
-
     return {
       next: (metricName: string, metricValue: any): void => {
         this.firebaseDevice.nextMetric(metricName, metricValue);
@@ -366,11 +341,7 @@ export class ApiClient implements Client {
         subscription: Subscription,
         callback: Function
       ): Function => {
-        if (isWebsocketMetric(subscription)) {
-          return this.websocket.onMetric(subscription, callback);
-        } else {
-          return this.firebaseDevice.onMetric(subscription, callback);
-        }
+        return this.firebaseDevice.onMetric(subscription, callback);
       },
       subscribe: (subscription: Subscription): Subscription => {
         const subscriptionCreated =
@@ -384,17 +355,10 @@ export class ApiClient implements Client {
       ): void => {
         this.subscriptionManager.remove(subscription);
         this.firebaseDevice.unsubscribeFromMetric(subscription);
-
-        if (isWebsocketMetric(subscription)) {
-          if (this.websocket) {
-            this.websocket.removeMetricListener(subscription, listener);
-          }
-        } else {
-          this.firebaseDevice.removeMetricListener(
-            subscription,
-            listener
-          );
-        }
+        this.firebaseDevice.removeMetricListener(
+          subscription,
+          listener
+        );
       }
     };
   }

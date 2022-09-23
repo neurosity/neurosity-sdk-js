@@ -39,10 +39,6 @@ export interface NotionOptions {
    * @hidden
    */
   skill?: Skill;
-  /**
-   * @hidden
-   */
-  onDeviceSocketUrl?: string;
 }
 
 /**

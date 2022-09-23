@@ -19,10 +19,6 @@ export function createSkill(app: SkillApp) {
         ...options
       });
 
-      await notion
-        .enableLocalMode(true)
-        .catch((error) => console.error(error.message));
-
       const teardown = app(notion, skill);
 
       return {
