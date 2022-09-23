@@ -29,14 +29,14 @@ export class BluetoothSDK {
   }
 
   // Method for React Native only
-  scan() {
+  onDiscover() {
     if (this.transport instanceof ReactNativeTransport) {
-      return this.transport.scan();
+      return this.transport.onDiscover();
     }
 
     if (this.transport instanceof WebBluetoothTransport) {
       throw new Error(
-        `scan method is compatibly with the React Native transport only`
+        `onDiscover method is compatibly with the React Native transport only`
       );
     }
   }

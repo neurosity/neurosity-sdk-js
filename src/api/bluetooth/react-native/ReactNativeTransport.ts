@@ -1,4 +1,3 @@
-import { BLUETOOTH_CHARACTERISTICS } from "@neurosity/ipk";
 import { BLUETOOTH_PRIMARY_SERVICE_UUID_STRING } from "@neurosity/ipk";
 import { BLUETOOTH_CHUNK_DELIMITER } from "@neurosity/ipk";
 import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
@@ -79,7 +78,7 @@ export class ReactNativeTransport {
     this.bleManagerEmitter = bleManagerEmitter;
     this.platform = platform;
 
-    // Initializes the module. Don't call this multiple times.
+    // Initializes the module. This can only be called once.
     this.BleManager.start({ showAlert: false });
 
     this.status$.asObservable().subscribe((status) => {
@@ -126,7 +125,7 @@ export class ReactNativeTransport {
     );
   }
 
-  scan(options?: { seconds: number }): Observable<Peripheral[]> {
+  onDiscover(options?: { seconds: number }): Observable<Peripheral[]> {
     const { seconds = 5 } = options;
     const serviceUUIDs = [BLUETOOTH_PRIMARY_SERVICE_UUID_STRING];
     const allowDuplicates = true;
