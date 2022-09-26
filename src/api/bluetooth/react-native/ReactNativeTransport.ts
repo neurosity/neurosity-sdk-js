@@ -5,7 +5,7 @@ import { BehaviorSubject, defer, race, Subject, timer } from "rxjs";
 import { fromEventPattern, Observable, NEVER } from "rxjs";
 import { switchMap, map, filter, takeUntil } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged } from "rxjs/operators";
-import { take, share, scan, takeLast } from "rxjs/operators";
+import { take, share, scan } from "rxjs/operators";
 
 import { create6DigitPin } from "../utils/create6DigitPin";
 import { stitchChunks } from "../utils/stitch";
@@ -79,7 +79,15 @@ export class ReactNativeTransport {
     this.platform = platform;
 
     // Initializes the module. This can only be called once.
-    this.BleManager.start({ showAlert: false });
+    this.BleManager.start({ showAlert: false })
+      .then(() => {
+        this.addLog(`BleManger started`);
+      })
+      .catch((error) => {
+        this.addLog(
+          `BleManger failed to start. ${error?.message ?? error}`
+        );
+      });
 
     this.status$.asObservable().subscribe((status) => {
       this.addLog(`status is ${status}`);
@@ -125,8 +133,8 @@ export class ReactNativeTransport {
     );
   }
 
-  onDiscover(options?: { seconds: number }): Observable<Peripheral[]> {
-    const { seconds = 5 } = options;
+  onDiscover(options?: { seconds?: number }): Observable<Peripheral[]> {
+    const { seconds } = options ?? { seconds: 5 };
     const serviceUUIDs = [BLUETOOTH_PRIMARY_SERVICE_UUID_STRING];
     const allowDuplicates = true;
     const scanOptions = {};
@@ -139,9 +147,14 @@ export class ReactNativeTransport {
           allowDuplicates,
           scanOptions
         ).then(() => {
-          subscriber.complete();
+          console.log();
+          this.addLog(`BleManger scan started`);
+          subscriber.next();
         });
       } catch (error) {
+        this.addLog(
+          `BleManger scan failed. ${error?.message ?? error}`
+        );
         subscriber.error(error);
       }
 
@@ -163,7 +176,8 @@ export class ReactNativeTransport {
       ),
       // Filter out devices that are not Neurosity devices
       filter((peripheral: Peripheral) => {
-        const peripheralName = peripheral.advertising?.localName ?? "";
+        const peripheralName =
+          peripheral.name ?? peripheral.advertising?.localName ?? "";
 
         if (!peripheralName) {
           return false;
@@ -176,8 +190,16 @@ export class ReactNativeTransport {
 
         return startsWithPrefix;
       }),
-      scan((acc, peripheral): Peripheral[] => [...acc, peripheral], []),
-      takeLast(1)
+      scan((acc, peripheral): { [name: string]: Peripheral } => {
+        return {
+          ...acc,
+          [peripheral.id]: peripheral
+        };
+      }, {}),
+      distinctUntilChanged(
+        (a, b) => JSON.stringify(a) === JSON.stringify(b)
+      ),
+      map((peripheralMap): Peripheral[] => Object.values(peripheralMap))
     );
   }
 
@@ -259,7 +281,7 @@ export class ReactNativeTransport {
 
   async disconnect(): Promise<void> {
     try {
-      if (this.isConnected()) {
+      if (this.isConnected() && this.device) {
         this.autoReconnectEnabled$.next(false);
         await this.BleManager.disconnect(this.device.id);
         this.autoReconnectEnabled$.next(true);
@@ -276,12 +298,16 @@ export class ReactNativeTransport {
   _getCharacteristicArgs(
     characteristicName: string
   ): [string, string, string] {
-    const peripheralId = this.device.id;
-    const serviceUUID = this.device.advertising?.serviceUUIDs?.[0];
-    const characteristicUUID =
-      this.getCharacteristicUUIDByName(characteristicName);
+    if (this.device) {
+      const peripheralId = this.device.id;
+      const serviceUUID = this.device.advertising?.serviceUUIDs?.[0];
+      const characteristicUUID =
+        this.getCharacteristicUUIDByName(characteristicName);
 
-    return [peripheralId, serviceUUID, characteristicUUID];
+      return [peripheralId, serviceUUID, characteristicUUID];
+    } else {
+      throw new Error(`No connected`);
+    }
   }
 
   subscribeToCharacteristic({
@@ -416,9 +442,6 @@ export class ReactNativeTransport {
   }
 
   async _autoToggleActionNotifications() {
-    const [peripheralId, serviceUUID, characteristicUUID] =
-      this._getCharacteristicArgs("actions");
-
     let started: boolean = false;
 
     this.status$
@@ -429,6 +452,9 @@ export class ReactNativeTransport {
         )
       )
       .subscribe(async (pendingActions: string[]) => {
+        const [peripheralId, serviceUUID, characteristicUUID] =
+          this._getCharacteristicArgs("actions");
+
         const hasPendingActions = !!pendingActions.length;
 
         if (hasPendingActions && !started) {
