@@ -1,15 +1,15 @@
 import { BLUETOOTH_PRIMARY_SERVICE_UUID_STRING } from "@neurosity/ipk";
 import { BLUETOOTH_CHUNK_DELIMITER } from "@neurosity/ipk";
 import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
-import { BehaviorSubject, defer, race, Subject, timer } from "rxjs";
-import { fromEventPattern, Observable, NEVER } from "rxjs";
+import { BehaviorSubject, defer, Subject, timer } from "rxjs";
+import { fromEventPattern, Observable, of, race, NEVER } from "rxjs";
 import { switchMap, map, filter, takeUntil } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged } from "rxjs/operators";
 import { take, share, scan } from "rxjs/operators";
 
 import { create6DigitPin } from "../utils/create6DigitPin";
 import { stitchChunks } from "../utils/stitch";
-import { encoder, decoder, decodeBuffer } from "../utils/encoding";
+import { encoder, decodeBuffer } from "../utils/encoding";
 import { ActionOptions, SubscribeOptions, STATUS } from "../types";
 import { BleManager } from "./types/BleManagerTypes";
 import { Peripheral, PeripheralInfo } from "./types/BleManagerTypes";
@@ -155,7 +155,6 @@ export class ReactNativeTransport {
           allowDuplicates,
           scanOptions
         ).then(() => {
-          console.log();
           this.addLog(`BleManger scan started`);
           subscriber.next();
         });
@@ -221,7 +220,6 @@ export class ReactNativeTransport {
 
         this.status$.next(STATUS.CONNECTING);
 
-        this.addLog("Peripheral not connected");
         await this.BleManager.connect(peripheral.id);
 
         this.addLog(`Getting service...`);
@@ -310,6 +308,12 @@ export class ReactNativeTransport {
   }
 
   getCharacteristicByName(characteristicName: string): Characteristic {
+    if (!(characteristicName in this.characteristicsByName)) {
+      throw new Error(
+        `Characteristic by name ${characteristicName} is not found`
+      );
+    }
+
     return this.characteristicsByName?.[characteristicName];
   }
 
@@ -317,82 +321,79 @@ export class ReactNativeTransport {
     characteristicName,
     manageNotifications = true
   }: SubscribeOptions): Observable<any> {
-    const { peripheralId, serviceUUID, characteristicUUID } =
-      this.getCharacteristicByName(characteristicName);
+    const getData = ({
+      peripheralId,
+      serviceUUID,
+      characteristicUUID
+    }: Characteristic) =>
+      defer(async () => {
+        if (manageNotifications) {
+          try {
+            await this.BleManager.startNotification(
+              peripheralId,
+              serviceUUID,
+              characteristicUUID
+            );
 
-    const data$ = defer(async () => {
-      if (this.isConnected() && manageNotifications) {
-        try {
-          await this.BleManager.startNotification(
-            peripheralId,
-            serviceUUID,
-            characteristicUUID
-          );
-
-          this.addLog(
-            `Started notifications for ${characteristicName} characteristic`
-          );
-        } catch (error) {
-          this.addLog(
-            `Attemped to stop notifications for ${characteristicName} characteristic: ${
-              error?.message ?? error
-            }`
-          );
+            this.addLog(
+              `Started notifications for ${characteristicName} characteristic`
+            );
+          } catch (error) {
+            this.addLog(
+              `Attemped to stop notifications for ${characteristicName} characteristic: ${
+                error?.message ?? error
+              }`
+            );
+          }
         }
-      }
-    }).pipe(
-      switchMap(() => {
-        return this._fromEvent(
-          "BleManagerDidUpdateValueForCharacteristic",
-          async () => {
-            if (this.isConnected() && manageNotifications) {
-              try {
-                await this.BleManager.stopNotification(
-                  peripheralId,
-                  serviceUUID,
-                  characteristicUUID
-                );
-                this.addLog(
-                  `Stopped notifications for ${characteristicName} characteristic`
-                );
-              } catch (error) {
-                this.addLog(
-                  `Attemped to stop notifications for ${characteristicName} characteristic: ${
-                    error?.message ?? error
-                  }`
-                );
+      }).pipe(
+        switchMap(() => {
+          return this._fromEvent(
+            "BleManagerDidUpdateValueForCharacteristic",
+            async () => {
+              if (manageNotifications) {
+                try {
+                  await this.BleManager.stopNotification(
+                    peripheralId,
+                    serviceUUID,
+                    characteristicUUID
+                  );
+                  this.addLog(
+                    `Stopped notifications for ${characteristicName} characteristic`
+                  );
+                } catch (error) {
+                  this.addLog(
+                    `Attemped to stop notifications for ${characteristicName} characteristic: ${
+                      error?.message ?? error
+                    }`
+                  );
+                }
               }
             }
+          );
+        }),
+        map(({ value }: any): string => {
+          return decodeBuffer(value);
+        }),
+        stitchChunks({ delimiter: BLUETOOTH_CHUNK_DELIMITER }),
+        map((payload: any) => {
+          try {
+            return JSON.parse(payload);
+          } catch (_) {
+            return payload;
           }
-        );
-      }),
-      map((event: any): string => {
-        const buffer = event.target.value;
-        return decoder.decode(buffer);
-      }),
-      stitchChunks({ delimiter: BLUETOOTH_CHUNK_DELIMITER }),
-      map((payload: any) => {
-        try {
-          return JSON.parse(payload);
-        } catch (_) {
-          return payload;
-        }
-      })
-      // when streaming at ultra-low latency, the logs will slow down rendering
-      // tap((data) => {
-      //   this.addLog(
-      //     `Received data for ${characteristicName} characteristic: \n${JSON.stringify(
-      //       data,
-      //       null,
-      //       2
-      //     )}`
-      //   );
-      // })
-    );
+        })
+      );
 
     return this.status$.pipe(
       switchMap((status) =>
-        status === STATUS.CONNECTED ? data$ : NEVER
+        status === STATUS.CONNECTED
+          ? of(this.getCharacteristicByName(characteristicName)).pipe(
+              switchMap((characteristic: Characteristic) =>
+                getData(characteristic)
+              )
+            )
+          : NEVER
       )
     );
   }
