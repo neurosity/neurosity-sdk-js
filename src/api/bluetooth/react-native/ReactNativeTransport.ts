@@ -19,6 +19,16 @@ import { DEFAULT_ACTION_RESPONSE_TIMEOUT } from "../constants";
 import { CHARACTERISTIC_UUIDS_TO_NAMES } from "../constants";
 import { ANDROD_MAX_MTU } from "../constants";
 
+type Characteristic = {
+  characteristicUUID: string;
+  serviceUUID: string;
+  peripheralId: string;
+};
+
+type CharacteristicsByName = {
+  [name: string]: Characteristic;
+};
+
 type Options = {
   BleManager: BleManager;
   bleManagerEmitter: NativeEventEmitter;
@@ -31,9 +41,7 @@ export class ReactNativeTransport {
   platform: PlatformOSType;
 
   device: Peripheral;
-  characteristicsByName: {
-    [name: string]: string; // UUID
-  } = {};
+  characteristicsByName: CharacteristicsByName = {};
 
   status$ = new BehaviorSubject<STATUS>(STATUS.DISCONNECTED);
   autoReconnectEnabled$ = new BehaviorSubject<boolean>(true);
@@ -236,15 +244,25 @@ export class ReactNativeTransport {
         this.device = peripheral;
 
         this.characteristicsByName = Object.fromEntries(
-          peripheralInfo.characteristics.map((characteristic) => [
+          peripheralInfo.characteristics.map((characteristic: any) => [
             CHARACTERISTIC_UUIDS_TO_NAMES[
-              characteristic.characteristic
+              characteristic.characteristic.toLowerCase() // react native uses uppercase
             ],
-            characteristic.characteristic
+            {
+              characteristicUUID: characteristic.characteristic,
+              serviceUUID: characteristic.service,
+              peripheralId: peripheral.id
+            }
           ])
         );
 
-        this.addLog(`Got characteristics`);
+        this.addLog(
+          `Got characteristics. ${JSON.stringify(
+            this.characteristicsByName,
+            null,
+            2
+          )}`
+        );
 
         if (this.platform === "android") {
           this.addLog(`Setting Android MTU to ${ANDROD_MAX_MTU}`);
@@ -291,31 +309,16 @@ export class ReactNativeTransport {
     }
   }
 
-  getCharacteristicUUIDByName(characteristicName: string): string {
+  getCharacteristicByName(characteristicName: string): Characteristic {
     return this.characteristicsByName?.[characteristicName];
-  }
-
-  _getCharacteristicArgs(
-    characteristicName: string
-  ): [string, string, string] {
-    if (this.device) {
-      const peripheralId = this.device.id;
-      const serviceUUID = this.device.advertising?.serviceUUIDs?.[0];
-      const characteristicUUID =
-        this.getCharacteristicUUIDByName(characteristicName);
-
-      return [peripheralId, serviceUUID, characteristicUUID];
-    } else {
-      throw new Error(`No connected`);
-    }
   }
 
   subscribeToCharacteristic({
     characteristicName,
     manageNotifications = true
   }: SubscribeOptions): Observable<any> {
-    const [peripheralId, serviceUUID, characteristicUUID] =
-      this._getCharacteristicArgs(characteristicName);
+    const { peripheralId, serviceUUID, characteristicUUID } =
+      this.getCharacteristicByName(characteristicName);
 
     const data$ = defer(async () => {
       if (this.isConnected() && manageNotifications) {
@@ -400,8 +403,8 @@ export class ReactNativeTransport {
   ): Promise<any> {
     this.addLog(`Reading characteristic: ${characteristicName}`);
 
-    const [peripheralId, serviceUUID, characteristicUUID] =
-      this._getCharacteristicArgs(characteristicName);
+    const { peripheralId, serviceUUID, characteristicUUID } =
+      this.getCharacteristicByName(characteristicName);
 
     if (!characteristicUUID) {
       return Promise.reject(
@@ -425,7 +428,11 @@ export class ReactNativeTransport {
 
       return data;
     } catch (error) {
-      return Promise.reject(error.message);
+      return Promise.reject(
+        `readCharacteristic ${characteristicName} error. ${
+          error?.message ?? error
+        }`
+      );
     }
   }
 
@@ -452,8 +459,8 @@ export class ReactNativeTransport {
         )
       )
       .subscribe(async (pendingActions: string[]) => {
-        const [peripheralId, serviceUUID, characteristicUUID] =
-          this._getCharacteristicArgs("actions");
+        const { peripheralId, serviceUUID, characteristicUUID } =
+          this.getCharacteristicByName("actions");
 
         const hasPendingActions = !!pendingActions.length;
 
@@ -503,8 +510,8 @@ export class ReactNativeTransport {
     characteristicName,
     action
   }: ActionOptions): Promise<any> {
-    const [peripheralId, serviceUUID, characteristicUUID] =
-      this._getCharacteristicArgs(characteristicName);
+    const { peripheralId, serviceUUID, characteristicUUID } =
+      this.getCharacteristicByName(characteristicName);
 
     const {
       responseRequired = false,
