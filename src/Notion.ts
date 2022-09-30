@@ -997,6 +997,18 @@ export class Notion {
 
   /**
    * @internal
+   * Not user facing
+   *
+   * Creates token (JWT) designed to authenticate and authorize Bluetooth clients/centrals.
+   *
+   * @returns token
+   */
+  public createBluetoothToken(): Promise<string> {
+    return this.api.createBluetoothToken();
+  }
+
+  /**
+   * @internal
    * Not user facing yet
    *
    * Creates custom token (JWT) to use to login with `{ customToken }`.

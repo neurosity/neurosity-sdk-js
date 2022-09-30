@@ -19,12 +19,18 @@ export class FirebaseDevice {
   static serverType = "firebase";
   protected app: firebase.app.App;
   protected deviceStore;
+  public deviceId: string;
 
   constructor({
     deviceId,
     firebaseApp,
     dependencies
   }: FirebaseDeviceOptions) {
+    if (!deviceId) {
+      throw new Error(`No Device ID provided.`);
+    }
+
+    this.deviceId = deviceId;
     this.app = firebaseApp.app;
     this.deviceStore = createDeviceStore(
       this.app,
@@ -135,6 +141,26 @@ export class FirebaseDevice {
       "bundleId",
       bundleId
     );
+  }
+
+  public async createBluetoothToken(): Promise<string> {
+    const [error, token] = await this.app
+      .functions()
+      .httpsCallable("createBluetoothToken")({
+        deviceId: this.deviceId
+      })
+      .then(({ data }) => [null, data?.token])
+      .catch((error) => [error, null]);
+
+    if (error) {
+      return Promise.reject(error?.message ?? error);
+    }
+
+    if (!token) {
+      return Promise.reject(`Failed to create Bluetooth token.`);
+    }
+
+    return token;
   }
 
   public disconnect() {

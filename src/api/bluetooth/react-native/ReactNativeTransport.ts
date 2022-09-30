@@ -9,7 +9,7 @@ import { take, share, scan } from "rxjs/operators";
 
 import { create6DigitPin } from "../utils/create6DigitPin";
 import { stitchChunks } from "../utils/stitch";
-import { encoder, decodeBuffer } from "../utils/encoding";
+import { encodeData, decodeBuffer } from "../utils/encoding";
 import { ActionOptions, SubscribeOptions, STATUS } from "../types";
 import { BleManager } from "./types/BleManagerTypes";
 import { Peripheral, PeripheralInfo } from "./types/BleManagerTypes";
@@ -437,6 +437,31 @@ export class ReactNativeTransport {
     }
   }
 
+  async writeCharacteristic(
+    characteristicName: string,
+    data: any
+  ): Promise<any> {
+    this.addLog(`Writing characteristic: ${characteristicName}`);
+
+    const { peripheralId, serviceUUID, characteristicUUID } =
+      this.getCharacteristicByName(characteristicName);
+
+    if (!characteristicUUID) {
+      return Promise.reject(
+        `Did not find characteristic matching ${characteristicName}`
+      );
+    }
+
+    const encoded = encodeData(data);
+
+    await this.BleManager.writeWithoutResponse(
+      peripheralId,
+      serviceUUID,
+      characteristicUUID,
+      encoded
+    );
+  }
+
   _addPendingAction(actionId: number): void {
     const actions = this.pendingActions$.getValue();
     this.pendingActions$.next([...actions, actionId]);
@@ -528,7 +553,7 @@ export class ReactNativeTransport {
       }
 
       const actionId: number = create6DigitPin(); // use to later identify and filter response
-      const payload = encoder.encode(
+      const payload = encodeData(
         JSON.stringify({ actionId, ...action })
       ); // add the response id to the action
 
