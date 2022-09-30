@@ -1,12 +1,15 @@
 import { defer, Observable, firstValueFrom } from "rxjs";
-import { switchMap, tap } from "rxjs/operators";
+import { ReplaySubject, EMPTY } from "rxjs";
+import { switchMap } from "rxjs/operators";
 
 import { WebBluetoothTransport } from "./web/WebBluetoothTransport";
 import { ReactNativeTransport } from "./react-native/ReactNativeTransport";
+import { Peripheral } from "./react-native/types/BleManagerTypes";
 import { csvBufferToEpoch } from "./utils/csvBufferToEpoch";
 import { DeviceInfo } from "../../types/deviceInfo";
+import { Action } from "../../types/actions";
 import { Epoch } from "../../types/epoch";
-import { Peripheral } from "./react-native/types/BleManagerTypes";
+import { STATUS } from "./types";
 
 type BluetoothTransport = WebBluetoothTransport | ReactNativeTransport;
 
@@ -22,6 +25,8 @@ export class BluetoothSDK {
   transport: BluetoothTransport;
   deviceInfo: DeviceInfo;
 
+  isAuthenticated$ = new ReplaySubject<IsAuthenticated>(1);
+
   constructor(options: Options) {
     const { transport } = options;
 
@@ -30,17 +35,34 @@ export class BluetoothSDK {
     }
 
     this.transport = transport;
+
+    // check if authenticated, which updates the isAuthenticated$ subject
+    this.connectionStatus()
+      .pipe(
+        switchMap((status) =>
+          status === STATUS.CONNECTED ? this.isAuthenticated() : EMPTY
+        )
+      )
+      .subscribe();
   }
 
   async authenticate(token: string): Promise<IsAuthenticatedResponse> {
     await this.transport.writeCharacteristic("auth", token);
 
-    return this.isAuthenticated();
+    const isAuthenticatedResponse = await this.isAuthenticated();
+
+    const [isAuthenticated] = isAuthenticatedResponse;
+
+    this.isAuthenticated$.next(isAuthenticated);
+
+    return isAuthenticatedResponse;
   }
 
   async isAuthenticated(): Promise<IsAuthenticatedResponse> {
     const [isAuthenticated, expiresIn] =
       await this.transport.readCharacteristic("auth", true);
+
+    this.isAuthenticated$.next(isAuthenticated);
 
     return [isAuthenticated, expiresIn];
   }
@@ -81,26 +103,40 @@ export class BluetoothSDK {
     return this.transport.logs$.asObservable();
   }
 
-  getDeviceId() {
+  async getDeviceId(): Promise<string> {
+    const isAuthenticated = await firstValueFrom(this.isAuthenticated$);
+
+    if (!isAuthenticated) {
+      return Promise.reject(`Authentication required.`);
+    }
+
     return this.transport.readCharacteristic("deviceId");
   }
 
+  _subscribeWhileAuthenticated(
+    characteristicName: string
+  ): Observable<any> {
+    return this.isAuthenticated$.pipe(
+      switchMap((isAuthenticated) =>
+        isAuthenticated
+          ? this.transport.subscribeToCharacteristic({
+              characteristicName
+            })
+          : EMPTY
+      )
+    );
+  }
+
   focus() {
-    return this.transport.subscribeToCharacteristic({
-      characteristicName: "focus"
-    });
+    return this._subscribeWhileAuthenticated("focus");
   }
 
   calm() {
-    return this.transport.subscribeToCharacteristic({
-      characteristicName: "calm"
-    });
+    return this._subscribeWhileAuthenticated("calm");
   }
 
   accelerometer() {
-    return this.transport.subscribeToCharacteristic({
-      characteristicName: "accelerometer"
-    });
+    return this._subscribeWhileAuthenticated("accelerometer");
   }
 
   brainwaves(label: string): Observable<Epoch | any> {
@@ -108,30 +144,23 @@ export class BluetoothSDK {
       case "raw":
       case "rawUnfiltered":
         return defer(() => this.getInfo()).pipe(
-          tap((info) => console.log("info", info)),
           switchMap((deviceInfo: DeviceInfo) =>
-            this.transport
-              .subscribeToCharacteristic({
-                characteristicName: label
-              })
-              .pipe(csvBufferToEpoch(deviceInfo))
+            this._subscribeWhileAuthenticated(label).pipe(
+              csvBufferToEpoch(deviceInfo)
+            )
           )
         );
       default:
-        return this.transport.subscribeToCharacteristic({
-          characteristicName: label
-        });
+        return this._subscribeWhileAuthenticated(label);
     }
   }
 
   signalQuality() {
-    return this.transport.subscribeToCharacteristic({
-      characteristicName: "signalQuality"
-    });
+    return this._subscribeWhileAuthenticated("signalQuality");
   }
 
-  addMarker(label: string) {
-    this.dispatchAction({
+  async addMarker(label: string): Promise<void> {
+    await this.dispatchAction({
       action: "marker",
       command: "add",
       message: {
@@ -141,8 +170,13 @@ export class BluetoothSDK {
     });
   }
 
-  // Tested
   async getInfo(): Promise<DeviceInfo> {
+    const isAuthenticated = await firstValueFrom(this.isAuthenticated$);
+
+    if (!isAuthenticated) {
+      return Promise.reject(`Authentication required.`);
+    }
+
     // cache for later
     if (this.deviceInfo) {
       return Promise.resolve(this.deviceInfo);
@@ -166,30 +200,28 @@ export class BluetoothSDK {
 
   // Tested
   status() {
-    return this.transport.subscribeToCharacteristic({
-      characteristicName: "status"
-    });
+    return this._subscribeWhileAuthenticated("status");
   }
 
-  dispatchAction(action) {
-    return this.transport.dispatchAction({
-      characteristicName: "actions",
-      action
-    });
+  async dispatchAction(action: Action): Promise<any> {
+    const isAuthenticated = await firstValueFrom(this.isAuthenticated$);
+
+    if (!isAuthenticated) {
+      return Promise.reject(`Authentication required.`);
+    }
+
+    try {
+      return await this.transport.dispatchAction({
+        characteristicName: "actions",
+        action
+      });
+    } catch (error) {
+      return Promise.reject(error?.messge ?? error);
+    }
   }
 
   settings() {
-    return this.transport.subscribeToCharacteristic({
-      characteristicName: "settings"
-    });
-  }
-
-  // @TODO: no backend yet - will support in future versions
-  changeSettings(settings) {
-    return this.transport.dispatchAction({
-      characteristicName: "settings",
-      action: settings
-    });
+    return this._subscribeWhileAuthenticated("settings");
   }
 
   haptics(effects) {
@@ -208,14 +240,10 @@ export class BluetoothSDK {
   get wifi() {
     return {
       nearbyNetworks: (): Observable<any> =>
-        this.transport.subscribeToCharacteristic({
-          characteristicName: "wifiNearbyNetworks"
-        }),
+        this._subscribeWhileAuthenticated("wifiNearbyNetworks"),
 
       connections: (): Observable<any> =>
-        this.transport.subscribeToCharacteristic({
-          characteristicName: "wifiConnections"
-        }),
+        this._subscribeWhileAuthenticated("wifiConnections"),
 
       connect: (ssid: string, password?: string) => {
         if (!ssid) {
