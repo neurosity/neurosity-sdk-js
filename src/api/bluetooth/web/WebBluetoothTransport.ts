@@ -317,6 +317,28 @@ export class WebBluetoothTransport {
     }
   }
 
+  async writeCharacteristic(
+    characteristicName: string,
+    data: any
+  ): Promise<void> {
+    this.addLog(`Writing characteristic: ${characteristicName}`);
+
+    const characteristic: BluetoothRemoteGATTCharacteristic =
+      await this.getCharacteristicByName(characteristicName);
+
+    if (!characteristic) {
+      this.addLog(`Did not fund ${characteristicName} characteristic`);
+
+      return Promise.reject(
+        `Did not find characteristic by the name: ${characteristicName}`
+      );
+    }
+
+    const encoded = encoder.encode(data);
+
+    await characteristic.writeValueWithoutResponse(encoded);
+  }
+
   _addPendingAction(actionId: number): void {
     const actions = this.pendingActions$.getValue();
     this.pendingActions$.next([...actions, actionId]);

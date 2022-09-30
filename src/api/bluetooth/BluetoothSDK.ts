@@ -10,6 +10,10 @@ import { Peripheral } from "./react-native/types/BleManagerTypes";
 
 type BluetoothTransport = WebBluetoothTransport | ReactNativeTransport;
 
+type IsAuthenticated = boolean;
+type ExpiresIn = number;
+type IsAuthenticatedResponse = [IsAuthenticated, ExpiresIn];
+
 type Options = {
   transport: BluetoothTransport;
 };
@@ -26,6 +30,19 @@ export class BluetoothSDK {
     }
 
     this.transport = transport;
+  }
+
+  async authenticate(token: string): Promise<IsAuthenticatedResponse> {
+    await this.transport.writeCharacteristic("auth", token);
+
+    return this.isAuthenticated();
+  }
+
+  async isAuthenticated(): Promise<IsAuthenticatedResponse> {
+    const [isAuthenticated, expiresIn] =
+      await this.transport.readCharacteristic("auth", true);
+
+    return [isAuthenticated, expiresIn];
   }
 
   // Method for React Native only

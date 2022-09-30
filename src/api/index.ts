@@ -371,6 +371,10 @@ export class ApiClient implements Client {
     return this.firebaseUser.deleteAccount();
   }
 
+  public createBluetoothToken(): Promise<string> {
+    return this.firebaseDevice.createBluetoothToken();
+  }
+
   public createCustomToken(): Promise<CustomToken> {
     return this.firebaseUser.createCustomToken();
   }
