@@ -8,16 +8,17 @@ import { switchMap, map, filter } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged } from "rxjs/operators";
 import { take, share } from "rxjs/operators";
 
+import { BluetoothTransport } from "../BluetoothTransport";
 import { isWebBluetoothSupported } from "./isWebBluetoothSupported";
 import { create6DigitPin } from "../utils/create6DigitPin";
 import { stitchChunks } from "../utils/stitch";
 import { encode, decode } from "../utils/encoding";
-import { ActionOptions, SubscribeOptions, STATUS } from "../types";
+import { ActionOptions, SubscribeOptions } from "../types";
+import { TRANSPORT_TYPE, STATUS } from "../types";
 import { DEFAULT_ACTION_RESPONSE_TIMEOUT } from "../constants";
 import { CHARACTERISTIC_UUIDS_TO_NAMES } from "../constants";
-import { TRANSPORT_TYPE } from "../BluetoothTransport";
 
-export class WebBluetoothTransport {
+export class WebBluetoothTransport implements BluetoothTransport {
   type: TRANSPORT_TYPE = TRANSPORT_TYPE.WEB;
   device: BluetoothDevice;
   server: BluetoothRemoteGATTServer;
@@ -176,7 +177,7 @@ export class WebBluetoothTransport {
     );
   }
 
-  disconnect(): void {
+  async disconnect(): Promise<void> {
     const isDeviceConnected = this?.device?.gatt?.connected;
     if (isDeviceConnected) {
       this.autoReconnectEnabled$.next(false);
