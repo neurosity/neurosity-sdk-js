@@ -545,27 +545,14 @@ export class ReactNativeTransport implements BluetoothTransport {
     characteristicName,
     action
   }: ActionOptions): Promise<any> {
-    const { peripheralId, serviceUUID, characteristicUUID } =
-      this.getCharacteristicByName(characteristicName);
-
     const {
       responseRequired = false,
       responseTimeout = DEFAULT_ACTION_RESPONSE_TIMEOUT
     } = action;
 
     return new Promise(async (resolve, reject) => {
-      if (!characteristicUUID) {
-        reject(
-          `Did not find characteristic by the name: ${characteristicName}`
-        );
-        return;
-      }
-
       const actionId: number = create6DigitPin(); // use to later identify and filter response
-      const payload = encode(
-        this.type,
-        JSON.stringify({ actionId, ...action }) // add the response id to the action
-      );
+      const payload = JSON.stringify({ actionId, ...action }); // add the response id to the action
 
       this.addLog(`Dispatched action with id ${actionId}`);
 
@@ -595,22 +582,14 @@ export class ReactNativeTransport implements BluetoothTransport {
           });
 
         // register action by writing
-        this.BleManager.writeWithoutResponse(
-          peripheralId,
-          serviceUUID,
-          characteristicUUID,
-          payload
-        ).catch((error) => {
-          this._removePendingAction(actionId);
-          reject(error.message);
-        });
+        this.writeCharacteristic(characteristicName, payload).catch(
+          (error) => {
+            this._removePendingAction(actionId);
+            reject(error.message);
+          }
+        );
       } else {
-        this.BleManager.writeWithoutResponse(
-          peripheralId,
-          serviceUUID,
-          characteristicUUID,
-          payload
-        )
+        this.writeCharacteristic(characteristicName, payload)
           .then(() => {
             resolve(null);
           })

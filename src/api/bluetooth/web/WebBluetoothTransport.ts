@@ -440,10 +440,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
       }
 
       const actionId: number = create6DigitPin(); // use to later identify and filter response
-      const payload = encode(
-        this.type,
-        JSON.stringify({ actionId, ...action })
-      ); // add the response id to the action
+      const payload = JSON.stringify({ actionId, ...action }); // add the response id to the action
 
       this.addLog(`Dispatched action with id ${actionId}`);
 
@@ -473,15 +470,14 @@ export class WebBluetoothTransport implements BluetoothTransport {
           });
 
         // register action by writing
-        characteristic
-          .writeValueWithoutResponse(payload as Uint8Array)
-          .catch((error) => {
+        this.writeCharacteristic(characteristicName, payload).catch(
+          (error) => {
             this._removePendingAction(actionId);
             reject(error.message);
-          });
+          }
+        );
       } else {
-        characteristic
-          .writeValueWithoutResponse(payload as Uint8Array)
+        this.writeCharacteristic(characteristicName, payload)
           .then(() => {
             resolve(null);
           })
