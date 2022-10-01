@@ -300,7 +300,7 @@ export class ReactNativeTransport implements BluetoothTransport {
 
   async disconnect(): Promise<void> {
     try {
-      if (this.isConnected() && this.device) {
+      if (this.isConnected() && this?.device?.id) {
         this.autoReconnectEnabled$.next(false);
         await this.BleManager.disconnect(this.device.id);
         this.autoReconnectEnabled$.next(true);

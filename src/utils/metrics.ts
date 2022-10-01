@@ -1,4 +1,5 @@
-import { Observable, throwError } from "rxjs";
+import { Observable, throwError, EMPTY } from "rxjs";
+import { switchMap } from "rxjs/operators";
 import { whileOnline } from "./whileOnline";
 
 import { validate } from "./subscription";
@@ -6,6 +7,7 @@ import {
   PendingSubscription,
   Subscription
 } from "../types/subscriptions";
+import { DeviceInfo } from "../types/deviceInfo";
 
 /**
  * @internal
@@ -14,7 +16,7 @@ export function getMetric(
   dependencies,
   subscription: PendingSubscription
 ): Observable<any> {
-  const { options, api, status } = dependencies;
+  const { options, api, onDeviceChange, status } = dependencies;
 
   const { metric, labels, atomic } = subscription;
 
@@ -58,10 +60,18 @@ export function getMetric(
     };
   });
 
-  return metric$.pipe(
-    whileOnline({
-      status$: status(),
-      allowWhileOnSleepMode: false
+  return onDeviceChange().pipe(
+    switchMap((device: DeviceInfo) => {
+      if (!device) {
+        return EMPTY;
+      }
+
+      return metric$.pipe(
+        whileOnline({
+          status$: status(),
+          allowWhileOnSleepMode: false
+        })
+      );
     })
   );
 }
