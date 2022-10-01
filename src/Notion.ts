@@ -134,6 +134,7 @@ export class Notion {
     return {
       options: this.options,
       api: this.api,
+      onDeviceChange: this.onDeviceChange.bind(this),
       status: this.status.bind(this)
     };
   }
