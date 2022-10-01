@@ -1,7 +1,7 @@
 // https://github.com/feross/buffer
 import Buffer from "buffer/";
 
-import { TRANSPORT_TYPE } from "../BluetoothTransport";
+import { TRANSPORT_TYPE } from "../types";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder("utf-8");
