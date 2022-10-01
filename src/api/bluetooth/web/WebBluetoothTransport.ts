@@ -11,12 +11,14 @@ import { take, share } from "rxjs/operators";
 import { isWebBluetoothSupported } from "./isWebBluetoothSupported";
 import { create6DigitPin } from "../utils/create6DigitPin";
 import { stitchChunks } from "../utils/stitch";
-import { encoder, decoder } from "../utils/encoding";
+import { encode, decode } from "../utils/encoding";
 import { ActionOptions, SubscribeOptions, STATUS } from "../types";
 import { DEFAULT_ACTION_RESPONSE_TIMEOUT } from "../constants";
 import { CHARACTERISTIC_UUIDS_TO_NAMES } from "../constants";
+import { TRANSPORT_TYPE } from "../BluetoothTransport";
 
 export class WebBluetoothTransport {
+  type: TRANSPORT_TYPE = TRANSPORT_TYPE.WEB;
   device: BluetoothDevice;
   server: BluetoothRemoteGATTServer;
   service: BluetoothRemoteGATTService;
@@ -255,8 +257,8 @@ export class WebBluetoothTransport {
         );
       }),
       map((event: any): string => {
-        const buffer = event.target.value;
-        return decoder.decode(buffer);
+        const buffer: Uint8Array = event.target.value;
+        return decode(this.type, buffer);
       }),
       stitchChunks({ delimiter: BLUETOOTH_CHUNK_DELIMITER }),
       map((payload: any) => {
@@ -303,8 +305,9 @@ export class WebBluetoothTransport {
     }
 
     try {
-      const value = await characteristic.readValue();
-      const decodedValue = decoder.decode(value);
+      const value: unknown = await characteristic.readValue();
+      const uint8Array = value as Uint8Array;
+      const decodedValue: string = decode(this.type, uint8Array);
       const data = parse ? JSON.parse(decodedValue) : decodedValue;
 
       this.addLog(
@@ -319,7 +322,7 @@ export class WebBluetoothTransport {
 
   async writeCharacteristic(
     characteristicName: string,
-    data: any
+    data: string
   ): Promise<void> {
     this.addLog(`Writing characteristic: ${characteristicName}`);
 
@@ -334,7 +337,7 @@ export class WebBluetoothTransport {
       );
     }
 
-    const encoded = encoder.encode(data);
+    const encoded = encode(this.type, data);
 
     await characteristic.writeValueWithoutResponse(encoded);
   }
@@ -434,7 +437,8 @@ export class WebBluetoothTransport {
       }
 
       const actionId: number = create6DigitPin(); // use to later identify and filter response
-      const payload = encoder.encode(
+      const payload = encode(
+        this.type,
         JSON.stringify({ actionId, ...action })
       ); // add the response id to the action
 

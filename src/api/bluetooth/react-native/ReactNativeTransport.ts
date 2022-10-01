@@ -9,7 +9,7 @@ import { take, share, scan } from "rxjs/operators";
 
 import { create6DigitPin } from "../utils/create6DigitPin";
 import { stitchChunks } from "../utils/stitch";
-import { encodeData, decodeBuffer } from "../utils/encoding";
+import { encode, decode } from "../utils/encoding";
 import { ActionOptions, SubscribeOptions, STATUS } from "../types";
 import { BleManager } from "./types/BleManagerTypes";
 import { Peripheral, PeripheralInfo } from "./types/BleManagerTypes";
@@ -18,6 +18,7 @@ import { PlatformOSType } from "./types/ReactNativeTypes";
 import { DEFAULT_ACTION_RESPONSE_TIMEOUT } from "../constants";
 import { CHARACTERISTIC_UUIDS_TO_NAMES } from "../constants";
 import { ANDROD_MAX_MTU } from "../constants";
+import { TRANSPORT_TYPE } from "../transportTypes";
 
 type Characteristic = {
   characteristicUUID: string;
@@ -36,6 +37,7 @@ type Options = {
 };
 
 export class ReactNativeTransport {
+  type: TRANSPORT_TYPE = TRANSPORT_TYPE.REACT_NATIVE;
   BleManager: BleManager;
   bleManagerEmitter: NativeEventEmitter;
   platform: PlatformOSType;
@@ -373,7 +375,11 @@ export class ReactNativeTransport {
           );
         }),
         map(({ value }: any): string => {
-          return decodeBuffer(value);
+          console.log(
+            "subscribeToCharacteristic typeof value",
+            typeof value
+          );
+          return decode(this.type, value);
         }),
         stitchChunks({ delimiter: BLUETOOTH_CHUNK_DELIMITER }),
         map((payload: any) => {
@@ -420,7 +426,7 @@ export class ReactNativeTransport {
         characteristicUUID
       );
 
-      const decodedValue = decodeBuffer(value);
+      const decodedValue = decode(this.type, value);
       const data = parse ? JSON.parse(decodedValue) : decodedValue;
 
       this.addLog(
@@ -439,8 +445,8 @@ export class ReactNativeTransport {
 
   async writeCharacteristic(
     characteristicName: string,
-    data: any
-  ): Promise<any> {
+    data: string
+  ): Promise<void> {
     this.addLog(`Writing characteristic: ${characteristicName}`);
 
     const { peripheralId, serviceUUID, characteristicUUID } =
@@ -452,7 +458,7 @@ export class ReactNativeTransport {
       );
     }
 
-    const encoded = encodeData(data);
+    const encoded = encode(this.type, data);
 
     await this.BleManager.writeWithoutResponse(
       peripheralId,
@@ -553,9 +559,10 @@ export class ReactNativeTransport {
       }
 
       const actionId: number = create6DigitPin(); // use to later identify and filter response
-      const payload = encodeData(
-        JSON.stringify({ actionId, ...action })
-      ); // add the response id to the action
+      const payload = encode(
+        this.type,
+        JSON.stringify({ actionId, ...action }) // add the response id to the action
+      );
 
       this.addLog(`Dispatched action with id ${actionId}`);
 
