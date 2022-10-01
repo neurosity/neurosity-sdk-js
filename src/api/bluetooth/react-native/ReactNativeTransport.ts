@@ -19,7 +19,8 @@ import { NativeEventEmitter } from "./types/ReactNativeTypes";
 import { PlatformOSType } from "./types/ReactNativeTypes";
 import { DEFAULT_ACTION_RESPONSE_TIMEOUT } from "../constants";
 import { CHARACTERISTIC_UUIDS_TO_NAMES } from "../constants";
-import { ANDROD_MAX_MTU } from "../constants";
+import { ANDROID_MAX_MTU } from "../constants";
+import { REACT_NATIVE_MAX_BYTE_SIZE } from "../constants";
 
 type Characteristic = {
   characteristicUUID: string;
@@ -266,10 +267,10 @@ export class ReactNativeTransport implements BluetoothTransport {
         );
 
         if (this.platform === "android") {
-          this.addLog(`Setting Android MTU to ${ANDROD_MAX_MTU}`);
+          this.addLog(`Setting Android MTU to ${ANDROID_MAX_MTU}`);
           await this.BleManager.requestMTU(
             peripheral.id,
-            ANDROD_MAX_MTU
+            ANDROID_MAX_MTU
           );
         }
 
@@ -465,7 +466,8 @@ export class ReactNativeTransport implements BluetoothTransport {
       peripheralId,
       serviceUUID,
       characteristicUUID,
-      encoded
+      encoded,
+      REACT_NATIVE_MAX_BYTE_SIZE
     );
   }
 
