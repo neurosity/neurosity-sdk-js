@@ -312,7 +312,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
       const data = parse ? JSON.parse(decodedValue) : decodedValue;
 
       this.addLog(
-        `Received read data for ${characteristicName} characteristic: \n${data}`
+        `Received read data from ${characteristicName} characteristic: \n${data}`
       );
 
       return data;
@@ -340,7 +340,9 @@ export class WebBluetoothTransport implements BluetoothTransport {
 
     const encoded = encode(this.type, data);
 
-    await characteristic.writeValueWithoutResponse(encoded);
+    await characteristic.writeValueWithoutResponse(
+      encoded as Uint8Array
+    );
   }
 
   _addPendingAction(actionId: number): void {
@@ -472,14 +474,14 @@ export class WebBluetoothTransport implements BluetoothTransport {
 
         // register action by writing
         characteristic
-          .writeValueWithoutResponse(payload)
+          .writeValueWithoutResponse(payload as Uint8Array)
           .catch((error) => {
             this._removePendingAction(actionId);
             reject(error.message);
           });
       } else {
         characteristic
-          .writeValueWithoutResponse(payload)
+          .writeValueWithoutResponse(payload as Uint8Array)
           .then(() => {
             resolve(null);
           })

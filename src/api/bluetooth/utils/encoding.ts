@@ -1,6 +1,3 @@
-// https://github.com/feross/buffer
-import Buffer from "buffer/";
-
 import { TRANSPORT_TYPE } from "../types";
 
 const encoder = new TextEncoder();
@@ -9,13 +6,10 @@ const decoder = new TextDecoder("utf-8");
 export function encode(
   transportType: TRANSPORT_TYPE,
   data: string
-): Uint8Array {
-  // ArrayLike<number>
+): Uint8Array | number[] {
   if (transportType === TRANSPORT_TYPE.REACT_NATIVE) {
-    const encoded: Uint8Array = encoder.encode(data);
-    return encoded;
-    // BleManager only support plain array and not Uint8Array
-    //return [...encoded] as Uint8Array;
+    // React Native expects a plain array  of numbers and not a Uint8Array
+    return [...encoder.encode(data)];
   }
 
   return encoder.encode(data);
@@ -23,12 +17,12 @@ export function encode(
 
 export function decode(
   transportType: TRANSPORT_TYPE,
-  data: Uint8Array // BufferSource
+  data: Uint8Array | number[]
 ): string {
   if (transportType === TRANSPORT_TYPE.REACT_NATIVE) {
-    const buffer: Buffer.Buffer = Buffer.Buffer.from(data);
-    return decoder.decode(buffer);
+    // React Native outpouts a plain array of numbers and not a Uint8Array
+    return decoder.decode(new Uint8Array(data as number[]));
   }
 
-  return decoder.decode(data);
+  return decoder.decode(data as Uint8Array);
 }
