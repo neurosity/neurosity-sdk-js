@@ -1,6 +1,9 @@
 import { pipe, from, Observable, UnaryFunction } from "rxjs";
 import { mergeMap, map } from "rxjs/operators";
-import { epoch, addInfo } from "@neurosity/pipes";
+import {
+  epoch,
+  addInfo
+} from "@neurosity/pipes/dist/esm/eeg-pipes.mjs";
 
 import { Sample, CSVSample } from "../../../types/sample";
 import { Epoch } from "../../../types/epoch";
