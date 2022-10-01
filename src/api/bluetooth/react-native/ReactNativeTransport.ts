@@ -431,7 +431,7 @@ export class ReactNativeTransport implements BluetoothTransport {
       const data = parse ? JSON.parse(decodedValue) : decodedValue;
 
       this.addLog(
-        `Received read data for ${characteristicName} characteristic: \n${data}`
+        `Received read data from ${characteristicName} characteristic: \n${data}`
       );
 
       return data;
