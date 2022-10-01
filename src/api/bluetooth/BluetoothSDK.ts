@@ -1,6 +1,6 @@
 import { defer, Observable, firstValueFrom } from "rxjs";
 import { ReplaySubject, EMPTY } from "rxjs";
-import { switchMap } from "rxjs/operators";
+import { distinctUntilChanged, switchMap } from "rxjs/operators";
 
 import { WebBluetoothTransport } from "./web/WebBluetoothTransport";
 import { ReactNativeTransport } from "./react-native/ReactNativeTransport";
@@ -117,6 +117,7 @@ export class BluetoothSDK {
     characteristicName: string
   ): Observable<any> {
     return this.isAuthenticated$.pipe(
+      distinctUntilChanged(),
       switchMap((isAuthenticated) =>
         isAuthenticated
           ? this.transport.subscribeToCharacteristic({
