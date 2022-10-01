@@ -376,11 +376,7 @@ export class ReactNativeTransport implements BluetoothTransport {
             }
           );
         }),
-        map(({ value }: any): string => {
-          console.log(
-            "subscribeToCharacteristic typeof value",
-            typeof value
-          );
+        map(({ value }: { value: number[] }): string => {
           return decode(this.type, value);
         }),
         stitchChunks({ delimiter: BLUETOOTH_CHUNK_DELIMITER }),
