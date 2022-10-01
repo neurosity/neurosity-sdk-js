@@ -7,10 +7,12 @@ import { switchMap, map, filter, takeUntil } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged } from "rxjs/operators";
 import { take, share, scan } from "rxjs/operators";
 
+import { BluetoothTransport } from "../BluetoothTransport";
 import { create6DigitPin } from "../utils/create6DigitPin";
 import { stitchChunks } from "../utils/stitch";
 import { encode, decode } from "../utils/encoding";
-import { ActionOptions, SubscribeOptions, STATUS } from "../types";
+import { ActionOptions, SubscribeOptions } from "../types";
+import { TRANSPORT_TYPE, STATUS } from "../types";
 import { BleManager } from "./types/BleManagerTypes";
 import { Peripheral, PeripheralInfo } from "./types/BleManagerTypes";
 import { NativeEventEmitter } from "./types/ReactNativeTypes";
@@ -18,7 +20,6 @@ import { PlatformOSType } from "./types/ReactNativeTypes";
 import { DEFAULT_ACTION_RESPONSE_TIMEOUT } from "../constants";
 import { CHARACTERISTIC_UUIDS_TO_NAMES } from "../constants";
 import { ANDROD_MAX_MTU } from "../constants";
-import { TRANSPORT_TYPE } from "../transportTypes";
 
 type Characteristic = {
   characteristicUUID: string;
@@ -36,7 +37,7 @@ type Options = {
   platform: PlatformOSType;
 };
 
-export class ReactNativeTransport {
+export class ReactNativeTransport implements BluetoothTransport {
   type: TRANSPORT_TYPE = TRANSPORT_TYPE.REACT_NATIVE;
   BleManager: BleManager;
   bleManagerEmitter: NativeEventEmitter;
