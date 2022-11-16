@@ -259,6 +259,13 @@ export class WebBluetoothTransport implements BluetoothTransport {
       }),
       map((event: any): string => {
         const buffer: Uint8Array = event.target.value;
+        // this.addLog(
+        //   `Received chunk for ${characteristicName} characteristic: \n${decode(
+        //     this.type,
+        //     buffer
+        //   )}`
+        // );
+
         return decode(this.type, buffer);
       }),
       stitchChunks({ delimiter: BLUETOOTH_CHUNK_DELIMITER }),
@@ -292,20 +299,22 @@ export class WebBluetoothTransport implements BluetoothTransport {
     characteristicName: string,
     parse: boolean = false
   ): Promise<any> {
-    this.addLog(`Reading characteristic: ${characteristicName}`);
-
-    const characteristic: BluetoothRemoteGATTCharacteristic =
-      await this.getCharacteristicByName(characteristicName);
-
-    if (!characteristic) {
-      this.addLog(`Did not fund ${characteristicName} characteristic`);
-
-      return Promise.reject(
-        `Did not find characteristic by the name: ${characteristicName}`
-      );
-    }
-
     try {
+      this.addLog(`Reading characteristic: ${characteristicName}`);
+
+      const characteristic: BluetoothRemoteGATTCharacteristic =
+        await this.getCharacteristicByName(characteristicName);
+
+      if (!characteristic) {
+        this.addLog(
+          `Did not fund ${characteristicName} characteristic`
+        );
+
+        return Promise.reject(
+          `Did not find characteristic by the name: ${characteristicName}`
+        );
+      }
+
       const value: unknown = await characteristic.readValue();
       const uint8Array = value as Uint8Array;
       const decodedValue: string = decode(this.type, uint8Array);
@@ -317,7 +326,9 @@ export class WebBluetoothTransport implements BluetoothTransport {
 
       return data;
     } catch (error) {
-      return Promise.reject(error.message);
+      return Promise.reject(
+        `Error reading characteristic: ${error.message}`
+      );
     }
   }
 
@@ -340,9 +351,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
 
     const encoded = encode(this.type, data);
 
-    await characteristic.writeValueWithoutResponse(
-      encoded as Uint8Array
-    );
+    await characteristic.writeValueWithResponse(encoded as Uint8Array);
   }
 
   _addPendingAction(actionId: number): void {

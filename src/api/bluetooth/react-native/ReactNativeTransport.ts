@@ -458,7 +458,7 @@ export class ReactNativeTransport implements BluetoothTransport {
 
     const encoded = encode(this.type, data);
 
-    await this.BleManager.writeWithoutResponse(
+    await this.BleManager.write(
       peripheralId,
       serviceUUID,
       characteristicUUID,
