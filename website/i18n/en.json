@@ -92,8 +92,8 @@
         "sidebar_label": "Kinesis"
       },
       "reference/interfaces/notionoptions": {
-        "title": "NotionOptions",
-        "sidebar_label": "NotionOptions"
+        "title": "SDKOptions",
+        "sidebar_label": "SDKOptions"
       },
       "reference/interfaces/powerbyband": {
         "title": "PowerByBand",

@@ -1,9 +1,6 @@
 import { pipe, from, Observable, UnaryFunction } from "rxjs";
 import { mergeMap, map } from "rxjs/operators";
-import {
-  epoch,
-  addInfo
-} from "@neurosity/pipes/dist/esm/eeg-pipes.mjs";
+import { epoch, addInfo } from "@neurosity/pipes/dist/esm/eeg-pipes.mjs";
 
 import { Sample, CSVSample } from "../../../types/sample";
 import { Epoch } from "../../../types/epoch";
@@ -43,9 +40,7 @@ export function csvBufferToEpoch(
  */
 export function csvBufferToSamples(): UnaryFunction<any, any> {
   return pipe(
-    mergeMap(
-      (samples: CSVSample[]): Observable<CSVSample> => from(samples)
-    ),
+    mergeMap((samples: CSVSample[]): Observable<CSVSample> => from(samples)),
     map(
       ([timestamp, ...data]: CSVSample): Sample => ({
         timestamp,

@@ -1,9 +1,4 @@
-import {
-  Observable,
-  BehaviorSubject,
-  fromEventPattern,
-  EMPTY
-} from "rxjs";
+import { Observable, BehaviorSubject, fromEventPattern, EMPTY } from "rxjs";
 import { switchMap, filter, shareReplay } from "rxjs/operators";
 import { FirebaseApp, FirebaseUser, FirebaseDevice } from "./firebase";
 import { Timesync } from "../timesync";
@@ -13,13 +8,10 @@ import { filterInternalKeys } from "../utils/filterInternalKeys";
 import { Client } from "../types/client";
 import { Actions } from "../types/actions";
 import { Metrics } from "../types/metrics";
-import { NotionOptions } from "../types/options";
+import { SDKOptions } from "../types/options";
 import { SkillsClient, DeviceSkill } from "../types/skill";
-import {
-  Credentials,
-  CustomToken,
-  EmailAndPassword
-} from "../types/credentials";
+import { Credentials, CustomToken } from "../types/credentials";
+import { EmailAndPassword } from "../types/credentials";
 import { ChangeSettings } from "../types/settings";
 import { Subscription } from "../types/subscriptions";
 import { DeviceStatus } from "../types/status";
@@ -29,19 +21,15 @@ import { OAuthRemoveResponse } from "../types/oauth";
 import { Experiment } from "../types/experiment";
 import { TransferDeviceOptions } from "../utils/transferDevice";
 
-export {
-  credentialWithLink,
-  createUser,
-  SERVER_TIMESTAMP
-} from "./firebase";
+export { credentialWithLink, createUser, SERVER_TIMESTAMP } from "./firebase";
 
 /**
  * @hidden
  */
-export class ApiClient implements Client {
+export class CloudClient implements Client {
   public user;
   public userClaims;
-  protected options: NotionOptions;
+  protected options: SDKOptions;
   protected firebaseApp: FirebaseApp;
   protected firebaseUser: FirebaseUser;
   protected firebaseDevice: FirebaseDevice;
@@ -54,7 +42,7 @@ export class ApiClient implements Client {
   private _selectedDevice: BehaviorSubject<DeviceInfo | null> =
     new BehaviorSubject(undefined);
 
-  constructor(options: NotionOptions) {
+  constructor(options: SDKOptions) {
     this.options = options;
     this.subscriptionManager = new SubscriptionManager();
     this.firebaseApp = new FirebaseApp(options);
@@ -88,9 +76,7 @@ export class ApiClient implements Client {
       if (this.options.timesync) {
         this.timesync = new Timesync({
           status$: this.status(),
-          getTimesync: this.firebaseDevice.getTimesync.bind(
-            this.firebaseDevice
-          )
+          getTimesync: this.firebaseDevice.getTimesync.bind(this.firebaseDevice)
         });
       }
     });
@@ -207,9 +193,7 @@ export class ApiClient implements Client {
     }
   }
 
-  public async transferDevice(
-    options: TransferDeviceOptions
-  ): Promise<void> {
+  public async transferDevice(options: TransferDeviceOptions): Promise<void> {
     const [hasError, error] = await this.firebaseUser
       .transferDevice(options)
       .then(() => [false])
@@ -257,8 +241,7 @@ export class ApiClient implements Client {
 
         const [deviceKey, deviceValue] = deviceSelector;
         return (
-          JSON.stringify(device?.[deviceKey]) ===
-          JSON.stringify(deviceValue)
+          JSON.stringify(device?.[deviceKey]) === JSON.stringify(deviceValue)
         );
       });
 
@@ -278,9 +261,7 @@ export class ApiClient implements Client {
     );
 
     if (!hasPermission) {
-      return Promise.reject(
-        `Rejected device access due to permissions.`
-      );
+      return Promise.reject(`Rejected device access due to permissions.`);
     }
 
     this._selectedDevice.next(device);
@@ -337,10 +318,7 @@ export class ApiClient implements Client {
       next: (metricName: string, metricValue: any): void => {
         this.firebaseDevice.nextMetric(metricName, metricValue);
       },
-      on: (
-        subscription: Subscription,
-        callback: Function
-      ): Function => {
+      on: (subscription: Subscription, callback: Function): Function => {
         return this.firebaseDevice.onMetric(subscription, callback);
       },
       subscribe: (subscription: Subscription): Subscription => {
@@ -349,16 +327,10 @@ export class ApiClient implements Client {
         this.subscriptionManager.add(subscriptionCreated);
         return subscriptionCreated;
       },
-      unsubscribe: (
-        subscription: Subscription,
-        listener: Function
-      ): void => {
+      unsubscribe: (subscription: Subscription, listener: Function): void => {
         this.subscriptionManager.remove(subscription);
         this.firebaseDevice.unsubscribeFromMetric(subscription);
-        this.firebaseDevice.removeMetricListener(
-          subscription,
-          listener
-        );
+        this.firebaseDevice.removeMetricListener(subscription, listener);
       }
     };
   }

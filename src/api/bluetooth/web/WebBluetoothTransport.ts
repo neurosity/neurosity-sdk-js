@@ -2,7 +2,7 @@ import { BLUETOOTH_PRIMARY_SERVICE_UUID_HEX } from "@neurosity/ipk";
 import { BLUETOOTH_CHUNK_DELIMITER } from "@neurosity/ipk";
 import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
 import { BLUETOOTH_COMPANY_IDENTIFIER_HEX } from "@neurosity/ipk";
-import { BehaviorSubject, defer, Subject, timer } from "rxjs";
+import { BehaviorSubject, defer, firstValueFrom, Subject, timer } from "rxjs";
 import { fromEventPattern, Observable, NEVER } from "rxjs";
 import { switchMap, map, filter } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged } from "rxjs/operators";
@@ -31,16 +31,12 @@ export class WebBluetoothTransport implements BluetoothTransport {
   autoReconnectEnabled$ = new BehaviorSubject<boolean>(true);
   pendingActions$ = new BehaviorSubject<any[]>([]);
   logs$ = new Subject<string>();
-  onDisconnected$: Observable<void> = this._onDisconnected().pipe(
-    share()
+  onDisconnected$: Observable<void> = this._onDisconnected().pipe(share());
+  connectionStatus$: Observable<STATUS> = this.status$.asObservable().pipe(
+    filter((status) => !!status),
+    distinctUntilChanged(),
+    shareReplay(1)
   );
-  connectionStatus$: Observable<STATUS> = this.status$
-    .asObservable()
-    .pipe(
-      filter((status) => !!status),
-      distinctUntilChanged(),
-      shareReplay(1)
-    );
 
   constructor() {
     if (!isWebBluetoothSupported()) {
@@ -66,6 +62,65 @@ export class WebBluetoothTransport implements BluetoothTransport {
     });
 
     this._autoToggleActionNotifications();
+
+    this._autoConnect("Crown-85A").catch((error) => {
+      console.log(error);
+      this.addLog(`Auto connect: error -> ${error?.message ?? error}`);
+    });
+  }
+
+  async _autoConnect(deviceNickname: string): Promise<void> {
+    try {
+      const [devicesError, devices] = await navigator.bluetooth
+        .getDevices()
+        .then((devices) => [null, devices])
+        .catch((error) => [error, null]);
+
+      if (devicesError) {
+        throw new Error(
+          `failed to get devices: ${devicesError?.message ?? devicesError}`
+        );
+      }
+
+      this.addLog(
+        `Auto connect: found ${devices.length} devices ${devices
+          .map(({ name }) => name)
+          .join(", ")}`
+      );
+
+      const device: BluetoothDevice | undefined = devices.find(
+        (device: BluetoothDevice) => device.name === deviceNickname
+      );
+
+      if (!device) {
+        throw new Error(
+          `couldn't find selected device in the list of paired devices.`
+        );
+      }
+
+      this.addLog(
+        `Auto connect: ${deviceNickname} was detected and previously paired`
+      );
+
+      const abortController = new AbortController();
+      const { signal } = abortController;
+
+      fromDOMEvent(device, "advertisementreceived")
+        .pipe(take(1))
+        .subscribe((event) => {
+          this.addLog(`Advertisement received for ${event.device.name}`);
+
+          abortController.abort();
+
+          this.getServerServiceAndCharacteristics(device).catch((error) => {
+            throw error;
+          });
+        });
+
+      await device.watchAdvertisements({ signal });
+    } catch (error) {
+      return Promise.reject(new Error(error));
+    }
   }
 
   addLog(log: string) {
@@ -81,30 +136,37 @@ export class WebBluetoothTransport implements BluetoothTransport {
     return this.connectionStatus$;
   }
 
-  async connect(): Promise<void> {
+  async connect(deviceNickname?: string): Promise<void> {
     try {
       // requires user gesture
-      this.device = await this.requestDevice();
+      const device: BluetoothDevice = await this.requestDevice(deviceNickname);
 
-      await this.getServerServiceAndCharacteristics();
+      await this.getServerServiceAndCharacteristics(device);
     } catch (error) {
       return Promise.reject(error);
     }
   }
 
-  async requestDevice() {
+  async requestDevice(deviceNickname?: string): Promise<BluetoothDevice> {
     try {
       this.addLog("Requesting Bluetooth Device...");
 
-      const namePrefixes = BLUETOOTH_DEVICE_NAME_PREFIXES.map(
-        (namePrefix) => ({
-          namePrefix
-        })
-      );
+      const prefixes = BLUETOOTH_DEVICE_NAME_PREFIXES.map((namePrefix) => ({
+        namePrefix
+      }));
 
-      this.device = await window.navigator.bluetooth.requestDevice({
+      // Ability to only show selectedDevice if provided
+      const filters = deviceNickname
+        ? [
+            {
+              name: deviceNickname
+            }
+          ]
+        : prefixes;
+
+      const device = await window.navigator.bluetooth.requestDevice({
         filters: [
-          ...namePrefixes,
+          ...filters,
           {
             manufacturerData: [
               {
@@ -116,17 +178,19 @@ export class WebBluetoothTransport implements BluetoothTransport {
         optionalServices: [BLUETOOTH_PRIMARY_SERVICE_UUID_HEX]
       });
 
-      return this.device;
+      return device;
     } catch (error) {
       return Promise.reject(error);
     }
   }
 
-  async getServerServiceAndCharacteristics() {
+  async getServerServiceAndCharacteristics(device: BluetoothDevice) {
     try {
+      this.device = device;
+
       this.status$.next(STATUS.CONNECTING);
 
-      this.server = await this.device.gatt.connect();
+      this.server = await device.gatt.connect();
 
       this.addLog(`Getting service...`);
       this.service = await this.server.getPrimaryService(
@@ -136,8 +200,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
         `Got service ${this.service.uuid}, getting characteristics...`
       );
 
-      const characteristicsList =
-        await this.service.getCharacteristics();
+      const characteristicsList = await this.service.getCharacteristics();
 
       this.addLog(`Got characteristics`);
 
@@ -206,26 +269,24 @@ export class WebBluetoothTransport implements BluetoothTransport {
     const data$ = defer(() =>
       this.getCharacteristicByName(characteristicName)
     ).pipe(
-      switchMap(
-        async (characteristic: BluetoothRemoteGATTCharacteristic) => {
-          if (this.isConnected() && manageNotifications) {
-            try {
-              await characteristic.startNotifications();
-              this.addLog(
-                `Started notifications for ${characteristicName} characteristic`
-              );
-            } catch (error) {
-              this.addLog(
-                `Attemped to stop notifications for ${characteristicName} characteristic: ${
-                  error?.message ?? error
-                }`
-              );
-            }
+      switchMap(async (characteristic: BluetoothRemoteGATTCharacteristic) => {
+        if (this.isConnected() && manageNotifications) {
+          try {
+            await characteristic.startNotifications();
+            this.addLog(
+              `Started notifications for ${characteristicName} characteristic`
+            );
+          } catch (error) {
+            this.addLog(
+              `Attemped to stop notifications for ${characteristicName} characteristic: ${
+                error?.message ?? error
+              }`
+            );
           }
-
-          return characteristic;
         }
-      ),
+
+        return characteristic;
+      }),
       switchMap((characteristic: BluetoothRemoteGATTCharacteristic) => {
         return fromEventPattern(
           (addHandler) => {
@@ -289,9 +350,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
     );
 
     return this.status$.pipe(
-      switchMap((status) =>
-        status === STATUS.CONNECTED ? data$ : NEVER
-      )
+      switchMap((status) => (status === STATUS.CONNECTED ? data$ : NEVER))
     );
   }
 
@@ -306,9 +365,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
         await this.getCharacteristicByName(characteristicName);
 
       if (!characteristic) {
-        this.addLog(
-          `Did not fund ${characteristicName} characteristic`
-        );
+        this.addLog(`Did not fund ${characteristicName} characteristic`);
 
         return Promise.reject(
           `Did not find characteristic by the name: ${characteristicName}`
@@ -326,9 +383,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
 
       return data;
     } catch (error) {
-      return Promise.reject(
-        `Error reading characteristic: ${error.message}`
-      );
+      return Promise.reject(`Error reading characteristic: ${error.message}`);
     }
   }
 
@@ -377,9 +432,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
           status === STATUS.CONNECTED
             ? defer(() => this.getCharacteristicByName("actions")).pipe(
                 switchMap(
-                  (
-                    characteristic: BluetoothRemoteGATTCharacteristic
-                  ) => {
+                  (characteristic: BluetoothRemoteGATTCharacteristic) => {
                     actionsCharacteristic = characteristic;
                     return this.pendingActions$;
                   }
@@ -395,9 +448,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
           started = true;
           try {
             await actionsCharacteristic.startNotifications();
-            this.addLog(
-              `Started notifications for [actions] characteristic`
-            );
+            this.addLog(`Started notifications for [actions] characteristic`);
           } catch (error) {
             this.addLog(
               `Attemped to start notifications for [actions] characteristic: ${
@@ -411,9 +462,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
           started = false;
           try {
             await actionsCharacteristic.stopNotifications();
-            this.addLog(
-              `Stopped notifications for actions characteristic`
-            );
+            this.addLog(`Stopped notifications for actions characteristic`);
           } catch (error) {
             this.addLog(
               `Attemped to stop notifications for [actions] characteristic: ${
@@ -436,13 +485,11 @@ export class WebBluetoothTransport implements BluetoothTransport {
 
     return new Promise(async (resolve, reject) => {
       const characteristic: BluetoothRemoteGATTCharacteristic | void =
-        await this.getCharacteristicByName(characteristicName).catch(
-          () => {
-            reject(
-              `Did not find characteristic by the name: ${characteristicName}`
-            );
-          }
-        );
+        await this.getCharacteristicByName(characteristicName).catch(() => {
+          reject(
+            `Did not find characteristic by the name: ${characteristicName}`
+          );
+        });
 
       if (!characteristic) {
         return;
@@ -479,12 +526,10 @@ export class WebBluetoothTransport implements BluetoothTransport {
           });
 
         // register action by writing
-        this.writeCharacteristic(characteristicName, payload).catch(
-          (error) => {
-            this._removePendingAction(actionId);
-            reject(error.message);
-          }
-        );
+        this.writeCharacteristic(characteristicName, payload).catch((error) => {
+          this._removePendingAction(actionId);
+          reject(error.message);
+        });
       } else {
         this.writeCharacteristic(characteristicName, payload)
           .then(() => {
@@ -496,4 +541,15 @@ export class WebBluetoothTransport implements BluetoothTransport {
       }
     });
   }
+}
+
+function fromDOMEvent(target: any, eventName: any): Observable<any> {
+  return fromEventPattern(
+    (addHandler) => {
+      target.addEventListener(eventName, addHandler);
+    },
+    (removeHandler) => {
+      target.removeEventListener(eventName, removeHandler);
+    }
+  );
 }

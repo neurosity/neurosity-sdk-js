@@ -1,7 +1,7 @@
 import { prodFunctionsBaseUrl } from "./config";
-import { NotionOptions } from "../../types/options";
+import { SDKOptions } from "../../types/options";
 
-export function getFunctionsBaseURL(sdkOptions: NotionOptions) {
+export function getFunctionsBaseURL(sdkOptions: SDKOptions) {
   if (!sdkOptions.emulator) {
     return prodFunctionsBaseUrl;
   }

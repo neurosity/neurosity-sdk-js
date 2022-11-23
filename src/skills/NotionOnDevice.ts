@@ -1,10 +1,10 @@
 import { Notion } from "../Notion";
-import { NotionOptions } from "../types/options";
+import { SDKOptions } from "../types/options";
 import { Skill, SkillInstance } from "../types/skill";
 
 export type NotionOnDevice = Omit<Notion, "skill">;
 
-export interface OnDeviceOptions extends NotionOptions {
+export interface OnDeviceOptions extends SDKOptions {
   skill: Skill;
 }
 
