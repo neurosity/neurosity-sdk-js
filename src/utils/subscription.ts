@@ -1,7 +1,7 @@
 import { metrics } from "@neurosity/ipk";
 
 import * as errors from "../utils/errors";
-import { NotionOptions } from "../types/options";
+import { SDKOptions } from "../types/options";
 
 export const isNotionMetric = (metric: string): boolean =>
   Object.keys(metrics).includes(metric);
@@ -19,7 +19,7 @@ export const hasInvalidLabels = (
 
 export const isMetricDisallowed = (
   metricName: string,
-  options: NotionOptions
+  options: SDKOptions
 ): boolean =>
   "skill" in options &&
   "metrics" in options.skill &&
@@ -28,7 +28,7 @@ export const isMetricDisallowed = (
 export const validate = (
   metric: string,
   labels: string[],
-  options: NotionOptions
+  options: SDKOptions
 ): Error | false => {
   const validLabels = getLabels(metric).join(", ");
 

@@ -2,14 +2,14 @@ import firebase from "firebase/app";
 
 import { FirebaseApp } from "./FirebaseApp";
 import { createDeviceStore } from "./deviceStore";
-import { NotionDependencies } from "../../types/options";
+import { SDKDependencies } from "../../types/options";
 
 const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
 
 type FirebaseDeviceOptions = {
   deviceId: string;
   firebaseApp: FirebaseApp;
-  dependencies: NotionDependencies;
+  dependencies: SDKDependencies;
 };
 
 /**

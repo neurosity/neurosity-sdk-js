@@ -1,10 +1,19 @@
 import { Skill } from "./skill";
 import { SubscriptionManager } from "../subscriptions/SubscriptionManager";
+import { BluetoothTransport } from "../api/bluetooth/BluetoothClient";
 
-export interface NotionOptions {
+export enum STREAMING_MODE {
+  CLOUD_ONLY = "cloud-only",
+  CLOUD_WITH_BLUETOOTH_FALLBACK = "cloud-with-bluetooth-fallback",
+  BLUETOOTH_WITH_CLOUD_FALLBACK = "bluetooth-with-cloud-fallback"
+}
+
+export interface SDKOptions {
   deviceId?: string;
   autoSelectDevice?: boolean;
   timesync?: boolean;
+  bluetoothTransport?: BluetoothTransport;
+  streamingMode?: STREAMING_MODE;
   /**
    * @hidden
    */
@@ -44,6 +53,6 @@ export interface NotionOptions {
 /**
  * @hidden
  */
-export interface NotionDependencies {
+export interface SDKDependencies {
   subscriptionManager: SubscriptionManager;
 }

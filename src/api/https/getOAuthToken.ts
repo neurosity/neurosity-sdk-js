@@ -1,12 +1,12 @@
 import axios from "axios";
 
 import { getFunctionsBaseURL } from "./utils";
-import { NotionOptions } from "../../types/options";
+import { SDKOptions } from "../../types/options";
 import { OAuthQuery, OAuthQueryResult } from "../../types/oauth";
 
 export async function getOAuthToken(
   query: OAuthQuery,
-  sdkOptions: NotionOptions
+  sdkOptions: SDKOptions
 ): Promise<OAuthQueryResult> {
   const baseUrl = getFunctionsBaseURL(sdkOptions);
 

@@ -11,7 +11,7 @@ import { Action } from "../../types/actions";
 import { Epoch } from "../../types/epoch";
 import { STATUS } from "./types";
 
-type BluetoothTransport = WebBluetoothTransport | ReactNativeTransport;
+export type BluetoothTransport = WebBluetoothTransport | ReactNativeTransport;
 
 type IsAuthenticated = boolean;
 type ExpiresIn = number;
@@ -21,7 +21,7 @@ type Options = {
   transport: BluetoothTransport;
 };
 
-export class BluetoothSDK {
+export class BluetoothClient {
   transport: BluetoothTransport;
   deviceInfo: DeviceInfo;
 
@@ -78,16 +78,20 @@ export class BluetoothSDK {
         `onDiscover method is compatibly with the React Native transport only`
       );
     }
+
+    throw new Error(`unknown transport`);
   }
 
   // Argument for React Native only
-  connect(peripheral?: Peripheral) {
+  connect(deviceNicknameORPeripheral?) {
     if (this.transport instanceof ReactNativeTransport) {
-      return this.transport.connect(peripheral);
+      return this.transport.connect(deviceNicknameORPeripheral);
     }
 
     if (this.transport instanceof WebBluetoothTransport) {
-      return this.transport.connect();
+      return deviceNicknameORPeripheral
+        ? this.transport.connect(deviceNicknameORPeripheral)
+        : this.transport.connect();
     }
   }
 
@@ -113,9 +117,7 @@ export class BluetoothSDK {
     return this.transport.readCharacteristic("deviceId");
   }
 
-  _subscribeWhileAuthenticated(
-    characteristicName: string
-  ): Observable<any> {
+  _subscribeWhileAuthenticated(characteristicName: string): Observable<any> {
     return this.isAuthenticated$.pipe(
       distinctUntilChanged(),
       switchMap((isAuthenticated) =>

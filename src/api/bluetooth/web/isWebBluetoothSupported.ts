@@ -1,3 +1,9 @@
+import { isMaybeWebWorkerContext } from "./isMaybeWebWorkerContext";
+
 export function isWebBluetoothSupported() {
-  return window?.navigator?.bluetooth;
+  return (
+    typeof window !== "undefined" &&
+    window?.navigator?.bluetooth &&
+    !isMaybeWebWorkerContext()
+  );
 }

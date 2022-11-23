@@ -1,12 +1,12 @@
 import axios from "axios";
 
 import { getFunctionsBaseURL } from "./utils";
-import { NotionOptions } from "../../types/options";
+import { SDKOptions } from "../../types/options";
 import { OAuthConfig } from "../../types/oauth";
 
 export function createOAuthURL(
   config: OAuthConfig,
-  sdkOptions: NotionOptions
+  sdkOptions: SDKOptions
 ): Promise<string> {
   const {
     clientId,

@@ -5,7 +5,7 @@ import "firebase/functions";
 import "firebase/firestore";
 
 import { config } from "./config";
-import { NotionOptions } from "../../types/options";
+import { SDKOptions } from "../../types/options";
 
 export const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
 
@@ -16,7 +16,7 @@ export class FirebaseApp {
   protected standalone: boolean;
   public app: firebase.app.App;
 
-  constructor(options: NotionOptions) {
+  constructor(options: SDKOptions) {
     this.app = this.getApp(options.deviceId);
     this.standalone = this.app.name === options.deviceId;
 
@@ -57,7 +57,7 @@ export class FirebaseApp {
     return firebase.initializeApp(config);
   }
 
-  connectEmulators(options: NotionOptions) {
+  connectEmulators(options: SDKOptions) {
     const {
       emulatorHost,
       emulatorAuthPort,

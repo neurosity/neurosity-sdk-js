@@ -1,25 +1,13 @@
-import {
-  Observable,
-  BehaviorSubject,
-  throwError,
-  of,
-  from
-} from "rxjs";
-import { map, share, switchMap } from "rxjs/operators";
-import {
-  ApiClient,
-  credentialWithLink,
-  createUser,
-  SERVER_TIMESTAMP
-} from "./api/index";
-import { NotionOptions } from "./types/options";
+import { Observable, throwError, from } from "rxjs";
+import { ReplaySubject, firstValueFrom } from "rxjs";
+import { map, switchMap } from "rxjs/operators";
+import { CloudClient, createUser } from "./api/index";
+import { credentialWithLink, SERVER_TIMESTAMP } from "./api/index";
+import { SDKOptions, STREAMING_MODE } from "./types/options";
 import { Training } from "./types/training";
 import { SkillInstance } from "./types/skill";
-import {
-  Credentials,
-  EmailAndPassword,
-  CustomToken
-} from "./types/credentials";
+import { Credentials, EmailAndPassword } from "./types/credentials";
+import { CustomToken } from "./types/credentials";
 import { Settings, ChangeSettings } from "./types/settings";
 import { SignalQuality } from "./types/signalQuality";
 import { Kinesis } from "./types/kinesis";
@@ -27,12 +15,7 @@ import { Calm } from "./types/calm";
 import { Focus } from "./types/focus";
 import { getLabels } from "./utils/subscription";
 import { Subscription } from "./types/subscriptions";
-import {
-  BrainwavesLabel,
-  Epoch,
-  PowerByBand,
-  PSD
-} from "./types/brainwaves";
+import { BrainwavesLabel, Epoch, PowerByBand, PSD } from "./types/brainwaves";
 import { Accelerometer } from "./types/accelerometer";
 import { DeviceInfo } from "./types/deviceInfo";
 import { DeviceStatus } from "./types/status";
@@ -41,27 +24,23 @@ import { HapticEffects } from "./types/hapticEffects";
 import * as errors from "./utils/errors";
 import * as platform from "./utils/platform";
 import * as hapticEffects from "./utils/hapticEffects";
-import {
-  validateOAuthScopeForFunctionName,
-  validateOAuthScopeForAction
-} from "./utils/oauth";
+import { validateOAuthScopeForFunctionName } from "./utils/oauth";
+import { validateOAuthScopeForAction } from "./utils/oauth";
 import { createOAuthURL } from "./api/https/createOAuthURL";
 import { getOAuthToken } from "./api/https/getOAuthToken";
-import {
-  OAuthConfig,
-  OAuthQuery,
-  OAuthQueryResult,
-  OAuthRemoveResponse
-} from "./types/oauth";
+import { OAuthConfig, OAuthQuery } from "./types/oauth";
+import { OAuthQueryResult, OAuthRemoveResponse } from "./types/oauth";
 import { UserClaims } from "./types/user";
 import { isNode } from "./utils/is-node";
 import { getMetric } from "./utils/metrics";
 import { Experiment } from "./types/experiment";
 import { TransferDeviceOptions } from "./utils/transferDevice";
+import { BluetoothClient } from "./api/bluetooth";
 
 const defaultOptions = {
   timesync: false,
   autoSelectDevice: true,
+  // streamingMode: STREAMING_MODE.CLOUD_ONLY,
   emulator: false,
   emulatorHost: "localhost",
   emulatorAuthPort: 9099,
@@ -83,12 +62,22 @@ export class Notion {
   /**
    * @hidden
    */
-  protected options: NotionOptions;
+  protected options: SDKOptions;
 
   /**
    * @hidden
    */
-  protected api: ApiClient;
+  protected cloudClient: CloudClient;
+
+  /**
+   * @hidden
+   */
+  protected bluetoothClient: BluetoothClient;
+
+  /**
+   * @hidden
+   */
+  private streamingMode$ = new ReplaySubject<STREAMING_MODE>(1);
 
   /**
    *
@@ -117,13 +106,45 @@ export class Notion {
 
    * @param options
    */
-  constructor(options: NotionOptions = {}) {
+  constructor(options: SDKOptions = {}) {
     this.options = Object.freeze({
       ...defaultOptions,
       ...options
     });
 
-    this.api = new ApiClient(this.options);
+    this.cloudClient = new CloudClient(this.options);
+
+    const { streamingMode, bluetoothTransport } = options;
+
+    if (bluetoothTransport) {
+      this.bluetoothClient = new BluetoothClient({
+        transport: bluetoothTransport
+      });
+    }
+
+    const streamingModeFeaturesBluetooth = [
+      STREAMING_MODE.BLUETOOTH_WITH_CLOUD_FALLBACK,
+      STREAMING_MODE.CLOUD_WITH_BLUETOOTH_FALLBACK
+    ].includes(streamingMode);
+
+    const isInvalidStreamingMode =
+      !Object.values(STREAMING_MODE).includes(streamingMode);
+
+    const isMissingBluetoothTransport =
+      streamingModeFeaturesBluetooth && !bluetoothTransport;
+
+    const shouldDefaultToCloud =
+      !streamingMode || isInvalidStreamingMode || isMissingBluetoothTransport;
+
+    // Default to backwards compatible cloud streaming mode if:
+    // 1. No streaming mode is provided
+    // 2. An invalid streaming mode is provided
+    // 3. A streaming mode containing bluetooth is provided, but without a bluetooth transport
+    if (shouldDefaultToCloud) {
+      this.streamingMode$.next(STREAMING_MODE.CLOUD_ONLY);
+    } else {
+      this.streamingMode$.next(streamingMode);
+    }
   }
 
   /**
@@ -133,7 +154,7 @@ export class Notion {
   private _getMetricDependencies() {
     return {
       options: this.options,
-      api: this.api,
+      cloudClient: this.cloudClient,
       onDeviceChange: this.onDeviceChange.bind(this),
       status: this.status.bind(this)
     };
@@ -152,7 +173,7 @@ export class Notion {
    * @param credentials
    */
   public async login(credentials: Credentials): Promise<void> {
-    return await this.api.login(credentials);
+    return await this.cloudClient.login(credentials);
   }
 
   /**
@@ -165,7 +186,7 @@ export class Notion {
    *
    */
   public async logout(): Promise<void> {
-    return await this.api.logout();
+    return await this.cloudClient.logout();
   }
 
   /**
@@ -173,7 +194,7 @@ export class Notion {
    * Not user facing.
    */
   public __getApp() {
-    return this.api.__getApp();
+    return this.cloudClient.__getApp();
   }
 
   /**
@@ -188,7 +209,7 @@ export class Notion {
    * ```
    */
   public onAuthStateChanged(): Observable<any> {
-    return this.api.onAuthStateChanged();
+    return this.cloudClient.onAuthStateChanged();
   }
 
   /**
@@ -196,17 +217,16 @@ export class Notion {
    * Not user facing yet
    */
   public addDevice(deviceId: string): Promise<void> {
-    const [hasOAuthError, OAuthError] =
-      validateOAuthScopeForFunctionName(
-        this.api.userClaims,
-        "addDevice"
-      );
+    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
+      this.cloudClient.userClaims,
+      "addDevice"
+    );
 
     if (hasOAuthError) {
       return Promise.reject(OAuthError);
     }
 
-    return this.api.addDevice(deviceId);
+    return this.cloudClient.addDevice(deviceId);
   }
 
   /**
@@ -214,17 +234,16 @@ export class Notion {
    * Not user facing yet
    */
   public removeDevice(deviceId: string): Promise<void> {
-    const [hasOAuthError, OAuthError] =
-      validateOAuthScopeForFunctionName(
-        this.api.userClaims,
-        "removeDevice"
-      );
+    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
+      this.cloudClient.userClaims,
+      "removeDevice"
+    );
 
     if (hasOAuthError) {
       return Promise.reject(OAuthError);
     }
 
-    return this.api.removeDevice(deviceId);
+    return this.cloudClient.removeDevice(deviceId);
   }
 
   /**
@@ -232,17 +251,16 @@ export class Notion {
    * Not user facing yet
    */
   public transferDevice(options: TransferDeviceOptions): Promise<void> {
-    const [hasOAuthError, OAuthError] =
-      validateOAuthScopeForFunctionName(
-        this.api.userClaims,
-        "transferDevice"
-      );
+    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
+      this.cloudClient.userClaims,
+      "transferDevice"
+    );
 
     if (hasOAuthError) {
       return Promise.reject(OAuthError);
     }
 
-    return this.api.transferDevice(options);
+    return this.cloudClient.transferDevice(options);
   }
 
   /**
@@ -250,17 +268,16 @@ export class Notion {
    * Not user facing yet
    */
   public onUserDevicesChange(): Observable<DeviceInfo[]> {
-    const [hasOAuthError, OAuthError] =
-      validateOAuthScopeForFunctionName(
-        this.api.userClaims,
-        "onUserDevicesChange"
-      );
+    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
+      this.cloudClient.userClaims,
+      "onUserDevicesChange"
+    );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
     }
 
-    return this.api.onUserDevicesChange();
+    return this.cloudClient.onUserDevicesChange();
   }
 
   /**
@@ -268,7 +285,7 @@ export class Notion {
    * Not user facing yet
    */
   public onUserClaimsChange(): Observable<UserClaims> {
-    return this.api.onUserClaimsChange();
+    return this.cloudClient.onUserClaimsChange();
   }
 
   /**
@@ -282,7 +299,7 @@ export class Notion {
    * ```
    */
   public async getDevices(): Promise<DeviceInfo[]> {
-    return await this.api.getDevices();
+    return await this.cloudClient.getDevices();
   }
 
   /**
@@ -313,17 +330,16 @@ export class Notion {
   public async selectDevice(
     deviceSelector: (devices: DeviceInfo[]) => DeviceInfo
   ): Promise<DeviceInfo> {
-    const [hasOAuthError, OAuthError] =
-      validateOAuthScopeForFunctionName(
-        this.api.userClaims,
-        "selectDevice"
-      );
+    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
+      this.cloudClient.userClaims,
+      "selectDevice"
+    );
 
     if (hasOAuthError) {
       return Promise.reject(OAuthError);
     }
 
-    return await this.api.selectDevice(deviceSelector);
+    return await this.cloudClient.selectDevice(deviceSelector);
   }
 
   /**
@@ -336,17 +352,16 @@ export class Notion {
    */
 
   public async getSelectedDevice(): Promise<DeviceInfo> {
-    const [hasOAuthError, OAuthError] =
-      validateOAuthScopeForFunctionName(
-        this.api.userClaims,
-        "getSelectedDevice"
-      );
+    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
+      this.cloudClient.userClaims,
+      "getSelectedDevice"
+    );
 
     if (hasOAuthError) {
       return Promise.reject(OAuthError);
     }
 
-    return await this.api.getSelectedDevice();
+    return await this.cloudClient.getSelectedDevice();
   }
 
   /**
@@ -355,18 +370,28 @@ export class Notion {
    * ```
    */
   public async getInfo(): Promise<DeviceInfo> {
-    if (!this.api.didSelectDevice()) {
+    if (!this.cloudClient.didSelectDevice()) {
       return Promise.reject(errors.mustSelectDevice);
     }
 
-    const [hasOAuthError, OAuthError] =
-      validateOAuthScopeForFunctionName(this.api.userClaims, "getInfo");
+    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
+      this.cloudClient.userClaims,
+      "getInfo"
+    );
 
     if (hasOAuthError) {
       return Promise.reject(OAuthError);
     }
 
-    return await this.api.getInfo();
+    return await firstValueFrom(
+      this.streamingMode$.pipe(
+        switchMap((streamingMode) =>
+          streamingMode === STREAMING_MODE.CLOUD_ONLY
+            ? this.cloudClient.getInfo()
+            : this.bluetoothClient.getInfo()
+        )
+      )
+    );
   }
 
   /**
@@ -379,17 +404,16 @@ export class Notion {
    * ```
    */
   public onDeviceChange(): Observable<DeviceInfo> {
-    const [hasOAuthError, OAuthError] =
-      validateOAuthScopeForFunctionName(
-        this.api.userClaims,
-        "onDeviceChange"
-      );
+    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
+      this.cloudClient.userClaims,
+      "onDeviceChange"
+    );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
     }
 
-    return this.api.onDeviceChange();
+    return this.cloudClient.onDeviceChange();
   }
 
   /**
@@ -400,7 +424,7 @@ export class Notion {
    * ```
    */
   public async disconnect(): Promise<void> {
-    return await this.api.disconnect();
+    return await this.cloudClient.disconnect();
   }
 
   /**
@@ -408,12 +432,12 @@ export class Notion {
    * Not user facing
    */
   private dispatchAction(action: Action): Promise<Action> {
-    if (!this.api.didSelectDevice()) {
+    if (!this.cloudClient.didSelectDevice()) {
       return Promise.reject(errors.mustSelectDevice);
     }
 
     const [hasOAuthError, OAuthError] = validateOAuthScopeForAction(
-      this.api.userClaims,
+      this.cloudClient.userClaims,
       action
     );
 
@@ -421,7 +445,7 @@ export class Notion {
       return Promise.reject(OAuthError);
     }
 
-    return this.api.actions.dispatch(action);
+    return this.cloudClient.actions.dispatch(action);
   }
 
   /**
@@ -438,14 +462,12 @@ export class Notion {
    * @param label Name the label to inject
    */
   public addMarker(label: string): Promise<Action> {
-    if (!this.api.didSelectDevice()) {
+    if (!this.cloudClient.didSelectDevice()) {
       throw errors.mustSelectDevice;
     }
 
     if (!label) {
-      throw new Error(
-        `${errors.prefix}A label is required for addMarker`
-      );
+      throw new Error(`${errors.prefix}A label is required for addMarker`);
     }
 
     return this.dispatchAction({
@@ -453,7 +475,7 @@ export class Notion {
       action: "add",
       message: {
         label,
-        timestamp: this.api.timestamp
+        timestamp: this.cloudClient.timestamp
       }
     });
   }
@@ -495,7 +517,7 @@ export class Notion {
    */
   public async haptics(effects: any): Promise<any> {
     const metric = "haptics";
-    if (!this.api.didSelectDevice()) {
+    if (!this.cloudClient.didSelectDevice()) {
       return Promise.reject(errors.mustSelectDevice);
     }
 
@@ -513,9 +535,7 @@ export class Notion {
 
     for (const key in effects) {
       if (!Object.keys(newPlatformHapticRequest).includes(key)) {
-        return Promise.reject(
-          errors.locationNotFound(key, modelVersion)
-        );
+        return Promise.reject(errors.locationNotFound(key, modelVersion));
       }
       const singleMotorEffects: string[] = effects[key];
       const maxItems = 7;
@@ -560,8 +580,10 @@ export class Notion {
   public accelerometer(): Observable<Accelerometer> {
     const metric = "accelerometer";
 
-    const [hasOAuthError, OAuthError] =
-      validateOAuthScopeForFunctionName(this.api.userClaims, metric);
+    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
+      this.cloudClient.userClaims,
+      metric
+    );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
@@ -632,11 +654,10 @@ export class Notion {
     label: BrainwavesLabel,
     ...otherLabels: BrainwavesLabel[]
   ): Observable<Epoch | PowerByBand | PSD> {
-    const [hasOAuthError, OAuthError] =
-      validateOAuthScopeForFunctionName(
-        this.api.userClaims,
-        "brainwaves"
-      );
+    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
+      this.cloudClient.userClaims,
+      "brainwaves"
+    );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
@@ -666,8 +687,10 @@ export class Notion {
    * @returns Observable of calm events - awareness/calm alias
    */
   public calm(): Observable<Calm> {
-    const [hasOAuthError, OAuthError] =
-      validateOAuthScopeForFunctionName(this.api.userClaims, "calm");
+    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
+      this.cloudClient.userClaims,
+      "calm"
+    );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
@@ -698,8 +721,10 @@ export class Notion {
   public signalQuality(): Observable<SignalQuality> {
     const metric = "signalQuality";
 
-    const [hasOAuthError, OAuthError] =
-      validateOAuthScopeForFunctionName(this.api.userClaims, metric);
+    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
+      this.cloudClient.userClaims,
+      metric
+    );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
@@ -727,17 +752,16 @@ export class Notion {
    * @returns Observable of `settings` metric events
    */
   public settings(): Observable<Settings> {
-    const [hasOAuthError, OAuthError] =
-      validateOAuthScopeForFunctionName(
-        this.api.userClaims,
-        "settings"
-      );
+    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
+      this.cloudClient.userClaims,
+      "settings"
+    );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
     }
 
-    return this.api.observeNamespace("settings");
+    return this.cloudClient.observeNamespace("settings");
   }
 
   /**
@@ -757,8 +781,10 @@ export class Notion {
    * @returns Observable of focus events - awareness/focus alias
    */
   public focus(): Observable<Focus> {
-    const [hasOAuthError, OAuthError] =
-      validateOAuthScopeForFunctionName(this.api.userClaims, "focus");
+    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
+      this.cloudClient.userClaims,
+      "focus"
+    );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
@@ -775,14 +801,13 @@ export class Notion {
    * @param labels Name of metric properties to filter by
    * @returns Observable of kinesis metric events
    */
-  public kinesis(
-    label: string,
-    ...otherLabels: string[]
-  ): Observable<Kinesis> {
+  public kinesis(label: string, ...otherLabels: string[]): Observable<Kinesis> {
     const metric = "kinesis";
 
-    const [hasOAuthError, OAuthError] =
-      validateOAuthScopeForFunctionName(this.api.userClaims, metric);
+    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
+      this.cloudClient.userClaims,
+      metric
+    );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
@@ -799,14 +824,13 @@ export class Notion {
    * @param labels Name of metric properties to filter by
    * @returns Observable of predictions metric events
    */
-  public predictions(
-    label: string,
-    ...otherLabels: string[]
-  ): Observable<any> {
+  public predictions(label: string, ...otherLabels: string[]): Observable<any> {
     const metric = "predictions";
 
-    const [hasOAuthError, OAuthError] =
-      validateOAuthScopeForFunctionName(this.api.userClaims, metric);
+    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
+      this.cloudClient.userClaims,
+      metric
+    );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
@@ -834,14 +858,16 @@ export class Notion {
    * @returns Observable of `status` metric events
    */
   public status(): Observable<DeviceStatus> {
-    const [hasOAuthError, OAuthError] =
-      validateOAuthScopeForFunctionName(this.api.userClaims, "status");
+    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
+      this.cloudClient.userClaims,
+      "status"
+    );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
     }
 
-    return this.api.status();
+    return this.cloudClient.status();
   }
 
   /**
@@ -861,21 +887,20 @@ export class Notion {
    * ```
    */
   public changeSettings(settings: ChangeSettings): Promise<void> {
-    if (!this.api.didSelectDevice()) {
+    if (!this.cloudClient.didSelectDevice()) {
       return Promise.reject(errors.mustSelectDevice);
     }
 
-    const [hasOAuthError, OAuthError] =
-      validateOAuthScopeForFunctionName(
-        this.api.userClaims,
-        "changeSettings"
-      );
+    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
+      this.cloudClient.userClaims,
+      "changeSettings"
+    );
 
     if (hasOAuthError) {
       return Promise.reject(OAuthError);
     }
 
-    return this.api.changeSettings(settings);
+    return this.cloudClient.changeSettings(settings);
   }
 
   /**
@@ -901,22 +926,22 @@ export class Notion {
        * @category Training
        */
       record: (training) => {
-        if (!this.api.didSelectDevice()) {
+        if (!this.cloudClient.didSelectDevice()) {
           throw errors.mustSelectDevice;
         }
 
         const userId =
-          this.api.user && "uid" in this.api.user
-            ? this.api.user.uid
+          this.cloudClient.user && "uid" in this.cloudClient.user
+            ? this.cloudClient.user.uid
             : null;
         const message = {
           fit: false,
           baseline: false,
-          timestamp: this.api.timestamp,
+          timestamp: this.cloudClient.timestamp,
           ...training,
           userId
         };
-        this.api.actions.dispatch({
+        this.cloudClient.actions.dispatch({
           command: "training",
           action: "record",
           message
@@ -927,11 +952,11 @@ export class Notion {
        * @category Training
        */
       stop: (training) => {
-        if (!this.api.didSelectDevice()) {
+        if (!this.cloudClient.didSelectDevice()) {
           throw errors.mustSelectDevice;
         }
 
-        this.api.actions.dispatch({
+        this.cloudClient.actions.dispatch({
           command: "training",
           action: "stop",
           message: {
@@ -944,11 +969,11 @@ export class Notion {
        * @category Training
        */
       stopAll: () => {
-        if (!this.api.didSelectDevice()) {
+        if (!this.cloudClient.didSelectDevice()) {
           throw errors.mustSelectDevice;
         }
 
-        this.api.actions.dispatch({
+        this.cloudClient.actions.dispatch({
           command: "training",
           action: "stopAll",
           message: {}
@@ -962,7 +987,7 @@ export class Notion {
    * Proof of Concept for disconnecting db
    */
   public goOffline(): void {
-    this.api.goOffline();
+    this.cloudClient.goOffline();
   }
 
   /**
@@ -970,7 +995,7 @@ export class Notion {
    * Proof of Concept for resuming db connection
    */
   public goOnline(): void {
-    this.api.goOnline();
+    this.cloudClient.goOnline();
   }
 
   /**
@@ -983,7 +1008,7 @@ export class Notion {
    * @returns user credential
    */
   public createAccount(credentials: EmailAndPassword) {
-    return this.api.createAccount(credentials);
+    return this.cloudClient.createAccount(credentials);
   }
 
   /**
@@ -993,7 +1018,7 @@ export class Notion {
    * Removes all devices from an account and then deletes the account
    */
   public deleteAccount() {
-    return this.api.deleteAccount();
+    return this.cloudClient.deleteAccount();
   }
 
   /**
@@ -1005,7 +1030,7 @@ export class Notion {
    * @returns token
    */
   public createBluetoothToken(): Promise<string> {
-    return this.api.createBluetoothToken();
+    return this.cloudClient.createBluetoothToken();
   }
 
   /**
@@ -1017,7 +1042,7 @@ export class Notion {
    * @returns custom token
    */
   public createCustomToken(): Promise<CustomToken> {
-    return this.api.createCustomToken();
+    return this.cloudClient.createCustomToken();
   }
 
   /**
@@ -1031,12 +1056,10 @@ export class Notion {
    */
   public getTimesyncOffset(): number {
     if (!this.options.timesync) {
-      console.warn(
-        `getTimesyncOffset() requires options.timesync to be true.`
-      );
+      console.warn(`getTimesyncOffset() requires options.timesync to be true.`);
     }
 
-    return this.options.timesync ? this.api.getTimesyncOffset() : 0;
+    return this.options.timesync ? this.cloudClient.getTimesyncOffset() : 0;
   }
 
   /**
@@ -1159,7 +1182,7 @@ export class Notion {
    * @returns custom token
    */
   public removeOAuthAccess(): Promise<OAuthRemoveResponse> {
-    return this.api.removeOAuthAccess();
+    return this.cloudClient.removeOAuthAccess();
   }
 
   /**
@@ -1173,11 +1196,11 @@ export class Notion {
    * @returns Skill instance
    */
   public async skill(bundleId: string): Promise<SkillInstance> {
-    if (!this.api.didSelectDevice()) {
+    if (!this.cloudClient.didSelectDevice()) {
       return Promise.reject(errors.mustSelectDevice);
     }
 
-    const skillData = await this.api.skills.get(bundleId);
+    const skillData = await this.cloudClient.skills.get(bundleId);
 
     if (skillData === null) {
       return Promise.reject(
@@ -1191,7 +1214,7 @@ export class Notion {
       metric: (label: string) => {
         const metricName = `skill~${skillData.id}~${label}`;
         const subscription = new Observable((observer) => {
-          const subscription: Subscription = this.api.metrics.subscribe(
+          const subscription: Subscription = this.cloudClient.metrics.subscribe(
             {
               metric: metricName,
               labels: [label],
@@ -1199,7 +1222,7 @@ export class Notion {
             }
           );
 
-          const listener = this.api.metrics.on(
+          const listener = this.cloudClient.metrics.on(
             subscription,
             (...data: any) => {
               observer.next(...data);
@@ -1207,13 +1230,13 @@ export class Notion {
           );
 
           return () => {
-            this.api.metrics.unsubscribe(subscription, listener);
+            this.cloudClient.metrics.unsubscribe(subscription, listener);
           };
         }).pipe(map((metric) => metric[label]));
 
         Object.defineProperty(subscription, "next", {
           value: (metricValue: { [label: string]: any }): void => {
-            this.api.metrics.next(metricName, {
+            this.cloudClient.metrics.next(metricName, {
               [label]: metricValue
             });
           }
@@ -1248,7 +1271,7 @@ export class Notion {
    * @returns Observable of `experiments` events
    */
   public onUserExperiments(): Observable<Experiment[]> {
-    return this.api.onUserExperiments();
+    return this.cloudClient.onUserExperiments();
   }
 
   /**
@@ -1262,6 +1285,6 @@ export class Notion {
    * @returns void
    */
   public deleteUserExperiment(experimentId: string): Promise<void> {
-    return this.api.deleteUserExperiment(experimentId);
+    return this.cloudClient.deleteUserExperiment(experimentId);
   }
 }

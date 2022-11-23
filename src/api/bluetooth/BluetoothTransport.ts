@@ -4,12 +4,16 @@ import { STATUS, TRANSPORT_TYPE } from "./types";
 import { Action } from "../../types/actions";
 import { Peripheral } from "./react-native/types/BleManagerTypes";
 
+type DeviceNicknameOrPeripheral = string | Peripheral;
+
 /**
  * @hidden
  */
 export interface BluetoothTransport {
   type: TRANSPORT_TYPE;
-  connect(peripheral?: Peripheral): Promise<void>;
+  connect(
+    deviceNicknameORPeripheral?: DeviceNicknameOrPeripheral
+  ): Promise<void>;
   disconnect(): Promise<void>;
   connectionStatus(): Observable<STATUS>;
   requestDevice?(): any;
@@ -22,15 +26,9 @@ export interface BluetoothTransport {
     manageNotifications?: boolean;
   }): Observable<any>;
 
-  readCharacteristic(
-    characteristicName: string,
-    parse?: boolean
-  ): Promise<any>;
+  readCharacteristic(characteristicName: string, parse?: boolean): Promise<any>;
 
-  writeCharacteristic(
-    characteristicName: string,
-    data: string
-  ): Promise<void>;
+  writeCharacteristic(characteristicName: string, data: string): Promise<void>;
 
   dispatchAction(args: {
     characteristicName: string;

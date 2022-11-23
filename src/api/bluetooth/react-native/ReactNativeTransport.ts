@@ -51,23 +51,18 @@ export class ReactNativeTransport implements BluetoothTransport {
   autoReconnectEnabled$ = new BehaviorSubject<boolean>(true);
   pendingActions$ = new BehaviorSubject<any[]>([]);
   logs$ = new Subject<string>();
-  onDisconnected$: Observable<void> = this._onDisconnected().pipe(
-    share()
+  onDisconnected$: Observable<void> = this._onDisconnected().pipe(share());
+  connectionStatus$: Observable<STATUS> = this.status$.asObservable().pipe(
+    filter((status) => !!status),
+    distinctUntilChanged(),
+    shareReplay(1)
   );
-  connectionStatus$: Observable<STATUS> = this.status$
-    .asObservable()
-    .pipe(
-      filter((status) => !!status),
-      distinctUntilChanged(),
-      shareReplay(1)
-    );
 
   constructor(options: Options) {
     const { BleManager, bleManagerEmitter, platform } = options;
 
     if (!BleManager) {
-      const errorMessage =
-        "React Native option: BleManager not provided.";
+      const errorMessage = "React Native option: BleManager not provided.";
       this.addLog(errorMessage);
       throw new Error(errorMessage);
     }
@@ -80,8 +75,7 @@ export class ReactNativeTransport implements BluetoothTransport {
     }
 
     if (!platform) {
-      const errorMessage =
-        "React Native option: platform not provided.";
+      const errorMessage = "React Native option: platform not provided.";
       this.addLog(errorMessage);
       throw new Error(errorMessage);
     }
@@ -96,9 +90,7 @@ export class ReactNativeTransport implements BluetoothTransport {
         this.addLog(`BleManger started`);
       })
       .catch((error) => {
-        this.addLog(
-          `BleManger failed to start. ${error?.message ?? error}`
-        );
+        this.addLog(`BleManger failed to start. ${error?.message ?? error}`);
       });
 
     this.status$.asObservable().subscribe((status) => {
@@ -163,9 +155,7 @@ export class ReactNativeTransport implements BluetoothTransport {
           subscriber.next();
         });
       } catch (error) {
-        this.addLog(
-          `BleManger scan failed. ${error?.message ?? error}`
-        );
+        this.addLog(`BleManger scan failed. ${error?.message ?? error}`);
         subscriber.error(error);
       }
 
@@ -179,11 +169,9 @@ export class ReactNativeTransport implements BluetoothTransport {
       this.onDisconnected$
     );
 
-    return onScan$.pipe(
+    const devices$ = onScan$.pipe(
       switchMap(() =>
-        this._fromEvent("BleManagerDiscoverPeripheral").pipe(
-          takeUntil(onStop$)
-        )
+        this._fromEvent("BleManagerDiscoverPeripheral").pipe(takeUntil(onStop$))
       ),
       // Filter out devices that are not Neurosity devices
       filter((peripheral: Peripheral) => {
@@ -207,11 +195,11 @@ export class ReactNativeTransport implements BluetoothTransport {
           [peripheral.id]: peripheral
         };
       }, {}),
-      distinctUntilChanged(
-        (a, b) => JSON.stringify(a) === JSON.stringify(b)
-      ),
+      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
       map((peripheralMap): Peripheral[] => Object.values(peripheralMap))
     );
+
+    return devices$;
   }
 
   async connect(peripheral: Peripheral): Promise<void> {
@@ -268,15 +256,10 @@ export class ReactNativeTransport implements BluetoothTransport {
 
         if (this.platform === "android") {
           this.addLog(`Setting Android MTU to ${ANDROID_MAX_MTU}`);
-          await this.BleManager.requestMTU(
-            peripheral.id,
-            ANDROID_MAX_MTU
-          );
+          await this.BleManager.requestMTU(peripheral.id, ANDROID_MAX_MTU);
         }
 
-        this.addLog(
-          `Successfully connected to peripheral ${peripheral.id}`
-        );
+        this.addLog(`Successfully connected to peripheral ${peripheral.id}`);
 
         this.status$.next(STATUS.CONNECTED);
 
@@ -503,9 +486,7 @@ export class ReactNativeTransport implements BluetoothTransport {
               serviceUUID,
               characteristicUUID
             );
-            this.addLog(
-              `Started notifications for [actions] characteristic`
-            );
+            this.addLog(`Started notifications for [actions] characteristic`);
           } catch (error) {
             this.addLog(
               `Attemped to start notifications for [actions] characteristic: ${
@@ -523,9 +504,7 @@ export class ReactNativeTransport implements BluetoothTransport {
               serviceUUID,
               characteristicUUID
             );
-            this.addLog(
-              `Stopped notifications for actions characteristic`
-            );
+            this.addLog(`Stopped notifications for actions characteristic`);
           } catch (error) {
             this.addLog(
               `Attemped to stop notifications for [actions] characteristic: ${
@@ -578,12 +557,10 @@ export class ReactNativeTransport implements BluetoothTransport {
           });
 
         // register action by writing
-        this.writeCharacteristic(characteristicName, payload).catch(
-          (error) => {
-            this._removePendingAction(actionId);
-            reject(error.message);
-          }
-        );
+        this.writeCharacteristic(characteristicName, payload).catch((error) => {
+          this._removePendingAction(actionId);
+          reject(error.message);
+        });
       } else {
         this.writeCharacteristic(characteristicName, payload)
           .then(() => {
