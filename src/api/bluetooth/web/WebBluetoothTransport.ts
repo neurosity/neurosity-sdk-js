@@ -2,7 +2,7 @@ import { BLUETOOTH_PRIMARY_SERVICE_UUID_HEX } from "@neurosity/ipk";
 import { BLUETOOTH_CHUNK_DELIMITER } from "@neurosity/ipk";
 import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
 import { BLUETOOTH_COMPANY_IDENTIFIER_HEX } from "@neurosity/ipk";
-import { BehaviorSubject, defer, firstValueFrom, Subject, timer } from "rxjs";
+import { BehaviorSubject, defer, Subject, timer } from "rxjs";
 import { fromEventPattern, Observable, NEVER } from "rxjs";
 import { switchMap, map, filter } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged } from "rxjs/operators";
@@ -58,11 +58,13 @@ export class WebBluetoothTransport implements BluetoothTransport {
       if (this.autoReconnectEnabled$.getValue()) {
         // this.addLog(`Attempting to reconnect...`);
         //this.getServerServiceAndCharacteristics();
+        this._autoConnect("Crown-85A"); // @TODO: get via selectedDevice
       }
     });
 
     this._autoToggleActionNotifications();
 
+    // @TODO: get via selectedDevice
     this._autoConnect("Crown-85A").catch((error) => {
       console.log(error);
       this.addLog(`Auto connect: error -> ${error?.message ?? error}`);
@@ -88,7 +90,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
           .join(", ")}`
       );
 
-      const device: BluetoothDevice | undefined = devices.find(
+      const device = devices.find(
         (device: BluetoothDevice) => device.name === deviceNickname
       );
 
@@ -102,12 +104,13 @@ export class WebBluetoothTransport implements BluetoothTransport {
         `Auto connect: ${deviceNickname} was detected and previously paired`
       );
 
+      this.status$.next(STATUS.CONNECTING);
+
       const abortController = new AbortController();
       const { signal } = abortController;
 
-      fromDOMEvent(device, "advertisementreceived")
-        .pipe(take(1))
-        .subscribe((event) => {
+      fromDOMEvent(device, "advertisementreceived", { once: true }).subscribe(
+        (event) => {
           this.addLog(`Advertisement received for ${event.device.name}`);
 
           abortController.abort();
@@ -115,7 +118,8 @@ export class WebBluetoothTransport implements BluetoothTransport {
           this.getServerServiceAndCharacteristics(device).catch((error) => {
             throw error;
           });
-        });
+        }
+      );
 
       await device.watchAdvertisements({ signal });
     } catch (error) {
@@ -188,7 +192,10 @@ export class WebBluetoothTransport implements BluetoothTransport {
     try {
       this.device = device;
 
-      this.status$.next(STATUS.CONNECTING);
+      const isConnecting = this.status$.getValue() === STATUS.CONNECTING;
+      if (!isConnecting) {
+        this.status$.next(STATUS.CONNECTING);
+      }
 
       this.server = await device.gatt.connect();
 
@@ -218,26 +225,15 @@ export class WebBluetoothTransport implements BluetoothTransport {
   }
 
   _onDisconnected(): Observable<any> {
-    return this.status$.asObservable().pipe(
-      switchMap((status) =>
-        status === STATUS.CONNECTED
-          ? fromEventPattern(
-              (addHandler) => {
-                this.device.addEventListener(
-                  "gattserverdisconnected",
-                  addHandler
-                );
-              },
-              (removeHandler) => {
-                this.device.removeEventListener(
-                  "gattserverdisconnected",
-                  removeHandler
-                );
-              }
-            )
-          : NEVER
-      )
-    );
+    return this.status$
+      .asObservable()
+      .pipe(
+        switchMap((status) =>
+          status === STATUS.CONNECTED
+            ? fromDOMEvent(this.device, "gattserverdisconnected")
+            : NEVER
+        )
+      );
   }
 
   async disconnect(): Promise<void> {
@@ -288,14 +284,11 @@ export class WebBluetoothTransport implements BluetoothTransport {
         return characteristic;
       }),
       switchMap((characteristic: BluetoothRemoteGATTCharacteristic) => {
-        return fromEventPattern(
-          (addHandler) => {
-            characteristic.addEventListener(
-              "characteristicvaluechanged",
-              addHandler
-            );
-          },
-          async (removeHandler) => {
+        return fromDOMEvent(
+          characteristic,
+          "characteristicvaluechanged",
+          {},
+          async () => {
             if (this.isConnected() && manageNotifications) {
               try {
                 await characteristic.stopNotifications();
@@ -310,11 +303,6 @@ export class WebBluetoothTransport implements BluetoothTransport {
                 );
               }
             }
-
-            characteristic.removeEventListener(
-              "characteristicvaluechanged",
-              removeHandler
-            );
           }
         );
       }),
@@ -543,13 +531,24 @@ export class WebBluetoothTransport implements BluetoothTransport {
   }
 }
 
-function fromDOMEvent(target: any, eventName: any): Observable<any> {
-  return fromEventPattern(
+function fromDOMEvent(
+  target: any,
+  eventName: any,
+  options: any = {},
+  beforeRemove?: () => Promise<void>
+): Observable<any> {
+  const events$ = fromEventPattern(
     (addHandler) => {
-      target.addEventListener(eventName, addHandler);
+      target.addEventListener(eventName, addHandler, options);
     },
-    (removeHandler) => {
+    async (removeHandler) => {
+      if (beforeRemove) {
+        await beforeRemove();
+      }
+
       target.removeEventListener(eventName, removeHandler);
     }
   );
+
+  return options?.once ? events$.pipe(take(1)) : events$;
 }
