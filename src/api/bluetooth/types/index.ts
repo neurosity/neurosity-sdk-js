@@ -18,6 +18,7 @@ export type SubscribeOptions = {
  * @hidden
  */
 export enum STATUS {
+  DISCOVERING = "discovering",
   CONNECTED = "connected",
   CONNECTING = "connecting",
   DISCONNECTING = "disconnecting",
