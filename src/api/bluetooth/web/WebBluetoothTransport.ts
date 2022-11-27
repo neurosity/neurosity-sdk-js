@@ -90,7 +90,9 @@ export class WebBluetoothTransport implements BluetoothTransport {
           .join(", ")}`
       );
 
-      const device = devices.find(
+      // @important - Using `findLast` instead of `find` because somehow the browser
+      // is finding multiple peripherals with the same name
+      const device = devices.findLast(
         (device: BluetoothDevice) => device.name === deviceNickname
       );
 
@@ -104,7 +106,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
         `Auto connect: ${deviceNickname} was detected and previously paired`
       );
 
-      this.status$.next(STATUS.CONNECTING);
+      this.status$.next(STATUS.DISCOVERING);
 
       const abortController = new AbortController();
       const { signal } = abortController;
@@ -121,9 +123,9 @@ export class WebBluetoothTransport implements BluetoothTransport {
         }
       );
 
-      await device.watchAdvertisements({ signal });
+      device.watchAdvertisements({ signal });
     } catch (error) {
-      return Promise.reject(new Error(error));
+      return Promise.reject(error);
     }
   }
 
