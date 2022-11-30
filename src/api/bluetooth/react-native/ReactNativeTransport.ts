@@ -169,7 +169,7 @@ export class ReactNativeTransport implements BluetoothTransport {
       this.onDisconnected$
     );
 
-    const devices$ = onScan$.pipe(
+    const peripherals$ = onScan$.pipe(
       switchMap(() =>
         this._fromEvent("BleManagerDiscoverPeripheral").pipe(takeUntil(onStop$))
       ),
@@ -196,10 +196,11 @@ export class ReactNativeTransport implements BluetoothTransport {
         };
       }, {}),
       distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
-      map((peripheralMap): Peripheral[] => Object.values(peripheralMap))
+      map((peripheralMap): Peripheral[] => Object.values(peripheralMap)),
+      share()
     );
 
-    return devices$;
+    return peripherals$;
   }
 
   async connect(peripheral: Peripheral): Promise<void> {
