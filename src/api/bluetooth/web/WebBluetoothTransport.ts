@@ -106,7 +106,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
         `Auto connect: ${deviceNickname} was detected and previously paired`
       );
 
-      this.status$.next(STATUS.DISCOVERING);
+      this.status$.next(STATUS.SCANNING);
 
       const abortController = new AbortController();
       const { signal } = abortController;
