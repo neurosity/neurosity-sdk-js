@@ -51,7 +51,7 @@
   },
   "homepage": "https://docs.neurosity.co",
   "dependencies": {
-    "@neurosity/ipk": "^2.11.0",
+    "@neurosity/ipk": "^2.12.0",
     "axios": "^0.25.0",
     "firebase": "^8.10.0",
     "outliers": "0.0.3",
