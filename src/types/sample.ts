@@ -8,6 +8,7 @@ export type Sample = {
   timestamp: number;
   count?: number;
   marker?: Marker;
+  info?: any;
 };
 
 /**
