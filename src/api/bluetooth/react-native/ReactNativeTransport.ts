@@ -247,13 +247,7 @@ export class ReactNativeTransport implements BluetoothTransport {
           ])
         );
 
-        this.addLog(
-          `Got characteristics. ${JSON.stringify(
-            this.characteristicsByName,
-            null,
-            2
-          )}`
-        );
+        this.addLog(`Got characteristics.`);
 
         if (this.platform === "android") {
           this.addLog(`Setting Android MTU to ${ANDROID_MAX_MTU}`);
@@ -360,9 +354,12 @@ export class ReactNativeTransport implements BluetoothTransport {
             }
           );
         }),
-        map(({ value }: { value: number[] }): string => {
-          return decode(this.type, value);
-        }),
+        // @bug-fix: the ble manager lib is returning notifications from other
+        // characteristics so we must filter them
+        filter(({ characteristic }) => characteristic === characteristicUUID),
+        map(({ value }: { value: number[]; characteristic: string }): string =>
+          decode(this.type, value)
+        ),
         stitchChunks({ delimiter: BLUETOOTH_CHUNK_DELIMITER }),
         map((payload: any) => {
           try {
@@ -376,11 +373,7 @@ export class ReactNativeTransport implements BluetoothTransport {
     return this.status$.pipe(
       switchMap((status) =>
         status === STATUS.CONNECTED
-          ? of(this.getCharacteristicByName(characteristicName)).pipe(
-              switchMap((characteristic: Characteristic) =>
-                getData(characteristic)
-              )
-            )
+          ? getData(this.getCharacteristicByName(characteristicName))
           : NEVER
       )
     );
