@@ -2,7 +2,7 @@ import { BLUETOOTH_PRIMARY_SERVICE_UUID_STRING } from "@neurosity/ipk";
 import { BLUETOOTH_CHUNK_DELIMITER } from "@neurosity/ipk";
 import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
 import { BehaviorSubject, defer, Subject, timer } from "rxjs";
-import { fromEventPattern, Observable, of, race, NEVER } from "rxjs";
+import { fromEventPattern, Observable, race, NEVER } from "rxjs";
 import { switchMap, map, filter, takeUntil } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged } from "rxjs/operators";
 import { take, share, scan } from "rxjs/operators";
@@ -138,7 +138,9 @@ export class ReactNativeTransport implements BluetoothTransport {
   }
 
   onDiscover(options?: { seconds?: number }): Observable<Peripheral[]> {
-    const { seconds } = options ?? { seconds: 5 };
+    const RESCAN_INTERVAL = 10_000; // 10 seconds
+    const SECONDS = RESCAN_INTERVAL / 1000;
+    const { seconds } = options ?? { seconds: SECONDS };
     const serviceUUIDs = [BLUETOOTH_PRIMARY_SERVICE_UUID_STRING];
     const allowDuplicates = true;
     const scanOptions = {};
@@ -169,9 +171,17 @@ export class ReactNativeTransport implements BluetoothTransport {
       this.onDisconnected$
     );
 
-    const peripherals$ = onScan$.pipe(
+    const rescanInterval$ = timer(0, RESCAN_INTERVAL);
+
+    const peripherals$ = rescanInterval$.pipe(
       switchMap(() =>
-        this._fromEvent("BleManagerDiscoverPeripheral").pipe(takeUntil(onStop$))
+        onScan$.pipe(
+          switchMap(() =>
+            this._fromEvent("BleManagerDiscoverPeripheral").pipe(
+              takeUntil(onStop$)
+            )
+          )
+        )
       ),
       // Filter out devices that are not Neurosity devices
       filter((peripheral: Peripheral) => {
