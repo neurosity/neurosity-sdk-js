@@ -1,6 +1,6 @@
 import { defer, Observable, firstValueFrom } from "rxjs";
-import { ReplaySubject, EMPTY } from "rxjs";
-import { distinctUntilChanged, switchMap } from "rxjs/operators";
+import { Subject, ReplaySubject, EMPTY, NEVER } from "rxjs";
+import { catchError, distinctUntilChanged, switchMap } from "rxjs/operators";
 
 import { WebBluetoothTransport } from "./web/WebBluetoothTransport";
 import { ReactNativeTransport } from "./react-native/ReactNativeTransport";
@@ -19,11 +19,13 @@ type IsAuthenticatedResponse = [IsAuthenticated, ExpiresIn];
 
 type Options = {
   transport: BluetoothTransport;
+  selectedDevice$?: Observable<DeviceInfo>;
 };
 
 export class BluetoothClient {
   transport: BluetoothTransport;
   deviceInfo: DeviceInfo;
+  selectedDevice$ = new Subject<DeviceInfo>();
 
   isAuthenticated$ = new ReplaySubject<IsAuthenticated>(1);
 
@@ -35,6 +37,30 @@ export class BluetoothClient {
     }
 
     this.transport = transport;
+
+    // Pass events to the internal selectedDevice$ if selectedDevice$ is passed via options
+    if (options.selectedDevice$) {
+      options.selectedDevice$.subscribe(this.selectedDevice$);
+    }
+
+    // Auto Connect
+    this.transport
+      ._autoConnect(this.selectedDevice$)
+      .pipe(
+        catchError((error) => {
+          console.log("ERROR _autoConnect", error);
+
+          // @TODO: handle retries
+          return NEVER;
+        })
+      )
+      .subscribe({
+        error: (error: Error) => {
+          this.transport.addLog(
+            `Auto connect: error -> ${error?.message ?? error}`
+          );
+        }
+      });
 
     // check if authenticated, which updates the isAuthenticated$ subject
     this.connectionStatus()

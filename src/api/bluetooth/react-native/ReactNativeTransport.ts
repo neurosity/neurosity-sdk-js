@@ -1,7 +1,7 @@
 import { BLUETOOTH_PRIMARY_SERVICE_UUID_STRING } from "@neurosity/ipk";
 import { BLUETOOTH_CHUNK_DELIMITER } from "@neurosity/ipk";
 import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
-import { BehaviorSubject, defer, Subject, timer } from "rxjs";
+import { BehaviorSubject, defer, EMPTY, of, Subject, timer } from "rxjs";
 import { fromEventPattern, Observable, race, NEVER } from "rxjs";
 import { switchMap, map, filter, takeUntil } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged } from "rxjs/operators";
@@ -21,6 +21,7 @@ import { DEFAULT_ACTION_RESPONSE_TIMEOUT } from "../constants";
 import { CHARACTERISTIC_UUIDS_TO_NAMES } from "../constants";
 import { ANDROID_MAX_MTU } from "../constants";
 import { REACT_NATIVE_MAX_BYTE_SIZE } from "../constants";
+import { DeviceInfo } from "../../../types/deviceInfo";
 
 type Characteristic = {
   characteristicUUID: string;
@@ -101,14 +102,6 @@ export class ReactNativeTransport implements BluetoothTransport {
       this.status$.next(STATUS.DISCONNECTED);
     });
 
-    this.onDisconnected$.subscribe(() => {
-      // only auto-reconnect if disconnected action not started by the user
-      if (this.autoReconnectEnabled$.getValue()) {
-        // this.addLog(`Attempting to reconnect...`);
-        //this.getServerServiceAndCharacteristics();
-      }
-    });
-
     this._autoToggleActionNotifications();
   }
 
@@ -119,6 +112,26 @@ export class ReactNativeTransport implements BluetoothTransport {
   isConnected() {
     const status = this.status$.getValue();
     return status === STATUS.CONNECTED;
+  }
+
+  _autoConnect(selectedDevice$: Observable<DeviceInfo>): Observable<void> {
+    return selectedDevice$.pipe(
+      switchMap((selectedDevice) =>
+        this.onDiscover().pipe(
+          switchMap((peripherals) => {
+            const peripheral = peripherals.find(
+              (peripheral) => peripheral.name === selectedDevice?.deviceNickname
+            );
+
+            return peripheral ? of(peripheral) : EMPTY;
+          }),
+          take(1)
+        )
+      ),
+      switchMap(async (peripheral) => {
+        return await this.connect(peripheral);
+      })
+    );
   }
 
   connectionStatus(): Observable<STATUS> {

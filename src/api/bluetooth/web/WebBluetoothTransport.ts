@@ -4,7 +4,7 @@ import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
 import { BLUETOOTH_COMPANY_IDENTIFIER_HEX } from "@neurosity/ipk";
 import { BehaviorSubject, defer, Subject, timer } from "rxjs";
 import { fromEventPattern, Observable, NEVER } from "rxjs";
-import { switchMap, map, filter } from "rxjs/operators";
+import { switchMap, map, filter, tap } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged } from "rxjs/operators";
 import { take, share } from "rxjs/operators";
 
@@ -17,6 +17,7 @@ import { ActionOptions, SubscribeOptions } from "../types";
 import { TRANSPORT_TYPE, STATUS } from "../types";
 import { DEFAULT_ACTION_RESPONSE_TIMEOUT } from "../constants";
 import { CHARACTERISTIC_UUIDS_TO_NAMES } from "../constants";
+import { DeviceInfo } from "../../../types/deviceInfo";
 
 export class WebBluetoothTransport implements BluetoothTransport {
   type: TRANSPORT_TYPE = TRANSPORT_TYPE.WEB;
@@ -53,80 +54,77 @@ export class WebBluetoothTransport implements BluetoothTransport {
       this.status$.next(STATUS.DISCONNECTED);
     });
 
-    this.onDisconnected$.subscribe(() => {
-      // only auto-reconnect if disconnected action not started by the user
-      if (this.autoReconnectEnabled$.getValue()) {
-        // this.addLog(`Attempting to reconnect...`);
-        //this.getServerServiceAndCharacteristics();
-        this._autoConnect("Crown-85A"); // @TODO: get via selectedDevice
-      }
-    });
-
     this._autoToggleActionNotifications();
-
-    // @TODO: get via selectedDevice
-    this._autoConnect("Crown-85A").catch((error) => {
-      console.log(error);
-      this.addLog(`Auto connect: error -> ${error?.message ?? error}`);
-    });
   }
 
-  async _autoConnect(deviceNickname: string): Promise<void> {
-    try {
-      const [devicesError, devices] = await navigator.bluetooth
-        .getDevices()
-        .then((devices) => [null, devices])
-        .catch((error) => [error, null]);
+  async _getPairedDevices(): Promise<BluetoothDevice[]> {
+    return await navigator.bluetooth.getDevices();
+  }
 
-      if (devicesError) {
-        throw new Error(
-          `failed to get devices: ${devicesError?.message ?? devicesError}`
-        );
-      }
+  _autoConnect(selectedDevice$: Observable<DeviceInfo>): Observable<void> {
+    return selectedDevice$.pipe(
+      switchMap(async (selectedDevice) => {
+        const { deviceNickname } = selectedDevice;
 
-      this.addLog(
-        `Auto connect: found ${devices.length} devices ${devices
-          .map(({ name }) => name)
-          .join(", ")}`
-      );
+        const [devicesError, devices] = await this._getPairedDevices()
+          .then((devices) => [null, devices])
+          .catch((error) => [error, null]);
 
-      // @important - Using `findLast` instead of `find` because somehow the browser
-      // is finding multiple peripherals with the same name
-      const device = devices.findLast(
-        (device: BluetoothDevice) => device.name === deviceNickname
-      );
-
-      if (!device) {
-        throw new Error(
-          `couldn't find selected device in the list of paired devices.`
-        );
-      }
-
-      this.addLog(
-        `Auto connect: ${deviceNickname} was detected and previously paired`
-      );
-
-      this.status$.next(STATUS.SCANNING);
-
-      const abortController = new AbortController();
-      const { signal } = abortController;
-
-      fromDOMEvent(device, "advertisementreceived", { once: true }).subscribe(
-        (event) => {
-          this.addLog(`Advertisement received for ${event.device.name}`);
-
-          abortController.abort();
-
-          this.getServerServiceAndCharacteristics(device).catch((error) => {
-            throw error;
-          });
+        if (devicesError) {
+          throw new Error(
+            `failed to get devices: ${devicesError?.message ?? devicesError}`
+          );
         }
-      );
 
-      device.watchAdvertisements({ signal });
-    } catch (error) {
-      return Promise.reject(error);
-    }
+        this.addLog(
+          `Auto connect: found ${devices.length} devices ${devices
+            .map(({ name }) => name)
+            .join(", ")}`
+        );
+
+        // @important - Using `findLast` instead of `find` because somehow the browser
+        // is finding multiple peripherals with the same name
+        const device = devices.findLast(
+          (device: BluetoothDevice) => device.name === deviceNickname
+        );
+
+        if (!device) {
+          throw new Error(
+            `couldn't find selected device in the list of paired devices.`
+          );
+        }
+
+        this.addLog(
+          `Auto connect: ${deviceNickname} was detected and previously paired`
+        );
+
+        return device;
+      }),
+      tap(() => {
+        this.status$.next(STATUS.SCANNING);
+      }),
+      switchMap((device: any) => {
+        const abortController = new AbortController();
+        const { signal } = abortController;
+
+        const advertisement$ = fromDOMEvent(device, "advertisementreceived", {
+          once: true
+        }).pipe(
+          tap((event) => {
+            this.addLog(`Advertisement received for ${event.device.name}`);
+
+            abortController.abort();
+          }),
+          switchMap(async () => {
+            return await this.getServerServiceAndCharacteristics(device);
+          })
+        );
+
+        device.watchAdvertisements({ signal });
+
+        return advertisement$;
+      })
+    );
   }
 
   addLog(log: string) {
