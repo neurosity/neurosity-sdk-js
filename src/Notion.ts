@@ -1,4 +1,4 @@
-import { Observable, throwError, from } from "rxjs";
+import { Observable, throwError } from "rxjs";
 import { ReplaySubject, firstValueFrom } from "rxjs";
 import { map, switchMap } from "rxjs/operators";
 import { CloudClient, createUser } from "./api/index";
@@ -118,6 +118,8 @@ export class Notion {
 
     if (bluetoothTransport) {
       this.bluetoothClient = new BluetoothClient({
+        selectedDevice$: this.onDeviceChange(),
+        createBluetoothToken: this.createBluetoothToken.bind(this),
         transport: bluetoothTransport
       });
     }
@@ -145,6 +147,14 @@ export class Notion {
     } else {
       this.streamingMode$.next(streamingMode);
     }
+  }
+
+  /**
+   *
+   * @hidden
+   */
+  get bluetooth() {
+    return this?.bluetoothClient;
   }
 
   /**
