@@ -1,6 +1,6 @@
 import { defer, Observable, firstValueFrom, timer } from "rxjs";
-import { Subject, ReplaySubject, EMPTY, NEVER } from "rxjs";
-import { catchError, switchMap, tap } from "rxjs/operators";
+import { ReplaySubject, EMPTY } from "rxjs";
+import { switchMap, tap } from "rxjs/operators";
 import { distinctUntilChanged } from "rxjs/operators";
 
 import { WebBluetoothTransport } from "./web/WebBluetoothTransport";
@@ -30,7 +30,7 @@ type Options = {
 export class BluetoothClient {
   transport: BluetoothTransport;
   deviceInfo: DeviceInfo;
-  selectedDevice$ = new Subject<DeviceInfo>();
+  selectedDevice$ = new ReplaySubject<DeviceInfo>(1);
   isAuthenticated$ = new ReplaySubject<IsAuthenticated>(1);
 
   constructor(options: Options) {
@@ -48,23 +48,13 @@ export class BluetoothClient {
     }
 
     // Auto Connect
-    this.transport
-      ._autoConnect(this.selectedDevice$)
-      .pipe(
-        catchError((error) => {
-          console.log("ERROR _autoConnect", error);
-
-          // @TODO: handle retries
-          return NEVER;
-        })
-      )
-      .subscribe({
-        error: (error: Error) => {
-          this.transport.addLog(
-            `Auto connect: error -> ${error?.message ?? error}`
-          );
-        }
-      });
+    this.transport._autoConnect(this.selectedDevice$).subscribe({
+      error: (error: Error) => {
+        this.transport.addLog(
+          `Auto connect: error -> ${error?.message ?? error}`
+        );
+      }
+    });
 
     // Auto authentication
     if (typeof createBluetoothToken === "function") {
@@ -77,7 +67,11 @@ export class BluetoothClient {
 
   _autoAuthenticate(createBluetoothToken: CreateBluetoothToken) {
     const REAUTHENTICATE_INTERVAL = 3600000; // 1 hour
-    const reauthenticateInterval$ = timer(0, REAUTHENTICATE_INTERVAL);
+    const reauthenticateInterval$ = timer(0, REAUTHENTICATE_INTERVAL).pipe(
+      tap(() => {
+        this.transport.addLog(`Auto authentication in progress...`);
+      })
+    );
 
     return this.connectionStatus().pipe(
       switchMap((status) =>
@@ -88,6 +82,8 @@ export class BluetoothClient {
         if (!isAuthenticated) {
           const token = await createBluetoothToken();
           await this.authenticate(token);
+        } else {
+          this.transport.addLog(`Already authenticated`);
         }
       })
     );
@@ -99,6 +95,10 @@ export class BluetoothClient {
     const isAuthenticatedResponse = await this.isAuthenticated();
 
     const [isAuthenticated] = isAuthenticatedResponse;
+
+    this.transport.addLog(
+      `Authentication ${isAuthenticated ? "succeeded" : "failed"}`
+    );
 
     this.isAuthenticated$.next(isAuthenticated);
 

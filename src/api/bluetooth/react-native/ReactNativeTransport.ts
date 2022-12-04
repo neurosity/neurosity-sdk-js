@@ -1,8 +1,8 @@
 import { BLUETOOTH_PRIMARY_SERVICE_UUID_STRING } from "@neurosity/ipk";
 import { BLUETOOTH_CHUNK_DELIMITER } from "@neurosity/ipk";
 import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
-import { BehaviorSubject, defer, EMPTY, of, ReplaySubject, timer } from "rxjs";
-import { fromEventPattern, Observable, race, NEVER } from "rxjs";
+import { BehaviorSubject, defer, merge, of, ReplaySubject, timer } from "rxjs";
+import { fromEventPattern, Observable, race, NEVER, EMPTY } from "rxjs";
 import { switchMap, map, filter, takeUntil } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged } from "rxjs/operators";
 import { take, share, scan } from "rxjs/operators";
@@ -115,7 +115,10 @@ export class ReactNativeTransport implements BluetoothTransport {
   }
 
   _autoConnect(selectedDevice$: Observable<DeviceInfo>): Observable<void> {
-    return selectedDevice$.pipe(
+    return merge(
+      selectedDevice$,
+      this.onDisconnected$.pipe(switchMap(() => selectedDevice$))
+    ).pipe(
       switchMap((selectedDevice) =>
         this.onDiscover().pipe(
           switchMap((peripherals) => {
