@@ -1,15 +1,17 @@
-import { defer, Observable, firstValueFrom } from "rxjs";
+import { defer, Observable, firstValueFrom, timer } from "rxjs";
 import { Subject, ReplaySubject, EMPTY, NEVER } from "rxjs";
-import { catchError, distinctUntilChanged, switchMap } from "rxjs/operators";
+import { catchError, switchMap, tap } from "rxjs/operators";
+import { distinctUntilChanged } from "rxjs/operators";
 
 import { WebBluetoothTransport } from "./web/WebBluetoothTransport";
 import { ReactNativeTransport } from "./react-native/ReactNativeTransport";
-import { Peripheral } from "./react-native/types/BleManagerTypes";
 import { csvBufferToEpoch } from "./utils/csvBufferToEpoch";
 import { DeviceInfo } from "../../types/deviceInfo";
 import { Action } from "../../types/actions";
 import { Epoch } from "../../types/epoch";
 import { STATUS } from "./types";
+import { DeviceNicknameOrPeripheral } from "./BluetoothTransport";
+import { Peripheral } from "./react-native/types/BleManagerTypes";
 
 export type BluetoothTransport = WebBluetoothTransport | ReactNativeTransport;
 
@@ -17,20 +19,22 @@ type IsAuthenticated = boolean;
 type ExpiresIn = number;
 type IsAuthenticatedResponse = [IsAuthenticated, ExpiresIn];
 
+type CreateBluetoothToken = () => Promise<string>;
+
 type Options = {
   transport: BluetoothTransport;
   selectedDevice$?: Observable<DeviceInfo>;
+  createBluetoothToken?: CreateBluetoothToken;
 };
 
 export class BluetoothClient {
   transport: BluetoothTransport;
   deviceInfo: DeviceInfo;
   selectedDevice$ = new Subject<DeviceInfo>();
-
   isAuthenticated$ = new ReplaySubject<IsAuthenticated>(1);
 
   constructor(options: Options) {
-    const { transport } = options;
+    const { transport, selectedDevice$, createBluetoothToken } = options ?? {};
 
     if (!transport) {
       throw new Error(`No bluetooth transport provided.`);
@@ -39,8 +43,8 @@ export class BluetoothClient {
     this.transport = transport;
 
     // Pass events to the internal selectedDevice$ if selectedDevice$ is passed via options
-    if (options.selectedDevice$) {
-      options.selectedDevice$.subscribe(this.selectedDevice$);
+    if (selectedDevice$) {
+      selectedDevice$.subscribe(this.selectedDevice$);
     }
 
     // Auto Connect
@@ -62,14 +66,31 @@ export class BluetoothClient {
         }
       });
 
-    // check if authenticated, which updates the isAuthenticated$ subject
-    this.connectionStatus()
-      .pipe(
-        switchMap((status) =>
-          status === STATUS.CONNECTED ? this.isAuthenticated() : EMPTY
-        )
-      )
-      .subscribe();
+    // Auto authentication
+    if (typeof createBluetoothToken === "function") {
+      this.transport.addLog("Auto authentication enabled");
+      this._autoAuthenticate(createBluetoothToken).subscribe();
+    } else {
+      this.transport.addLog("Auto authentication not enabled");
+    }
+  }
+
+  _autoAuthenticate(createBluetoothToken: CreateBluetoothToken) {
+    const REAUTHENTICATE_INTERVAL = 3600000; // 1 hour
+    const reauthenticateInterval$ = timer(0, REAUTHENTICATE_INTERVAL);
+
+    return this.connectionStatus().pipe(
+      switchMap((status) =>
+        status === STATUS.CONNECTED ? reauthenticateInterval$ : EMPTY
+      ),
+      switchMap(async () => await this.isAuthenticated()),
+      tap(async ([isAuthenticated]) => {
+        if (!isAuthenticated) {
+          const token = await createBluetoothToken();
+          await this.authenticate(token);
+        }
+      })
+    );
   }
 
   async authenticate(token: string): Promise<IsAuthenticatedResponse> {
@@ -109,14 +130,14 @@ export class BluetoothClient {
   }
 
   // Argument for React Native only
-  connect(deviceNicknameORPeripheral?) {
+  connect(deviceNicknameORPeripheral?: DeviceNicknameOrPeripheral) {
     if (this.transport instanceof ReactNativeTransport) {
-      return this.transport.connect(deviceNicknameORPeripheral);
+      return this.transport.connect(deviceNicknameORPeripheral as Peripheral);
     }
 
     if (this.transport instanceof WebBluetoothTransport) {
       return deviceNicknameORPeripheral
-        ? this.transport.connect(deviceNicknameORPeripheral)
+        ? this.transport.connect(deviceNicknameORPeripheral as string)
         : this.transport.connect();
     }
   }

@@ -2,7 +2,7 @@ import { BLUETOOTH_PRIMARY_SERVICE_UUID_HEX } from "@neurosity/ipk";
 import { BLUETOOTH_CHUNK_DELIMITER } from "@neurosity/ipk";
 import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
 import { BLUETOOTH_COMPANY_IDENTIFIER_HEX } from "@neurosity/ipk";
-import { BehaviorSubject, defer, Subject, timer } from "rxjs";
+import { BehaviorSubject, defer, ReplaySubject, timer } from "rxjs";
 import { fromEventPattern, Observable, NEVER } from "rxjs";
 import { switchMap, map, filter, tap } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged } from "rxjs/operators";
@@ -31,7 +31,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
   status$ = new BehaviorSubject<STATUS>(STATUS.DISCONNECTED);
   autoReconnectEnabled$ = new BehaviorSubject<boolean>(true);
   pendingActions$ = new BehaviorSubject<any[]>([]);
-  logs$ = new Subject<string>();
+  logs$ = new ReplaySubject<string>(10);
   onDisconnected$: Observable<void> = this._onDisconnected().pipe(share());
   connectionStatus$: Observable<STATUS> = this.status$.asObservable().pipe(
     filter((status) => !!status),
