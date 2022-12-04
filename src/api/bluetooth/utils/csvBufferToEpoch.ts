@@ -42,7 +42,7 @@ export function csvBufferToSamples(): UnaryFunction<any, any> {
   return pipe(
     mergeMap((samples: CSVSample[]): Observable<CSVSample> => from(samples)),
     map(
-      ([timestamp, ...data]: CSVSample): Sample => ({
+      ([timestamp, marker, ...data]: CSVSample): Sample => ({
         timestamp,
         data
       })
