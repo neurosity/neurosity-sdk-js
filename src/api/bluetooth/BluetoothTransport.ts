@@ -5,7 +5,7 @@ import { Action } from "../../types/actions";
 import { DeviceInfo } from "../../types/deviceInfo";
 import { Peripheral } from "./react-native/types/BleManagerTypes";
 
-type DeviceNicknameOrPeripheral = string | Peripheral;
+export type DeviceNicknameOrPeripheral = string | Peripheral;
 
 /**
  * @hidden
@@ -19,6 +19,7 @@ export interface BluetoothTransport {
   disconnect(): Promise<void>;
   connectionStatus(): Observable<STATUS>;
   requestDevice?(): any;
+  addLog: (log: string) => void;
   logs$: Subject<string>;
 
   onDiscover?(options?: { seconds?: number }): Observable<Peripheral[]>;
