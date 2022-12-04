@@ -103,26 +103,12 @@ export class WebBluetoothTransport implements BluetoothTransport {
       tap(() => {
         this.status$.next(STATUS.SCANNING);
       }),
-      switchMap((device: any) => {
-        const abortController = new AbortController();
-        const { signal } = abortController;
-
-        const advertisement$ = fromDOMEvent(device, "advertisementreceived", {
-          once: true
-        }).pipe(
-          tap((event) => {
-            this.addLog(`Advertisement received for ${event.device.name}`);
-
-            abortController.abort();
-          }),
-          switchMap(async () => {
-            return await this.getServerServiceAndCharacteristics(device);
-          })
+      switchMap((device: BluetoothDevice) => onAdvertisementReceived(device)),
+      switchMap(async (advertisement) => {
+        this.addLog(`Advertisement received for ${advertisement.device.name}`);
+        return await this.getServerServiceAndCharacteristics(
+          advertisement.device
         );
-
-        device.watchAdvertisements({ signal });
-
-        return advertisement$;
       })
     );
   }
@@ -287,7 +273,6 @@ export class WebBluetoothTransport implements BluetoothTransport {
         return fromDOMEvent(
           characteristic,
           "characteristicvaluechanged",
-          {},
           async () => {
             if (this.isConnected() && manageNotifications) {
               try {
@@ -534,12 +519,11 @@ export class WebBluetoothTransport implements BluetoothTransport {
 function fromDOMEvent(
   target: any,
   eventName: any,
-  options: any = {},
   beforeRemove?: () => Promise<void>
 ): Observable<any> {
-  const events$ = fromEventPattern(
+  return fromEventPattern(
     (addHandler) => {
-      target.addEventListener(eventName, addHandler, options);
+      target.addEventListener(eventName, addHandler);
     },
     async (removeHandler) => {
       if (beforeRemove) {
@@ -549,6 +533,36 @@ function fromDOMEvent(
       target.removeEventListener(eventName, removeHandler);
     }
   );
+}
 
-  return options?.once ? events$.pipe(take(1)) : events$;
+function onAdvertisementReceived(
+  device: BluetoothDevice | any
+): Observable<BluetoothAdvertisingEvent> {
+  return new Observable((subscriber) => {
+    const abortController = new AbortController();
+    const { signal } = abortController;
+
+    const listener = device.addEventListener(
+      "advertisementreceived",
+      (advertisement: BluetoothAdvertisingEvent) => {
+        abortController.abort();
+        subscriber.next(advertisement);
+        subscriber.complete();
+      },
+      {
+        once: true
+      }
+    );
+
+    try {
+      device.watchAdvertisements({ signal });
+    } catch (error) {
+      subscriber.error(error);
+    }
+
+    return () => {
+      abortController.abort();
+      device.removeEventListener("advertisementreceived", listener);
+    };
+  });
 }
