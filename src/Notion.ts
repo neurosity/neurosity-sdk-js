@@ -370,7 +370,7 @@ export class Notion {
    * ```
    */
   public async getInfo(): Promise<DeviceInfo> {
-    if (!this.cloudClient.didSelectDevice()) {
+    if (!(await this.cloudClient.didSelectDevice())) {
       return Promise.reject(errors.mustSelectDevice);
     }
 
@@ -431,8 +431,8 @@ export class Notion {
    * @internal
    * Not user facing
    */
-  private dispatchAction(action: Action): Promise<Action> {
-    if (!this.cloudClient.didSelectDevice()) {
+  private async dispatchAction(action: Action): Promise<Action> {
+    if (!(await this.cloudClient.didSelectDevice())) {
       return Promise.reject(errors.mustSelectDevice);
     }
 
@@ -445,7 +445,7 @@ export class Notion {
       return Promise.reject(OAuthError);
     }
 
-    return this.cloudClient.actions.dispatch(action);
+    return await this.cloudClient.actions.dispatch(action);
   }
 
   /**
@@ -461,8 +461,8 @@ export class Notion {
    *
    * @param label Name the label to inject
    */
-  public addMarker(label: string): Promise<Action> {
-    if (!this.cloudClient.didSelectDevice()) {
+  public async addMarker(label: string): Promise<Action> {
+    if (!(await this.cloudClient.didSelectDevice())) {
       throw errors.mustSelectDevice;
     }
 
@@ -470,7 +470,7 @@ export class Notion {
       throw new Error(`${errors.prefix}A label is required for addMarker`);
     }
 
-    return this.dispatchAction({
+    return await this.dispatchAction({
       command: "marker",
       action: "add",
       message: {
@@ -517,11 +517,11 @@ export class Notion {
    */
   public async haptics(effects: any): Promise<any> {
     const metric = "haptics";
-    if (!this.cloudClient.didSelectDevice()) {
+    if (!(await this.cloudClient.didSelectDevice())) {
       return Promise.reject(errors.mustSelectDevice);
     }
 
-    const modelVersion = (await this.getSelectedDevice()).modelVersion;
+    const modelVersion = (await this.getSelectedDevice())?.modelVersion;
     const supportsHaptics = platform.supportsHaptics(modelVersion);
 
     if (!supportsHaptics) {
@@ -589,8 +589,8 @@ export class Notion {
       return throwError(() => OAuthError);
     }
 
-    return from(this.getSelectedDevice()).pipe(
-      switchMap((selectedDevice: DeviceInfo) => {
+    return this.onDeviceChange().pipe(
+      switchMap((selectedDevice: DeviceInfo | null) => {
         const modelVersion =
           selectedDevice?.modelVersion || platform.MODEL_VERSION_1;
         const supportsAccel = platform.supportsAccel(modelVersion);
@@ -886,8 +886,8 @@ export class Notion {
    * });
    * ```
    */
-  public changeSettings(settings: ChangeSettings): Promise<void> {
-    if (!this.cloudClient.didSelectDevice()) {
+  public async changeSettings(settings: ChangeSettings): Promise<void> {
+    if (!(await this.cloudClient.didSelectDevice())) {
       return Promise.reject(errors.mustSelectDevice);
     }
 
@@ -900,7 +900,7 @@ export class Notion {
       return Promise.reject(OAuthError);
     }
 
-    return this.cloudClient.changeSettings(settings);
+    return await this.cloudClient.changeSettings(settings);
   }
 
   /**
@@ -925,8 +925,8 @@ export class Notion {
        * Records a training for a metric/label pair
        * @category Training
        */
-      record: (training) => {
-        if (!this.cloudClient.didSelectDevice()) {
+      record: async (training) => {
+        if (!(await this.cloudClient.didSelectDevice())) {
           throw errors.mustSelectDevice;
         }
 
@@ -941,7 +941,8 @@ export class Notion {
           ...training,
           userId
         };
-        this.cloudClient.actions.dispatch({
+
+        await this.cloudClient.actions.dispatch({
           command: "training",
           action: "record",
           message
@@ -951,12 +952,12 @@ export class Notion {
        * Stops the training for a metric/label pair
        * @category Training
        */
-      stop: (training) => {
-        if (!this.cloudClient.didSelectDevice()) {
+      stop: async (training) => {
+        if (!(await this.cloudClient.didSelectDevice())) {
           throw errors.mustSelectDevice;
         }
 
-        this.cloudClient.actions.dispatch({
+        await this.cloudClient.actions.dispatch({
           command: "training",
           action: "stop",
           message: {
@@ -968,12 +969,12 @@ export class Notion {
        * Stops all trainings
        * @category Training
        */
-      stopAll: () => {
-        if (!this.cloudClient.didSelectDevice()) {
+      stopAll: async () => {
+        if (!(await this.cloudClient.didSelectDevice())) {
           throw errors.mustSelectDevice;
         }
 
-        this.cloudClient.actions.dispatch({
+        await this.cloudClient.actions.dispatch({
           command: "training",
           action: "stopAll",
           message: {}
@@ -1196,7 +1197,7 @@ export class Notion {
    * @returns Skill instance
    */
   public async skill(bundleId: string): Promise<SkillInstance> {
-    if (!this.cloudClient.didSelectDevice()) {
+    if (!(await this.cloudClient.didSelectDevice())) {
       return Promise.reject(errors.mustSelectDevice);
     }
 

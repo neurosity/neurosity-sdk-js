@@ -1,5 +1,6 @@
-import { Observable, BehaviorSubject, fromEventPattern, EMPTY } from "rxjs";
-import { switchMap, filter, shareReplay } from "rxjs/operators";
+import { Observable, ReplaySubject, EMPTY } from "rxjs";
+import { fromEventPattern, firstValueFrom } from "rxjs";
+import { filter, switchMap } from "rxjs/operators";
 import { FirebaseApp, FirebaseUser, FirebaseDevice } from "./firebase";
 import { Timesync } from "../timesync";
 import { SubscriptionManager } from "../subscriptions/SubscriptionManager";
@@ -39,14 +40,15 @@ export class CloudClient implements Client {
   /**
    * @internal
    */
-  private _selectedDevice: BehaviorSubject<DeviceInfo | null> =
-    new BehaviorSubject(undefined);
+  private _selectedDevice = new ReplaySubject<DeviceInfo | null | undefined>(1);
 
   constructor(options: SDKOptions) {
     this.options = options;
     this.subscriptionManager = new SubscriptionManager();
     this.firebaseApp = new FirebaseApp(options);
     this.firebaseUser = new FirebaseUser(this.firebaseApp);
+
+    this._selectedDevice.next(undefined);
 
     this.firebaseUser.onAuthStateChanged().subscribe((user) => {
       this.user = user;
@@ -83,10 +85,9 @@ export class CloudClient implements Client {
   }
 
   public onDeviceChange(): Observable<DeviceInfo> {
-    return this._selectedDevice.asObservable().pipe(
-      shareReplay(1),
-      filter((value) => value !== undefined)
-    );
+    return this._selectedDevice
+      .asObservable()
+      .pipe(filter((value) => value !== undefined));
   }
 
   // Automatically select device when user logs in
@@ -186,7 +187,7 @@ export class CloudClient implements Client {
       return Promise.reject(errorMessage);
     }
 
-    const selectedDevice = this._selectedDevice.getValue();
+    const selectedDevice = await this.getSelectedDevice();
 
     if (selectedDevice?.deviceId === deviceId) {
       this._selectedDevice.next(null);
@@ -203,7 +204,7 @@ export class CloudClient implements Client {
       return Promise.reject(error);
     }
 
-    const selectedDevice = this._selectedDevice.getValue();
+    const selectedDevice = await this.getSelectedDevice();
 
     if (selectedDevice?.deviceId === options.deviceId) {
       this._selectedDevice.next(null);
@@ -218,8 +219,9 @@ export class CloudClient implements Client {
     return this.firebaseUser.onUserClaimsChange();
   }
 
-  public didSelectDevice(): boolean {
-    return !!this._selectedDevice.getValue();
+  public async didSelectDevice(): Promise<boolean> {
+    const selectedDevice = await this.getSelectedDevice();
+    return !!selectedDevice;
   }
 
   public async selectDevice(
@@ -269,24 +271,8 @@ export class CloudClient implements Client {
     return device;
   }
 
-  public async getSelectedDevice(): Promise<DeviceInfo> {
-    const selectedDevice = this._selectedDevice.getValue();
-
-    if (!selectedDevice) {
-      return Promise.reject(`There is no device currently selected.`);
-    }
-
-    const devices = await this.getDevices();
-
-    if (!devices) {
-      return Promise.reject(
-        `Did not find any devices for this user. Make sure your device is claimed by your Neurosity account.`
-      );
-    }
-
-    return devices.find(
-      (device) => device.deviceId === selectedDevice.deviceId
-    );
+  public async getSelectedDevice(): Promise<DeviceInfo | null> {
+    return await firstValueFrom(this._selectedDevice);
   }
 
   public status(): Observable<DeviceStatus> {
