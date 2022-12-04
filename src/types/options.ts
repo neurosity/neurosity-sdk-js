@@ -4,6 +4,7 @@ import { BluetoothTransport } from "../api/bluetooth/BluetoothClient";
 
 export enum STREAMING_MODE {
   CLOUD_ONLY = "cloud-only",
+  BLUETOOTH_ONLY = "bluetooth-only",
   CLOUD_WITH_BLUETOOTH_FALLBACK = "cloud-with-bluetooth-fallback",
   BLUETOOTH_WITH_CLOUD_FALLBACK = "bluetooth-with-cloud-fallback"
 }
