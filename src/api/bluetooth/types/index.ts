@@ -17,7 +17,7 @@ export type SubscribeOptions = {
 /**
  * @hidden
  */
-export enum STATUS {
+export enum BLUETOOTH_CONNECTION {
   SCANNING = "scanning",
   CONNECTED = "connected",
   CONNECTING = "connecting",

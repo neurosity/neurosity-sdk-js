@@ -1,6 +1,6 @@
 import { Observable, Subject } from "rxjs";
 
-import { STATUS, TRANSPORT_TYPE } from "./types";
+import { BLUETOOTH_CONNECTION, TRANSPORT_TYPE } from "./types";
 import { Action } from "../../types/actions";
 import { DeviceInfo } from "../../types/deviceInfo";
 import { Peripheral } from "./react-native/types/BleManagerTypes";
@@ -17,7 +17,7 @@ export interface BluetoothTransport {
   ): Promise<void>;
   _autoConnect(selectedDevice$: Observable<DeviceInfo>): Observable<void>;
   disconnect(): Promise<void>;
-  connectionStatus(): Observable<STATUS>;
+  connection(): Observable<BLUETOOTH_CONNECTION>;
   requestDevice?(): any;
   addLog: (log: string) => void;
   logs$: Subject<string>;

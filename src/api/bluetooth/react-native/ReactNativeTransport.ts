@@ -12,7 +12,7 @@ import { create6DigitPin } from "../utils/create6DigitPin";
 import { stitchChunks } from "../utils/stitch";
 import { encode, decode } from "../utils/encoding";
 import { ActionOptions, SubscribeOptions } from "../types";
-import { TRANSPORT_TYPE, STATUS } from "../types";
+import { TRANSPORT_TYPE, BLUETOOTH_CONNECTION } from "../types";
 import { BleManager } from "./types/BleManagerTypes";
 import { Peripheral, PeripheralInfo } from "./types/BleManagerTypes";
 import { NativeEventEmitter } from "./types/ReactNativeTypes";
@@ -48,16 +48,20 @@ export class ReactNativeTransport implements BluetoothTransport {
   device: Peripheral;
   characteristicsByName: CharacteristicsByName = {};
 
-  status$ = new BehaviorSubject<STATUS>(STATUS.DISCONNECTED);
+  connection$ = new BehaviorSubject<BLUETOOTH_CONNECTION>(
+    BLUETOOTH_CONNECTION.DISCONNECTED
+  );
   autoReconnectEnabled$ = new BehaviorSubject<boolean>(true);
   pendingActions$ = new BehaviorSubject<any[]>([]);
   logs$ = new ReplaySubject<string>(10);
   onDisconnected$: Observable<void> = this._onDisconnected().pipe(share());
-  connectionStatus$: Observable<STATUS> = this.status$.asObservable().pipe(
-    filter((status) => !!status),
-    distinctUntilChanged(),
-    shareReplay(1)
-  );
+  connectionStream$: Observable<BLUETOOTH_CONNECTION> = this.connection$
+    .asObservable()
+    .pipe(
+      filter((connection) => !!connection),
+      distinctUntilChanged(),
+      shareReplay(1)
+    );
 
   constructor(options: Options) {
     const { BleManager, bleManagerEmitter, platform } = options;
@@ -94,12 +98,12 @@ export class ReactNativeTransport implements BluetoothTransport {
         this.addLog(`BleManger failed to start. ${error?.message ?? error}`);
       });
 
-    this.status$.asObservable().subscribe((status) => {
-      this.addLog(`status is ${status}`);
+    this.connection$.asObservable().subscribe((connection) => {
+      this.addLog(`connection status is ${connection}`);
     });
 
     this.onDisconnected$.subscribe(() => {
-      this.status$.next(STATUS.DISCONNECTED);
+      this.connection$.next(BLUETOOTH_CONNECTION.DISCONNECTED);
     });
 
     this._autoToggleActionNotifications();
@@ -110,8 +114,8 @@ export class ReactNativeTransport implements BluetoothTransport {
   }
 
   isConnected() {
-    const status = this.status$.getValue();
-    return status === STATUS.CONNECTED;
+    const connection = this.connection$.getValue();
+    return connection === BLUETOOTH_CONNECTION.CONNECTED;
   }
 
   _autoConnect(selectedDevice$: Observable<DeviceInfo>): Observable<void> {
@@ -137,8 +141,8 @@ export class ReactNativeTransport implements BluetoothTransport {
     );
   }
 
-  connectionStatus(): Observable<STATUS> {
-    return this.connectionStatus$;
+  connection(): Observable<BLUETOOTH_CONNECTION> {
+    return this.connectionStream$;
   }
 
   _fromEvent(eventName: string, onRemove = () => {}): Observable<any> {
@@ -237,7 +241,7 @@ export class ReactNativeTransport implements BluetoothTransport {
           return;
         }
 
-        this.status$.next(STATUS.CONNECTING);
+        this.connection$.next(BLUETOOTH_CONNECTION.CONNECTING);
 
         await this.BleManager.connect(peripheral.id);
 
@@ -282,7 +286,7 @@ export class ReactNativeTransport implements BluetoothTransport {
 
         this.addLog(`Successfully connected to peripheral ${peripheral.id}`);
 
-        this.status$.next(STATUS.CONNECTED);
+        this.connection$.next(BLUETOOTH_CONNECTION.CONNECTED);
 
         resolve();
       } catch (error) {
@@ -292,11 +296,11 @@ export class ReactNativeTransport implements BluetoothTransport {
   }
 
   _onDisconnected(): Observable<any> {
-    return this.status$
+    return this.connection$
       .asObservable()
       .pipe(
-        switchMap((status) =>
-          status === STATUS.CONNECTED
+        switchMap((connection) =>
+          connection === BLUETOOTH_CONNECTION.CONNECTED
             ? this._fromEvent("BleManagerDisconnectPeripheral")
             : NEVER
         )
@@ -396,9 +400,9 @@ export class ReactNativeTransport implements BluetoothTransport {
         })
       );
 
-    return this.status$.pipe(
-      switchMap((status) =>
-        status === STATUS.CONNECTED
+    return this.connection$.pipe(
+      switchMap((connection) =>
+        connection === BLUETOOTH_CONNECTION.CONNECTED
           ? getData(this.getCharacteristicByName(characteristicName))
           : NEVER
       )
@@ -485,11 +489,13 @@ export class ReactNativeTransport implements BluetoothTransport {
   async _autoToggleActionNotifications() {
     let started: boolean = false;
 
-    this.status$
+    this.connection$
       .asObservable()
       .pipe(
-        switchMap((status) =>
-          status === STATUS.CONNECTED ? this.pendingActions$ : NEVER
+        switchMap((connection) =>
+          connection === BLUETOOTH_CONNECTION.CONNECTED
+            ? this.pendingActions$
+            : NEVER
         )
       )
       .subscribe(async (pendingActions: string[]) => {
