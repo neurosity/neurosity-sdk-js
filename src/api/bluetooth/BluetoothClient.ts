@@ -9,7 +9,7 @@ import { csvBufferToEpoch } from "./utils/csvBufferToEpoch";
 import { DeviceInfo } from "../../types/deviceInfo";
 import { Action } from "../../types/actions";
 import { Epoch } from "../../types/epoch";
-import { STATUS } from "./types";
+import { BLUETOOTH_CONNECTION } from "./types";
 import { DeviceNicknameOrPeripheral } from "./BluetoothTransport";
 import { Peripheral } from "./react-native/types/BleManagerTypes";
 
@@ -73,9 +73,11 @@ export class BluetoothClient {
       })
     );
 
-    return this.connectionStatus().pipe(
-      switchMap((status) =>
-        status === STATUS.CONNECTED ? reauthenticateInterval$ : EMPTY
+    return this.connection().pipe(
+      switchMap((connection) =>
+        connection === BLUETOOTH_CONNECTION.CONNECTED
+          ? reauthenticateInterval$
+          : EMPTY
       ),
       switchMap(async () => await this.isAuthenticated()),
       tap(async ([isAuthenticated]) => {
@@ -146,8 +148,8 @@ export class BluetoothClient {
     return this.transport.disconnect();
   }
 
-  connectionStatus() {
-    return this.transport.connectionStatus();
+  connection() {
+    return this.transport.connection();
   }
 
   logs() {

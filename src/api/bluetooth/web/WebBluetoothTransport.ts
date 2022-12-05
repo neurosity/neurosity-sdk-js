@@ -14,7 +14,7 @@ import { create6DigitPin } from "../utils/create6DigitPin";
 import { stitchChunks } from "../utils/stitch";
 import { encode, decode } from "../utils/encoding";
 import { ActionOptions, SubscribeOptions } from "../types";
-import { TRANSPORT_TYPE, STATUS } from "../types";
+import { TRANSPORT_TYPE, BLUETOOTH_CONNECTION } from "../types";
 import { DEFAULT_ACTION_RESPONSE_TIMEOUT } from "../constants";
 import { CHARACTERISTIC_UUIDS_TO_NAMES } from "../constants";
 import { DeviceInfo } from "../../../types/deviceInfo";
@@ -28,15 +28,19 @@ export class WebBluetoothTransport implements BluetoothTransport {
     [name: string]: BluetoothRemoteGATTCharacteristic;
   } = {};
 
-  status$ = new BehaviorSubject<STATUS>(STATUS.DISCONNECTED);
+  connection$ = new BehaviorSubject<BLUETOOTH_CONNECTION>(
+    BLUETOOTH_CONNECTION.DISCONNECTED
+  );
   pendingActions$ = new BehaviorSubject<any[]>([]);
   logs$ = new ReplaySubject<string>(10);
   onDisconnected$: Observable<void> = this._onDisconnected().pipe(share());
-  connectionStatus$: Observable<STATUS> = this.status$.asObservable().pipe(
-    filter((status) => !!status),
-    distinctUntilChanged(),
-    shareReplay(1)
-  );
+  connectionStream$: Observable<BLUETOOTH_CONNECTION> = this.connection$
+    .asObservable()
+    .pipe(
+      filter((connection) => !!connection),
+      distinctUntilChanged(),
+      shareReplay(1)
+    );
 
   constructor() {
     if (!isWebBluetoothSupported()) {
@@ -45,12 +49,12 @@ export class WebBluetoothTransport implements BluetoothTransport {
       throw new Error(errorMessage);
     }
 
-    this.status$.asObservable().subscribe((status) => {
-      this.addLog(`status is ${status}`);
+    this.connection$.asObservable().subscribe((connection) => {
+      this.addLog(`connection status is ${connection}`);
     });
 
     this.onDisconnected$.subscribe(() => {
-      this.status$.next(STATUS.DISCONNECTED);
+      this.connection$.next(BLUETOOTH_CONNECTION.DISCONNECTED);
     });
 
     this._autoToggleActionNotifications();
@@ -103,7 +107,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
         return device;
       }),
       tap(() => {
-        this.status$.next(STATUS.SCANNING);
+        this.connection$.next(BLUETOOTH_CONNECTION.SCANNING);
       }),
       switchMap((device: BluetoothDevice) => onAdvertisementReceived(device)),
       switchMap(async (advertisement) => {
@@ -120,12 +124,12 @@ export class WebBluetoothTransport implements BluetoothTransport {
   }
 
   isConnected() {
-    const status = this.status$.getValue();
-    return status === STATUS.CONNECTED;
+    const connection = this.connection$.getValue();
+    return connection === BLUETOOTH_CONNECTION.CONNECTED;
   }
 
-  connectionStatus(): Observable<STATUS> {
-    return this.connectionStatus$;
+  connection(): Observable<BLUETOOTH_CONNECTION> {
+    return this.connectionStream$;
   }
 
   async connect(deviceNickname?: string): Promise<void> {
@@ -180,9 +184,10 @@ export class WebBluetoothTransport implements BluetoothTransport {
     try {
       this.device = device;
 
-      const isConnecting = this.status$.getValue() === STATUS.CONNECTING;
+      const isConnecting =
+        this.connection$.getValue() === BLUETOOTH_CONNECTION.CONNECTING;
       if (!isConnecting) {
-        this.status$.next(STATUS.CONNECTING);
+        this.connection$.next(BLUETOOTH_CONNECTION.CONNECTING);
       }
 
       this.server = await device.gatt.connect();
@@ -206,18 +211,18 @@ export class WebBluetoothTransport implements BluetoothTransport {
         ])
       );
 
-      this.status$.next(STATUS.CONNECTED);
+      this.connection$.next(BLUETOOTH_CONNECTION.CONNECTED);
     } catch (error) {
       return Promise.reject(error);
     }
   }
 
   _onDisconnected(): Observable<any> {
-    return this.status$
+    return this.connection$
       .asObservable()
       .pipe(
-        switchMap((status) =>
-          status === STATUS.CONNECTED
+        switchMap((connection) =>
+          connection === BLUETOOTH_CONNECTION.CONNECTED
             ? fromDOMEvent(this.device, "gattserverdisconnected")
             : NEVER
         )
@@ -322,8 +327,10 @@ export class WebBluetoothTransport implements BluetoothTransport {
       // })
     );
 
-    return this.status$.pipe(
-      switchMap((status) => (status === STATUS.CONNECTED ? data$ : NEVER))
+    return this.connection$.pipe(
+      switchMap((connection) =>
+        connection === BLUETOOTH_CONNECTION.CONNECTED ? data$ : NEVER
+      )
     );
   }
 
@@ -398,11 +405,11 @@ export class WebBluetoothTransport implements BluetoothTransport {
     let actionsCharacteristic: BluetoothRemoteGATTCharacteristic;
     let started: boolean = false;
 
-    this.status$
+    this.connection$
       .asObservable()
       .pipe(
-        switchMap((status) =>
-          status === STATUS.CONNECTED
+        switchMap((connection) =>
+          connection === BLUETOOTH_CONNECTION.CONNECTED
             ? defer(() => this.getCharacteristicByName("actions")).pipe(
                 switchMap(
                   (characteristic: BluetoothRemoteGATTCharacteristic) => {
