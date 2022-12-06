@@ -23,8 +23,8 @@ type CreateBluetoothToken = () => Promise<string>;
 
 type Options = {
   transport: BluetoothTransport;
-  selectedDevice$?: Observable<DeviceInfo>;
-  createBluetoothToken?: CreateBluetoothToken;
+  selectedDevice$: Observable<DeviceInfo>;
+  createBluetoothToken: CreateBluetoothToken;
 };
 
 export class BluetoothClient {
