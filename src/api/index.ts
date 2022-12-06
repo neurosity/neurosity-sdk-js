@@ -7,7 +7,7 @@ import { SubscriptionManager } from "../subscriptions/SubscriptionManager";
 import { offlineIfLostHeartbeat } from "../utils/heartbeat";
 import { filterInternalKeys } from "../utils/filterInternalKeys";
 import { Client } from "../types/client";
-import { Actions } from "../types/actions";
+import { Action, Actions } from "../types/actions";
 import { Metrics } from "../types/metrics";
 import { SDKOptions } from "../types/options";
 import { SkillsClient, DeviceSkill } from "../types/skill";
@@ -118,6 +118,10 @@ export class CloudClient implements Client {
         return this.firebaseDevice.dispatchAction(action);
       }
     };
+  }
+
+  public async dispatchAction(action: Action): Promise<any> {
+    return await this.firebaseDevice.dispatchAction(action);
   }
 
   public async disconnect(): Promise<any> {
