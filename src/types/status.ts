@@ -1,10 +1,28 @@
+/**
+ * @hidden
+ */
+export enum STATUS {
+  ONLINE = "online",
+  OFFLINE = "offline",
+  UPDATING = "updating",
+  BOOTING = "booting",
+  SHUTTING_OFF = "shuttingOff"
+}
+
+/**
+ * @hidden
+ */
+export enum SLEEP_MODE_REASON {
+  UPDATING = "updating",
+  CHARGING = "charging"
+}
+
 export interface DeviceStatus {
   battery: number;
   charging: boolean;
-  state: "online" | "offline" | "updating" | "booting" | "shuttingOff";
+  state: STATUS;
   sleepMode: boolean;
-  sleepModeReason: "updating" | "charging" | null;
-  updatingProgress: number;
+  sleepModeReason: SLEEP_MODE_REASON | null;
   lastHeartbeat: number;
   ssid: string;
 }

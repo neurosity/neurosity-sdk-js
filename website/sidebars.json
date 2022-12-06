@@ -1,6 +1,8 @@
 {
   "docs": {
-    "Overview": ["overview"],
+    "Overview": [
+      "overview"
+    ],
     "Get Started": [
       "getting-started",
       "tutorials/your-first-web-app",
@@ -30,18 +32,22 @@
     ]
   },
   "@neurosity/notion": {
-    "Introduction": ["reference/index"],
-    "Classes": ["reference/classes/notion"],
+    "Introduction": [
+      "reference/index"
+    ],
+    "Classes": [
+      "reference/classes/notion"
+    ],
     "Interfaces": [
+      "reference/interfaces/accelerometer",
       "reference/interfaces/calm",
       "reference/interfaces/deviceinfo",
       "reference/interfaces/devicestatus",
-      "reference/interfaces/epoch",
       "reference/interfaces/focus",
       "reference/interfaces/kinesis",
-      "reference/interfaces/notionoptions",
       "reference/interfaces/psd",
       "reference/interfaces/powerbyband",
+      "reference/interfaces/sdkoptions",
       "reference/interfaces/settings",
       "reference/interfaces/signalquality"
     ]

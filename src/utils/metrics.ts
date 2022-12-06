@@ -9,7 +9,7 @@ import { DeviceInfo } from "../types/deviceInfo";
 /**
  * @internal
  */
-export function getMetric(
+export function getCloudMetric(
   dependencies,
   subscription: PendingSubscription
 ): Observable<any> {

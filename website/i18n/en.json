@@ -23,11 +23,17 @@
       "api/focus": {
         "title": "Focus"
       },
+      "api/haptics": {
+        "title": "Haptics"
+      },
       "api/info": {
         "title": "Device Information"
       },
       "api/kinesis": {
         "title": "Kinesis"
+      },
+      "api/oauth": {
+        "title": "OAuth"
       },
       "api/predictions": {
         "title": "Predictions"
@@ -67,6 +73,10 @@
         "title": "@neurosity/notion",
         "sidebar_label": "Globals"
       },
+      "reference/interfaces/accelerometer": {
+        "title": "Accelerometer",
+        "sidebar_label": "Accelerometer"
+      },
       "reference/interfaces/calm": {
         "title": "Calm",
         "sidebar_label": "Calm"
@@ -79,10 +89,6 @@
         "title": "DeviceStatus",
         "sidebar_label": "DeviceStatus"
       },
-      "reference/interfaces/epoch": {
-        "title": "Epoch",
-        "sidebar_label": "Epoch"
-      },
       "reference/interfaces/focus": {
         "title": "Focus",
         "sidebar_label": "Focus"
@@ -91,10 +97,6 @@
         "title": "Kinesis",
         "sidebar_label": "Kinesis"
       },
-      "reference/interfaces/notionoptions": {
-        "title": "SDKOptions",
-        "sidebar_label": "SDKOptions"
-      },
       "reference/interfaces/powerbyband": {
         "title": "PowerByBand",
         "sidebar_label": "PowerByBand"
@@ -102,6 +104,10 @@
       "reference/interfaces/psd": {
         "title": "PSD",
         "sidebar_label": "PSD"
+      },
+      "reference/interfaces/sdkoptions": {
+        "title": "SDKOptions",
+        "sidebar_label": "SDKOptions"
       },
       "reference/interfaces/settings": {
         "title": "Settings",
