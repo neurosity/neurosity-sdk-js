@@ -1,9 +1,11 @@
-import { Observable, throwError } from "rxjs";
-import { ReplaySubject, firstValueFrom } from "rxjs";
-import { map, switchMap } from "rxjs/operators";
+import { combineLatest, Observable, throwError } from "rxjs";
+import { ReplaySubject, firstValueFrom, EMPTY } from "rxjs";
+import { distinctUntilChanged, map, switchMap } from "rxjs/operators";
+import isEqual from "fast-deep-equal";
 import { CloudClient, createUser } from "./api/index";
 import { credentialWithLink, SERVER_TIMESTAMP } from "./api/index";
-import { SDKOptions, STREAMING_MODE } from "./types/options";
+import { SDKOptions } from "./types/options";
+import { STREAMING_MODE, STREAMING_TYPE } from "./types/streaming";
 import { Training } from "./types/training";
 import { SkillInstance } from "./types/skill";
 import { Credentials, EmailAndPassword } from "./types/credentials";
@@ -18,7 +20,7 @@ import { Subscription } from "./types/subscriptions";
 import { BrainwavesLabel, Epoch, PowerByBand, PSD } from "./types/brainwaves";
 import { Accelerometer } from "./types/accelerometer";
 import { DeviceInfo } from "./types/deviceInfo";
-import { DeviceStatus } from "./types/status";
+import { DeviceStatus, STATUS } from "./types/status";
 import { Action } from "./types/actions";
 import { HapticEffects } from "./types/hapticEffects";
 import * as errors from "./utils/errors";
@@ -32,15 +34,16 @@ import { OAuthConfig, OAuthQuery } from "./types/oauth";
 import { OAuthQueryResult, OAuthRemoveResponse } from "./types/oauth";
 import { UserClaims } from "./types/user";
 import { isNode } from "./utils/is-node";
-import { getMetric } from "./utils/metrics";
+import { getCloudMetric } from "./utils/metrics";
 import { Experiment } from "./types/experiment";
 import { TransferDeviceOptions } from "./utils/transferDevice";
 import { BluetoothClient } from "./api/bluetooth";
+import { BLUETOOTH_CONNECTION } from "./api/bluetooth/types";
 
 const defaultOptions = {
   timesync: false,
   autoSelectDevice: true,
-  // streamingMode: STREAMING_MODE.CLOUD_ONLY,
+  streamingMode: STREAMING_MODE.WIFI_ONLY,
   emulator: false,
   emulatorHost: "localhost",
   emulatorAuthPort: 9099,
@@ -107,6 +110,8 @@ export class Notion {
    * @param options
    */
   constructor(options: SDKOptions = {}) {
+    const { streamingMode, bluetoothTransport } = options;
+
     this.options = Object.freeze({
       ...defaultOptions,
       ...options
@@ -114,9 +119,7 @@ export class Notion {
 
     this.cloudClient = new CloudClient(this.options);
 
-    const { streamingMode, bluetoothTransport } = options;
-
-    if (bluetoothTransport) {
+    if (!!bluetoothTransport) {
       this.bluetoothClient = new BluetoothClient({
         selectedDevice$: this.onDeviceChange(),
         createBluetoothToken: this.createBluetoothToken.bind(this),
@@ -124,16 +127,27 @@ export class Notion {
       });
     }
 
+    this._initStreamingMode(streamingMode, !!bluetoothTransport);
+  }
+
+  /**
+   *
+   * @hidden
+   */
+  _initStreamingMode(
+    streamingMode: STREAMING_MODE,
+    hasBluetoothTransport: boolean
+  ): void {
     const streamingModeFeaturesBluetooth = [
-      STREAMING_MODE.BLUETOOTH_WITH_CLOUD_FALLBACK,
-      STREAMING_MODE.CLOUD_WITH_BLUETOOTH_FALLBACK
+      STREAMING_MODE.BLUETOOTH_WITH_WIFI_FALLBACK,
+      STREAMING_MODE.WIFI_WITH_BLUETOOTH_FALLBACK
     ].includes(streamingMode);
 
     const isInvalidStreamingMode =
       !Object.values(STREAMING_MODE).includes(streamingMode);
 
     const isMissingBluetoothTransport =
-      streamingModeFeaturesBluetooth && !bluetoothTransport;
+      streamingModeFeaturesBluetooth && !hasBluetoothTransport;
 
     const shouldDefaultToCloud =
       !streamingMode || isInvalidStreamingMode || isMissingBluetoothTransport;
@@ -143,9 +157,133 @@ export class Notion {
     // 2. An invalid streaming mode is provided
     // 3. A streaming mode containing bluetooth is provided, but without a bluetooth transport
     if (shouldDefaultToCloud) {
-      this.streamingMode$.next(STREAMING_MODE.CLOUD_ONLY);
+      this.streamingMode$.next(STREAMING_MODE.WIFI_ONLY);
     } else {
       this.streamingMode$.next(streamingMode);
+    }
+  }
+
+  /**
+   * Subscribe to streaming mode changes and the current strategy
+   *
+   * Streams the current mode of streaming (wifi or bluetooth).
+   *
+   * ```typescript
+   * notion.streamingMode().subscribe((streamingMode) => {
+   *   console.log(streamingMode);
+   *   // { streamingMode: "wifi-only", activeMode: "wifi" }
+   * });
+   * ```
+   */
+  public streamingMode(): Observable<{
+    activeMode: STREAMING_TYPE;
+    streamingMode: STREAMING_MODE;
+  }> {
+    const wifiStatus$ = this.cloudClient.status();
+    const bluetoothConnection$ = this.bluetoothClient.connection();
+
+    return this.onDeviceChange().pipe(
+      switchMap((selectDevice) =>
+        !selectDevice
+          ? EMPTY
+          : combineLatest({
+              streamingMode: this.streamingMode$,
+              wifiStatus: wifiStatus$,
+              bluetoothConnection: bluetoothConnection$
+            }).pipe(
+              map(({ streamingMode, wifiStatus, bluetoothConnection }) => {
+                switch (streamingMode) {
+                  default:
+                  case STREAMING_MODE.WIFI_ONLY:
+                    return {
+                      streamingMode,
+                      activeMode: STREAMING_TYPE.WIFI
+                    };
+
+                  case STREAMING_MODE.BLUETOOTH_ONLY:
+                    return {
+                      streamingMode,
+                      activeMode: STREAMING_TYPE.BLUETOOTH
+                    };
+
+                  case STREAMING_MODE.WIFI_WITH_BLUETOOTH_FALLBACK:
+                    const isWifiOnline = [
+                      STATUS.ONLINE,
+                      STATUS.UPDATING
+                    ].includes(wifiStatus.state);
+
+                    return {
+                      streamingMode,
+                      activeMode: isWifiOnline
+                        ? STREAMING_TYPE.WIFI
+                        : STREAMING_TYPE.BLUETOOTH
+                    };
+
+                  case STREAMING_MODE.BLUETOOTH_WITH_WIFI_FALLBACK:
+                    const isBluetoothConnected =
+                      bluetoothConnection === BLUETOOTH_CONNECTION.CONNECTED;
+
+                    return {
+                      streamingMode,
+                      activeMode: isBluetoothConnected
+                        ? STREAMING_TYPE.BLUETOOTH
+                        : STREAMING_TYPE.WIFI
+                    };
+                }
+              }),
+              distinctUntilChanged((a, b) => isEqual(a, b))
+            )
+      )
+    );
+  }
+
+  /**
+   *
+   * @hidden
+   */
+  _withStreamingModeObservable<T>(streams: {
+    wifi: () => Observable<T>;
+    bluetooth: () => Observable<T>;
+  }): Observable<any> {
+    const { wifi, bluetooth } = streams;
+
+    return this.streamingMode().pipe(
+      switchMap(({ activeMode }) => {
+        switch (activeMode) {
+          case STREAMING_TYPE.WIFI:
+            return wifi();
+
+          case STREAMING_TYPE.BLUETOOTH:
+            return bluetooth();
+
+          default:
+            return wifi();
+        }
+      })
+    );
+  }
+
+  /**
+   *
+   * @hidden
+   */
+  async _withStreamingModePromise<T>(promises: {
+    wifi: () => Promise<T>;
+    bluetooth: () => Promise<T>;
+  }): Promise<T> {
+    const { wifi, bluetooth } = promises;
+
+    const { activeMode } = await firstValueFrom(this.streamingMode());
+
+    switch (activeMode) {
+      case STREAMING_TYPE.WIFI:
+        return await wifi();
+
+      case STREAMING_TYPE.BLUETOOTH:
+        return await bluetooth();
+
+      default:
+        return await wifi();
     }
   }
 
@@ -161,7 +299,7 @@ export class Notion {
    *
    * @hidden
    */
-  private _getMetricDependencies() {
+  private _getCloudMetricDependencies() {
     return {
       options: this.options,
       cloudClient: this.cloudClient,
@@ -393,15 +531,10 @@ export class Notion {
       return Promise.reject(OAuthError);
     }
 
-    return await firstValueFrom(
-      this.streamingMode$.pipe(
-        switchMap((streamingMode) =>
-          streamingMode === STREAMING_MODE.CLOUD_ONLY
-            ? this.cloudClient.getInfo()
-            : this.bluetoothClient.getInfo()
-        )
-      )
-    );
+    return await this._withStreamingModePromise({
+      wifi: () => this.cloudClient.getInfo(),
+      bluetooth: () => this.bluetoothClient.getInfo()
+    });
   }
 
   /**
@@ -427,6 +560,8 @@ export class Notion {
   }
 
   /**
+   * `wifi` `bluetooth`
+   *
    * Ends database connection
    *
    * ```typescript
@@ -434,10 +569,15 @@ export class Notion {
    * ```
    */
   public async disconnect(): Promise<void> {
-    return await this.cloudClient.disconnect();
+    return await this._withStreamingModePromise({
+      wifi: () => this.cloudClient.disconnect(),
+      bluetooth: () => this.bluetoothClient.disconnect()
+    });
   }
 
   /**
+   * `wifi` `bluetooth`
+   *
    * @internal
    * Not user facing
    */
@@ -455,10 +595,15 @@ export class Notion {
       return Promise.reject(OAuthError);
     }
 
-    return await this.cloudClient.actions.dispatch(action);
+    return await this._withStreamingModePromise({
+      wifi: () => this.cloudClient.dispatchAction(action),
+      bluetooth: () => this.bluetoothClient.dispatchAction(action)
+    });
   }
 
   /**
+   * `wifi` `bluetooth`
+   *
    * Injects an EEG marker to data stream
    *
    * ```typescript
@@ -480,17 +625,23 @@ export class Notion {
       throw new Error(`${errors.prefix}A label is required for addMarker`);
     }
 
-    return await this.dispatchAction({
-      command: "marker",
-      action: "add",
-      message: {
-        label,
-        timestamp: this.cloudClient.timestamp
-      }
+    return await this._withStreamingModePromise({
+      wifi: () =>
+        this.cloudClient.dispatchAction({
+          command: "marker",
+          action: "add",
+          message: {
+            label,
+            timestamp: this.cloudClient.timestamp
+          }
+        }),
+      bluetooth: () => this.bluetoothClient.addMarker(label)
     });
   }
 
   /**
+   * `wifi` `bluetooth`
+   *
    * Queue haptic motor commands
    *
    * To queue haptic P7 only,
@@ -555,12 +706,17 @@ export class Notion {
       newPlatformHapticRequest[key] = singleMotorEffects;
     }
 
-    return this.dispatchAction({
+    const payload = {
       command: metric,
       action: "queue",
       responseRequired: true,
       responseTimeout: 1000,
       message: { effects: newPlatformHapticRequest }
+    };
+
+    return await this._withStreamingModePromise({
+      wifi: () => this.cloudClient.dispatchAction(payload),
+      bluetooth: () => this.bluetoothClient.dispatchAction(payload)
     });
   }
 
@@ -574,6 +730,8 @@ export class Notion {
   }
 
   /**
+   * `wifi` `bluetooth`
+   *
    * Observes accelerometer data
    * Supported by Notion 2 and the Crown.
    *
@@ -611,16 +769,22 @@ export class Notion {
           );
         }
 
-        return getMetric(this._getMetricDependencies(), {
-          metric,
-          labels: getLabels(metric),
-          atomic: true
+        return this._withStreamingModeObservable({
+          wifi: () =>
+            getCloudMetric(this._getCloudMetricDependencies(), {
+              metric,
+              labels: getLabels(metric),
+              atomic: true
+            }),
+          bluetooth: () => this.bluetoothClient.accelerometer()
         });
       })
     );
   }
 
   /**
+   * `wifi` `bluetooth`
+   * 
    * The `raw` brainwaves parameter emits epochs of 16 samples for Crown and 25 for Notion 1 and 2.
    *
    * Example
@@ -673,14 +837,22 @@ export class Notion {
       return throwError(() => OAuthError);
     }
 
-    return getMetric(this._getMetricDependencies(), {
-      metric: "brainwaves",
-      labels: label ? [label, ...otherLabels] : [],
-      atomic: false
+    return this._withStreamingModeObservable({
+      wifi: () =>
+        getCloudMetric(this._getCloudMetricDependencies(), {
+          metric: "brainwaves",
+          labels: label ? [label, ...otherLabels] : [],
+          atomic: false
+        }),
+      // @TODO: doesn't support multiple labels, we should make the higher
+      // order function only support one label
+      bluetooth: () => this.bluetoothClient.brainwaves(label)
     });
   }
 
   /**
+   * `wifi` `bluetooth`
+   *
    * Example
    * ```typescript
    * notion.calm().subscribe(calm => {
@@ -706,14 +878,20 @@ export class Notion {
       return throwError(() => OAuthError);
     }
 
-    return getMetric(this._getMetricDependencies(), {
-      metric: "awareness",
-      labels: ["calm"],
-      atomic: false
+    return this._withStreamingModeObservable({
+      wifi: () =>
+        getCloudMetric(this._getCloudMetricDependencies(), {
+          metric: "awareness",
+          labels: ["calm"],
+          atomic: false
+        }),
+      bluetooth: () => this.bluetoothClient.calm()
     });
   }
 
   /**
+   * `wifi` `bluetooth`
+   *
    * Observes signal quality data where each property is the name
    * of the channel and the value includes the standard deviation and
    * a status set by the device
@@ -740,14 +918,20 @@ export class Notion {
       return throwError(() => OAuthError);
     }
 
-    return getMetric(this._getMetricDependencies(), {
-      metric,
-      labels: getLabels(metric),
-      atomic: true
+    return this._withStreamingModeObservable({
+      wifi: () =>
+        getCloudMetric(this._getCloudMetricDependencies(), {
+          metric,
+          labels: getLabels(metric),
+          atomic: true
+        }),
+      bluetooth: () => this.bluetoothClient.signalQuality()
     });
   }
 
   /**
+   * `wifi` `bluetooth`
+   *
    * Observes last state of `settings` and all subsequent `settings` changes
    *
    * ```typescript
@@ -771,10 +955,15 @@ export class Notion {
       return throwError(() => OAuthError);
     }
 
-    return this.cloudClient.observeNamespace("settings");
+    return this._withStreamingModeObservable({
+      wifi: () => this.cloudClient.observeNamespace("settings"),
+      bluetooth: () => this.bluetoothClient.settings()
+    });
   }
 
   /**
+   * `wifi` `bluetooth`
+   *
    * Example
    * ```typescript
    * notion.focus().subscribe(focus => {
@@ -800,14 +989,20 @@ export class Notion {
       return throwError(() => OAuthError);
     }
 
-    return getMetric(this._getMetricDependencies(), {
-      metric: "awareness",
-      labels: ["focus"],
-      atomic: false
+    return this._withStreamingModeObservable({
+      wifi: () =>
+        getCloudMetric(this._getCloudMetricDependencies(), {
+          metric: "awareness",
+          labels: ["focus"],
+          atomic: false
+        }),
+      bluetooth: () => this.bluetoothClient.focus()
     });
   }
 
   /**
+   * `wifi`
+   *
    * @param labels Name of metric properties to filter by
    * @returns Observable of kinesis metric events
    */
@@ -823,7 +1018,7 @@ export class Notion {
       return throwError(() => OAuthError);
     }
 
-    return getMetric(this._getMetricDependencies(), {
+    return getCloudMetric(this._getCloudMetricDependencies(), {
       metric,
       labels: label ? [label, ...otherLabels] : [],
       atomic: false
@@ -831,6 +1026,8 @@ export class Notion {
   }
 
   /**
+   * `wifi`
+   *
    * @param labels Name of metric properties to filter by
    * @returns Observable of predictions metric events
    */
@@ -846,7 +1043,7 @@ export class Notion {
       return throwError(() => OAuthError);
     }
 
-    return getMetric(this._getMetricDependencies(), {
+    return getCloudMetric(this._getCloudMetricDependencies(), {
       metric,
       labels: label ? [label, ...otherLabels] : [],
       atomic: false
@@ -854,6 +1051,8 @@ export class Notion {
   }
 
   /**
+   * `wifi` `bluetooth`
+   *
    * Observes last state of `status` and all subsequent `status` changes
    *
    * ```typescript
@@ -877,12 +1076,17 @@ export class Notion {
       return throwError(() => OAuthError);
     }
 
-    return this.cloudClient.status();
+    return this._withStreamingModeObservable({
+      wifi: () => this.cloudClient.status(),
+      bluetooth: () => this.bluetoothClient.status()
+    });
   }
 
   /**
    * @internal
    * Not user facing yet
+   *
+   * `wifi`
    *
    * Changes device settings programmatically. These settings can be
    * also changed from the developer console under device settings.
@@ -914,6 +1118,7 @@ export class Notion {
   }
 
   /**
+   * `wifi`
    *
    * ```typescript
    * notion.training.record({
@@ -932,6 +1137,8 @@ export class Notion {
   public get training(): Training {
     return {
       /**
+       * `wifi`
+       *
        * Records a training for a metric/label pair
        * @category Training
        */
@@ -959,6 +1166,8 @@ export class Notion {
         });
       },
       /**
+       * `wifi`
+       *
        * Stops the training for a metric/label pair
        * @category Training
        */
@@ -976,6 +1185,8 @@ export class Notion {
         });
       },
       /**
+       * `wifi`
+       *
        * Stops all trainings
        * @category Training
        */
@@ -1259,6 +1470,8 @@ export class Notion {
   }
 
   /**
+   * `wifi`
+   *
    * Observes and returns a list of all Kinesis `experiments` and all subsequent experiment changes.
    * Here's an example of how to get a list of all Kinesis labels that have been trained:
    *
@@ -1286,6 +1499,8 @@ export class Notion {
   }
 
   /**
+   * `wifi`
+   *
    * Deletes a specific experiment provided an experiment ID
    *
    * ```typescript

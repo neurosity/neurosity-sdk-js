@@ -1,0 +1,17 @@
+/**
+ * @hidden
+ */
+export enum STREAMING_TYPE {
+  WIFI = "wifi",
+  BLUETOOTH = "bluetooth"
+}
+
+/**
+ * @hidden
+ */
+export enum STREAMING_MODE {
+  WIFI_ONLY = "wifi-only",
+  BLUETOOTH_ONLY = "bluetooth-only",
+  WIFI_WITH_BLUETOOTH_FALLBACK = "wifi-with-bluetooth-fallback",
+  BLUETOOTH_WITH_WIFI_FALLBACK = "bluetooth-with-wifi-fallback"
+}
