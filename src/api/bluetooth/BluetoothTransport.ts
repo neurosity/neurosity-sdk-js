@@ -22,7 +22,7 @@ export interface BluetoothTransport {
   addLog: (log: string) => void;
   logs$: Subject<string>;
 
-  onDiscover?(options?: { seconds?: number }): Observable<Peripheral[]>;
+  discover?(options?: { seconds?: number }): Observable<Peripheral[]>;
 
   subscribeToCharacteristic(args: {
     characteristicName: string;

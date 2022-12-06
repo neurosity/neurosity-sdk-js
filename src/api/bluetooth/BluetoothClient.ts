@@ -117,14 +117,14 @@ export class BluetoothClient {
   }
 
   // Method for React Native only
-  onDiscover() {
+  discover() {
     if (this.transport instanceof ReactNativeTransport) {
-      return this.transport.onDiscover();
+      return this.transport.discover();
     }
 
     if (this.transport instanceof WebBluetoothTransport) {
       throw new Error(
-        `onDiscover method is compatibly with the React Native transport only`
+        `discover method is compatibly with the React Native transport only`
       );
     }
 

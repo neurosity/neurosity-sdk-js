@@ -124,7 +124,7 @@ export class ReactNativeTransport implements BluetoothTransport {
       this.onDisconnected$.pipe(switchMap(() => selectedDevice$))
     ).pipe(
       switchMap((selectedDevice) =>
-        this.onDiscover().pipe(
+        this.discover().pipe(
           switchMap((peripherals) => {
             const peripheral = peripherals.find(
               (peripheral) => peripheral.name === selectedDevice?.deviceNickname
@@ -157,7 +157,7 @@ export class ReactNativeTransport implements BluetoothTransport {
     );
   }
 
-  onDiscover(options?: { seconds?: number }): Observable<Peripheral[]> {
+  discover(options?: { seconds?: number }): Observable<Peripheral[]> {
     const RESCAN_INTERVAL = 10_000; // 10 seconds
     const SECONDS = RESCAN_INTERVAL / 1000;
     const { seconds } = options ?? { seconds: SECONDS };
