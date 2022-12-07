@@ -139,9 +139,9 @@ export class BluetoothClient {
   }
 
   // Method for React Native only
-  scan() {
+  scan(options?) {
     if (this.transport instanceof ReactNativeTransport) {
-      return this.transport.scan();
+      return this.transport.scan(options);
     }
 
     if (this.transport instanceof WebBluetoothTransport) {
