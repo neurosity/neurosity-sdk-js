@@ -205,8 +205,8 @@ export class ReactNativeTransport implements BluetoothTransport {
       ),
       // Filter out devices that are not Neurosity devices
       filter((peripheral: Peripheral) => {
-        const peripheralName =
-          peripheral.name ?? peripheral.advertising?.localName ?? "";
+        const peripheralName: string =
+          peripheral?.advertising?.localName ?? peripheral.name ?? "";
 
         if (!peripheralName) {
           return false;
@@ -220,9 +220,19 @@ export class ReactNativeTransport implements BluetoothTransport {
         return startsWithPrefix;
       }),
       scan((acc, peripheral): { [name: string]: Peripheral } => {
+        // normalized peripheral name for backwards compatibility
+        // Neurosity OS v15 doesn't have peripheral.name as deviceNickname
+        // it only has peripheral.advertising.localName as deviceNickname
+        // and OS v16 has both as deviceNickname
+        const peripheralName: string =
+          peripheral?.advertising?.localName ?? peripheral.name ?? "";
+
         return {
           ...acc,
-          [peripheral.id]: peripheral
+          [peripheral.id]: {
+            ...peripheral,
+            name: peripheralName
+          }
         };
       }, {}),
       distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
