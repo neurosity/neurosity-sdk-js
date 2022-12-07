@@ -2,7 +2,7 @@ import { BLUETOOTH_PRIMARY_SERVICE_UUID_HEX } from "@neurosity/ipk";
 import { BLUETOOTH_CHUNK_DELIMITER } from "@neurosity/ipk";
 import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
 import { BLUETOOTH_COMPANY_IDENTIFIER_HEX } from "@neurosity/ipk";
-import { BehaviorSubject, defer, merge, ReplaySubject, timer } from "rxjs";
+import { BehaviorSubject, defer, merge, of, ReplaySubject, timer } from "rxjs";
 import { fromEventPattern, Observable, EMPTY, NEVER } from "rxjs";
 import { switchMap, map, filter, tap } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged } from "rxjs/operators";
@@ -68,6 +68,9 @@ export class WebBluetoothTransport implements BluetoothTransport {
       selectedDevice$,
       this.onDisconnected$.pipe(switchMap(() => selectedDevice$))
     ).pipe(
+      switchMap((selectedDevice) =>
+        osHasBluetoothSupport(selectedDevice) ? of(selectedDevice) : EMPTY
+      ),
       switchMap(async (selectedDevice) => {
         const { deviceNickname } = selectedDevice;
 

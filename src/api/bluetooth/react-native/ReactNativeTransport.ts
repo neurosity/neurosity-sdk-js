@@ -123,10 +123,13 @@ export class ReactNativeTransport implements BluetoothTransport {
       this.onDisconnected$.pipe(switchMap(() => selectedDevice$))
     ).pipe(
       switchMap((selectedDevice) =>
-        this.scan().pipe(
+        !osHasBluetoothSupport(selectedDevice)
+          ? EMPTY
+          : this.scan().pipe(
           switchMap((peripherals) => {
             const peripheral = peripherals.find(
-              (peripheral) => peripheral.name === selectedDevice?.deviceNickname
+                  (peripheral) =>
+                    peripheral.name === selectedDevice?.deviceNickname
             );
 
             return peripheral ? of(peripheral) : EMPTY;

@@ -7,8 +7,13 @@ export function osHasBluetoothSupport(selectedDevice: DeviceInfo) {
     return false;
   }
 
-  const isEmulator = !!selectedDevice?.emulator;
+  // Only the Crown supports Bluetooth
+  const isCrown = Number(selectedDevice.modelVersion) >= 3;
+  if (!isCrown) {
+    return false;
+  }
 
+  const isEmulator = !!selectedDevice?.emulator;
   if (isEmulator) {
     return false;
   }
