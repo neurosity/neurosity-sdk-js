@@ -3,7 +3,7 @@ import { BLUETOOTH_CHUNK_DELIMITER } from "@neurosity/ipk";
 import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
 import { BehaviorSubject, defer, merge, of, ReplaySubject, timer } from "rxjs";
 import { fromEventPattern, Observable, race, NEVER, EMPTY } from "rxjs";
-import { switchMap, map, filter, takeUntil } from "rxjs/operators";
+import { switchMap, map, filter, takeUntil, tap } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged } from "rxjs/operators";
 import { take, share, scan } from "rxjs/operators";
 
@@ -22,6 +22,7 @@ import { CHARACTERISTIC_UUIDS_TO_NAMES } from "../constants";
 import { ANDROID_MAX_MTU } from "../constants";
 import { REACT_NATIVE_MAX_BYTE_SIZE } from "../constants";
 import { DeviceInfo } from "../../../types/deviceInfo";
+import { osHasBluetoothSupport } from "../utils/osHasBluetoothSupport";
 
 type Characteristic = {
   characteristicUUID: string;
@@ -105,8 +106,6 @@ export class ReactNativeTransport implements BluetoothTransport {
     this.onDisconnected$.subscribe(() => {
       this.connection$.next(BLUETOOTH_CONNECTION.DISCONNECTED);
     });
-
-    this._autoToggleActionNotifications();
   }
 
   addLog(log: string) {
@@ -496,19 +495,18 @@ export class ReactNativeTransport implements BluetoothTransport {
     );
   }
 
-  async _autoToggleActionNotifications() {
+  async _autoToggleActionNotifications(
+    selectedDevice$: Observable<DeviceInfo>
+  ): Promise<void> {
     let started: boolean = false;
 
-    this.connection$
-      .asObservable()
-      .pipe(
-        switchMap((connection) =>
-          connection === BLUETOOTH_CONNECTION.CONNECTED
-            ? this.pendingActions$
-            : NEVER
-        )
-      )
-      .subscribe(async (pendingActions: string[]) => {
+    const sideEffects$ = this.connection$.asObservable().pipe(
+      switchMap((connection) =>
+        connection === BLUETOOTH_CONNECTION.CONNECTED
+          ? this.pendingActions$
+          : NEVER
+      ),
+      tap(async (pendingActions: string[]) => {
         const { peripheralId, serviceUUID, characteristicUUID } =
           this.getCharacteristicByName("actions");
 
@@ -549,7 +547,16 @@ export class ReactNativeTransport implements BluetoothTransport {
             );
           }
         }
-      });
+      })
+    );
+
+    selectedDevice$
+      .pipe(
+        switchMap((selectedDevice: DeviceInfo) =>
+          !osHasBluetoothSupport(selectedDevice) ? EMPTY : sideEffects$
+        )
+      )
+      .subscribe();
   }
 
   async dispatchAction({

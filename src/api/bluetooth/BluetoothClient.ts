@@ -12,6 +12,7 @@ import { Epoch } from "../../types/epoch";
 import { BLUETOOTH_CONNECTION } from "./types";
 import { DeviceNicknameOrPeripheral } from "./BluetoothTransport";
 import { Peripheral } from "./react-native/types/BleManagerTypes";
+import { osHasBluetoothSupport } from "./utils/osHasBluetoothSupport";
 
 export type BluetoothTransport = WebBluetoothTransport | ReactNativeTransport;
 
@@ -63,6 +64,9 @@ export class BluetoothClient {
     } else {
       this.transport.addLog("Auto authentication not enabled");
     }
+
+    // Auto manage action notifications
+    this.transport._autoToggleActionNotifications(this.selectedDevice$);
   }
 
   _autoAuthenticate(createBluetoothToken: CreateBluetoothToken) {
@@ -73,25 +77,43 @@ export class BluetoothClient {
       })
     );
 
-    return this.connection().pipe(
-      switchMap((connection) =>
-        connection === BLUETOOTH_CONNECTION.CONNECTED
-          ? reauthenticateInterval$
-          : EMPTY
-      ),
-      switchMap(async () => await this.isAuthenticated()),
-      tap(async ([isAuthenticated]) => {
-        if (!isAuthenticated) {
-          const token = await createBluetoothToken();
-          await this.authenticate(token);
-        } else {
-          this.transport.addLog(`Already authenticated`);
-        }
-      })
+    return this.selectedDevice$.pipe(
+      switchMap((selectedDevice) =>
+        !osHasBluetoothSupport(selectedDevice)
+          ? EMPTY
+          : this.connection().pipe(
+              switchMap((connection) =>
+                connection === BLUETOOTH_CONNECTION.CONNECTED
+                  ? reauthenticateInterval$
+                  : EMPTY
+              ),
+              switchMap(async () => await this.isAuthenticated()),
+              tap(async ([isAuthenticated]) => {
+                if (!isAuthenticated) {
+                  const token = await createBluetoothToken();
+                  await this.authenticate(token);
+                } else {
+                  this.transport.addLog(`Already authenticated`);
+                }
+              })
+            )
+      )
     );
   }
 
+  async _hasBluetoothSupport(): Promise<boolean> {
+    const selectedDevice = await firstValueFrom(this.selectedDevice$);
+    return osHasBluetoothSupport(selectedDevice);
+  }
+
   async authenticate(token: string): Promise<IsAuthenticatedResponse> {
+    const hasBluetoothSupport = await this._hasBluetoothSupport();
+    if (!hasBluetoothSupport) {
+      const errorMessage = `authenticate method: The OS version does not support Bluetooth.`;
+      this.transport.addLog(errorMessage);
+      return Promise.reject(errorMessage);
+    }
+
     await this.transport.writeCharacteristic("auth", token);
 
     const isAuthenticatedResponse = await this.isAuthenticated();
@@ -157,24 +179,44 @@ export class BluetoothClient {
   }
 
   async getDeviceId(): Promise<string> {
-    const isAuthenticated = await firstValueFrom(this.isAuthenticated$);
-
-    if (!isAuthenticated) {
-      return Promise.reject(`Authentication required.`);
-    }
-
+    // This is a public characteristic and does not require authentication
     return this.transport.readCharacteristic("deviceId");
   }
 
+  async _withAuthentication<T>(getter: () => Promise<T>): Promise<T> {
+    // First check if the OS supports Bluetooth before checking if the device is authenticated
+    const hasBluetoothSupport = await this._hasBluetoothSupport();
+    if (!hasBluetoothSupport) {
+      const errorMessage = `The OS version does not support Bluetooth.`;
+      this.transport.addLog(errorMessage);
+      return Promise.reject(errorMessage);
+    }
+
+    const isAuthenticated = await firstValueFrom(this.isAuthenticated$);
+    if (!isAuthenticated) {
+      const errorMessage = `Authentication required.`;
+      this.transport.addLog(errorMessage);
+      return Promise.reject(errorMessage);
+    }
+
+    return await getter();
+  }
+
   _subscribeWhileAuthenticated(characteristicName: string): Observable<any> {
-    return this.isAuthenticated$.pipe(
-      distinctUntilChanged(),
-      switchMap((isAuthenticated) =>
-        isAuthenticated
-          ? this.transport.subscribeToCharacteristic({
-              characteristicName
-            })
-          : EMPTY
+    return this.selectedDevice$.pipe(
+      switchMap((selectedDevice) =>
+        !osHasBluetoothSupport(selectedDevice)
+          ? EMPTY
+          : this.isAuthenticated$.pipe(
+              distinctUntilChanged(),
+              switchMap((isAuthenticated) =>
+                isAuthenticated
+                  ? this.transport.subscribeToCharacteristic({
+                      characteristicName
+                    })
+                  : EMPTY
+              )
+            )
       )
     );
   }
@@ -223,31 +265,13 @@ export class BluetoothClient {
   }
 
   async getInfo(): Promise<DeviceInfo> {
-    const isAuthenticated = await firstValueFrom(this.isAuthenticated$);
-
-    if (!isAuthenticated) {
-      return Promise.reject(`Authentication required.`);
-    }
-
-    // cache for later
-    if (this.deviceInfo) {
-      return Promise.resolve(this.deviceInfo);
-    }
-
-    try {
-      const deviceInfo = await firstValueFrom(
+    return await this._withAuthentication(() =>
+      firstValueFrom(
         this.transport.subscribeToCharacteristic({
           characteristicName: "deviceInfo"
         })
-      );
-
-      this.deviceInfo = deviceInfo;
-
-      return deviceInfo;
-    } catch (error) {
-      console.log("getinfo error", error);
-      return Promise.reject(error?.message);
-    }
+      )
+    );
   }
 
   // Tested
@@ -256,20 +280,12 @@ export class BluetoothClient {
   }
 
   async dispatchAction(action: Action): Promise<any> {
-    const isAuthenticated = await firstValueFrom(this.isAuthenticated$);
-
-    if (!isAuthenticated) {
-      return Promise.reject(`Authentication required.`);
-    }
-
-    try {
-      return await this.transport.dispatchAction({
+    return await this._withAuthentication(() =>
+      this.transport.dispatchAction({
         characteristicName: "actions",
         action
-      });
-    } catch (error) {
-      return Promise.reject(error?.messge ?? error);
-    }
+      })
+    );
   }
 
   settings() {
