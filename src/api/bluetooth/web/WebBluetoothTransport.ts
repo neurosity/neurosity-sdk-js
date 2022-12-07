@@ -3,7 +3,7 @@ import { BLUETOOTH_CHUNK_DELIMITER } from "@neurosity/ipk";
 import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
 import { BLUETOOTH_COMPANY_IDENTIFIER_HEX } from "@neurosity/ipk";
 import { BehaviorSubject, defer, merge, ReplaySubject, timer } from "rxjs";
-import { fromEventPattern, Observable, NEVER } from "rxjs";
+import { fromEventPattern, Observable, EMPTY, NEVER } from "rxjs";
 import { switchMap, map, filter, tap } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged } from "rxjs/operators";
 import { take, share } from "rxjs/operators";
@@ -18,6 +18,7 @@ import { TRANSPORT_TYPE, BLUETOOTH_CONNECTION } from "../types";
 import { DEFAULT_ACTION_RESPONSE_TIMEOUT } from "../constants";
 import { CHARACTERISTIC_UUIDS_TO_NAMES } from "../constants";
 import { DeviceInfo } from "../../../types/deviceInfo";
+import { osHasBluetoothSupport } from "../utils/osHasBluetoothSupport";
 
 export class WebBluetoothTransport implements BluetoothTransport {
   type: TRANSPORT_TYPE = TRANSPORT_TYPE.WEB;
@@ -56,8 +57,6 @@ export class WebBluetoothTransport implements BluetoothTransport {
     this.onDisconnected$.subscribe(() => {
       this.connection$.next(BLUETOOTH_CONNECTION.DISCONNECTED);
     });
-
-    this._autoToggleActionNotifications();
   }
 
   async _getPairedDevices(): Promise<BluetoothDevice[]> {
@@ -401,27 +400,24 @@ export class WebBluetoothTransport implements BluetoothTransport {
     );
   }
 
-  async _autoToggleActionNotifications() {
+  async _autoToggleActionNotifications(
+    selectedDevice$: Observable<DeviceInfo>
+  ): Promise<void> {
     let actionsCharacteristic: BluetoothRemoteGATTCharacteristic;
     let started: boolean = false;
 
-    this.connection$
-      .asObservable()
-      .pipe(
-        switchMap((connection) =>
-          connection === BLUETOOTH_CONNECTION.CONNECTED
-            ? defer(() => this.getCharacteristicByName("actions")).pipe(
-                switchMap(
-                  (characteristic: BluetoothRemoteGATTCharacteristic) => {
-                    actionsCharacteristic = characteristic;
-                    return this.pendingActions$;
-                  }
-                )
-              )
-            : NEVER
-        )
-      )
-      .subscribe(async (pendingActions: string[]) => {
+    const sideEffects$ = this.connection$.asObservable().pipe(
+      switchMap((connection) =>
+        connection === BLUETOOTH_CONNECTION.CONNECTED
+          ? defer(() => this.getCharacteristicByName("actions")).pipe(
+              switchMap((characteristic: BluetoothRemoteGATTCharacteristic) => {
+                actionsCharacteristic = characteristic;
+                return this.pendingActions$;
+              })
+            )
+          : NEVER
+      ),
+      tap(async (pendingActions: string[]) => {
         const hasPendingActions = !!pendingActions.length;
 
         if (hasPendingActions && !started) {
@@ -451,7 +447,16 @@ export class WebBluetoothTransport implements BluetoothTransport {
             );
           }
         }
-      });
+      })
+    );
+
+    selectedDevice$
+      .pipe(
+        switchMap((selectedDevice: DeviceInfo) =>
+          !osHasBluetoothSupport(selectedDevice) ? EMPTY : sideEffects$
+        )
+      )
+      .subscribe();
   }
 
   async dispatchAction({
