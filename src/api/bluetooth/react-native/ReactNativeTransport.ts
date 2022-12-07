@@ -196,7 +196,13 @@ export class ReactNativeTransport implements BluetoothTransport {
     });
 
     const stop$ = race(
-      this._fromEvent("BleManagerStopScan"),
+      this._fromEvent("BleManagerStopScan").pipe(
+        tap(() => {
+          this.addLog(
+            `BleManger stopped scanning ${once ? "once" : "indefintely"}`
+          );
+        })
+      ),
       this.onDisconnected$
     );
 
@@ -205,9 +211,8 @@ export class ReactNativeTransport implements BluetoothTransport {
     );
 
     const peripherals$ = (once ? scanOnce$ : keepScanning$).pipe(
-      switchMap(() =>
-        this._fromEvent("BleManagerDiscoverPeripheral").pipe(takeUntil(stop$))
-      ),
+      switchMap(() => this._fromEvent("BleManagerDiscoverPeripheral")),
+      takeUntil(stop$),
       // Filter out devices that are not Neurosity devices
       filter((peripheral: Peripheral) => {
         const peripheralName: string =
