@@ -22,7 +22,8 @@ export interface BluetoothTransport {
   addLog: (log: string) => void;
   logs$: Subject<string>;
 
-  discover?(options?: { seconds?: number }): Observable<Peripheral[]>;
+  // React Native only
+  scan?(options?: { seconds?: number }): Observable<Peripheral[]>;
 
   subscribeToCharacteristic(args: {
     characteristicName: string;
