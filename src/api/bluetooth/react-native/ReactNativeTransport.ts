@@ -126,16 +126,16 @@ export class ReactNativeTransport implements BluetoothTransport {
         !osHasBluetoothSupport(selectedDevice)
           ? EMPTY
           : this.scan().pipe(
-          switchMap((peripherals) => {
-            const peripheral = peripherals.find(
+              switchMap((peripherals) => {
+                const peripheral = peripherals.find(
                   (peripheral) =>
                     peripheral.name === selectedDevice?.deviceNickname
-            );
+                );
 
-            return peripheral ? of(peripheral) : EMPTY;
-          }),
-          take(1)
-        )
+                return peripheral ? of(peripheral) : EMPTY;
+              }),
+              take(1)
+            )
       ),
       switchMap(async (peripheral) => {
         return await this.connect(peripheral);
@@ -159,15 +159,18 @@ export class ReactNativeTransport implements BluetoothTransport {
     );
   }
 
-  scan(options?: { seconds?: number }): Observable<Peripheral[]> {
+  scan(options?: {
+    seconds?: number;
+    once?: boolean;
+  }): Observable<Peripheral[]> {
     const RESCAN_INTERVAL = 10_000; // 10 seconds
-    const SECONDS = RESCAN_INTERVAL / 1000;
-    const { seconds } = options ?? { seconds: SECONDS };
+    const seconds = options?.seconds ?? RESCAN_INTERVAL / 1000;
+    const once = options?.once ?? false;
     const serviceUUIDs = [BLUETOOTH_PRIMARY_SERVICE_UUID_STRING];
     const allowDuplicates = true;
     const scanOptions = {};
 
-    const onScan$ = new Observable((subscriber) => {
+    const scanOnce$ = new Observable((subscriber) => {
       try {
         this.BleManager.scan(
           serviceUUIDs,
@@ -175,11 +178,15 @@ export class ReactNativeTransport implements BluetoothTransport {
           allowDuplicates,
           scanOptions
         ).then(() => {
-          this.addLog(`BleManger scan started`);
+          this.addLog(`BleManger scanning ${once ? "once" : "indefintely"}`);
           subscriber.next();
         });
       } catch (error) {
-        this.addLog(`BleManger scan failed. ${error?.message ?? error}`);
+        this.addLog(
+          `BleManger scanning ${once ? "once" : "indefintely"} failed. ${
+            error?.message ?? error
+          }`
+        );
         subscriber.error(error);
       }
 
@@ -188,22 +195,18 @@ export class ReactNativeTransport implements BluetoothTransport {
       };
     });
 
-    const onStop$ = race(
+    const stop$ = race(
       this._fromEvent("BleManagerStopScan"),
       this.onDisconnected$
     );
 
-    const rescanInterval$ = timer(0, RESCAN_INTERVAL);
+    const keepScanning$ = timer(0, RESCAN_INTERVAL).pipe(
+      switchMap(() => scanOnce$)
+    );
 
-    const peripherals$ = rescanInterval$.pipe(
+    const peripherals$ = (once ? scanOnce$ : keepScanning$).pipe(
       switchMap(() =>
-        onScan$.pipe(
-          switchMap(() =>
-            this._fromEvent("BleManagerDiscoverPeripheral").pipe(
-              takeUntil(onStop$)
-            )
-          )
-        )
+        this._fromEvent("BleManagerDiscoverPeripheral").pipe(takeUntil(stop$))
       ),
       // Filter out devices that are not Neurosity devices
       filter((peripheral: Peripheral) => {
