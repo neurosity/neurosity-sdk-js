@@ -7,5 +7,11 @@ export function osHasBluetoothSupport(selectedDevice: DeviceInfo) {
     return false;
   }
 
+  const isEmulator = !!selectedDevice?.emulator;
+
+  if (isEmulator) {
+    return false;
+  }
+
   return semverGte(selectedDevice.osVersion, "16.0.0");
 }
