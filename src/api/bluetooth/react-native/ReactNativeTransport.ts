@@ -4,7 +4,7 @@ import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
 import { BehaviorSubject, defer, merge, of, ReplaySubject, timer } from "rxjs";
 import { fromEventPattern, Observable, race, NEVER, EMPTY } from "rxjs";
 import { switchMap, map, filter, takeUntil, tap } from "rxjs/operators";
-import { shareReplay, distinctUntilChanged } from "rxjs/operators";
+import { shareReplay, distinctUntilChanged, finalize } from "rxjs/operators";
 import { take, share, scan } from "rxjs/operators";
 
 import { BluetoothTransport } from "../BluetoothTransport";
@@ -40,11 +40,19 @@ type Options = {
   platform: PlatformOSType;
 };
 
+type BleManagerEvents = {
+  stopScan$: Observable<void>;
+  discoverPeripheral$: Observable<Peripheral>;
+  disconnectPeripheral$: Observable<void>;
+  didUpdateValueForCharacteristic$: Observable<any>;
+};
+
 export class ReactNativeTransport implements BluetoothTransport {
   type: TRANSPORT_TYPE = TRANSPORT_TYPE.REACT_NATIVE;
   BleManager: BleManager;
   bleManagerEmitter: NativeEventEmitter;
   platform: PlatformOSType;
+  bleEvents: BleManagerEvents;
 
   device: Peripheral;
   characteristicsByName: CharacteristicsByName = {};
@@ -89,6 +97,17 @@ export class ReactNativeTransport implements BluetoothTransport {
     this.BleManager = BleManager;
     this.bleManagerEmitter = bleManagerEmitter;
     this.platform = platform;
+
+    // We create a single listener per event type to
+    // avoid missing events when multiple listeners are attached.
+    this.bleEvents = {
+      stopScan$: this._fromEvent("BleManagerStopScan"),
+      discoverPeripheral$: this._fromEvent("BleManagerDiscoverPeripheral"),
+      disconnectPeripheral$: this._fromEvent("BleManagerDisconnectPeripheral"),
+      didUpdateValueForCharacteristic$: this._fromEvent(
+        "BleManagerDidUpdateValueForCharacteristic"
+      )
+    };
 
     // Initializes the module. This can only be called once.
     this.BleManager.start({ showAlert: false })
@@ -147,15 +166,18 @@ export class ReactNativeTransport implements BluetoothTransport {
     return this.connectionStream$;
   }
 
-  _fromEvent(eventName: string, onRemove = () => {}): Observable<any> {
+  _fromEvent(eventName: string): Observable<any> {
     return fromEventPattern(
       (addHandler) => {
         this.bleManagerEmitter.addListener(eventName, addHandler);
       },
       () => {
         this.bleManagerEmitter.removeAllListeners(eventName);
-        onRemove();
       }
+    ).pipe(
+      // @important: we need to share the subscription
+      // to avoid missing events
+      share()
     );
   }
 
@@ -196,7 +218,7 @@ export class ReactNativeTransport implements BluetoothTransport {
     });
 
     const stop$ = race(
-      this._fromEvent("BleManagerStopScan").pipe(
+      this.bleEvents.stopScan$.pipe(
         tap(() => {
           this.addLog(
             `BleManger stopped scanning ${once ? "once" : "indefintely"}`
@@ -211,7 +233,7 @@ export class ReactNativeTransport implements BluetoothTransport {
     );
 
     const peripherals$ = (once ? scanOnce$ : keepScanning$).pipe(
-      switchMap(() => this._fromEvent("BleManagerDiscoverPeripheral")),
+      switchMap(() => this.bleEvents.discoverPeripheral$),
       takeUntil(stop$),
       // Filter out devices that are not Neurosity devices
       filter((peripheral: Peripheral) => {
@@ -321,7 +343,7 @@ export class ReactNativeTransport implements BluetoothTransport {
       .pipe(
         switchMap((connection) =>
           connection === BLUETOOTH_CONNECTION.CONNECTED
-            ? this._fromEvent("BleManagerDisconnectPeripheral")
+            ? this.bleEvents.disconnectPeripheral$
             : NEVER
         )
       );
@@ -379,33 +401,27 @@ export class ReactNativeTransport implements BluetoothTransport {
           }
         }
       }).pipe(
-        switchMap(() => {
-          return this._fromEvent(
-            "BleManagerDidUpdateValueForCharacteristic",
-            async () => {
-              if (manageNotifications) {
-                try {
-                  await this.BleManager.stopNotification(
-                    peripheralId,
-                    serviceUUID,
-                    characteristicUUID
-                  );
-                  this.addLog(
-                    `Stopped notifications for ${characteristicName} characteristic`
-                  );
-                } catch (error) {
-                  this.addLog(
-                    `Attemped to stop notifications for ${characteristicName} characteristic: ${
-                      error?.message ?? error
-                    }`
-                  );
-                }
-              }
+        switchMap(() => this.bleEvents.didUpdateValueForCharacteristic$),
+        finalize(async () => {
+          if (manageNotifications) {
+            try {
+              await this.BleManager.stopNotification(
+                peripheralId,
+                serviceUUID,
+                characteristicUUID
+              );
+              this.addLog(
+                `Stopped notifications for ${characteristicName} characteristic`
+              );
+            } catch (error) {
+              this.addLog(
+                `Attemped to stop notifications for ${characteristicName} characteristic: ${
+                  error?.message ?? error
+                }`
+              );
             }
-          );
+          }
         }),
-        // @bug-fix: the ble manager lib is returning notifications from other
-        // characteristics so we must filter them
         filter(({ characteristic }) => characteristic === characteristicUUID),
         map(({ value }: { value: number[]; characteristic: string }): string =>
           decode(this.type, value)
