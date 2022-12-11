@@ -2,7 +2,7 @@ import { BLUETOOTH_PRIMARY_SERVICE_UUID_STRING } from "@neurosity/ipk";
 import { BLUETOOTH_CHUNK_DELIMITER } from "@neurosity/ipk";
 import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
 import { BehaviorSubject, defer, merge, of, ReplaySubject, timer } from "rxjs";
-import { fromEventPattern, Observable, race, NEVER, EMPTY } from "rxjs";
+import { fromEventPattern, Observable, NEVER, EMPTY } from "rxjs";
 import { switchMap, map, filter, takeUntil, tap } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged, finalize } from "rxjs/operators";
 import { take, share, scan } from "rxjs/operators";
@@ -43,6 +43,7 @@ type Options = {
 type BleManagerEvents = {
   stopScan$: Observable<void>;
   discoverPeripheral$: Observable<Peripheral>;
+  connectPeripheral$: Observable<void>;
   disconnectPeripheral$: Observable<void>;
   didUpdateValueForCharacteristic$: Observable<any>;
 };
@@ -60,10 +61,9 @@ export class ReactNativeTransport implements BluetoothTransport {
   connection$ = new BehaviorSubject<BLUETOOTH_CONNECTION>(
     BLUETOOTH_CONNECTION.DISCONNECTED
   );
-  autoReconnectEnabled$ = new BehaviorSubject<boolean>(true);
   pendingActions$ = new BehaviorSubject<any[]>([]);
   logs$ = new ReplaySubject<string>(10);
-  onDisconnected$: Observable<void> = this._onDisconnected().pipe(share());
+  onDisconnected$: Observable<void>;
   connectionStream$: Observable<BLUETOOTH_CONNECTION> = this.connection$
     .asObservable()
     .pipe(
@@ -103,11 +103,14 @@ export class ReactNativeTransport implements BluetoothTransport {
     this.bleEvents = {
       stopScan$: this._fromEvent("BleManagerStopScan"),
       discoverPeripheral$: this._fromEvent("BleManagerDiscoverPeripheral"),
+      connectPeripheral$: this._fromEvent("BleManagerConnectPeripheral"),
       disconnectPeripheral$: this._fromEvent("BleManagerDisconnectPeripheral"),
       didUpdateValueForCharacteristic$: this._fromEvent(
         "BleManagerDidUpdateValueForCharacteristic"
       )
     };
+
+    this.onDisconnected$ = this.bleEvents.disconnectPeripheral$.pipe(share());
 
     // Initializes the module. This can only be called once.
     this.BleManager.start({ showAlert: false })
@@ -137,10 +140,11 @@ export class ReactNativeTransport implements BluetoothTransport {
   }
 
   _autoConnect(selectedDevice$: Observable<DeviceInfo>): Observable<void> {
-    return merge(
-      selectedDevice$,
-      this.onDisconnected$.pipe(switchMap(() => selectedDevice$))
-    ).pipe(
+    const selectedDeviceAfterDisconnect$ = this.onDisconnected$.pipe(
+      switchMap(() => selectedDevice$)
+    );
+
+    return merge(selectedDevice$, selectedDeviceAfterDisconnect$).pipe(
       switchMap((selectedDevice) =>
         !osHasBluetoothSupport(selectedDevice)
           ? EMPTY
@@ -217,24 +221,16 @@ export class ReactNativeTransport implements BluetoothTransport {
       };
     });
 
-    const stop$ = race(
-      this.bleEvents.stopScan$.pipe(
-        tap(() => {
-          this.addLog(
-            `BleManger stopped scanning ${once ? "once" : "indefintely"}`
-          );
-        })
-      ),
-      this.onDisconnected$
-    );
+    const scan$ = once
+      ? scanOnce$
+      : timer(0, RESCAN_INTERVAL).pipe(switchMap(() => scanOnce$));
 
-    const keepScanning$ = timer(0, RESCAN_INTERVAL).pipe(
-      switchMap(() => scanOnce$)
-    );
-
-    const peripherals$ = (once ? scanOnce$ : keepScanning$).pipe(
+    const peripherals$ = scan$.pipe(
+      tap(() => {
+        this.connection$.next(BLUETOOTH_CONNECTION.SCANNING);
+      }),
+      takeUntil(this.onDisconnected$),
       switchMap(() => this.bleEvents.discoverPeripheral$),
-      takeUntil(stop$),
       // Filter out devices that are not Neurosity devices
       filter((peripheral: Peripheral) => {
         const peripheralName: string =
@@ -337,24 +333,10 @@ export class ReactNativeTransport implements BluetoothTransport {
     });
   }
 
-  _onDisconnected(): Observable<any> {
-    return this.connection$
-      .asObservable()
-      .pipe(
-        switchMap((connection) =>
-          connection === BLUETOOTH_CONNECTION.CONNECTED
-            ? this.bleEvents.disconnectPeripheral$
-            : NEVER
-        )
-      );
-  }
-
   async disconnect(): Promise<void> {
     try {
       if (this.isConnected() && this?.device?.id) {
-        this.autoReconnectEnabled$.next(false);
         await this.BleManager.disconnect(this.device.id);
-        this.autoReconnectEnabled$.next(true);
       }
     } catch (error) {
       return Promise.reject(error);
