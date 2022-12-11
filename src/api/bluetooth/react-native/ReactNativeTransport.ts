@@ -255,11 +255,17 @@ export class ReactNativeTransport implements BluetoothTransport {
         const peripheralName: string =
           peripheral?.advertising?.localName ?? peripheral.name ?? "";
 
+        const manufactureDataString = decode(
+          this.type,
+          peripheral?.advertising?.manufacturerData?.bytes ?? []
+        )?.slice?.(2); // First 2 bytes are reserved for the Neurosity company code
+
         return {
           ...acc,
           [peripheral.id]: {
             ...peripheral,
-            name: peripheralName
+            name: peripheralName,
+            manufactureDataString
           }
         };
       }, {}),
