@@ -206,6 +206,14 @@ export class Notion {
                     : of(BLUETOOTH_CONNECTION.DISCONNECTED)
                 }).pipe(
                   map(({ wifiStatus, bluetoothConnection }) => {
+                    const isWifiOnline = [
+                      STATUS.ONLINE,
+                      STATUS.UPDATING
+                    ].includes(wifiStatus.state);
+
+                    const isBluetoothConnected =
+                      bluetoothConnection === BLUETOOTH_CONNECTION.CONNECTED;
+
                     switch (streamingMode) {
                       default:
                       case STREAMING_MODE.WIFI_ONLY:
@@ -215,23 +223,15 @@ export class Notion {
                         };
 
                       case STREAMING_MODE.WIFI_WITH_BLUETOOTH_FALLBACK:
-                        const isWifiOnline = [
-                          STATUS.ONLINE,
-                          STATUS.UPDATING
-                        ].includes(wifiStatus.state);
-
                         return {
                           streamingMode,
-                          activeMode: isWifiOnline
+                          activeMode:
+                            isWifiOnline || !isBluetoothConnected
                             ? STREAMING_TYPE.WIFI
                             : STREAMING_TYPE.BLUETOOTH
                         };
 
                       case STREAMING_MODE.BLUETOOTH_WITH_WIFI_FALLBACK:
-                        const isBluetoothConnected =
-                          bluetoothConnection ===
-                          BLUETOOTH_CONNECTION.CONNECTED;
-
                         return {
                           streamingMode,
                           activeMode: isBluetoothConnected
