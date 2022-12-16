@@ -214,12 +214,6 @@ export class Notion {
                           activeMode: STREAMING_TYPE.WIFI
                         };
 
-                      case STREAMING_MODE.BLUETOOTH_ONLY:
-                        return {
-                          streamingMode,
-                          activeMode: STREAMING_TYPE.BLUETOOTH
-                        };
-
                       case STREAMING_MODE.WIFI_WITH_BLUETOOTH_FALLBACK:
                         const isWifiOnline = [
                           STATUS.ONLINE,
