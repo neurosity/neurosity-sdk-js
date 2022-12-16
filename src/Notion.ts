@@ -227,8 +227,8 @@ export class Notion {
                           streamingMode,
                           activeMode:
                             isWifiOnline || !isBluetoothConnected
-                            ? STREAMING_TYPE.WIFI
-                            : STREAMING_TYPE.BLUETOOTH
+                              ? STREAMING_TYPE.WIFI
+                              : STREAMING_TYPE.BLUETOOTH
                         };
 
                       case STREAMING_MODE.BLUETOOTH_WITH_WIFI_FALLBACK:
@@ -941,7 +941,7 @@ export class Notion {
   }
 
   /**
-   * `wifi` `bluetooth`
+   * `wifi`
    *
    * Observes last state of `settings` and all subsequent `settings` changes
    *
@@ -966,10 +966,7 @@ export class Notion {
       return throwError(() => OAuthError);
     }
 
-    return this._withStreamingModeObservable({
-      wifi: () => this.cloudClient.observeNamespace("settings"),
-      bluetooth: () => this.bluetoothClient.settings()
-    });
+    return this.cloudClient.observeNamespace("settings");
   }
 
   /**
