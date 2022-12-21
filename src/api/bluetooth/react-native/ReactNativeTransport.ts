@@ -5,7 +5,7 @@ import { BehaviorSubject, defer, merge, of, ReplaySubject, timer } from "rxjs";
 import { fromEventPattern, Observable, NEVER, EMPTY } from "rxjs";
 import { switchMap, map, filter, takeUntil, tap } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged, finalize } from "rxjs/operators";
-import { take, share, scan } from "rxjs/operators";
+import { take, share, scan, distinct } from "rxjs/operators";
 
 import { BluetoothTransport } from "../BluetoothTransport";
 import { create6DigitPin } from "../utils/create6DigitPin";
@@ -147,16 +147,17 @@ export class ReactNativeTransport implements BluetoothTransport {
     return merge(selectedDevice$, selectedDeviceAfterDisconnect$).pipe(
       switchMap((selectedDevice) =>
         !osHasBluetoothSupport(selectedDevice)
-          ? EMPTY
+          ? NEVER
           : this.scan().pipe(
-              switchMap((peripherals) => {
-                const peripheral = peripherals.find(
+              switchMap((peripherals: Peripheral[]) => {
+                const peripheralMatch = peripherals.find(
                   (peripheral) =>
                     peripheral.name === selectedDevice?.deviceNickname
                 );
 
-                return peripheral ? of(peripheral) : EMPTY;
+                return peripheralMatch ? of(peripheralMatch) : NEVER;
               }),
+              distinct((peripheral: Peripheral) => peripheral.id),
               take(1)
             )
       ),
