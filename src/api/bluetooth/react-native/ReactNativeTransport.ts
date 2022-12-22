@@ -419,7 +419,13 @@ export class ReactNativeTransport implements BluetoothTransport {
         map((payload: any) => {
           try {
             return JSON.parse(payload);
-          } catch (_) {
+          } catch (error) {
+            this.addLog(
+              `Failed to parse JSON for ${characteristicName} characteristic. Falling back to unparsed string. ${
+                error?.message ?? error
+              }`
+            );
+
             return payload;
           }
         })
