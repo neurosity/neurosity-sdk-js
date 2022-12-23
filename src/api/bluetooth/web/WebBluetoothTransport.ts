@@ -300,20 +300,25 @@ export class WebBluetoothTransport implements BluetoothTransport {
       }),
       map((event: any): string => {
         const buffer: Uint8Array = event.target.value;
-        // this.addLog(
-        //   `Received chunk for ${characteristicName} characteristic: \n${decode(
-        //     this.type,
-        //     buffer
-        //   )}`
-        // );
+        const decoded = decode(this.type, buffer);
 
-        return decode(this.type, buffer);
+        this.addLog(
+          `Received chunk with buffer size of ${buffer.byteLength} and decoded size ${decoded.length} for ${characteristicName} characteristic: \n${decoded}`
+        );
+
+        return decoded;
       }),
       stitchChunks({ delimiter: BLUETOOTH_CHUNK_DELIMITER }),
       map((payload: any) => {
         try {
           return JSON.parse(payload);
-        } catch (_) {
+        } catch (error) {
+          this.addLog(
+            `Failed to parse JSON for ${characteristicName} characteristic. Falling back to unparsed string. ${
+              error?.message ?? error
+            }`
+          );
+
           return payload;
         }
       })
