@@ -171,28 +171,35 @@ export class Notion {
   }
 
   /**
-   * Subscribe to streaming mode changes and the current strategy
+   * Subscribe to the device's streaming state changes and the current strategy
    *
    * Streams the current mode of streaming (wifi or bluetooth).
    *
    * ```typescript
-   * notion.streamingMode().subscribe((streamingMode) => {
-   *   console.log(streamingMode);
-   *   // { streamingMode: "wifi-only", activeMode: "wifi" }
+   * notion.streamingState().subscribe((streamingState) => {
+   *   console.log(streamingState);
+   *   // { streamingMode: "wifi-only", activeMode: "wifi", connected: true }
    * });
    * ```
    */
-  public streamingMode(): Observable<{
+  public streamingState(): Observable<{
+    connected: boolean;
     activeMode: STREAMING_TYPE;
     streamingMode: STREAMING_MODE;
   }> {
+    const isWifiOnline = (state: STATUS) =>
+      [STATUS.ONLINE, STATUS.UPDATING].includes(state);
+
     return this.streamingMode$.pipe(
       switchMap((streamingMode: STREAMING_MODE) => {
         if (this.isMissingBluetoothTransport) {
-          return of({
-            streamingMode,
-            activeMode: STREAMING_TYPE.WIFI
-          });
+          return this.cloudClient.status().pipe(
+            map(({ state }) => ({
+              connected: isWifiOnline(state),
+              streamingMode,
+              activeMode: STREAMING_TYPE.WIFI
+            }))
+          );
         }
 
         return this.onDeviceChange().pipe(
@@ -206,11 +213,6 @@ export class Notion {
                     : of(BLUETOOTH_CONNECTION.DISCONNECTED)
                 }).pipe(
                   map(({ wifiStatus, bluetoothConnection }) => {
-                    const isWifiOnline = [
-                      STATUS.ONLINE,
-                      STATUS.UPDATING
-                    ].includes(wifiStatus.state);
-
                     const isBluetoothConnected =
                       bluetoothConnection === BLUETOOTH_CONNECTION.CONNECTED;
 
@@ -218,21 +220,31 @@ export class Notion {
                       default:
                       case STREAMING_MODE.WIFI_ONLY:
                         return {
+                          connected: isWifiOnline(wifiStatus.state),
                           streamingMode,
                           activeMode: STREAMING_TYPE.WIFI
                         };
 
                       case STREAMING_MODE.WIFI_WITH_BLUETOOTH_FALLBACK:
                         return {
+                          connected:
+                            isWifiOnline(wifiStatus.state) ||
+                            !isBluetoothConnected
+                              ? isWifiOnline(wifiStatus.state)
+                              : isBluetoothConnected,
                           streamingMode,
                           activeMode:
-                            isWifiOnline || !isBluetoothConnected
+                            isWifiOnline(wifiStatus.state) ||
+                            !isBluetoothConnected
                               ? STREAMING_TYPE.WIFI
                               : STREAMING_TYPE.BLUETOOTH
                         };
 
                       case STREAMING_MODE.BLUETOOTH_WITH_WIFI_FALLBACK:
                         return {
+                          connected: isBluetoothConnected
+                            ? true
+                            : isWifiOnline(wifiStatus.state),
                           streamingMode,
                           activeMode: isBluetoothConnected
                             ? STREAMING_TYPE.BLUETOOTH
@@ -258,7 +270,7 @@ export class Notion {
   }): Observable<any> {
     const { wifi, bluetooth } = streams;
 
-    return this.streamingMode().pipe(
+    return this.streamingState().pipe(
       switchMap(({ activeMode }) => {
         switch (activeMode) {
           case STREAMING_TYPE.WIFI:
@@ -284,7 +296,7 @@ export class Notion {
   }): Promise<T> {
     const { wifi, bluetooth } = promises;
 
-    const { activeMode } = await firstValueFrom(this.streamingMode());
+    const { activeMode } = await firstValueFrom(this.streamingState());
 
     switch (activeMode) {
       case STREAMING_TYPE.WIFI:
