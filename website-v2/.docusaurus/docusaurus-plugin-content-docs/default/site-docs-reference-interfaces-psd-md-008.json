@@ -1,0 +1,30 @@
+{
+  "unversionedId": "reference/interfaces/psd",
+  "id": "reference/interfaces/psd",
+  "title": "PSD",
+  "description": "@neurosity/sdk › PSD",
+  "source": "@site/../docs/reference/interfaces/psd.md",
+  "sourceDirName": "reference/interfaces",
+  "slug": "/reference/interfaces/psd",
+  "permalink": "/docs/reference/interfaces/psd",
+  "draft": false,
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Author",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "Oct 14, 2018",
+  "frontMatter": {
+    "id": "psd",
+    "title": "PSD",
+    "sidebar_label": "PSD"
+  },
+  "sidebar": "@neurosity/sdk",
+  "previous": {
+    "title": "Kinesis",
+    "permalink": "/docs/reference/interfaces/kinesis"
+  },
+  "next": {
+    "title": "PowerByBand",
+    "permalink": "/docs/reference/interfaces/powerbyband"
+  }
+}

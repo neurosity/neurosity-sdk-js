@@ -1,0 +1,29 @@
+{
+  "unversionedId": "api/signal-quality",
+  "id": "api/signal-quality",
+  "title": "Signal Quality",
+  "description": "Standard deviation based signal quality metrics. Great signal happens when the standard deviation is between 1.5 and 10. See SignalQuality for using in code.",
+  "source": "@site/../docs/api/signal-quality.md",
+  "sourceDirName": "api",
+  "slug": "/api/signal-quality",
+  "permalink": "/docs/api/signal-quality",
+  "draft": false,
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Author",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "Oct 14, 2018",
+  "frontMatter": {
+    "id": "signal-quality",
+    "title": "Signal Quality"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Predictions",
+    "permalink": "/docs/api/predictions"
+  },
+  "next": {
+    "title": "OAuth",
+    "permalink": "/docs/api/oauth"
+  }
+}

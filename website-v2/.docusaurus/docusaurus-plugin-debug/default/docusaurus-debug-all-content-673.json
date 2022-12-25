@@ -1,0 +1,1449 @@
+{
+  "docusaurus-plugin-content-docs": {
+    "default": {
+      "loadedVersions": [
+        {
+          "versionName": "current",
+          "label": "Next",
+          "banner": null,
+          "badge": false,
+          "noIndex": false,
+          "className": "docs-version-current",
+          "path": "/docs",
+          "tagsPath": "/docs/tags",
+          "isLast": true,
+          "routePriority": -1,
+          "sidebarFilePath": "/Users/alexcastillo/Code/notion-js/website/sidebars.json",
+          "contentPath": "/Users/alexcastillo/Code/notion-js/docs",
+          "contentPathLocalized": "/Users/alexcastillo/Code/notion-js/website-v2/i18n/en/docusaurus-plugin-content-docs/current",
+          "docs": [
+            {
+              "unversionedId": "api/authentication",
+              "id": "api/authentication",
+              "title": "Authentication",
+              "description": "We take data privacy very seriously at Neurosity. Should you find a bug or vulnerability, please submit a request, and we will take your inquiry seriously and work as fast as possible to fix the issue for all.",
+              "source": "@site/../docs/api/authentication.md",
+              "sourceDirName": "api",
+              "slug": "/api/authentication",
+              "permalink": "/docs/api/authentication",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "authentication",
+                "title": "Authentication"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Device Selection",
+                "permalink": "/docs/api/device-selection"
+              },
+              "next": {
+                "title": "Brainwaves",
+                "permalink": "/docs/api/brainwaves"
+              }
+            },
+            {
+              "unversionedId": "api/brainwaves",
+              "id": "api/brainwaves",
+              "title": "Brainwaves",
+              "description": "The brainwaves API is what we always wished for when it came to inventing the future: an easy way to get lossless brainwaves. Sometimes we wanted to manipulate the raw data and other times we wanted to analyze the power in each frequency bin. With brainwaves, our goal is to enable new APIs and powerful programs to be built. We expect that someone working with the brainwaves API has a bit of experience working with EEG data or a strong desire to learn.",
+              "source": "@site/../docs/api/brainwaves.md",
+              "sourceDirName": "api",
+              "slug": "/api/brainwaves",
+              "permalink": "/docs/api/brainwaves",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "brainwaves",
+                "title": "Brainwaves"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Authentication",
+                "permalink": "/docs/api/authentication"
+              },
+              "next": {
+                "title": "Calm",
+                "permalink": "/docs/api/calm"
+              }
+            },
+            {
+              "unversionedId": "api/calm",
+              "id": "api/calm",
+              "title": "Calm",
+              "description": "Constantly fires and predicts user's calm level from passive cognitive state based on the alpha brainwave between 7.5Hz and 12.5Hz. Calm is a probability from 0.0 to 1.0. To get calm over 0.3 is significant. Calm will take up to 16 seconds to initialize. We normally take a longer rolling average of calm to produce brain processes over time, see how we do it in our flow walk through.",
+              "source": "@site/../docs/api/calm.md",
+              "sourceDirName": "api",
+              "slug": "/api/calm",
+              "permalink": "/docs/api/calm",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "calm",
+                "title": "Calm"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Brainwaves",
+                "permalink": "/docs/api/brainwaves"
+              },
+              "next": {
+                "title": "Disconnect",
+                "permalink": "/docs/api/disconnect"
+              }
+            },
+            {
+              "unversionedId": "api/device-selection",
+              "id": "api/device-selection",
+              "title": "Device Selection",
+              "description": "When using the Neurosity SDK, there are 3 ways to select which device you wish to connect to. The options are:",
+              "source": "@site/../docs/api/device-selection.md",
+              "sourceDirName": "api",
+              "slug": "/api/device-selection",
+              "permalink": "/docs/api/device-selection",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "device-selection",
+                "title": "Device Selection"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Training",
+                "permalink": "/docs/guides/training"
+              },
+              "next": {
+                "title": "Authentication",
+                "permalink": "/docs/api/authentication"
+              }
+            },
+            {
+              "unversionedId": "api/disconnect",
+              "id": "api/disconnect",
+              "title": "Disconnect",
+              "description": "You should always call disconnect the Neurosity instance when you're ending a session. This will clean up the session.",
+              "source": "@site/../docs/api/disconnect.md",
+              "sourceDirName": "api",
+              "slug": "/api/disconnect",
+              "permalink": "/docs/api/disconnect",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "disconnect",
+                "title": "Disconnect"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Calm",
+                "permalink": "/docs/api/calm"
+              },
+              "next": {
+                "title": "Device Information",
+                "permalink": "/docs/api/info"
+              }
+            },
+            {
+              "unversionedId": "api/focus",
+              "id": "api/focus",
+              "title": "Focus",
+              "description": "Constantly fires and predicts user's focus level from passive cognitive state based on the gamma brainwave between 30Hz and 44Hz. Focus is a probability from 0.0 to 1.0. To get focus over 0.3 is significant. Focus will take up to 16 seconds to fully initialize.",
+              "source": "@site/../docs/api/focus.md",
+              "sourceDirName": "api",
+              "slug": "/api/focus",
+              "permalink": "/docs/api/focus",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "focus",
+                "title": "Focus"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Device Status",
+                "permalink": "/docs/api/status"
+              },
+              "next": {
+                "title": "Kinesis",
+                "permalink": "/docs/api/kinesis"
+              }
+            },
+            {
+              "unversionedId": "api/haptics",
+              "id": "api/haptics",
+              "title": "Haptics",
+              "description": "The haptics API is the way to communicate to the user without a screen or speaker. There are two haptic motors on both Crown and Notion 2, none on DK1. We assume the number of haptics will change, so our approach to haptic control became a dynamic strategy. Each haptic motor's location is positioned in reference to the 10-10 EEG system used to label the channels of the Crown's EEG sensors. Notion 2 and Crown have haptics at P7 and P8.",
+              "source": "@site/../docs/api/haptics.md",
+              "sourceDirName": "api",
+              "slug": "/api/haptics",
+              "permalink": "/docs/api/haptics",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "haptics",
+                "title": "Haptics"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Device Information",
+                "permalink": "/docs/api/info"
+              },
+              "next": {
+                "title": "Device Settings",
+                "permalink": "/docs/api/settings"
+              }
+            },
+            {
+              "unversionedId": "api/info",
+              "id": "api/info",
+              "title": "Device Information",
+              "description": "Non-mutable device information.",
+              "source": "@site/../docs/api/info.md",
+              "sourceDirName": "api",
+              "slug": "/api/info",
+              "permalink": "/docs/api/info",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "info",
+                "title": "Device Information"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Disconnect",
+                "permalink": "/docs/api/disconnect"
+              },
+              "next": {
+                "title": "Haptics",
+                "permalink": "/docs/api/haptics"
+              }
+            },
+            {
+              "unversionedId": "api/kinesis",
+              "id": "api/kinesis",
+              "title": "Kinesis",
+              "description": "The Kinesis API is based on the Motor Imagery BCI method. Fires when a user attempts to trigger a side effect from defined thoughts. E.g. motor imagery, etc.",
+              "source": "@site/../docs/api/kinesis.md",
+              "sourceDirName": "api",
+              "slug": "/api/kinesis",
+              "permalink": "/docs/api/kinesis",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "kinesis",
+                "title": "Kinesis"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Focus",
+                "permalink": "/docs/api/focus"
+              },
+              "next": {
+                "title": "Predictions",
+                "permalink": "/docs/api/predictions"
+              }
+            },
+            {
+              "unversionedId": "api/oauth",
+              "id": "api/oauth",
+              "title": "OAuth",
+              "description": "Registering your app",
+              "source": "@site/../docs/api/oauth.md",
+              "sourceDirName": "api",
+              "slug": "/api/oauth",
+              "permalink": "/docs/api/oauth",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "oauth",
+                "title": "OAuth"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Signal Quality",
+                "permalink": "/docs/api/signal-quality"
+              }
+            },
+            {
+              "unversionedId": "api/predictions",
+              "id": "api/predictions",
+              "title": "Predictions",
+              "description": "The predictions API is based on the Motor Imagery BCI method. Predictions are produced a predetermined amount of times per second. If you're looking to implement your own Kinesis algorithim, then predictions can be good for you.",
+              "source": "@site/../docs/api/predictions.md",
+              "sourceDirName": "api",
+              "slug": "/api/predictions",
+              "permalink": "/docs/api/predictions",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "predictions",
+                "title": "Predictions"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Kinesis",
+                "permalink": "/docs/api/kinesis"
+              },
+              "next": {
+                "title": "Signal Quality",
+                "permalink": "/docs/api/signal-quality"
+              }
+            },
+            {
+              "unversionedId": "api/settings",
+              "id": "api/settings",
+              "title": "Device Settings",
+              "description": "Methods:",
+              "source": "@site/../docs/api/settings.md",
+              "sourceDirName": "api",
+              "slug": "/api/settings",
+              "permalink": "/docs/api/settings",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "settings",
+                "title": "Device Settings"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Haptics",
+                "permalink": "/docs/api/haptics"
+              },
+              "next": {
+                "title": "Device Status",
+                "permalink": "/docs/api/status"
+              }
+            },
+            {
+              "unversionedId": "api/signal-quality",
+              "id": "api/signal-quality",
+              "title": "Signal Quality",
+              "description": "Standard deviation based signal quality metrics. Great signal happens when the standard deviation is between 1.5 and 10. See SignalQuality for using in code.",
+              "source": "@site/../docs/api/signal-quality.md",
+              "sourceDirName": "api",
+              "slug": "/api/signal-quality",
+              "permalink": "/docs/api/signal-quality",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "signal-quality",
+                "title": "Signal Quality"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Predictions",
+                "permalink": "/docs/api/predictions"
+              },
+              "next": {
+                "title": "OAuth",
+                "permalink": "/docs/api/oauth"
+              }
+            },
+            {
+              "unversionedId": "api/status",
+              "id": "api/status",
+              "title": "Device Status",
+              "description": "Metrics:",
+              "source": "@site/../docs/api/status.md",
+              "sourceDirName": "api",
+              "slug": "/api/status",
+              "permalink": "/docs/api/status",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "status",
+                "title": "Device Status"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Device Settings",
+                "permalink": "/docs/api/settings"
+              },
+              "next": {
+                "title": "Focus",
+                "permalink": "/docs/api/focus"
+              }
+            },
+            {
+              "unversionedId": "getting-started",
+              "id": "getting-started",
+              "title": "Your First Node App",
+              "description": "Welcome to the Neurosity SDK documentation site. To begin, you'll need to set up an account one time with Neurosity via console.neurosity.co. Learn how to create an account with Neurosity Developer Console.",
+              "source": "@site/../docs/getting-started.md",
+              "sourceDirName": ".",
+              "slug": "/getting-started",
+              "permalink": "/docs/getting-started",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "getting-started",
+                "title": "Your First Node App"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Neurosity SDK",
+                "permalink": "/docs/overview"
+              },
+              "next": {
+                "title": "Your First Web App",
+                "permalink": "/docs/tutorials/your-first-web-app"
+              }
+            },
+            {
+              "unversionedId": "guides/ethics",
+              "id": "guides/ethics",
+              "title": "Ethics",
+              "description": "Ethics are at the core of every Neurosity product. We believe that our collective future has all of us wearing brain computers for terrific, empowering experiences.",
+              "source": "@site/../docs/guides/ethics.md",
+              "sourceDirName": "guides",
+              "slug": "/guides/ethics",
+              "permalink": "/docs/guides/ethics",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "ethics",
+                "title": "Ethics"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Resources",
+                "permalink": "/docs/resources"
+              },
+              "next": {
+                "title": "Importing",
+                "permalink": "/docs/guides/importing"
+              }
+            },
+            {
+              "unversionedId": "guides/importing",
+              "id": "guides/importing",
+              "title": "Importing",
+              "description": "We support ESM, Node and the Browser:",
+              "source": "@site/../docs/guides/importing.md",
+              "sourceDirName": "guides",
+              "slug": "/guides/importing",
+              "permalink": "/docs/guides/importing",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "importing",
+                "title": "Importing"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Ethics",
+                "permalink": "/docs/guides/ethics"
+              },
+              "next": {
+                "title": "Signal",
+                "permalink": "/docs/guides/signal"
+              }
+            },
+            {
+              "unversionedId": "guides/signal",
+              "id": "guides/signal",
+              "title": "Signal",
+              "description": "Getting great signal is very important. To learn about how to get great signal, check out this getting started guide here.",
+              "source": "@site/../docs/guides/signal.md",
+              "sourceDirName": "guides",
+              "slug": "/guides/signal",
+              "permalink": "/docs/guides/signal",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "signal",
+                "title": "Signal"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Importing",
+                "permalink": "/docs/guides/importing"
+              },
+              "next": {
+                "title": "Training",
+                "permalink": "/docs/guides/training"
+              }
+            },
+            {
+              "unversionedId": "guides/training",
+              "id": "guides/training",
+              "title": "Training",
+              "description": "We recommend learning about an imagined thought training here before starting this guide.",
+              "source": "@site/../docs/guides/training.md",
+              "sourceDirName": "guides",
+              "slug": "/guides/training",
+              "permalink": "/docs/guides/training",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "training",
+                "title": "Training"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Signal",
+                "permalink": "/docs/guides/signal"
+              },
+              "next": {
+                "title": "Device Selection",
+                "permalink": "/docs/api/device-selection"
+              }
+            },
+            {
+              "unversionedId": "overview",
+              "id": "overview",
+              "title": "Neurosity SDK",
+              "description": "The Neurosity software processes and manages the data produced by Neurosity headsets which measures, tracks and monitors EEG brainwaves.",
+              "source": "@site/../docs/overview.md",
+              "sourceDirName": ".",
+              "slug": "/overview",
+              "permalink": "/docs/overview",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "overview",
+                "title": "Neurosity SDK"
+              },
+              "sidebar": "docs",
+              "next": {
+                "title": "Your First Node App",
+                "permalink": "/docs/getting-started"
+              }
+            },
+            {
+              "unversionedId": "reference/classes/neurosity",
+              "id": "reference/classes/neurosity",
+              "title": "Neurosity",
+              "description": "@neurosity/sdk › Neurosity",
+              "source": "@site/../docs/reference/classes/neurosity.md",
+              "sourceDirName": "reference/classes",
+              "slug": "/reference/classes/neurosity",
+              "permalink": "/docs/reference/classes/neurosity",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "neurosity",
+                "title": "Neurosity",
+                "sidebar_label": "Neurosity"
+              },
+              "sidebar": "@neurosity/sdk",
+              "previous": {
+                "title": "Globals",
+                "permalink": "/docs/reference/"
+              },
+              "next": {
+                "title": "Accelerometer",
+                "permalink": "/docs/reference/interfaces/accelerometer"
+              }
+            },
+            {
+              "unversionedId": "reference/index",
+              "id": "reference/index",
+              "title": "@neurosity/sdk",
+              "description": "@neurosity/sdk",
+              "source": "@site/../docs/reference/index.md",
+              "sourceDirName": "reference",
+              "slug": "/reference/",
+              "permalink": "/docs/reference/",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "index",
+                "title": "@neurosity/sdk",
+                "sidebar_label": "Globals"
+              },
+              "sidebar": "@neurosity/sdk",
+              "next": {
+                "title": "Neurosity",
+                "permalink": "/docs/reference/classes/neurosity"
+              }
+            },
+            {
+              "unversionedId": "reference/interfaces/accelerometer",
+              "id": "reference/interfaces/accelerometer",
+              "title": "Accelerometer",
+              "description": "@neurosity/sdk › Accelerometer",
+              "source": "@site/../docs/reference/interfaces/accelerometer.md",
+              "sourceDirName": "reference/interfaces",
+              "slug": "/reference/interfaces/accelerometer",
+              "permalink": "/docs/reference/interfaces/accelerometer",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "accelerometer",
+                "title": "Accelerometer",
+                "sidebar_label": "Accelerometer"
+              },
+              "sidebar": "@neurosity/sdk",
+              "previous": {
+                "title": "Neurosity",
+                "permalink": "/docs/reference/classes/neurosity"
+              },
+              "next": {
+                "title": "Calm",
+                "permalink": "/docs/reference/interfaces/calm"
+              }
+            },
+            {
+              "unversionedId": "reference/interfaces/calm",
+              "id": "reference/interfaces/calm",
+              "title": "Calm",
+              "description": "@neurosity/sdk › Calm",
+              "source": "@site/../docs/reference/interfaces/calm.md",
+              "sourceDirName": "reference/interfaces",
+              "slug": "/reference/interfaces/calm",
+              "permalink": "/docs/reference/interfaces/calm",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "calm",
+                "title": "Calm",
+                "sidebar_label": "Calm"
+              },
+              "sidebar": "@neurosity/sdk",
+              "previous": {
+                "title": "Accelerometer",
+                "permalink": "/docs/reference/interfaces/accelerometer"
+              },
+              "next": {
+                "title": "DeviceInfo",
+                "permalink": "/docs/reference/interfaces/deviceinfo"
+              }
+            },
+            {
+              "unversionedId": "reference/interfaces/deviceinfo",
+              "id": "reference/interfaces/deviceinfo",
+              "title": "DeviceInfo",
+              "description": "@neurosity/sdk › DeviceInfo",
+              "source": "@site/../docs/reference/interfaces/deviceinfo.md",
+              "sourceDirName": "reference/interfaces",
+              "slug": "/reference/interfaces/deviceinfo",
+              "permalink": "/docs/reference/interfaces/deviceinfo",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "deviceinfo",
+                "title": "DeviceInfo",
+                "sidebar_label": "DeviceInfo"
+              },
+              "sidebar": "@neurosity/sdk",
+              "previous": {
+                "title": "Calm",
+                "permalink": "/docs/reference/interfaces/calm"
+              },
+              "next": {
+                "title": "DeviceStatus",
+                "permalink": "/docs/reference/interfaces/devicestatus"
+              }
+            },
+            {
+              "unversionedId": "reference/interfaces/devicestatus",
+              "id": "reference/interfaces/devicestatus",
+              "title": "DeviceStatus",
+              "description": "@neurosity/sdk › DeviceStatus",
+              "source": "@site/../docs/reference/interfaces/devicestatus.md",
+              "sourceDirName": "reference/interfaces",
+              "slug": "/reference/interfaces/devicestatus",
+              "permalink": "/docs/reference/interfaces/devicestatus",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "devicestatus",
+                "title": "DeviceStatus",
+                "sidebar_label": "DeviceStatus"
+              },
+              "sidebar": "@neurosity/sdk",
+              "previous": {
+                "title": "DeviceInfo",
+                "permalink": "/docs/reference/interfaces/deviceinfo"
+              },
+              "next": {
+                "title": "Focus",
+                "permalink": "/docs/reference/interfaces/focus"
+              }
+            },
+            {
+              "unversionedId": "reference/interfaces/focus",
+              "id": "reference/interfaces/focus",
+              "title": "Focus",
+              "description": "@neurosity/sdk › Focus",
+              "source": "@site/../docs/reference/interfaces/focus.md",
+              "sourceDirName": "reference/interfaces",
+              "slug": "/reference/interfaces/focus",
+              "permalink": "/docs/reference/interfaces/focus",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "focus",
+                "title": "Focus",
+                "sidebar_label": "Focus"
+              },
+              "sidebar": "@neurosity/sdk",
+              "previous": {
+                "title": "DeviceStatus",
+                "permalink": "/docs/reference/interfaces/devicestatus"
+              },
+              "next": {
+                "title": "Kinesis",
+                "permalink": "/docs/reference/interfaces/kinesis"
+              }
+            },
+            {
+              "unversionedId": "reference/interfaces/kinesis",
+              "id": "reference/interfaces/kinesis",
+              "title": "Kinesis",
+              "description": "@neurosity/sdk › Kinesis",
+              "source": "@site/../docs/reference/interfaces/kinesis.md",
+              "sourceDirName": "reference/interfaces",
+              "slug": "/reference/interfaces/kinesis",
+              "permalink": "/docs/reference/interfaces/kinesis",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "kinesis",
+                "title": "Kinesis",
+                "sidebar_label": "Kinesis"
+              },
+              "sidebar": "@neurosity/sdk",
+              "previous": {
+                "title": "Focus",
+                "permalink": "/docs/reference/interfaces/focus"
+              },
+              "next": {
+                "title": "PSD",
+                "permalink": "/docs/reference/interfaces/psd"
+              }
+            },
+            {
+              "unversionedId": "reference/interfaces/powerbyband",
+              "id": "reference/interfaces/powerbyband",
+              "title": "PowerByBand",
+              "description": "@neurosity/sdk › PowerByBand",
+              "source": "@site/../docs/reference/interfaces/powerbyband.md",
+              "sourceDirName": "reference/interfaces",
+              "slug": "/reference/interfaces/powerbyband",
+              "permalink": "/docs/reference/interfaces/powerbyband",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "powerbyband",
+                "title": "PowerByBand",
+                "sidebar_label": "PowerByBand"
+              },
+              "sidebar": "@neurosity/sdk",
+              "previous": {
+                "title": "PSD",
+                "permalink": "/docs/reference/interfaces/psd"
+              },
+              "next": {
+                "title": "SDKOptions",
+                "permalink": "/docs/reference/interfaces/sdkoptions"
+              }
+            },
+            {
+              "unversionedId": "reference/interfaces/psd",
+              "id": "reference/interfaces/psd",
+              "title": "PSD",
+              "description": "@neurosity/sdk › PSD",
+              "source": "@site/../docs/reference/interfaces/psd.md",
+              "sourceDirName": "reference/interfaces",
+              "slug": "/reference/interfaces/psd",
+              "permalink": "/docs/reference/interfaces/psd",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "psd",
+                "title": "PSD",
+                "sidebar_label": "PSD"
+              },
+              "sidebar": "@neurosity/sdk",
+              "previous": {
+                "title": "Kinesis",
+                "permalink": "/docs/reference/interfaces/kinesis"
+              },
+              "next": {
+                "title": "PowerByBand",
+                "permalink": "/docs/reference/interfaces/powerbyband"
+              }
+            },
+            {
+              "unversionedId": "reference/interfaces/sdkoptions",
+              "id": "reference/interfaces/sdkoptions",
+              "title": "SDKOptions",
+              "description": "@neurosity/sdk › SDKOptions",
+              "source": "@site/../docs/reference/interfaces/sdkoptions.md",
+              "sourceDirName": "reference/interfaces",
+              "slug": "/reference/interfaces/sdkoptions",
+              "permalink": "/docs/reference/interfaces/sdkoptions",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "sdkoptions",
+                "title": "SDKOptions",
+                "sidebar_label": "SDKOptions"
+              },
+              "sidebar": "@neurosity/sdk",
+              "previous": {
+                "title": "PowerByBand",
+                "permalink": "/docs/reference/interfaces/powerbyband"
+              },
+              "next": {
+                "title": "Settings",
+                "permalink": "/docs/reference/interfaces/settings"
+              }
+            },
+            {
+              "unversionedId": "reference/interfaces/settings",
+              "id": "reference/interfaces/settings",
+              "title": "Settings",
+              "description": "@neurosity/sdk › Settings",
+              "source": "@site/../docs/reference/interfaces/settings.md",
+              "sourceDirName": "reference/interfaces",
+              "slug": "/reference/interfaces/settings",
+              "permalink": "/docs/reference/interfaces/settings",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "settings",
+                "title": "Settings",
+                "sidebar_label": "Settings"
+              },
+              "sidebar": "@neurosity/sdk",
+              "previous": {
+                "title": "SDKOptions",
+                "permalink": "/docs/reference/interfaces/sdkoptions"
+              },
+              "next": {
+                "title": "SignalQuality",
+                "permalink": "/docs/reference/interfaces/signalquality"
+              }
+            },
+            {
+              "unversionedId": "reference/interfaces/signalquality",
+              "id": "reference/interfaces/signalquality",
+              "title": "SignalQuality",
+              "description": "@neurosity/sdk › SignalQuality",
+              "source": "@site/../docs/reference/interfaces/signalquality.md",
+              "sourceDirName": "reference/interfaces",
+              "slug": "/reference/interfaces/signalquality",
+              "permalink": "/docs/reference/interfaces/signalquality",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "signalquality",
+                "title": "SignalQuality",
+                "sidebar_label": "SignalQuality"
+              },
+              "sidebar": "@neurosity/sdk",
+              "previous": {
+                "title": "Settings",
+                "permalink": "/docs/reference/interfaces/settings"
+              }
+            },
+            {
+              "unversionedId": "resources",
+              "id": "resources",
+              "title": "Resources",
+              "description": "Online Community",
+              "source": "@site/../docs/resources.md",
+              "sourceDirName": ".",
+              "slug": "/resources",
+              "permalink": "/docs/resources",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "resources",
+                "title": "Resources"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Your First Web App",
+                "permalink": "/docs/tutorials/your-first-web-app"
+              },
+              "next": {
+                "title": "Ethics",
+                "permalink": "/docs/guides/ethics"
+              }
+            },
+            {
+              "unversionedId": "tutorials/your-first-web-app",
+              "id": "tutorials/your-first-web-app",
+              "title": "Your First Web App",
+              "description": "In this tutorial, we'll build a Web App from scratch using the following tech stack:",
+              "source": "@site/../docs/tutorials/your-first-web-app.md",
+              "sourceDirName": "tutorials",
+              "slug": "/tutorials/your-first-web-app",
+              "permalink": "/docs/tutorials/your-first-web-app",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "your-first-web-app",
+                "title": "Your First Web App"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Your First Node App",
+                "permalink": "/docs/getting-started"
+              },
+              "next": {
+                "title": "Resources",
+                "permalink": "/docs/resources"
+              }
+            }
+          ],
+          "drafts": [],
+          "sidebars": {
+            "docs": [
+              {
+                "type": "category",
+                "label": "Overview",
+                "items": [
+                  {
+                    "type": "doc",
+                    "id": "overview"
+                  }
+                ],
+                "collapsed": true,
+                "collapsible": true
+              },
+              {
+                "type": "category",
+                "label": "Get Started",
+                "items": [
+                  {
+                    "type": "doc",
+                    "id": "getting-started"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "tutorials/your-first-web-app"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "resources"
+                  }
+                ],
+                "collapsed": true,
+                "collapsible": true
+              },
+              {
+                "type": "category",
+                "label": "Working with the SDK",
+                "items": [
+                  {
+                    "type": "doc",
+                    "id": "guides/ethics"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "guides/importing"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "guides/signal"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "guides/training"
+                  }
+                ],
+                "collapsed": true,
+                "collapsible": true
+              },
+              {
+                "type": "category",
+                "label": "API Guides",
+                "items": [
+                  {
+                    "type": "doc",
+                    "id": "api/device-selection"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/authentication"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/brainwaves"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/calm"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/disconnect"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/info"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/haptics"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/settings"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/status"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/focus"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/kinesis"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/predictions"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/signal-quality"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/oauth"
+                  }
+                ],
+                "collapsed": true,
+                "collapsible": true
+              }
+            ],
+            "@neurosity/sdk": [
+              {
+                "type": "category",
+                "label": "Introduction",
+                "items": [
+                  {
+                    "type": "doc",
+                    "id": "reference/index"
+                  }
+                ],
+                "collapsed": true,
+                "collapsible": true
+              },
+              {
+                "type": "category",
+                "label": "Classes",
+                "items": [
+                  {
+                    "type": "doc",
+                    "id": "reference/classes/neurosity"
+                  }
+                ],
+                "collapsed": true,
+                "collapsible": true
+              },
+              {
+                "type": "category",
+                "label": "Interfaces",
+                "items": [
+                  {
+                    "type": "doc",
+                    "id": "reference/interfaces/accelerometer"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "reference/interfaces/calm"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "reference/interfaces/deviceinfo"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "reference/interfaces/devicestatus"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "reference/interfaces/focus"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "reference/interfaces/kinesis"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "reference/interfaces/psd"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "reference/interfaces/powerbyband"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "reference/interfaces/sdkoptions"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "reference/interfaces/settings"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "reference/interfaces/signalquality"
+                  }
+                ],
+                "collapsed": true,
+                "collapsible": true
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "docusaurus-plugin-content-blog": {
+    "default": {
+      "blogSidebarTitle": "Recent posts",
+      "blogPosts": [
+        {
+          "id": "/2017/10/24/new-version-1.0.0",
+          "metadata": {
+            "permalink": "/blog/2017/10/24/new-version-1.0.0",
+            "source": "@site/blog/2017-10-24-new-version-1.0.0.md",
+            "title": "New Version 1.0.0",
+            "description": "This blog post will test file name parsing issues when periods are present.",
+            "date": "2017-10-24T00:00:00.000Z",
+            "formattedDate": "October 24, 2017",
+            "tags": [],
+            "readingTime": 0.065,
+            "hasTruncateMarker": false,
+            "authors": [
+              {
+                "name": "Eric Nakagawa",
+                "url": "http://twitter.com/ericnakagawa"
+              }
+            ],
+            "frontMatter": {
+              "title": "New Version 1.0.0",
+              "author": "Eric Nakagawa",
+              "authorURL": "http://twitter.com/ericnakagawa",
+              "authorFBID": 661277173
+            },
+            "nextItem": {
+              "title": "Adding RSS Support",
+              "permalink": "/blog/2017/09/26/adding-rss"
+            }
+          },
+          "content": "This blog post will test file name parsing issues when periods are present."
+        },
+        {
+          "id": "/2017/09/26/adding-rss",
+          "metadata": {
+            "permalink": "/blog/2017/09/26/adding-rss",
+            "source": "@site/blog/2017-09-26-adding-rss.md",
+            "title": "Adding RSS Support",
+            "description": "This is a test post.",
+            "date": "2017-09-26T00:00:00.000Z",
+            "formattedDate": "September 26, 2017",
+            "tags": [],
+            "readingTime": 0.055,
+            "hasTruncateMarker": false,
+            "authors": [
+              {
+                "name": "Eric Nakagawa",
+                "url": "http://twitter.com/ericnakagawa"
+              }
+            ],
+            "frontMatter": {
+              "title": "Adding RSS Support",
+              "author": "Eric Nakagawa",
+              "authorURL": "http://twitter.com/ericnakagawa",
+              "authorFBID": 661277173
+            },
+            "prevItem": {
+              "title": "New Version 1.0.0",
+              "permalink": "/blog/2017/10/24/new-version-1.0.0"
+            },
+            "nextItem": {
+              "title": "Adding RSS Support - RSS Truncation Test",
+              "permalink": "/blog/2017/09/25/testing-rss"
+            }
+          },
+          "content": "This is a test post.\n\nA whole bunch of other information."
+        },
+        {
+          "id": "/2017/09/25/testing-rss",
+          "metadata": {
+            "permalink": "/blog/2017/09/25/testing-rss",
+            "source": "@site/blog/2017-09-25-testing-rss.md",
+            "title": "Adding RSS Support - RSS Truncation Test",
+            "description": "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890",
+            "date": "2017-09-25T00:00:00.000Z",
+            "formattedDate": "September 25, 2017",
+            "tags": [],
+            "readingTime": 0.065,
+            "hasTruncateMarker": true,
+            "authors": [
+              {
+                "name": "Eric Nakagawa",
+                "url": "http://twitter.com/ericnakagawa"
+              }
+            ],
+            "frontMatter": {
+              "title": "Adding RSS Support - RSS Truncation Test",
+              "author": "Eric Nakagawa",
+              "authorURL": "http://twitter.com/ericnakagawa",
+              "authorFBID": 661277173
+            },
+            "prevItem": {
+              "title": "Adding RSS Support",
+              "permalink": "/blog/2017/09/26/adding-rss"
+            },
+            "nextItem": {
+              "title": "New Blog Post",
+              "permalink": "/blog/2017/04/10/blog-post-two"
+            }
+          },
+          "content": "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890\n\nThis should be truncated.\n<!--truncate-->\nThis line should never render in XML."
+        },
+        {
+          "id": "/2017/04/10/blog-post-two",
+          "metadata": {
+            "permalink": "/blog/2017/04/10/blog-post-two",
+            "source": "@site/blog/2017-04-10-blog-post-two.md",
+            "title": "New Blog Post",
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus elementum massa eget nulla aliquet sagittis. Proin odio tortor, vulputate ut odio in, ultrices ultricies augue. Cras ornare ultrices lorem malesuada iaculis. Etiam sit amet libero tempor, pulvinar mauris sed, sollicitudin sapien.",
+            "date": "2017-04-10T00:00:00.000Z",
+            "formattedDate": "April 10, 2017",
+            "tags": [],
+            "readingTime": 2.31,
+            "hasTruncateMarker": true,
+            "authors": [
+              {
+                "name": "Blog Author",
+                "url": "http://twitter.com/"
+              }
+            ],
+            "frontMatter": {
+              "title": "New Blog Post",
+              "author": "Blog Author",
+              "authorURL": "http://twitter.com/",
+              "authorFBID": 100002976521003
+            },
+            "prevItem": {
+              "title": "Adding RSS Support - RSS Truncation Test",
+              "permalink": "/blog/2017/09/25/testing-rss"
+            },
+            "nextItem": {
+              "title": "Blog Title",
+              "permalink": "/blog/2016/03/11/blog-post"
+            }
+          },
+          "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus elementum massa eget nulla aliquet sagittis. Proin odio tortor, vulputate ut odio in, ultrices ultricies augue. Cras ornare ultrices lorem malesuada iaculis. Etiam sit amet libero tempor, pulvinar mauris sed, sollicitudin sapien.\n\n<!--truncate-->\n\nMauris vestibulum ullamcorper nibh, ut semper purus pulvinar ut. Donec volutpat orci sit amet mauris malesuada, non pulvinar augue aliquam. Vestibulum ultricies at urna ut suscipit. Morbi iaculis, erat at imperdiet semper, ipsum nulla sodales erat, eget tincidunt justo dui quis justo. Pellentesque dictum bibendum diam at aliquet. Sed pulvinar, dolor quis finibus ornare, eros odio facilisis erat, eu rhoncus nunc dui sed ex. Nunc gravida dui massa, sed ornare arcu tincidunt sit amet. Maecenas efficitur sapien neque, a laoreet libero feugiat ut.\n\nNulla facilisi. Maecenas sodales nec purus eget posuere. Sed sapien quam, pretium a risus in, porttitor dapibus erat. Sed sit amet fringilla ipsum, eget iaculis augue. Integer sollicitudin tortor quis ultricies aliquam. Suspendisse fringilla nunc in tellus cursus, at placerat tellus scelerisque. Sed tempus elit a sollicitudin rhoncus. Nulla facilisi. Morbi nec dolor dolor. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras et aliquet lectus. Pellentesque sit amet eros nisi. Quisque ac sapien in sapien congue accumsan. Nullam in posuere ante. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Proin lacinia leo a nibh fringilla pharetra.\n\nOrci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Proin venenatis lectus dui, vel ultrices ante bibendum hendrerit. Aenean egestas feugiat dui id hendrerit. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Curabitur in tellus laoreet, eleifend nunc id, viverra leo. Proin vulputate non dolor vel vulputate. Curabitur pretium lobortis felis, sit amet finibus lorem suscipit ut. Sed non mollis risus. Duis sagittis, mi in euismod tincidunt, nunc mauris vestibulum urna, at euismod est elit quis erat. Phasellus accumsan vitae neque eu placerat. In elementum arcu nec tellus imperdiet, eget maximus nulla sodales. Curabitur eu sapien eget nisl sodales fermentum.\n\nPhasellus pulvinar ex id commodo imperdiet. Praesent odio nibh, sollicitudin sit amet faucibus id, placerat at metus. Donec vitae eros vitae tortor hendrerit finibus. Interdum et malesuada fames ac ante ipsum primis in faucibus. Quisque vitae purus dolor. Duis suscipit ac nulla et finibus. Phasellus ac sem sed dui dictum gravida. Phasellus eleifend vestibulum facilisis. Integer pharetra nec enim vitae mattis. Duis auctor, lectus quis condimentum bibendum, nunc dolor aliquam massa, id bibendum orci velit quis magna. Ut volutpat nulla nunc, sed interdum magna condimentum non. Sed urna metus, scelerisque vitae consectetur a, feugiat quis magna. Donec dignissim ornare nisl, eget tempor risus malesuada quis."
+        },
+        {
+          "id": "/2016/03/11/blog-post",
+          "metadata": {
+            "permalink": "/blog/2016/03/11/blog-post",
+            "source": "@site/blog/2016-03-11-blog-post.md",
+            "title": "Blog Title",
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus elementum massa eget nulla aliquet sagittis. Proin odio tortor, vulputate ut odio in, ultrices ultricies augue. Cras ornare ultrices lorem malesuada iaculis. Etiam sit amet libero tempor, pulvinar mauris sed, sollicitudin sapien.",
+            "date": "2016-03-11T00:00:00.000Z",
+            "formattedDate": "March 11, 2016",
+            "tags": [],
+            "readingTime": 2.31,
+            "hasTruncateMarker": true,
+            "authors": [
+              {
+                "name": "Blog Author",
+                "url": "http://twitter.com/"
+              }
+            ],
+            "frontMatter": {
+              "title": "Blog Title",
+              "author": "Blog Author",
+              "authorURL": "http://twitter.com/",
+              "authorFBID": 100002976521003
+            },
+            "prevItem": {
+              "title": "New Blog Post",
+              "permalink": "/blog/2017/04/10/blog-post-two"
+            }
+          },
+          "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus elementum massa eget nulla aliquet sagittis. Proin odio tortor, vulputate ut odio in, ultrices ultricies augue. Cras ornare ultrices lorem malesuada iaculis. Etiam sit amet libero tempor, pulvinar mauris sed, sollicitudin sapien.\n\n<!--truncate-->\n\nMauris vestibulum ullamcorper nibh, ut semper purus pulvinar ut. Donec volutpat orci sit amet mauris malesuada, non pulvinar augue aliquam. Vestibulum ultricies at urna ut suscipit. Morbi iaculis, erat at imperdiet semper, ipsum nulla sodales erat, eget tincidunt justo dui quis justo. Pellentesque dictum bibendum diam at aliquet. Sed pulvinar, dolor quis finibus ornare, eros odio facilisis erat, eu rhoncus nunc dui sed ex. Nunc gravida dui massa, sed ornare arcu tincidunt sit amet. Maecenas efficitur sapien neque, a laoreet libero feugiat ut.\n\nNulla facilisi. Maecenas sodales nec purus eget posuere. Sed sapien quam, pretium a risus in, porttitor dapibus erat. Sed sit amet fringilla ipsum, eget iaculis augue. Integer sollicitudin tortor quis ultricies aliquam. Suspendisse fringilla nunc in tellus cursus, at placerat tellus scelerisque. Sed tempus elit a sollicitudin rhoncus. Nulla facilisi. Morbi nec dolor dolor. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras et aliquet lectus. Pellentesque sit amet eros nisi. Quisque ac sapien in sapien congue accumsan. Nullam in posuere ante. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Proin lacinia leo a nibh fringilla pharetra.\n\nOrci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Proin venenatis lectus dui, vel ultrices ante bibendum hendrerit. Aenean egestas feugiat dui id hendrerit. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Curabitur in tellus laoreet, eleifend nunc id, viverra leo. Proin vulputate non dolor vel vulputate. Curabitur pretium lobortis felis, sit amet finibus lorem suscipit ut. Sed non mollis risus. Duis sagittis, mi in euismod tincidunt, nunc mauris vestibulum urna, at euismod est elit quis erat. Phasellus accumsan vitae neque eu placerat. In elementum arcu nec tellus imperdiet, eget maximus nulla sodales. Curabitur eu sapien eget nisl sodales fermentum.\n\nPhasellus pulvinar ex id commodo imperdiet. Praesent odio nibh, sollicitudin sit amet faucibus id, placerat at metus. Donec vitae eros vitae tortor hendrerit finibus. Interdum et malesuada fames ac ante ipsum primis in faucibus. Quisque vitae purus dolor. Duis suscipit ac nulla et finibus. Phasellus ac sem sed dui dictum gravida. Phasellus eleifend vestibulum facilisis. Integer pharetra nec enim vitae mattis. Duis auctor, lectus quis condimentum bibendum, nunc dolor aliquam massa, id bibendum orci velit quis magna. Ut volutpat nulla nunc, sed interdum magna condimentum non. Sed urna metus, scelerisque vitae consectetur a, feugiat quis magna. Donec dignissim ornare nisl, eget tempor risus malesuada quis."
+        }
+      ],
+      "blogListPaginated": [
+        {
+          "items": [
+            "/2017/10/24/new-version-1.0.0",
+            "/2017/09/26/adding-rss",
+            "/2017/09/25/testing-rss",
+            "/2017/04/10/blog-post-two",
+            "/2016/03/11/blog-post"
+          ],
+          "metadata": {
+            "permalink": "/blog",
+            "page": 1,
+            "postsPerPage": 10,
+            "totalPages": 1,
+            "totalCount": 5,
+            "blogDescription": "Blog",
+            "blogTitle": "Blog"
+          }
+        }
+      ],
+      "blogTags": {},
+      "blogTagsListPath": "/blog/tags"
+    }
+  },
+  "docusaurus-plugin-content-pages": {
+    "default": [
+      {
+        "type": "jsx",
+        "permalink": "/",
+        "source": "@site/src/pages/index.js"
+      }
+    ]
+  },
+  "docusaurus-plugin-debug": {},
+  "docusaurus-theme-classic": {},
+  "docusaurus-bootstrap-plugin": {},
+  "docusaurus-mdx-fallback-plugin": {}
+}

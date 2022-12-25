@@ -1,0 +1,30 @@
+{
+  "unversionedId": "reference/interfaces/calm",
+  "id": "reference/interfaces/calm",
+  "title": "Calm",
+  "description": "@neurosity/sdk › Calm",
+  "source": "@site/../docs/reference/interfaces/calm.md",
+  "sourceDirName": "reference/interfaces",
+  "slug": "/reference/interfaces/calm",
+  "permalink": "/docs/reference/interfaces/calm",
+  "draft": false,
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Author",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "Oct 14, 2018",
+  "frontMatter": {
+    "id": "calm",
+    "title": "Calm",
+    "sidebar_label": "Calm"
+  },
+  "sidebar": "@neurosity/sdk",
+  "previous": {
+    "title": "Accelerometer",
+    "permalink": "/docs/reference/interfaces/accelerometer"
+  },
+  "next": {
+    "title": "DeviceInfo",
+    "permalink": "/docs/reference/interfaces/deviceinfo"
+  }
+}

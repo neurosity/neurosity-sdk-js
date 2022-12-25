@@ -1,0 +1,30 @@
+{
+  "unversionedId": "reference/classes/neurosity",
+  "id": "reference/classes/neurosity",
+  "title": "Neurosity",
+  "description": "@neurosity/sdk › Neurosity",
+  "source": "@site/../docs/reference/classes/neurosity.md",
+  "sourceDirName": "reference/classes",
+  "slug": "/reference/classes/neurosity",
+  "permalink": "/docs/reference/classes/neurosity",
+  "draft": false,
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Author",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "Oct 14, 2018",
+  "frontMatter": {
+    "id": "neurosity",
+    "title": "Neurosity",
+    "sidebar_label": "Neurosity"
+  },
+  "sidebar": "@neurosity/sdk",
+  "previous": {
+    "title": "Globals",
+    "permalink": "/docs/reference/"
+  },
+  "next": {
+    "title": "Accelerometer",
+    "permalink": "/docs/reference/interfaces/accelerometer"
+  }
+}

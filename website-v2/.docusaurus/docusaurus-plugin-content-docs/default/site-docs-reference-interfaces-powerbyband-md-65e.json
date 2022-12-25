@@ -1,0 +1,30 @@
+{
+  "unversionedId": "reference/interfaces/powerbyband",
+  "id": "reference/interfaces/powerbyband",
+  "title": "PowerByBand",
+  "description": "@neurosity/sdk › PowerByBand",
+  "source": "@site/../docs/reference/interfaces/powerbyband.md",
+  "sourceDirName": "reference/interfaces",
+  "slug": "/reference/interfaces/powerbyband",
+  "permalink": "/docs/reference/interfaces/powerbyband",
+  "draft": false,
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Author",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "Oct 14, 2018",
+  "frontMatter": {
+    "id": "powerbyband",
+    "title": "PowerByBand",
+    "sidebar_label": "PowerByBand"
+  },
+  "sidebar": "@neurosity/sdk",
+  "previous": {
+    "title": "PSD",
+    "permalink": "/docs/reference/interfaces/psd"
+  },
+  "next": {
+    "title": "SDKOptions",
+    "permalink": "/docs/reference/interfaces/sdkoptions"
+  }
+}

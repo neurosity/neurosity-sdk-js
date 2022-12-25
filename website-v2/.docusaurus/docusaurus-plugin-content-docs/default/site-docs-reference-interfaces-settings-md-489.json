@@ -1,0 +1,30 @@
+{
+  "unversionedId": "reference/interfaces/settings",
+  "id": "reference/interfaces/settings",
+  "title": "Settings",
+  "description": "@neurosity/sdk › Settings",
+  "source": "@site/../docs/reference/interfaces/settings.md",
+  "sourceDirName": "reference/interfaces",
+  "slug": "/reference/interfaces/settings",
+  "permalink": "/docs/reference/interfaces/settings",
+  "draft": false,
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Author",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "Oct 14, 2018",
+  "frontMatter": {
+    "id": "settings",
+    "title": "Settings",
+    "sidebar_label": "Settings"
+  },
+  "sidebar": "@neurosity/sdk",
+  "previous": {
+    "title": "SDKOptions",
+    "permalink": "/docs/reference/interfaces/sdkoptions"
+  },
+  "next": {
+    "title": "SignalQuality",
+    "permalink": "/docs/reference/interfaces/signalquality"
+  }
+}
