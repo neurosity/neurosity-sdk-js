@@ -1,10 +1,10 @@
 const { createSkill } = require("../..");
 
-module.exports = createSkill((notion, skill) => {
-  console.log("notion", notion);
+module.exports = createSkill((neurosity, skill) => {
+  console.log("neurosity", neurosity);
   console.log("skill instance", skill);
 
-  skill.metric("marker").subscribe(data => {
+  skill.metric("marker").subscribe((data) => {
     console.log(data);
     // { timestamp: 23453632423 }
   });
@@ -13,10 +13,10 @@ module.exports = createSkill((notion, skill) => {
     right: true
   });
 
-  notion.kinesis("liftRightArm").subscribe(() => {});
+  neurosity.kinesis("liftRightArm").subscribe(() => {});
 
   // should throw error as is not an allowed metric
-  // notion.emotion().subscribe(console.log);
+  // neurosity.emotion().subscribe(console.log);
 
   return async () => {
     // Any additional clean-up here

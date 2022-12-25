@@ -51,4 +51,4 @@ If you have questions for extension development, try asking on:
 - [Feedback Portal](https://feedback.neurosity.co): Have a feature request? Found a bug? Submit your feedback to us.
 - [Knowledge Base](https://support.neurosity.co): There are over a dozen articles for getting started and developing with the Neurosity SDK.
 
-If you have questions or issues related to the Neurosity SDK, please open new issues at [Neurosity/notion-js](https://github.com/neurosity/notion-js) as well.
+If you have questions or issues related to the Neurosity SDK, please open new issues at [Neurosity/neurosity-sdk-js](https://github.com/neurosity/neurosity-sdk-js) as well.

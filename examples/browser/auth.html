@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Notion API - Auth Inheritance</title>
+    <title>Neurosity SDK - Auth Inheritance</title>
   </head>
   <body>
     <pre>View source</pre>
@@ -10,7 +10,7 @@
     <script src="//www.gstatic.com/firebasejs/7.2.0/firebase-auth.js"></script>
     <script src="//www.gstatic.com/firebasejs/7.2.0/firebase-database.js"></script>
     <script type="module">
-      import { Notion } from "./notion.mjs";
+      import { Neurosity } from "./neurosity.mjs";
 
       const config = {
         apiKey: "AIzaSyB0TkZ83Fj0CIzn8AAmE-Osc92s3ER8hy8",
@@ -24,22 +24,20 @@
       firebase.initializeApp(config);
 
       (async () => {
-        await firebase
-          .auth()
-          .signInWithEmailAndPassword("email", "password");
+        await firebase.auth().signInWithEmailAndPassword("email", "password");
 
-        firebase.auth().onAuthStateChanged(user => {
+        firebase.auth().onAuthStateChanged((user) => {
           console.log("app user", user ? user.uid : null);
         });
 
-        const notion = new Notion({
+        const neurosity = new Neurosity({
           deviceId: "deviceId"
         });
 
-        // Notion login is not required since a previously
-        // defined neurosity firebase app is used for Notion
+        // Neurosity login is not required since a previously
+        // defined neurosity firebase app is used for Neurosity
 
-        const info = await notion.getInfo();
+        const info = await neurosity.getInfo();
         console.log("info", info);
       })();
     </script>

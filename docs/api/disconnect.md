@@ -3,12 +3,12 @@ id: disconnect
 title: Disconnect
 ---
 
-You should always call disconnect from the Notion when you're ending a session with Notion. This will clean up the session.
+You should always call disconnect the Neurosity instance when you're ending a session. This will clean up the session.
 
 ```js
-import { Notion } from "@neurosity/notion";
+import { Neurosity } from "@neurosity/sdk";
 
-const notion = new Notion();
+const neurosity = new Neurosity();
 
-notion.disconnect();
+neurosity.disconnect();
 ```

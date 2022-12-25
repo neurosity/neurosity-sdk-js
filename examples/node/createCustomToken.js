@@ -1,9 +1,9 @@
-const { Notion } = require("../..");
+const { Neurosity } = require("../..");
 
-const notion = new Notion();
+const neurosity = new Neurosity();
 
 (async () => {
-  await notion
+  await neurosity
     .login({
       email: process.env.NEUROSITY_EMAIL,
       password: process.env.NEUROSITY_PASSWORD
@@ -12,11 +12,9 @@ const notion = new Notion();
       console.log("error", error);
     });
 
-  const customToken = await notion
-    .createCustomToken()
-    .catch((error) => {
-      console.log(error);
-    });
+  const customToken = await neurosity.createCustomToken().catch((error) => {
+    console.log(error);
+  });
 
   if (customToken) {
     console.log(customToken);

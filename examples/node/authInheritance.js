@@ -1,4 +1,4 @@
-const { Notion } = require("../..");
+const { Neurosity } = require("../..");
 const firebase = require("firebase/app");
 require("firebase/auth");
 
@@ -21,21 +21,21 @@ firebase.initializeApp(config);
       process.env.NEUROSITY_PASSWORD
     );
 
-  firebase.auth().onAuthStateChanged(user => {
+  firebase.auth().onAuthStateChanged((user) => {
     console.log("app user", user ? user.uid : null);
   });
 
-  const notion = new Notion({
+  const neurosity = new Neurosity({
     deviceId: process.env.NEUROSITY_DEVICE_ID
   });
 
-  // Notion login is not required since a previously
-  // defined neurosity firebase app is used for Notion
+  // Neurosity login is not required since a previously
+  // defined neurosity firebase app is used for Neurosity
 
-  const info = await notion.getInfo();
+  const info = await neurosity.getInfo();
   console.log("info", info);
 
-  notion.status().subscribe(status => {
+  neurosity.status().subscribe((status) => {
     console.log("status", status);
   });
 })();

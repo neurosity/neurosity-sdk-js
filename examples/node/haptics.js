@@ -1,8 +1,8 @@
-module.exports = async function (notion) {
-  const info = await notion.getInfo();
+module.exports = async function (neurosity) {
+  const info = await neurosity.getInfo();
   console.log("info", info);
 
-  const effects = notion.getHapticEffects();
+  const effects = neurosity.getHapticEffects();
   const hapticOptions = {
     P7: [effects.strongClick100],
     P8: [
@@ -15,6 +15,6 @@ module.exports = async function (notion) {
     ]
   };
 
-  const res = await notion.haptics(hapticOptions);
+  const res = await neurosity.haptics(hapticOptions);
   console.log("Res", res);
 };

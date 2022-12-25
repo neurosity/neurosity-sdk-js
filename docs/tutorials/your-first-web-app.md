@@ -7,11 +7,11 @@ In this tutorial, we'll build a Web App from scratch using the following tech st
 
 - ⚛️ React - [Create React App](https://github.com/facebook/create-react-app)
 - 🏆 Reach Router - [@reach/router](https://reach.tech/router)
-- 🤯 NotionJS API - [@neurosity/notion](https://www.npmjs.com/package/@neurosity/notion)
-- 🔑 NotionJS Authentication
+- 🤯 Neurosity SDK - [@neurosity/sdk](https://www.npmjs.com/package/@neurosity/sdk)
+- 🔑 Neurosity Authentication
 - 👍 React Use - [react-use](https://github.com/streamich/react-use)
 
-**TLDR**: If you want to quickly get your neuro app up and running using NotionJS & React, you can clone the [Notion React Starter](https://github.com/neurosity/notion-react-starter) repo.
+**TLDR**: If you want to quickly get your neuro app up and running using the Neurosity SDK & React, you can clone the [Neurosity React Starter](https://github.com/neurosity/notion-react-starter) repo.
 
 ## Getting Started
 
@@ -29,9 +29,9 @@ If all goes well, you should see something like this:
 
 ## 🔑 Authentication
 
-We believe in privacy. That's why Notion is the first brain computer to feature authentication. Adding auth to the app is pretty straightforward. For this, we'll need a login form and 3 side effects to sync the authentication state.
+We believe in privacy. That's why Neurosity is the first brain computer to feature authentication. Adding auth to the app is pretty straightforward. For this, we'll need a login form and 3 side effects to sync the authentication state.
 
-All you need to connect to your Notion brain computer is a [Neurosity account](https://console.neurosity.co/) and a Device ID. So, let's start by creating a new component for the login form that will collect this information.
+All you need to connect to your device is a [Neurosity account](https://console.neurosity.co/) and a Device ID. So, let's start by creating a new component for the login form that will collect this information.
 
 ```jsx
 // src/components/LoginForm.js
@@ -52,12 +52,12 @@ export function LoginForm({ onLogin, loading, error }) {
       <h3 className="card-heading">Login</h3>
       {!!error ? <h4 className="card-error">{error}</h4> : null}
       <div className="row">
-        <label>Notion Device ID</label>
+        <label>Neurosity Device ID</label>
         <input
           type="text"
           value={deviceId}
           disabled={loading}
-          onChange={e => setDeviceId(e.target.value)}
+          onChange={(e) => setDeviceId(e.target.value)}
         />
       </div>
       <div className="row">
@@ -66,7 +66,7 @@ export function LoginForm({ onLogin, loading, error }) {
           type="email"
           value={email}
           disabled={loading}
-          onChange={e => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
         />
       </div>
       <div className="row">
@@ -75,7 +75,7 @@ export function LoginForm({ onLogin, loading, error }) {
           type="password"
           value={password}
           disabled={loading}
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
         />
       </div>
       <div className="row">
@@ -97,7 +97,7 @@ Now that we've created our login component, let's add a login page that will mak
 import React, { useState, useEffect } from "react";
 import { LoginForm } from "../components/LoginForm";
 
-export function Login({ notion, user, setUser, setDeviceId }) {
+export function Login({ neurosity, user, setUser, setDeviceId }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -114,9 +114,7 @@ export function Login({ notion, user, setUser, setDeviceId }) {
     }
   }
 
-  return (
-    <LoginForm onLogin={onLogin} loading={isLoggingIn} error={error} />
-  );
+  return <LoginForm onLogin={onLogin} loading={isLoggingIn} error={error} />;
 }
 ```
 
@@ -126,17 +124,15 @@ The goal of this page is to display the login form, add basic form validation vi
 
 ```jsx
 useEffect(() => {
-  if (!user && notion && email && password) {
+  if (!user && neurosity && email && password) {
     login();
   }
 
   async function login() {
     setIsLoggingIn(true);
-    const auth = await notion
-      .login({ email, password })
-      .catch(error => {
-        setError(error.message);
-      });
+    const auth = await neurosity.login({ email, password }).catch((error) => {
+      setError(error.message);
+    });
 
     if (auth) {
       setUser(auth.user);
@@ -144,12 +140,12 @@ useEffect(() => {
 
     setIsLoggingIn(false);
   }
-}, [email, password, notion, user, setUser, setError]);
+}, [email, password, neurosity, user, setUser, setError]);
 ```
 
-You can think of `user` as the object that holds the auth user session set by the Notion API. So we are only calling our `login()` function if there is no auth session, we have a Notion instance in the state, and the user has submitted an email and password.
+You can think of `user` as the object that holds the auth user session set by the Neurosity SDK. So we are only calling our `login()` function if there is no auth session, we have a Neurosity instance in the state, and the user has submitted an email and password.
 
-Very soon you'll find out how we'll receive the props: `notion, user, setUser, setDeviceId`. But before we do that, let's go back to our `App.js` and start putting it all together.
+Very soon you'll find out how we'll receive the props: `neurosity, user, setUser, setDeviceId`. But before we do that, let's go back to our `App.js` and start putting it all together.
 
 ## ⚙️ App State
 
@@ -167,7 +163,7 @@ import useLocalStorage from "react-use/lib/useLocalStorage";
 import { Login } from "./pages/Login";
 
 export function App() {
-  const [notion, setNotion] = useState(null);
+  const [neurosity, setNeurosity] = useState(null);
   const [user, setUser] = useState(null);
   const [deviceId, setDeviceId] = useLocalStorage("deviceId");
   const [loading, setLoading] = useState(true);
@@ -176,7 +172,7 @@ export function App() {
     <Router>
       <Login
         path="/"
-        notion={notion}
+        neurosity={neurosity}
         user={user}
         setUser={setUser}
         setDeviceId={setDeviceId}
@@ -188,23 +184,23 @@ export function App() {
 
 If you were wondering why have we decided to keep the `deviceId` in the local storage, it is because we'll need to access it before and after the user has logged in. It also makes a nicer user experience not to have to enter it multiple times.
 
-## 🤯 NotionJS
+## 🤯 Neurosity SDK
 
-Now that we have basic state management in place, let's integrate our app with _Notion_ by installing the API and importing it in `App.js`.
+Now that we have basic state management in place, let's integrate our app with _Neurosity_ by installing the SDK and importing it in `App.js`.
 
-- `npm install @neurosity/notion`
+- `npm install @neurosity/sdk`
 
 ```jsx
-import { Notion } from "@neurosity/notion";
+import { Neurosity } from "@neurosity/sdk";
 ```
 
-Connecting to a Notion device is simple. We instantiate a new _Notion_ and pass the Device ID. We can add a side effect that sets the instance to the App component state by syncing with `deviceId`.
+Connecting to a Neurosity device is simple. We instantiate a new _Neurosity_ class and pass the Device ID. We can add a side effect that sets the instance to the App component state by syncing with `deviceId`.
 
 ```jsx
 useEffect(() => {
   if (deviceId) {
-    const notion = new Notion({ deviceId });
-    setNotion(notion);
+    const neurosity = new Neurosity({ deviceId });
+    setNeurosity(neurosity);
   } else {
     setLoading(false);
   }
@@ -213,15 +209,15 @@ useEffect(() => {
 
 Another state we want to sync is the `user` state.
 
-In the following example, we'll add a side effect that syncs with the value of the `notion` instance. If `notion` hasn't been set yet, then we'll skip subscribing to _calm_ events until the `notion` instance is created.
+In the following example, we'll add a side effect that syncs with the value of the `neurosity` instance. If `neurosity` hasn't been set yet, then we'll skip subscribing to _calm_ events until the `neurosity` instance is created.
 
 ```jsx
 useEffect(() => {
-  if (!notion) {
+  if (!neurosity) {
     return;
   }
 
-  const subscription = notion.onAuthStateChanged().subscribe(user => {
+  const subscription = neurosity.onAuthStateChanged().subscribe((user) => {
     if (user) {
       setUser(user);
     } else {
@@ -233,12 +229,12 @@ useEffect(() => {
   return () => {
     subscription.unsubscribe();
   };
-}, [notion]);
+}, [neurosity]);
 ```
 
-If the app has an active user session persisted by the Notion authentication, we'll want to get the current logged in user, and set it to the state in our App component.
+If the app has an active user session persisted by the Neurosity SDK authentication, we'll want to get the current logged in user, and set it to the state in our App component.
 
-The `onAuthStateChanged` method returns an observable of user auth events. It is important to note that when using the Notion API in the browser, the session will persist via local storage. So, if you close the app, or reload the page, the session will persist and `onAuthStateChanged` will return the user session instead of `null`. This is exactly what we want.
+The `onAuthStateChanged` method returns an observable of user auth events. It is important to note that when using the Neurosity SDK in the browser, the session will persist via local storage. So, if you close the app, or reload the page, the session will persist and `onAuthStateChanged` will return the user session instead of `null`. This is exactly what we want.
 
 If no session is detected we can navigate to the login page. Otherwise, set `user` in the component's state.
 
@@ -249,21 +245,21 @@ We can complete full authentication by adding a Logout page.
 import { useEffect } from "react";
 import { navigate } from "@reach/router";
 
-export function Logout({ notion, resetState }) {
+export function Logout({ neurosity, resetState }) {
   useEffect(() => {
-    if (notion) {
-      notion.logout().then(() => {
+    if (neurosity) {
+      neurosity.logout().then(() => {
         resetState();
         navigate("/");
       });
     }
-  }, [notion, resetState]);
+  }, [neurosity, resetState]);
 
   return null;
 }
 ```
 
-The logout page is simply a React component with no DOM elements. The only logic we need is a side effect that will call the `notion.logout()` method if the `notion` instance is present. Lastly, it redirects the user to the initial route after logging out.
+The logout page is simply a React component with no DOM elements. The only logic we need is a side effect that will call the `neurosity.logout()` method if the `neurosity` instance is present. Lastly, it redirects the user to the initial route after logging out.
 
 This component can now be added as a route in `App.js`.
 
@@ -278,9 +274,9 @@ return (
     {/* ... */}
     <Logout
       path="/logout"
-      notion={notion}
+      neurosity={neurosity}
       resetState={() => {
-        setNotion(null);
+        setNeurosity(null);
         setUser(null);
         setDeviceId("");
       }}
@@ -325,23 +321,23 @@ function getStatusColor(state) {
   return stateColors.offline;
 }
 
-export function Status({ notion, info }) {
+export function Status({ neurosity, info }) {
   const [status, setStatus] = useState(null);
   const { state, charging, battery, sleepMode } = status || {};
 
   useEffect(() => {
-    if (!notion) {
+    if (!neurosity) {
       return;
     }
 
-    const subscription = notion.status().subscribe(status => {
+    const subscription = neurosity.status().subscribe((status) => {
       setStatus(status);
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [notion]);
+  }, [neurosity]);
 
   if (!status) {
     return <div>Connecting to device...</div>;
@@ -349,9 +345,7 @@ export function Status({ notion, info }) {
 
   return (
     <aside>
-      {info ? (
-        <h3 className="card-heading">{info.deviceNickname}</h3>
-      ) : null}
+      {info ? <h3 className="card-heading">{info.deviceNickname}</h3> : null}
       <div className="status-item status-state">
         <span
           className="status-indicator"
@@ -391,22 +385,22 @@ import { navigate } from "@reach/router";
 import { Status } from "./Status";
 import { Footer } from "./Footer";
 
-export function Nav({ notion }) {
+export function Nav({ neurosity }) {
   const [info, setInfo] = useState(null);
 
   useEffect(() => {
-    if (!notion) {
+    if (!neurosity) {
       return;
     }
 
-    notion.getInfo().then(info => {
+    neurosity.getInfo().then((info) => {
       setInfo(info);
     });
-  }, [notion]);
+  }, [neurosity]);
 
   return (
     <nav className="card">
-      <Status notion={notion} info={info} />
+      <Status neurosity={neurosity} info={info} />
       <button onClick={() => navigate("/logout")} className="card-btn">
         Logout
       </button>
@@ -421,7 +415,7 @@ Now that our app displays the state of the device at any given time, let's add A
 
 This is the fun part. This is where we get to access brain data and map it to the app state.
 
-By subscribing to `notion.calm()`, we get a new `calm` score approximately every second. So, let's add a page to display the calm score.
+By subscribing to `neurosity.calm()`, we get a new `calm` score approximately every second. So, let's add a page to display the calm score.
 
 > 💡 Learn more about the [calm score](../api/calm).
 
@@ -430,26 +424,26 @@ By subscribing to `notion.calm()`, we get a new `calm` score approximately every
 import React, { useState, useEffect } from "react";
 import { Nav } from "../components/Nav";
 
-export function Calm({ user, notion }) {
+export function Calm({ user, neurosity }) {
   const [calm, setCalm] = useState(0);
 
   useEffect(() => {
-    if (!user || !notion) {
+    if (!user || !neurosity) {
       return;
     }
 
-    const subscription = notion.calm().subscribe(calm => {
+    const subscription = neurosity.calm().subscribe((calm) => {
       setCalm(Number(calm.probability.toFixed(2)));
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [user, notion]);
+  }, [user, neurosity]);
 
   return (
     <main className="main-container">
-      {user ? <Nav notion={notion} /> : null}
+      {user ? <Nav neurosity={neurosity} /> : null}
       <div className="calm-score">
         &nbsp;{calm * 100}% <div className="calm-word">Calm</div>
       </div>
@@ -458,9 +452,9 @@ export function Calm({ user, notion }) {
 }
 ```
 
-A side effect that syncs with the instance of `notion` and with `user` will create a subscription to the Calm API.
+A side effect that syncs with the instance of `neurosity` and with `user` will create a subscription to the Calm API.
 
-> All notion metrics, including `notion.calm()` return an RxJS subscription that we can use to safely unsubscribe when the component unmounts.
+> All neurosity metrics, including `neurosity.calm()` return an RxJS subscription that we can use to safely unsubscribe when the component unmounts.
 
 And finally, we add our Calm page to `App.js`.
 
@@ -480,13 +474,13 @@ useEffect(() => {
 return (
   <Router>
     {/* ... */}
-    <Calm path="/calm" notion={notion} user={user} />
+    <Calm path="/calm" neurosity={neurosity} user={user} />
   </Router>
 );
 ```
 
-![Notion React Starter](https://github.com/neurosity/notion-react-starter/raw/master/public/notion-react-starter.png)
+![Neurosity React Starter](https://github.com/neurosity/notion-react-starter/raw/master/public/notion-react-starter.png)
 
-And with that, your first Notion React App is now complete.
+And with that, your first Neurosity React App is now complete.
 
 - [View full code](https://github.com/neurosity/notion-react-starter)

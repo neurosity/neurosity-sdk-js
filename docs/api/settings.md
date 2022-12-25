@@ -11,17 +11,17 @@ title: Device Settings
 ```
 
 ```js
-import { Notion } from "@neurosity/notion";
+import { Neurosity } from "@neurosity/sdk";
 
-const notion = new Notion();
+const neurosity = new Neurosity();
 
-notion.settings().subscribe(settings => {
+neurosity.settings().subscribe((settings) => {
   console.log(settings);
   // { lsl: false }
   // { lsl: true }
 });
 
-await notion.changeSettings({
+await neurosity.changeSettings({
   lsl: true
 });
 ```

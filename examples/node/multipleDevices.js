@@ -1,15 +1,15 @@
-const { Notion } = require("../..");
+const { Neurosity } = require("../..");
 const { EMPTY } = require("rxjs");
 const { switchMap, map } = require("rxjs/operators");
 
 // Note: when `deviceId` is not passed, and `autoSelectDevice`
 // is set to false, the `selectDevice method should be called`
-const notion = new Notion({
+const neurosity = new Neurosity({
   autoSelectDevice: false
 });
 
 (async () => {
-  await notion
+  await neurosity
     .login({
       email: process.env.NEUROSITY_EMAIL,
       password: process.env.NEUROSITY_PASSWORD
@@ -18,11 +18,11 @@ const notion = new Notion({
       console.log("error", error);
     });
 
-  const devices = await notion.getDevices().catch(console.error);
+  const devices = await neurosity.getDevices().catch(console.error);
 
   devices.forEach(async (device) => {
     const { deviceId } = device;
-    const deviceInstance = new Notion({ deviceId });
+    const deviceInstance = new Neurosity({ deviceId });
 
     deviceInstance
       .onAuthStateChanged()

@@ -1,7 +1,7 @@
 {
   "mode": "file",
   "out": "./docs/reference",
-  "toc": ["classes/notion"],
+  "toc": ["classes/neurosity"],
   "includes": "./src",
   "exclude": [
     "**/timesync/**/*.ts",

@@ -1,7 +1,7 @@
-module.exports = async function(notion) {
-  notion
+module.exports = async function (neurosity) {
+  neurosity
     .predictions("leftHandPinch", "jumpingJacks")
-    .subscribe(prediction => {
+    .subscribe((prediction) => {
       console.log("prediction", prediction);
     });
 };

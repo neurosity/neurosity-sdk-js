@@ -1,5 +1,5 @@
-module.exports = async function(notion) {
-  notion.focus().subscribe(focus => {
+module.exports = async function (neurosity) {
+  neurosity.focus().subscribe((focus) => {
     console.log("focus", focus);
   });
 };

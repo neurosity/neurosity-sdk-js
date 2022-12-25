@@ -1,5 +1,5 @@
-module.exports = async function (notion) {
-  notion.dispatchAction({
+module.exports = async function (neurosity) {
+  neurosity.dispatchAction({
     command: "random",
     action: "send",
     responseRequired: true,

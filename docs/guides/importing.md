@@ -2,25 +2,26 @@
 id: importing
 title: Importing
 ---
+
 We support ESM, Node and the Browser:
 
 ## ESM
 
 ```js
-import { Notion } from "@neurosity/notion";
+import { Neurosity } from "@neurosity/sdk";
 ```
 
 ## Node
 
 ```js
-const { Notion } = require("@neurosity/notion");
+const { Neurosity } = require("@neurosity/sdk");
 ```
 
 ## Browser
 
 ```html
 <script type="module">
-  import { Notion } from "./node_modules/notion/esm/notion.mjs";
+  import { Neurosity } from "./node_modules/neurosity/esm/neurosity.mjs";
 </script>
-<script nomodule src="./node_modules/notion/browser/notion.js">
+<script nomodule src="./node_modules/neurosity/browser/neurosity.js">
 ```

@@ -15,11 +15,11 @@ title: Device Status
 - claimedBy: string
 
 ```js
-import { Notion } from "@neurosity/notion";
+import { Neurosity } from "@neurosity/sdk";
 
-const notion = new Notion();
+const neurosity = new Neurosity();
 
-notion.status().subscribe((status) => {
+neurosity.status().subscribe((status) => {
   console.log(status);
   // status example: { state: "online", charging: true, battery: 93, ... }
 });

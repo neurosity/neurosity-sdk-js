@@ -1,21 +1,21 @@
-const { Notion } = require("../..");
+const { Neurosity } = require("../..");
 
-const notion = new Notion({
+const neurosity = new Neurosity({
   // important to set `autoSelectDevice` to false when creating an account
   // since there will be no devices to select from
   autoSelectDevice: false
 });
 
-notion.onAuthStateChanged().subscribe((user) => {
+neurosity.onAuthStateChanged().subscribe((user) => {
   console.log(
     "onAuthStateChanged",
     user ? `logged in as ${user.email}` : "not logged in"
   );
 });
 
-notion
+neurosity
   .createAccount({
-    email: "tester+notion@neurosity.co",
+    email: "tester+neurosity@neurosity.co",
     password: `${Math.random()}`
   })
   .then(() => {

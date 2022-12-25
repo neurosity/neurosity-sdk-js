@@ -45,13 +45,13 @@ export class FirebaseApp {
     }
 
     if (deviceId) {
-      const notionAppName = deviceId;
-      const notionApp = moduleApps.find(
-        (app) => app.name === notionAppName
+      const neurosityAppName = deviceId;
+      const neurosityApp = moduleApps.find(
+        (app) => app.name === neurosityAppName
       );
-      return notionApp
-        ? notionApp
-        : firebase.initializeApp(config, notionAppName);
+      return neurosityApp
+        ? neurosityApp
+        : firebase.initializeApp(config, neurosityAppName);
     }
 
     return firebase.initializeApp(config);
@@ -67,22 +67,14 @@ export class FirebaseApp {
       emulatorOptions
     } = options;
 
-    this.app
-      .auth()
-      .useEmulator(`http://${emulatorHost}:${emulatorAuthPort}`);
+    this.app.auth().useEmulator(`http://${emulatorHost}:${emulatorAuthPort}`);
     this.app
       .database()
       .useEmulator(emulatorHost, emulatorDatabasePort, emulatorOptions);
-    this.app
-      .functions()
-      .useEmulator(emulatorHost, emulatorFunctionsPort);
+    this.app.functions().useEmulator(emulatorHost, emulatorFunctionsPort);
     this.app
       .firestore()
-      .useEmulator(
-        emulatorHost,
-        emulatorFirestorePort,
-        emulatorOptions
-      );
+      .useEmulator(emulatorHost, emulatorFirestorePort, emulatorOptions);
   }
 
   goOnline() {

@@ -1,16 +1,16 @@
-module.exports = async function(notion) {
-  notion.settings().subscribe(settings => {
+module.exports = async function (neurosity) {
+  neurosity.settings().subscribe((settings) => {
     console.log("settings", settings);
   });
 
   await delay();
-  const x = await notion.changeSettings({ lsl: true, simulate: true });
+  const x = await neurosity.changeSettings({ lsl: true, simulate: true });
   await delay();
-  await notion.changeSettings({ simulate: false });
+  await neurosity.changeSettings({ simulate: false });
   await delay();
-  await notion.changeSettings({ lsl: false });
+  await neurosity.changeSettings({ lsl: false });
 };
 
 function delay(ms = 500) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

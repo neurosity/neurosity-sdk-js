@@ -65,12 +65,12 @@
       "overview": {
         "title": "Neurosity SDK"
       },
-      "reference/classes/notion": {
-        "title": "Notion",
-        "sidebar_label": "Notion"
+      "reference/classes/neurosity": {
+        "title": "Neurosity",
+        "sidebar_label": "Neurosity"
       },
       "reference/index": {
-        "title": "@neurosity/notion",
+        "title": "@neurosity/sdk",
         "sidebar_label": "Globals"
       },
       "reference/interfaces/accelerometer": {

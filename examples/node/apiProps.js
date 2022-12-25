@@ -1,9 +1,9 @@
-module.exports = async function(notion) {
+module.exports = async function (neurosity) {
   console.log(
-    Object.getOwnPropertyNames(notion).concat(
-      Object.getOwnPropertyNames(Object.getPrototypeOf(notion))
+    Object.getOwnPropertyNames(neurosity).concat(
+      Object.getOwnPropertyNames(Object.getPrototypeOf(neurosity))
     )
   );
 
-  await notion.disconnect();
+  await neurosity.disconnect();
 };

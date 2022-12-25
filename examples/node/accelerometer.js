@@ -1,5 +1,5 @@
-module.exports = async function(notion) {
-  notion.accelerometer().subscribe(accelerometer => {
+module.exports = async function (neurosity) {
+  neurosity.accelerometer().subscribe((accelerometer) => {
     console.log("accelerometer", accelerometer);
   });
 };

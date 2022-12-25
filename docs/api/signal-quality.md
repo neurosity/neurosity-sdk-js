@@ -2,14 +2,15 @@
 id: signal-quality
 title: Signal Quality
 ---
-Standard deviation based signal quality metrics. Great signal happens when the standard deviation is between 1.5  and 10. See [`SignalQuality`](https://docs.neurosity.co/docs/reference/interfaces/signalquality) for using in code.
+
+Standard deviation based signal quality metrics. Great signal happens when the standard deviation is between 1.5 and 10. See [`SignalQuality`](https://docs.neurosity.co/docs/reference/interfaces/signalquality) for using in code.
 
 ```js
-import { Notion } from "@neurosity/notion";
+import { Neurosity } from "@neurosity/sdk";
 
-const notion = new Notion();
+const neurosity = new Neurosity();
 
-notion.signalQuality().subscribe(signalQuality => {
+neurosity.signalQuality().subscribe((signalQuality) => {
   console.log(signalQuality);
 });
 ```

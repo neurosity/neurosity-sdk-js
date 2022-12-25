@@ -12,16 +12,16 @@ The haptics API is the way to communicate to the user without a screen or speake
 
 A haptic motor location is referenced local to the human head and using the EEG 10-10 chart can pin point exactly where the motor is on the Crown. P7 is on the back left side of the human head from the top down perspective shown in FIG. 1. The outerband passes over both P7 and P8. The motor at P7, compared with electorde 4, is a bit farther away from the midline of the head. P8, on the right side of the outerband, is a bit farther away from the midline of the head compared to electrode 5.
 
-Haptic effects are able to be sent to one or more motors at a time. Sending the commands together starts the effects at the same time on the device. A list of effects may be found on this [SDKs github](https://github.com/neurosity/notion-js/blob/master/src/utils/hapticEffects.ts).
+Haptic effects are able to be sent to one or more motors at a time. Sending the commands together starts the effects at the same time on the device. A list of effects may be found on this [SDKs github](https://github.com/neurosity/neurosity-sdk-js/blob/master/src/utils/hapticEffects.ts).
 
 To send one effect to one motor:
 
 ```js
-const mind = new Notion();
+const neurosity = new Neurosity();
 
-const effects = notion.getHapticEffects();
+const effects = neurosity.getHapticEffects();
 
-const result = await notion.haptics({
+const result = await neurosity.haptics({
   P8: [effects.strongClick100]
 });
 
@@ -32,7 +32,7 @@ If you want to combine multiple haptic effects together:
 
 ```js
 ...
-await notion.haptics({
+await neurosity.haptics({
   P7: [
     effects.transitionRampUpLongSmooth1_0_to_100,
     effects.transitionRampDownLongSmooth1_100_to_0
@@ -44,7 +44,7 @@ To send effects to multiple haptic motors at once:
 
 ```js
 ...
-await notion.haptics({
+await neurosity.haptics({
   P7: [
     effects.transitionRampUpLongSmooth1_0_to_100,
     effects.transitionRampDownLongSmooth1_100_to_0
@@ -60,7 +60,7 @@ You may queue up to seven (7) effects in one command
 
 ```js
 ...
-await notion.haptics({
+await neurosity.haptics({
   P7: [
     effects.transitionRampUpLongSmooth1_0_to_100,
     effects.transitionRampDownLongSmooth1_100_to_0,

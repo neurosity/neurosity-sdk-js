@@ -1,5 +1,5 @@
-module.exports = async function(notion) {
-  notion.signalQuality().subscribe(signalQuality => {
+module.exports = async function (neurosity) {
+  neurosity.signalQuality().subscribe((signalQuality) => {
     console.log("signalQuality", signalQuality);
   });
 };

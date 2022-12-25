@@ -1,8 +1,8 @@
-import { Notion } from "../Notion";
+import { Neurosity } from "../Notion";
 import { SDKOptions } from "../types/options";
 import { Skill, SkillInstance } from "../types/skill";
 
-export type NotionOnDevice = Omit<Notion, "skill">;
+export type NotionOnDevice = Omit<Neurosity, "skill">;
 
 export interface OnDeviceOptions extends SDKOptions {
   skill: Skill;
@@ -14,11 +14,11 @@ export interface OnDeviceOptions extends SDKOptions {
 export async function createNotionOnDevice(
   options: OnDeviceOptions
 ): Promise<[NotionOnDevice, SkillInstance]> {
-  const notion = new Notion(options);
+  const neurosity = new Neurosity(options);
   const skill = {
-    ...(await notion.skill(options.skill.bundleId)),
+    ...(await neurosity.skill(options.skill.bundleId)),
     props: "props" in options.skill ? options.skill.props : {}
   };
-  delete notion.skill;
-  return [notion, skill];
+  delete neurosity.skill;
+  return [neurosity, skill];
 }

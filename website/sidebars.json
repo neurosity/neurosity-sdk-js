@@ -31,12 +31,12 @@
       "api/oauth"
     ]
   },
-  "@neurosity/notion": {
+  "@neurosity/sdk": {
     "Introduction": [
       "reference/index"
     ],
     "Classes": [
-      "reference/classes/notion"
+      "reference/classes/neurosity"
     ],
     "Interfaces": [
       "reference/interfaces/accelerometer",

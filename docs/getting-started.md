@@ -3,7 +3,7 @@ id: getting-started
 title: Your First Node App
 ---
 
-Welcome to Neurosity's NotionJS documentation side. To begin, you'll need to set up an account one time with Neurosity via [console.neurosity.co](https://console.neurosity.co/). Learn how to [create an account with Neurosity Developer Console](https://support.neurosity.co/hc/en-us/articles/360036196792).
+Welcome to the Neurosity SDK documentation site. To begin, you'll need to set up an account one time with Neurosity via [console.neurosity.co](https://console.neurosity.co/). Learn how to [create an account with Neurosity Developer Console](https://support.neurosity.co/hc/en-us/articles/360036196792).
 
 ## Prerequisites
 
@@ -21,11 +21,11 @@ Install and build all of the dependencies using [`NPM`](https://npmjs.org)
 
 ### VSCode
 
-We'll be using [VSCode](https://code.visualstudio.com/download) to program this tutorial. For a little added fun, we recommend adding the Neurosity VSCode extension to track your flow state while programming. Check out our guide to [installing and getting started with VSCode and the Notion extension](https://support.neurosity.co/hc/en-us/articles/360036195712-Installing-and-using-the-VSCode-extension).
+We'll be using [VSCode](https://code.visualstudio.com/download) to program this tutorial. For a little added fun, we recommend adding the Neurosity VSCode extension to track your flow state while programming. Check out our guide to [installing and getting started with VSCode and the Neurosity extension](https://support.neurosity.co/hc/en-us/articles/360036195712-Installing-and-using-the-VSCode-extension).
 
 ### Tutorial Repository
 
-Want to see the complete project before reading anymore? You can view all the code from this project in it's [repository on Github](https://github.com/neurosity/app-hello-world-notion-js).
+Want to see the complete project before reading anymore? You can view all the code from this project in it's [repository on Github](https://github.com/neurosity/app-hello-world-neurosity-sdk-js).
 
 ## Setup your Project
 
@@ -49,11 +49,11 @@ You'll need to run through the initial questions:
 ```bash
 package name: (hello-world)
 version: (1.0.0)
-description: My first application using Notion
+description: My first application using the Neurosity SDK
 entry point: (index.js)
 test command:
 git repository:
-keywords: notion
+keywords: neurosity
 author: Hans Berger
 license: (ISC) MIT
 ```
@@ -88,7 +88,7 @@ Go ahead and make a new file called `index.js`, we'll use it soon as the base of
   <img alt="Created a new file called index.js" src="assets/images/tutorial/vscode-make-index-js-file.png">
 </p>
 
-## Adding Notion to a Node Project
+## Adding the Neurosity SDK to a Node Project
 
 ### Add `.gitignore` file
 
@@ -112,10 +112,10 @@ Adding `node_modules` will help VS Code run a little bit better because we're te
 
 ### Install Dependencies
 
-The first dependency we need to install is from Neurosity, it's called Notion. We'll end up using some environment variables from a `.env` file, so go ahead and install another dependency for that as well. From the command line, enter:
+The first dependency we need to install the Neurosity SDK. We'll end up using some environment variables from a `.env` file, so go ahead and install another dependency for that as well. From the command line, enter:
 
 ```bash
-npm install @neurosity/notion dotenv
+npm install @neurosity/sdk dotenv
 ```
 
 <p align="center">
@@ -127,7 +127,7 @@ npm install @neurosity/notion dotenv
 Importing libraries in Node is quite simple, all you have to do is add the following to the top of your index.js file:
 
 ```js
-const { Notion } = require("@neurosity/notion");
+const { Neurosity } = require("@neurosity/sdk");
 require("dotenv").config();
 ```
 
@@ -151,17 +151,17 @@ Your `package.json` will look like below once added:
 {
   "name": "hello-world",
   "version": "1.0.0",
-  "description": "My first application using Notion",
+  "description": "My first application using the Neurosity SDK",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["notion"],
+  "keywords": ["neurosity"],
   "author": "Hans Berger",
   "license": "MIT",
   "dependencies": {
-    "@neurosity/notion": "^3.8.0",
+    "@neurosity/sdk": "^3.8.0",
     "dotenv": "^8.2.0"
   }
 }
@@ -183,7 +183,7 @@ You should see the program run and exit successfully.
 
 ## Add Authentication
 
-At this point you will need to have [created an account](https://support.neurosity.co/hc/en-us/articles/360036196792-Create-account-with-Neurosity) with [console.neurosity.co](https://console.neurosity.co) and [claimed your Notion](https://support.neurosity.co/hc/en-us/articles/360037562351).
+At this point you will need to have [created an account](https://support.neurosity.co/hc/en-us/articles/360036196792-Create-account-with-Neurosity) with [console.neurosity.co](https://console.neurosity.co) and [claimed your device](https://support.neurosity.co/hc/en-us/articles/360037562351).
 
 ### Get variables from `.env` file
 
@@ -202,11 +202,7 @@ const verifyEnvs = (email, password, deviceId) => {
   const invalidEnv = (env) => {
     return env === "" || env === 0;
   };
-  if (
-    invalidEnv(email) ||
-    invalidEnv(password) ||
-    invalidEnv(deviceId)
-  ) {
+  if (invalidEnv(email) || invalidEnv(password) || invalidEnv(deviceId)) {
     console.error(
       "Please verify deviceId, email and password are in .env file, quitting..."
     );
@@ -244,12 +240,12 @@ Now, if we run our program, we should see a success message print out, informing
   <img alt="Pulled out three variables from .env" src="assets/images/tutorial/vscode-got-env-variables.png">
 </p>
 
-### Instantiate a Notion
+### Instantiate the Neurosity class
 
-We can then use the `deviceId` to instantiate a new Notion by adding the following line to our file.
+We can then use the `deviceId` to instantiate a new Neurosity by adding the following line to our file.
 
 ```js
-const notion = new Notion({
+const neurosity = new Neurosity({
   deviceId
 });
 ```
@@ -260,7 +256,7 @@ We need to use an [`async/await`](https://javascript.info/async-await) paradigm 
 
 ```js
 const main = async () => {
-  await notion
+  await neurosity
     .login({
       email,
       password
@@ -278,7 +274,7 @@ main();
 Then run the program with `npm start` in the CLI. If all worked, then you should see:
 
 <p align="center">
-  <img alt="Made a function that authenticated with Notion" src="assets/images/tutorial/vscode-main-logged-in.png">
+  <img alt="Made a function that authenticated with Neurosity" src="assets/images/tutorial/vscode-main-logged-in.png">
 </p>
 
 ## Add Subscriptions
@@ -290,7 +286,7 @@ Now that you are authenticated, print out hello world when you're calm increases
 Add the following code to your main() function after login.
 
 ```js
-notion.calm().subscribe((calm) => {
+neurosity.calm().subscribe((calm) => {
   if (calm.probability > 0.3) {
     console.log("Hello World!");
   }
@@ -300,16 +296,16 @@ notion.calm().subscribe((calm) => {
 Your index.js file is now ready to print `Hello World!`
 
 <p align="center">
-  <img alt="Add code to subscribe to Notion calm score" src="assets/images/tutorial/vscode-main-calm-subscribe.png">
+  <img alt="Add code to subscribe to the calm score" src="assets/images/tutorial/vscode-main-calm-subscribe.png">
 </p>
 
 ### Kinesis Training
 
 Head over to the [Developer Console](https://console.neurosity.co) and train Left Hand Pinch. [Learn how to train an imagined movement thought](https://support.neurosity.co/hc/en-us/articles/360036344012-Imagined-thought-training). Do at least 15 trials.
 
-When we write code to interact with Notion, we use camel case, so Left Hand Pinch in code is `leftHandPinch`.
+When we write code to interact with the Neurosity SDK, we use camel case, so Left Hand Pinch in code is `leftHandPinch`.
 
-Now that the `leftHandPinch` thought is trained, you'll be able to use load it into your Notion for use.
+Now that the `leftHandPinch` thought is trained, you'll be able to load it into your device for use.
 
 ### Kinesis Subscription
 
@@ -318,7 +314,7 @@ In the `index.js` file we can remove the `calm` subscription from above and repl
 Check out the [Kinesis guide](https://docs.neurosity.co/docs/api/kinesis) or [Kinesis API docs](https://docs.neurosity.co/docs/reference/interfaces/kinesis).
 
 ```js
-notion.kinesis("leftHandPinch").subscribe((intent) => {
+neurosity.kinesis("leftHandPinch").subscribe((intent) => {
   console.log("Hello World!");
 });
 ```
@@ -331,7 +327,7 @@ Your `index.js` file should look like:
 
 ## Conclusion
 
-Developing with Neurosity Notion can be a lot of fun! There are two main types of thought processes that Notion detects, intent and background. The foreground we consider to be the `kinesis()` where you're intending to do something and the background is `calm()` or `focus()` that occurs in the background of the mind.
+Developing with the Neurosity SDK can be a lot of fun! There are two main types of thought processes that Neurosity devices can detect: intent and background. The foreground we consider to be the `kinesis()` where you're intending to do something and the background is `calm()` or `focus()` that occurs in the background of the mind.
 
 ### Dive into development
 

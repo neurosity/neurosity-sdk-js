@@ -3,16 +3,13 @@ import { metrics } from "@neurosity/ipk";
 import * as errors from "../utils/errors";
 import { SDKOptions } from "../types/options";
 
-export const isNotionMetric = (metric: string): boolean =>
+export const isMetric = (metric: string): boolean =>
   Object.keys(metrics).includes(metric);
 
 export const getLabels = (metric: string): string[] =>
   Object.keys(metrics[metric]);
 
-export const hasInvalidLabels = (
-  metric: string,
-  labels: string[]
-): boolean => {
+export const hasInvalidLabels = (metric: string, labels: string[]): boolean => {
   const validLabels = getLabels(metric);
   return !labels.every((label) => validLabels.includes(label));
 };
