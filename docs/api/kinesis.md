@@ -10,9 +10,9 @@ Kinesis implements a spike detection algorithm over the [predictions](/docs/api/
 To train a Kinesis command, use [console.neurosity.co](https://console.neurosity.co/) and use the corresponding label for the `Active` classifier. Learn how to train a new command [here](https://support.neurosity.co/hc/en-us/articles/360036344012-Imagined-thought-training). To make your own custom training, see [guides/training](/docs/guides/training).
 
 ```js
-const mind = new Notion();
+const neurosity = new Neurosity();
 
-mind.kinesis("rightArm").subscribe(intent => {
+neurosity.kinesis("rightArm").subscribe((intent) => {
   // Switch light off/on
   light.togglePower();
   console.log(intent);
@@ -21,10 +21,10 @@ mind.kinesis("rightArm").subscribe(intent => {
 // { probability: 0.93, label: "rightArm", timestamp: 1569961321174, metric: "kinesis" }
 ```
 
-or 
+or
 
 ```js
-mind.kinesis("leftArm").subscribe(intent => {
+neurosity.kinesis("leftArm").subscribe((intent) => {
   // Launch drone
   drone.launch();
   console.log(intent);

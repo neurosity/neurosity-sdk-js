@@ -2,24 +2,24 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Notion API - Cloud mode</title>
+    <title>Neurosity SDK - Cloud mode</title>
   </head>
   <body>
     <pre>View source</pre>
     <script type="module">
-      import { Notion } from "./notion.mjs";
+      import { Neurosity } from "./neurosity.mjs";
 
       (async () => {
-        const notion = new Notion({
+        const neurosity = new Neurosity({
           deviceId: process.env.NEUROSITY_DEVICE_ID
         });
 
-        await notion.login({
+        await neurosity.login({
           email: process.env.NEUROSITY_EMAIL,
           password: process.env.NEUROSITY_PASSWORD
         });
 
-        const info = await notion.getInfo();
+        const info = await neurosity.getInfo();
         console.log("info", info);
       })();
     </script>

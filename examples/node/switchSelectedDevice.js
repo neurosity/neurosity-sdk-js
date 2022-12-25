@@ -1,9 +1,9 @@
-const { Notion } = require("../..");
+const { Neurosity } = require("../..");
 
-const notion = new Notion();
+const neurosity = new Neurosity();
 
 (async () => {
-  await notion
+  await neurosity
     .login({
       email: process.env.NEUROSITY_EMAIL,
       password: process.env.NEUROSITY_PASSWORD
@@ -12,24 +12,24 @@ const notion = new Notion();
       console.log("error", error);
     });
 
-  notion.calm().subscribe();
-  notion.focus().subscribe();
+  neurosity.calm().subscribe();
+  neurosity.focus().subscribe();
 
   let i = 0;
   setInterval(() => {
-    notion.selectDevice((devices) => devices[i]);
+    neurosity.selectDevice((devices) => devices[i]);
     i = i === 0 ? 1 : 0;
   }, 5000);
 
-  notion.onDeviceChange().subscribe((device) => {
+  neurosity.onDeviceChange().subscribe((device) => {
     console.log("Changed device to", device.deviceId);
   });
 
-  notion.status().subscribe((status) => {
+  neurosity.status().subscribe((status) => {
     console.log("status", status.battery);
   });
 
-  notion.settings().subscribe((settings) => {
+  neurosity.settings().subscribe((settings) => {
     console.log("settings", settings);
   });
 })();

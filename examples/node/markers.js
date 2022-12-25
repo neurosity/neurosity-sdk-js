@@ -1,6 +1,6 @@
-const { Notion } = require("../..");
+const { Neurosity } = require("../..");
 
-const notion = new Notion({
+const neurosity = new Neurosity({
   autoSelectDevice: false
   //timesync: true
 });
@@ -8,17 +8,17 @@ const notion = new Notion({
 main();
 
 async function main() {
-  await notion.login({
+  await neurosity.login({
     email: process.env.NEUROSITY_EMAIL,
     password: process.env.NEUROSITY_PASSWORD
   });
 
   // Replace with your device nickname, or remove line and set autoSelectDevice to true
-  await notion.selectDevice(["deviceNickname", "Crown-85A"]);
+  await neurosity.selectDevice(["deviceNickname", "Crown-85A"]);
 
   let count = 0;
 
-  notion.brainwaves("raw").subscribe((brainwaves) => {
+  neurosity.brainwaves("raw").subscribe((brainwaves) => {
     if (brainwaves.info && brainwaves.info.markers) {
       console.log("Got a marker!", brainwaves.info.markers);
     }
@@ -26,7 +26,7 @@ async function main() {
 
   setTimeout(() => {
     setInterval(() => {
-      notion.addMarker(`my-marker-${count}`).catch((error) => {
+      neurosity.addMarker(`my-marker-${count}`).catch((error) => {
         console.log(error);
       });
       count++;

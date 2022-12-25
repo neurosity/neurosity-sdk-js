@@ -13,11 +13,11 @@ Things that can help increase the calm score are:
 - Meditating
 
 ```js
-import { Notion } from "@neurosity/notion";
+import { Neurosity } from "@neurosity/sdk";
 
-const mind = new Notion();
+const neurosity = new Neurosity();
 
-mind.calm().subscribe(calm => {
+neurosity.calm().subscribe((calm) => {
   console.log(calm);
 });
 
@@ -26,7 +26,7 @@ mind.calm().subscribe(calm => {
 // { probability: 0.45, metric: "awareness", label: "calm", timestamp:  1569961321110 }
 
 // Demo
-mind.calm().subscribe(({ probability }) => {
+neurosity.calm().subscribe(({ probability }) => {
   if (probability < 0.25) {
     musicPlayer.recommendGenre("classical");
   }

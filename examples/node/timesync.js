@@ -1,12 +1,12 @@
-const { Notion } = require("../..");
+const { Neurosity } = require("../..");
 
-const notion = new Notion({
+const neurosity = new Neurosity({
   deviceId: process.env.NEUROSITY_DEVICE_ID,
   timesync: true
 });
 
 (async () => {
-  await notion
+  await neurosity
     .login({
       email: process.env.NEUROSITY_EMAIL,
       password: process.env.NEUROSITY_PASSWORD

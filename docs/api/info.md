@@ -23,10 +23,10 @@ interface IInfo {
 ## Example
 
 ```js
-import { Notion } from "@neurosity/notion";
+import { Neurosity } from "@neurosity/sdk";
 
-const notion = new Notion();
+const neurosity = new Neurosity();
 
-const info = await notion.getInfo();
+const info = await neurosity.getInfo();
 console.log(info); // { channels: 8, samplingRate: 250, ... }
 ```

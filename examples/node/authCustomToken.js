@@ -1,9 +1,9 @@
-const { Notion } = require("../..");
+const { Neurosity } = require("../..");
 
-const notion = new Notion();
+const neurosity = new Neurosity();
 
 (async () => {
-  await notion
+  await neurosity
     .login({
       customToken: process.env.NEUROSITY_CUSTOM_TOKEN
     })
@@ -11,7 +11,7 @@ const notion = new Notion();
       console.log("error", error);
     });
 
-  notion.status().subscribe((status) => {
+  neurosity.status().subscribe((status) => {
     console.log("status", status);
   });
 })();

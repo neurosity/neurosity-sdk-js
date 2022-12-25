@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { Notion } = require("../..");
+const { Neurosity } = require("../..");
 const inquirer = require("inquirer");
 const fs = require("fs");
 
@@ -10,11 +10,7 @@ const choices = fs
   .readdirSync("./examples/node")
   .filter((fileName) => fileName !== "index.js");
 
-if (
-  choices
-    .map((choice) => choice.replace(".js", ""))
-    .includes(choiceName)
-) {
+if (choices.map((choice) => choice.replace(".js", "")).includes(choiceName)) {
   const exampleFileName = `${choiceName}.js`;
   runFile(exampleFileName).catch((error) => {
     console.log("runFile error -> ", error);
@@ -44,14 +40,14 @@ async function runFile(exampleFileName) {
     return;
   }
 
-  const notion = new Notion({
+  const neurosity = new Neurosity({
     deviceId
   });
 
-  await notion.login({
+  await neurosity.login({
     email: process.env.NEUROSITY_EMAIL,
     password: process.env.NEUROSITY_PASSWORD
   });
 
-  await exampleFunction(notion);
+  await exampleFunction(neurosity);
 }

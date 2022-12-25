@@ -1,11 +1,11 @@
-const { Notion } = require("../..");
+const { Neurosity } = require("../..");
 
-new Notion({
+new Neurosity({
   deviceId: process.env.NEUROSITY_DEVICE_ID
 });
 
 setTimeout(() => {
-  new Notion({
+  new Neurosity({
     deviceId: process.env.NEUROSITY_DEVICE_ID
   });
 }, 2000);

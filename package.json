@@ -1,10 +1,10 @@
 {
-  "name": "@neurosity/notion",
+  "name": "@neurosity/sdk",
   "version": "6.0.0-next.11",
   "description": "Neurosity SDK",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
-  "browser": "dist/browser/notion.js",
+  "browser": "dist/browser/neurosity.js",
   "typings": "dist/esm/index.d.ts",
   "scripts": {
     "prebuild": "npm run clean",
@@ -14,8 +14,8 @@
     "build:typedoc": "del docs/reference && typedoc",
     "build:esm": "tsc -p tsconfig.esm.json && npm run build:esm:bundle",
     "build:esm:bundle": "rollup -c",
-    "build:browser": "parcel build ./src/index.ts --target browser --out-dir dist/browser --out-file notion.js && npm run build:browser:iife",
-    "build:browser:iife": "rollup ./dist/esm/notion.mjs --file dist/browser/notion.iife.js --format iife --name 'Notion'",
+    "build:browser": "parcel build ./src/index.ts --target browser --out-dir dist/browser --out-file neurosity.js && npm run build:browser:iife",
+    "build:browser:iife": "rollup ./dist/esm/neurosity.mjs --file dist/browser/neurosity.iife.js --format iife --name 'Neurosity'",
     "build:electron": "parcel build ./src/index.ts --target electron --out-dir dist/electron",
     "build:examples": "copyfiles -f ./dist/esm/*.mjs ./dist/browser/*.js ./dist/examples && parcel build ./examples/browser/index.html --target browser --out-dir dist/examples",
     "serve:examples": "lite-server --baseDir=./dist/examples",
@@ -30,13 +30,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/neurosity/notion-js.git"
+    "url": "git+https://github.com/neurosity/neurosity-sdk-js.git"
   },
   "keywords": [
     "neurosity",
     "api",
     "client",
-    "notion"
+    "neurosity"
   ],
   "engines": {
     "node": ">=4"
@@ -44,7 +44,7 @@
   "author": "Alex Castillo",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/neurosity/notion-js/issues"
+    "url": "https://github.com/neurosity/neurosity-sdk-js/issues"
   },
   "homepage": "https://docs.neurosity.co",
   "dependencies": {

@@ -12,16 +12,16 @@ To train a thought, you need to timesync and you need to call a special api endp
 ### Time Synchronization
 
 ```js
-const { Notion } = require("@neurosity/notion");
+const { Neurosity } = require("@neurosity/sdk");
 
-const notion = new Notion({
+const neurosity = new Neurosity({
   timesync: true
 });
 
 main();
 
 async function main() {
-  await notion.login({
+  await neurosity.login({
     email: process.env.NEUROSITY_EMAIL,
     password: process.env.NEUROSITY_PASSWORD
   });
@@ -32,10 +32,10 @@ async function main() {
 }
 ```
 
-The most important feature is the fact that I have `timesync: true` in the options argument to instantiate a new `Notion`.
+The most important feature is the fact that I have `timesync: true` in the options argument to instantiate a new `Neurosity`.
 
 ```js
-const notion = new Notion({
+const neurosity = new Neurosity({
   timesync: true
 });
 ```
@@ -59,12 +59,12 @@ const trainingOptions = {
 };
 
 // Subscribe to Kinesis
-notion.kinesis(label).subscribe((kinesis) => {
+neurosity.kinesis(label).subscribe((kinesis) => {
   console.log("leftArm kinesis detection", kinesis);
 });
 
 // Subscribe to raw predictions
-notion.predictions(label).subscribe((prediction) => {
+neurosity.predictions(label).subscribe((prediction) => {
   console.log("leftArm prediction", prediction);
 });
 
@@ -74,7 +74,7 @@ console.log("Clear you mind and relax");
 // Tag baseline after a couple seconds
 setTimeout(() => {
   // Note: using the spread operator to bring all properties from trainingOptions into the current object plus adding the new baseline tag. Learn about spread operators here: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax
-  notion.training.record({
+  neurosity.training.record({
     ...trainingOptions,
     baseline: true
   });
@@ -86,7 +86,7 @@ setTimeout(() => {
 // Tell the user to imagine active thought and fit
 setTimeout(() => {
   // Note: You must call fit after a baseline and an active have been recorded.
-  notion.training.record({
+  neurosity.training.record({
     ...trainingOptions,
     fit: true
   });

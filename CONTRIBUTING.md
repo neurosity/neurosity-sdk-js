@@ -1,6 +1,6 @@
 # Contributing
 
-:tada::clinking_glasses:  First off, thanks for taking the time to contribute! :tada::clinking_glasses:
+:tada::clinking_glasses: First off, thanks for taking the time to contribute! :tada::clinking_glasses:
 
 Contributions are always welcome, no matter how small.
 
@@ -9,6 +9,7 @@ The following is a small set of guidelines for how to contribute to the project
 ## Where to start
 
 ### Code of Conduct
+
 This project adheres to the Contributor Covenant [Code of Conduct](CODE_OF_CONDUCT.md).
 By participating you are expected to adhere to these expectations. Please report unacceptable behaviour to [contact@neursoity.co](mailto:contact@neursoity.co).
 
@@ -18,7 +19,7 @@ If you're new to Git and want to learn how to fork this repo, make your own addi
 
 ### Community
 
-This project is maintained by [Neurosity](https://neurosity.co). Join the [Neurosity Discord Chat](https://discord.gg/E4dvX6g), where discussions about Neurosity and Notion take place.
+This project is maintained by [Neurosity](https://neurosity.co). Join the [Neurosity Discord Chat](https://discord.gg/E4dvX6g), where discussions about the Neurosity SDK take place.
 
 ## How can I contribute?
 
@@ -30,8 +31,8 @@ If you find a bug, or have a suggestion on how to improve the project, please fi
 
 1. Fork it!
 2. Branch off of `development`: `git checkout development`
-2. Create your feature branch: `git checkout -b my-new-feature`
-3. Make changes
-4. Commit your changes: `git commit -m 'Add some feature'`
-5. Push to the branch: `git push origin my-new-feature`
-6. Submit a pull request. Make sure it is based off of the `development` branch when submitting! :D
+3. Create your feature branch: `git checkout -b my-new-feature`
+4. Make changes
+5. Commit your changes: `git commit -m 'Add some feature'`
+6. Push to the branch: `git push origin my-new-feature`
+7. Submit a pull request. Make sure it is based off of the `development` branch when submitting! :D

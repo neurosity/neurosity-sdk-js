@@ -64,19 +64,19 @@ NEUROSITY_OAUTH_CLIENT_REDIRECT_URI=http://localhost:3000
 
 ### First Cloud Function: createOAuthURL
 
-The first function wraps the [createOAuthURL](/reference/classes/notion#createOAuthURL) SDK method. This method creates client-specific OAuth URL. This is the first step of the OAuth workflow. Use this function to create a URL you can use to redirect users to the Neurosity sign-in page.
+The first function wraps the [createOAuthURL](/reference/classes/neurosity#createOAuthURL) SDK method. This method creates client-specific OAuth URL. This is the first step of the OAuth workflow. Use this function to create a URL you can use to redirect users to the Neurosity sign-in page.
 
 The following cloud function example was designed to work with Netlify. Let's name this function `get-neurosity-oauth-url`.
 
 ```js
-const { Notion } = require("@neurosity/notion");
+const { Neurosity } = require("@neurosity/sdk");
 
-const notion = new Notion({
+const neurosity = new Neurosity({
   autoSelectDevice: false
 });
 
 exports.handler = async function (event) {
-  return notion
+  return neurosity
     .createOAuthURL({
       clientId: process.env.NEUROSITY_OAUTH_CLIENT_ID,
       clientSecret: process.env.NEUROSITY_OAUTH_CLIENT_SECRET,
@@ -103,23 +103,23 @@ exports.handler = async function (event) {
 
 ### Second Cloud Function: getOAuthToken
 
-The [getOAuthToken](/reference/classes/notion#getOAuthToken) method retreives the client-specific OAuth token for a given userId.
+The [getOAuthToken](/reference/classes/neurosity#getOAuthToken) method retreives the client-specific OAuth token for a given userId.
 
 Here's an example of a cloud function that receives a `userId` via query params and loads the client id and client secret securely via environment variables.
 
 Let's name this function `get-neurosity-custom-token`.
 
 ```js
-const { Notion } = require("@neurosity/notion");
+const { Neurosity } = require("@neurosity/sdk");
 
-const notion = new Notion({
+const neurosity = new Neurosity({
   autoSelectDevice: false
 });
 
 exports.handler = async function (event) {
   const userId = event.queryStringParameters?.userId;
 
-  return notion
+  return neurosity
     .getOAuthToken({
       clientId: process.env.NEUROSITY_OAUTH_CLIENT_ID,
       clientSecret: process.env.NEUROSITY_OAUTH_CLIENT_SECRET,
@@ -162,9 +162,7 @@ export function ConnectNeurosityAccountButton() {
   }
 
   return (
-    <button onClick={connectNeurosityAccount}>
-      Connect Neurosity Account
-    </button>
+    <button onClick={connectNeurosityAccount}>Connect Neurosity Account</button>
   );
 }
 ```
@@ -174,10 +172,10 @@ export function ConnectNeurosityAccountButton() {
 We'll import and create a new instance of the Neurosity SDK. Then, add a hook for Neurosity auth state management.
 
 ```js
-import { Notion } from "@neurosity/notion";
+import { Neurosity } from "@neurosity/sdk";
 import { useState, useEffect } from "react";
 
-const notion = new Notion({
+const neurosity = new Neurosity({
   autoSelectDevice: false
 });
 
@@ -187,21 +185,19 @@ const initialState = {
   error: null
 };
 
-export function useNotion() {
+export function useNeurosity() {
   const [state, setState] = useState(initialState);
   const { customToken } = useOAuthResult();
 
   // Fires everytime an uth session starts or ends
   useEffect(() => {
-    const subscription = notion
-      .onAuthStateChanged()
-      .subscribe((user) => {
-        setState((prevState) => ({
-          ...prevState,
-          loading: false,
-          user
-        }));
-      });
+    const subscription = neurosity.onAuthStateChanged().subscribe((user) => {
+      setState((prevState) => ({
+        ...prevState,
+        loading: false,
+        user
+      }));
+    });
 
     return () => {
       subscription.unsubscribe();
@@ -211,7 +207,7 @@ export function useNotion() {
   // Calls the Neurosity login with the custom token received via url parameter
   useEffect(() => {
     if (customToken) {
-      notion.login({ customToken }).catch((error) => {
+      neurosity.login({ customToken }).catch((error) => {
         setState((prevState) => ({
           ...prevState,
           error: error?.message
@@ -236,7 +232,7 @@ function useOAuthResult() {
 
 ### Removing Access
 
-After a user has granted your app access to their Neurosity account, it is good practice to give them the option to remove the access. For that, we'll use the SDK [removeOAuthAccess](/reference/classes/notion#removeOAuthAccess) method on the client or server side.
+After a user has granted your app access to their Neurosity account, it is good practice to give them the option to remove the access. For that, we'll use the SDK [removeOAuthAccess](/reference/classes/neurosity#removeOAuthAccess) method on the client or server side.
 
 The following example removes client-specific OAuth token for a given `userId`. This method requires the SDK to be signed in with OAuth custom token.
 
@@ -245,7 +241,7 @@ import React from "react";
 
 export function RemoveNeurosityAccessButton() {
   async function removeNeurosityAccess() {
-    await notion.removeOAuthAccess().catch((error) => {
+    await neurosity.removeOAuthAccess().catch((error) => {
       // handle error here...
     });
   }

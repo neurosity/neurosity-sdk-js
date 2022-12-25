@@ -1,13 +1,13 @@
-const { Notion } = require("../..");
+const { Neurosity } = require("../..");
 
-const notion = new Notion({
+const neurosity = new Neurosity({
   autoSelectDevice: false
 });
 
 main();
 
 async function main() {
-  await notion
+  await neurosity
     .login({
       email: process.env.NEUROSITY_EMAIL,
       password: process.env.NEUROSITY_PASSWORD
@@ -16,7 +16,7 @@ async function main() {
       console.log("login error", error.response);
     });
 
-  const token = await notion
+  const token = await neurosity
     .getOAuthToken({
       clientId: process.env.NEUROSITY_OAUTH_CLIENT_ID,
       clientSecret: process.env.NEUROSITY_OAUTH_CLIENT_SECRET,

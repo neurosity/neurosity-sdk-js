@@ -29,9 +29,9 @@ There are four brainwaves metrics:
 The `raw` brainwaves parameter emits events of 16 samples for Crown and 25 for Notion 1 and 2. We call these groups of samples Epochs.
 
 ```js
-const mind = new Notion();
+const neurosity = new Neurosity();
 
-mind.brainwaves("raw").subscribe((brainwaves) => {
+neurosity.brainwaves("raw").subscribe((brainwaves) => {
   console.log(brainwaves);
 });
 ```
@@ -151,7 +151,7 @@ To apply your own filters, you can use the `rawUnfiltered` brainwaves parameter 
 To unsubscribe from brainwaves and stop the emission of data events, you can do the following:
 
 ```js
-const subscription = mind.brainwaves("raw").subscribe((brainwaves) => {
+const subscription = neurosity.brainwaves("raw").subscribe((brainwaves) => {
   console.log(brainwaves);
 });
 
@@ -186,9 +186,9 @@ The unfiltered raw data follows the same shape as the `raw` data option, just wi
 Note that unfiltered raw data will include environmental noise in the signal, as well as DC drift, which is expected when working with EEG. To filter out the noise, you can use the `raw` option described earlier on this page, or you can apply your own custom filters (like notch and bass pass) on the client side by using the [Neurosity Pipes](https://github.com/neurosity/eeg-pipes) library.
 
 ```js
-const mind = new Notion();
+const neurosity = new Neurosity();
 
-mind.brainwaves("rawUnfiltered").subscribe((brainwaves) => {
+neurosity.brainwaves("rawUnfiltered").subscribe((brainwaves) => {
   console.log(brainwaves);
 });
 ```
@@ -296,9 +296,9 @@ The code above will output new epochs of 16 samples approximately every 62.5ms (
 ### Power Spectral Density (PSD)
 
 ```js
-const mind = new Notion();
+const neurosity = new Neurosity();
 
-mind.brainwaves("psd").subscribe((brainwaves) => {
+neurosity.brainwaves("psd").subscribe((brainwaves) => {
   console.log(brainwaves);
 });
 ```
@@ -525,9 +525,9 @@ Please note this data is pre-filtered using the same filters described under the
 ### Power By Band
 
 ```js
-const mind = new Notion();
+const neurosity = new Neurosity();
 
-mind.brainwaves("powerByBand").subscribe((brainwaves) => {
+neurosity.brainwaves("powerByBand").subscribe((brainwaves) => {
   console.log(brainwaves);
 });
 ```

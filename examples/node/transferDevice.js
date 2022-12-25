@@ -1,12 +1,12 @@
-const { Notion } = require("../..");
+const { Neurosity } = require("../..");
 
-const notion = new Notion({
+const neurosity = new Neurosity({
   autoSelectDevice: false,
   emulator: true
 });
 
 (async () => {
-  const auth = await notion
+  const auth = await neurosity
     .login({
       email: process.env.NEUROSITY_EMULATOR_EMAIL,
       password: process.env.NEUROSITY_EMULATOR_PASSWORD
@@ -21,7 +21,7 @@ const notion = new Notion({
 
   console.log(`logged in as ${auth?.user?.email}`);
 
-  notion
+  neurosity
     .transferDevice({
       // recipientsEmail: "test@testemail.com",
       recipientsUserId: "L4orwrLG9hVNLTYBmIzYwKkENLGT",

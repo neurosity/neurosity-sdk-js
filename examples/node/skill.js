@@ -1,7 +1,7 @@
-module.exports = async function(notion) {
-  const akimy = await notion.skill("app.neurosity.akimy");
+module.exports = async function (neurosity) {
+  const akimy = await neurosity.skill("app.neurosity.akimy");
 
-  akimy.metric("fromDevice").subscribe(data => {
+  akimy.metric("fromDevice").subscribe((data) => {
     console.log("fromDevice", data);
   });
 

@@ -21,7 +21,7 @@ const users = [
 ];
 
 const organizationName = "neurosity";
-const projectName = "notion-js";
+const projectName = "neurosity-sdk-js";
 const repoUrl = `https://github.com/${organizationName}/${projectName}`;
 const helpUrl = "https://support.neurosity.co";
 
@@ -47,7 +47,7 @@ const siteConfig = {
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
     { doc: "getting-started", label: "Docs" },
-    { doc: "reference/classes/notion", label: "Reference" },
+    { doc: "reference/classes/neurosity", label: "Reference" },
     { href: repoUrl, label: "GitHub", external: true },
     // { blog: true, label: "Blog" },
     { href: helpUrl, label: "Need Help?", external: true }
@@ -63,7 +63,7 @@ const siteConfig = {
 
   stylesheets: [
     "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700",
-    "/css/code-block-buttons.css",
+    "/css/code-block-buttons.css"
   ],
 
   /* Colors for website */
@@ -84,7 +84,7 @@ const siteConfig = {
   scripts: [
     "https://buttons.github.io/buttons.js",
     "https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js",
-    "/js/code-block-buttons.js",
+    "/js/code-block-buttons.js"
   ],
 
   // On page navigation for the current documentation page.

@@ -1,16 +1,16 @@
-const { Notion } = require("../..");
+const { Neurosity } = require("../..");
 
 // Note: when `deviceId` is not passed, and `autoSelectDevice`
 // is set to not set (defaults to true), the first claimed
 // device will be automatically selected.
-const notion = new Notion();
+const neurosity = new Neurosity();
 
 (async () => {
-  notion.onUserDevicesChange().subscribe((devices) => {
+  neurosity.onUserDevicesChange().subscribe((devices) => {
     console.log("devices", devices);
   });
 
-  await notion
+  await neurosity
     .login({
       email: process.env.NEUROSITY_EMAIL,
       password: process.env.NEUROSITY_PASSWORD
@@ -19,7 +19,7 @@ const notion = new Notion();
       console.log("error", error);
     });
 
-  notion
+  neurosity
     .getDevices()
     .then((devices) => {
       console.log("devices (once)", devices);

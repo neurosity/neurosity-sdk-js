@@ -56,12 +56,12 @@ const defaultOptions = {
 /**
  * Example
  * ```typescript
- * import { Notion } from "@neurosity/notion";
+ * import { Neurosity } from "@neurosity/sdk";
  *
- * const notion = new Notion();
+ * const neurosity = new Neurosity();
  * ```
  */
-export class Notion {
+export class Neurosity {
   /**
    * @hidden
    */
@@ -106,10 +106,10 @@ export class Notion {
   static SERVER_TIMESTAMP = SERVER_TIMESTAMP;
 
   /**
-   * Creates new instance of Notion
+   * Creates new instance of the Neurosity SDK
    * 
    * ```typescript
-   * const notion = new Notion();
+   * const neurosity = new Neurosity();
    * ```
 
    * @param options
@@ -176,7 +176,7 @@ export class Notion {
    * Streams the current mode of streaming (wifi or bluetooth).
    *
    * ```typescript
-   * notion.streamingState().subscribe((streamingState) => {
+   * neurosity.streamingState().subscribe((streamingState) => {
    *   console.log(streamingState);
    *   // { streamingMode: "wifi-only", activeMode: "wifi", connected: true }
    * });
@@ -335,7 +335,7 @@ export class Notion {
    * Starts user session
    *
    * ```typescript
-   * await notion.login({
+   * await neurosity.login({
    *   email: "...",
    *   password: "..."
    * });
@@ -351,7 +351,7 @@ export class Notion {
    * Ends user session
    *
    * ```typescript
-   * await notion.logout();
+   * await neurosity.logout();
    * // session has ended
    * ```
    *
@@ -374,7 +374,7 @@ export class Notion {
    * Streams the state of the auth session. If user has logged in, the user object will be set. When logged out, the user object will be null.
    *
    * ```typescript
-   * notion.onAuthStateChanged().subscribe((user) => {
+   * neurosity.onAuthStateChanged().subscribe((user) => {
    *   console.log(user);
    * });
    * ```
@@ -465,7 +465,7 @@ export class Notion {
    * Returns a list of devices claimed by the user authenticated.
    *
    * ```typescript
-   * const devices = await notion.getDevices();
+   * const devices = await neurosity.getDevices();
    * console.log(devices);
    * ```
    */
@@ -482,13 +482,13 @@ export class Notion {
    *
    * The 3 steps to manually selecting a device are:
    *
-   * - Set `autoSelectDevice` to false when instantiating `Notion`.
-   * - Authenticate with your Neurosity account to access your devices by calling the `notion.login(...)` function.
-   * - Call the `notion.selectDevice(...)` function with a device selector function.
+   * - Set `autoSelectDevice` to false when instantiating the `Neurosity` class.
+   * - Authenticate with your Neurosity account to access your devices by calling the `neurosity.login(...)` function.
+   * - Call the `neurosity.selectDevice(...)` function with a device selector function.
    *
    * ```typescript
-   * const devices = await notion.selectDevice((devices) =>
-   *   devices.find((device) => device.deviceNickname === "Notion-A1B")
+   * const devices = await neurosity.selectDevice((devices) =>
+   *   devices.find((device) => device.deviceNickname === "Crown-A1B")
    * );
    *
    * console.log(devices);
@@ -517,7 +517,7 @@ export class Notion {
    * Get selected device
    *
    * ```typescript
-   * const selectedDevice = await notion.getSelectedDevice();
+   * const selectedDevice = await neurosity.getSelectedDevice();
    * console.log(selectedDevice);
    * ```
    */
@@ -537,7 +537,7 @@ export class Notion {
 
   /**
    * ```typescript
-   * const info = await notion.getInfo();
+   * const info = await neurosity.getInfo();
    * ```
    */
   public async getInfo(): Promise<DeviceInfo> {
@@ -564,7 +564,7 @@ export class Notion {
    * Observes selected device
    *
    * ```typescript
-   * notion.onDeviceChange().subscribe(device => {
+   * neurosity.onDeviceChange().subscribe(device => {
    *  console.log(device);
    * });
    * ```
@@ -588,7 +588,7 @@ export class Notion {
    * Ends database connection
    *
    * ```typescript
-   * await notion.disconnect();
+   * await neurosity.disconnect();
    * ```
    */
   public async disconnect(): Promise<void> {
@@ -630,11 +630,11 @@ export class Notion {
    * Injects an EEG marker to data stream
    *
    * ```typescript
-   * notion.addMarker("eyes-closed");
+   * neurosity.addMarker("eyes-closed");
    *
    * // later...
    *
-   * notion.addMarker("eyes-open");
+   * neurosity.addMarker("eyes-open");
    * ```
    *
    * @param label Name the label to inject
@@ -669,23 +669,23 @@ export class Notion {
    *
    * To queue haptic P7 only,
    * ```typescript
-   * await notion.haptics({
+   * await neurosity.haptics({
    *   P7: ["tripleClick100"]
    * });
    * ```
    *
    * To queue both motors at the same time
    * ```typescript
-   * await notion.haptics({
-   *   P7: [notion.getHapticEffects().strongClick100],
-   *   P8: [notion.getHapticEffects().strongClick100]
+   * await neurosity.haptics({
+   *   P7: [neurosity.getHapticEffects().strongClick100],
+   *   P8: [neurosity.getHapticEffects().strongClick100]
    * });
    * ```
    *
    * You can queue different commands to the motors too
    * ```typescript
-   * const effects = notion.getHapticEffects();
-   * await notion.haptics({
+   * const effects = neurosity.getHapticEffects();
+   * await neurosity.haptics({
    *   P7: [effects.transitionRampUpLongSmooth1_0_to_100,
    *         effects.transitionRampDownLongSmooth1_100_to_0],
    *   P8: [effects.strongClick100]
@@ -693,7 +693,7 @@ export class Notion {
    * ```
    *
    * @param effects Effects to queue. The key of the object passed should be the location of the motor
-   *  to queue. Each key can be an array of up to 7 commands. There is no haptic support on model
+   *  to queue. Each key can be an array of up to 7 commands. There is no haptic support for model
    *  version 1, Notion DK1. The Haptic motor's location is positioned in reference to the 10-10 EEG
    *  system used to label the channels of the Crown's EEG sensors. Notion 2 and Crown have haptics
    *  at P7 and P8. A list of haptic commands can be found on ./utils/hapticCodes.ts - there
@@ -745,7 +745,7 @@ export class Notion {
 
   /**
    * ```typescript
-   * const effects = notion.getHapticEffects();
+   * const effects = neurosity.getHapticEffects();
    * ```
    */
   public getHapticEffects(): HapticEffects {
@@ -756,10 +756,10 @@ export class Notion {
    * `wifi` `bluetooth`
    *
    * Observes accelerometer data
-   * Supported by Notion 2 and the Crown.
+   * Supported by the Crown and Notion 2 devices.
    *
    * ```typescript
-   * notion.accelerometer().subscribe(accelerometer => {
+   * neurosity.accelerometer().subscribe(accelerometer => {
    *   console.log(accelerometer);
    * });
    *
@@ -812,7 +812,7 @@ export class Notion {
    *
    * Example
    * ```typescript
-   * notion.brainwaves("raw").subscribe(brainwaves => {
+   * neurosity.brainwaves("raw").subscribe(brainwaves => {
    *   console.log(brainwaves);
    * });
    * ```
@@ -821,7 +821,7 @@ export class Notion {
 
    * Example
    * ```typescript
-   * notion.brainwaves("rawUnfiltered").subscribe(brainwaves => {
+   * neurosity.brainwaves("rawUnfiltered").subscribe(brainwaves => {
    *   console.log(brainwaves);
    * });
    * ```
@@ -830,7 +830,7 @@ export class Notion {
    * 
    * Example
    * ```typescript
-   * notion.brainwaves("powerByBand").subscribe(brainwaves => {
+   * neurosity.brainwaves("powerByBand").subscribe(brainwaves => {
    *   console.log(brainwaves);
    * });
    * ```
@@ -839,7 +839,7 @@ export class Notion {
    * 
    * Example
    * ```typescript
-   * notion.brainwaves("psd").subscribe(brainwaves => {
+   * neurosity.brainwaves("psd").subscribe(brainwaves => {
    *   console.log(brainwaves);
    * });
    * ```
@@ -878,7 +878,7 @@ export class Notion {
    *
    * Example
    * ```typescript
-   * notion.calm().subscribe(calm => {
+   * neurosity.calm().subscribe(calm => {
    *   console.log(calm.probability);
    * });
    *
@@ -920,7 +920,7 @@ export class Notion {
    * a status set by the device
    *
    * ```typescript
-   * notion.signalQuality().subscribe(signalQuality => {
+   * neurosity.signalQuality().subscribe(signalQuality => {
    *   console.log(signalQuality);
    * });
    *
@@ -958,7 +958,7 @@ export class Notion {
    * Observes last state of `settings` and all subsequent `settings` changes
    *
    * ```typescript
-   * notion.settings().subscribe(settings => {
+   * neurosity.settings().subscribe(settings => {
    *   console.log(settings.lsl);
    * });
    *
@@ -986,7 +986,7 @@ export class Notion {
    *
    * Example
    * ```typescript
-   * notion.focus().subscribe(focus => {
+   * neurosity.focus().subscribe(focus => {
    *   console.log(focus.probability);
    * });
    *
@@ -1076,7 +1076,7 @@ export class Notion {
    * Observes last state of `status` and all subsequent `status` changes
    *
    * ```typescript
-   * notion.status().subscribe(status => {
+   * neurosity.status().subscribe(status => {
    *   console.log(status.state);
    * });
    *
@@ -1115,7 +1115,7 @@ export class Notion {
    *
    * Example
    * ```typescript
-   * notion.changeSettings({
+   * neurosity.changeSettings({
    *   lsl: true
    * });
    * ```
@@ -1141,12 +1141,12 @@ export class Notion {
    * `wifi`
    *
    * ```typescript
-   * notion.training.record({
+   * neurosity.training.record({
    *   metric: "kinesis",
    *   label: "push"
    * });
    *
-   * notion.training.stop({
+   * neurosity.training.stop({
    *   metric: "kinesis",
    *   label: "push"
    * });
@@ -1313,14 +1313,14 @@ export class Notion {
    * 💡 This function is designed to only run on the server side for security reasons, as it requires your client secret.
    *
    * ```typescript
-   * const { Notion } = require("@neurosity/notion");
+   * const { Neurosity } = require("@neurosity/sdk");
    *
-   * const notion = new Notion({
+   * const neurosity = new Neurosity({
    *   autoSelectDevice: false
    * });
    *
    * exports.handler = async function (event) {
-   *   return notion
+   *   return neurosity
    *     .createOAuthURL({
    *       clientId: process.env.NEUROSITY_OAUTH_CLIENT_ID,
    *       clientSecret: process.env.NEUROSITY_OAUTH_CLIENT_SECRET,
@@ -1370,16 +1370,16 @@ export class Notion {
    *
    *
    * ```typescript
-   * const { Notion } = require("@neurosity/notion");
+   * const { Neurosity } = require("@neurosity/sdk");
    *
-   * const notion = new Notion({
+   * const neurosity = new Neurosity({
    *   autoSelectDevice: false
    * });
    *
    * exports.handler = async function (event) {
    *   const userId = event.queryStringParameters?.userId;
    *
-   *   return notion
+   *   return neurosity
    *     .getOAuthToken({
    *       clientId: process.env.NEUROSITY_OAUTH_CLIENT_ID,
    *       clientSecret: process.env.NEUROSITY_OAUTH_CLIENT_SECRET,
@@ -1417,7 +1417,7 @@ export class Notion {
    * Removes client-specific OAuth token for a given userId. Requires SDK to be signed in with OAuth custom token.
    *
    * ```typescript
-   * await notion.removeOAuthAccess().catch((error) => {
+   * await neurosity.removeOAuthAccess().catch((error) => {
    *   // handle error here...
    * });
    * ```
@@ -1503,7 +1503,7 @@ export class Notion {
    *   return [...new Set(labels)];
    * }
    *
-   * notion.onUserExperiments().subscribe((experiments) => {
+   * neurosity.onUserExperiments().subscribe((experiments) => {
    *   console.log(experiments);
    *   console.log("labels", getUniqueLabels(experiments));
    * });
@@ -1524,7 +1524,7 @@ export class Notion {
    * Deletes a specific experiment provided an experiment ID
    *
    * ```typescript
-   * await notion.deleteUserExperiment(experiment.id);
+   * await neurosity.deleteUserExperiment(experiment.id);
    * ```
    *
    * @param experimentId The ID of the Experiment
@@ -1532,5 +1532,18 @@ export class Notion {
    */
   public deleteUserExperiment(experimentId: string): Promise<void> {
     return this.cloudClient.deleteUserExperiment(experimentId);
+  }
+}
+
+/**
+ * @hidden
+ * Deprecated class kept for backwards compatibility purposes.
+ */
+export class Notion extends Neurosity {
+  constructor(options: SDKOptions = {}) {
+    super(options);
+    console.log(
+      `The Notion class is deprecated and will be removed in the next version of the SDK. Please use the Neurosity class instead. e.g. new Notion() => new Neurosity()`
+    );
   }
 }

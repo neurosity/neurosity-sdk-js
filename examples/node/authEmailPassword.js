@@ -1,22 +1,22 @@
-const { Notion } = require("../..");
+const { Neurosity } = require("../..");
 
-const notion = new Notion({
+const neurosity = new Neurosity({
   deviceId: process.env.NEUROSITY_DEVICE_ID
 });
 
-notion.onAuthStateChanged().subscribe(user => {
+neurosity.onAuthStateChanged().subscribe((user) => {
   console.log("onAuthStateChanged", user ? user.uid : user);
 });
 
 (async () => {
-  await notion.login({
+  await neurosity.login({
     email: process.env.NEUROSITY_EMAIL,
     password: process.env.NEUROSITY_PASSWORD
   });
 
-  notion.status().subscribe(status => {
+  neurosity.status().subscribe((status) => {
     console.log("status", status);
   });
 
-  await notion.logout();
+  await neurosity.logout();
 })();

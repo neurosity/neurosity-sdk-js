@@ -6,24 +6,22 @@ import {
 import { SkillInstance, SkillSubscription } from "../types/skill";
 
 type SkillApp = (
-  notion: NotionOnDevice,
+  neurosity: NotionOnDevice,
   skill: SkillInstance
 ) => () => Promise<void>;
 
 export function createSkill(app: SkillApp) {
   return {
-    subscribe: async (
-      options: OnDeviceOptions
-    ): Promise<SkillSubscription> => {
-      const [notion, skill] = await createNotionOnDevice({
+    subscribe: async (options: OnDeviceOptions): Promise<SkillSubscription> => {
+      const [neurosity, skill] = await createNotionOnDevice({
         ...options
       });
 
-      const teardown = app(notion, skill);
+      const teardown = app(neurosity, skill);
 
       return {
         unsubscribe: async () => {
-          await notion.disconnect();
+          await neurosity.disconnect();
 
           if (teardown && "then" in teardown) {
             const cleanUp: any = await teardown;

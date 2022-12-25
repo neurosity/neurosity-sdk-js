@@ -1,17 +1,17 @@
-const { Notion } = require("../..");
+const { Neurosity } = require("../..");
 
-const notion = new Notion({
+const neurosity = new Neurosity({
   autoSelectDevice: false
 });
 
-notion.onAuthStateChanged().subscribe((user) => {
+neurosity.onAuthStateChanged().subscribe((user) => {
   console.log(
     "onAuthStateChanged",
     user ? `logged in as ${user.email}` : "not logged in"
   );
 });
 
-notion
+neurosity
   .createAccount({
     email: "tester+delete+account@neurosity.co",
     password: `${Math.random()}`
@@ -21,7 +21,7 @@ notion
 
     await new Promise((r) => setTimeout(r, 10000));
 
-    await notion.deleteAccount();
+    await neurosity.deleteAccount();
 
     console.log("account deleted");
   })
