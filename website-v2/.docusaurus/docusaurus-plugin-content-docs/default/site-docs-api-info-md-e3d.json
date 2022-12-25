@@ -1,0 +1,29 @@
+{
+  "unversionedId": "api/info",
+  "id": "api/info",
+  "title": "Device Information",
+  "description": "Non-mutable device information.",
+  "source": "@site/../docs/api/info.md",
+  "sourceDirName": "api",
+  "slug": "/api/info",
+  "permalink": "/docs/api/info",
+  "draft": false,
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Author",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "Oct 14, 2018",
+  "frontMatter": {
+    "id": "info",
+    "title": "Device Information"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Disconnect",
+    "permalink": "/docs/api/disconnect"
+  },
+  "next": {
+    "title": "Haptics",
+    "permalink": "/docs/api/haptics"
+  }
+}

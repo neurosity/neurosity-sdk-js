@@ -1,0 +1,29 @@
+{
+  "unversionedId": "api/kinesis",
+  "id": "api/kinesis",
+  "title": "Kinesis",
+  "description": "The Kinesis API is based on the Motor Imagery BCI method. Fires when a user attempts to trigger a side effect from defined thoughts. E.g. motor imagery, etc.",
+  "source": "@site/../docs/api/kinesis.md",
+  "sourceDirName": "api",
+  "slug": "/api/kinesis",
+  "permalink": "/docs/api/kinesis",
+  "draft": false,
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Author",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "Oct 14, 2018",
+  "frontMatter": {
+    "id": "kinesis",
+    "title": "Kinesis"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Focus",
+    "permalink": "/docs/api/focus"
+  },
+  "next": {
+    "title": "Predictions",
+    "permalink": "/docs/api/predictions"
+  }
+}

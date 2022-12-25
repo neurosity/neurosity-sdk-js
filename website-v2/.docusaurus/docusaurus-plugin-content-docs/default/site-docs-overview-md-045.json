@@ -1,0 +1,25 @@
+{
+  "unversionedId": "overview",
+  "id": "overview",
+  "title": "Neurosity SDK",
+  "description": "The Neurosity software processes and manages the data produced by Neurosity headsets which measures, tracks and monitors EEG brainwaves.",
+  "source": "@site/../docs/overview.md",
+  "sourceDirName": ".",
+  "slug": "/overview",
+  "permalink": "/docs/overview",
+  "draft": false,
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Author",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "Oct 14, 2018",
+  "frontMatter": {
+    "id": "overview",
+    "title": "Neurosity SDK"
+  },
+  "sidebar": "docs",
+  "next": {
+    "title": "Your First Node App",
+    "permalink": "/docs/getting-started"
+  }
+}

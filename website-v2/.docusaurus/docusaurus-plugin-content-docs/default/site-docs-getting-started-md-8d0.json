@@ -1,0 +1,29 @@
+{
+  "unversionedId": "getting-started",
+  "id": "getting-started",
+  "title": "Your First Node App",
+  "description": "Welcome to the Neurosity SDK documentation site. To begin, you'll need to set up an account one time with Neurosity via console.neurosity.co. Learn how to create an account with Neurosity Developer Console.",
+  "source": "@site/../docs/getting-started.md",
+  "sourceDirName": ".",
+  "slug": "/getting-started",
+  "permalink": "/docs/getting-started",
+  "draft": false,
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Author",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "Oct 14, 2018",
+  "frontMatter": {
+    "id": "getting-started",
+    "title": "Your First Node App"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Neurosity SDK",
+    "permalink": "/docs/overview"
+  },
+  "next": {
+    "title": "Your First Web App",
+    "permalink": "/docs/tutorials/your-first-web-app"
+  }
+}

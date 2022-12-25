@@ -1,0 +1,29 @@
+{
+  "unversionedId": "api/status",
+  "id": "api/status",
+  "title": "Device Status",
+  "description": "Metrics:",
+  "source": "@site/../docs/api/status.md",
+  "sourceDirName": "api",
+  "slug": "/api/status",
+  "permalink": "/docs/api/status",
+  "draft": false,
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Author",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "Oct 14, 2018",
+  "frontMatter": {
+    "id": "status",
+    "title": "Device Status"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Device Settings",
+    "permalink": "/docs/api/settings"
+  },
+  "next": {
+    "title": "Focus",
+    "permalink": "/docs/api/focus"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "unversionedId": "api/settings",
+  "id": "api/settings",
+  "title": "Device Settings",
+  "description": "Methods:",
+  "source": "@site/../docs/api/settings.md",
+  "sourceDirName": "api",
+  "slug": "/api/settings",
+  "permalink": "/docs/api/settings",
+  "draft": false,
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Author",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "Oct 14, 2018",
+  "frontMatter": {
+    "id": "settings",
+    "title": "Device Settings"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Haptics",
+    "permalink": "/docs/api/haptics"
+  },
+  "next": {
+    "title": "Device Status",
+    "permalink": "/docs/api/status"
+  }
+}

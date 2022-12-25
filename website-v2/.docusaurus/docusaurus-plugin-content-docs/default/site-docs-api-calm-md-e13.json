@@ -1,0 +1,29 @@
+{
+  "unversionedId": "api/calm",
+  "id": "api/calm",
+  "title": "Calm",
+  "description": "Constantly fires and predicts user's calm level from passive cognitive state based on the alpha brainwave between 7.5Hz and 12.5Hz. Calm is a probability from 0.0 to 1.0. To get calm over 0.3 is significant. Calm will take up to 16 seconds to initialize. We normally take a longer rolling average of calm to produce brain processes over time, see how we do it in our flow walk through.",
+  "source": "@site/../docs/api/calm.md",
+  "sourceDirName": "api",
+  "slug": "/api/calm",
+  "permalink": "/docs/api/calm",
+  "draft": false,
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Author",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "Oct 14, 2018",
+  "frontMatter": {
+    "id": "calm",
+    "title": "Calm"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Brainwaves",
+    "permalink": "/docs/api/brainwaves"
+  },
+  "next": {
+    "title": "Disconnect",
+    "permalink": "/docs/api/disconnect"
+  }
+}

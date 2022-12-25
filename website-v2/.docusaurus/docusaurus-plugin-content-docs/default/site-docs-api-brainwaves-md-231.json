@@ -1,0 +1,29 @@
+{
+  "unversionedId": "api/brainwaves",
+  "id": "api/brainwaves",
+  "title": "Brainwaves",
+  "description": "The brainwaves API is what we always wished for when it came to inventing the future: an easy way to get lossless brainwaves. Sometimes we wanted to manipulate the raw data and other times we wanted to analyze the power in each frequency bin. With brainwaves, our goal is to enable new APIs and powerful programs to be built. We expect that someone working with the brainwaves API has a bit of experience working with EEG data or a strong desire to learn.",
+  "source": "@site/../docs/api/brainwaves.md",
+  "sourceDirName": "api",
+  "slug": "/api/brainwaves",
+  "permalink": "/docs/api/brainwaves",
+  "draft": false,
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Author",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "Oct 14, 2018",
+  "frontMatter": {
+    "id": "brainwaves",
+    "title": "Brainwaves"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Authentication",
+    "permalink": "/docs/api/authentication"
+  },
+  "next": {
+    "title": "Calm",
+    "permalink": "/docs/api/calm"
+  }
+}

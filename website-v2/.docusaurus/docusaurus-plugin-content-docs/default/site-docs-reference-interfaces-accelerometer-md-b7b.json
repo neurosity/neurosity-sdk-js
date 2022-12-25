@@ -1,0 +1,30 @@
+{
+  "unversionedId": "reference/interfaces/accelerometer",
+  "id": "reference/interfaces/accelerometer",
+  "title": "Accelerometer",
+  "description": "@neurosity/sdk › Accelerometer",
+  "source": "@site/../docs/reference/interfaces/accelerometer.md",
+  "sourceDirName": "reference/interfaces",
+  "slug": "/reference/interfaces/accelerometer",
+  "permalink": "/docs/reference/interfaces/accelerometer",
+  "draft": false,
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Author",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "Oct 14, 2018",
+  "frontMatter": {
+    "id": "accelerometer",
+    "title": "Accelerometer",
+    "sidebar_label": "Accelerometer"
+  },
+  "sidebar": "@neurosity/sdk",
+  "previous": {
+    "title": "Neurosity",
+    "permalink": "/docs/reference/classes/neurosity"
+  },
+  "next": {
+    "title": "Calm",
+    "permalink": "/docs/reference/interfaces/calm"
+  }
+}

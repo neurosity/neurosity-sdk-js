@@ -1,0 +1,29 @@
+{
+  "unversionedId": "guides/signal",
+  "id": "guides/signal",
+  "title": "Signal",
+  "description": "Getting great signal is very important. To learn about how to get great signal, check out this getting started guide here.",
+  "source": "@site/../docs/guides/signal.md",
+  "sourceDirName": "guides",
+  "slug": "/guides/signal",
+  "permalink": "/docs/guides/signal",
+  "draft": false,
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Author",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "Oct 14, 2018",
+  "frontMatter": {
+    "id": "signal",
+    "title": "Signal"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Importing",
+    "permalink": "/docs/guides/importing"
+  },
+  "next": {
+    "title": "Training",
+    "permalink": "/docs/guides/training"
+  }
+}

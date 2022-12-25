@@ -1,0 +1,30 @@
+{
+  "unversionedId": "reference/interfaces/devicestatus",
+  "id": "reference/interfaces/devicestatus",
+  "title": "DeviceStatus",
+  "description": "@neurosity/sdk › DeviceStatus",
+  "source": "@site/../docs/reference/interfaces/devicestatus.md",
+  "sourceDirName": "reference/interfaces",
+  "slug": "/reference/interfaces/devicestatus",
+  "permalink": "/docs/reference/interfaces/devicestatus",
+  "draft": false,
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Author",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "Oct 14, 2018",
+  "frontMatter": {
+    "id": "devicestatus",
+    "title": "DeviceStatus",
+    "sidebar_label": "DeviceStatus"
+  },
+  "sidebar": "@neurosity/sdk",
+  "previous": {
+    "title": "DeviceInfo",
+    "permalink": "/docs/reference/interfaces/deviceinfo"
+  },
+  "next": {
+    "title": "Focus",
+    "permalink": "/docs/reference/interfaces/focus"
+  }
+}

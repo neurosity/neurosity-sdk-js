@@ -1,0 +1,30 @@
+{
+  "unversionedId": "reference/interfaces/sdkoptions",
+  "id": "reference/interfaces/sdkoptions",
+  "title": "SDKOptions",
+  "description": "@neurosity/sdk › SDKOptions",
+  "source": "@site/../docs/reference/interfaces/sdkoptions.md",
+  "sourceDirName": "reference/interfaces",
+  "slug": "/reference/interfaces/sdkoptions",
+  "permalink": "/docs/reference/interfaces/sdkoptions",
+  "draft": false,
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Author",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "Oct 14, 2018",
+  "frontMatter": {
+    "id": "sdkoptions",
+    "title": "SDKOptions",
+    "sidebar_label": "SDKOptions"
+  },
+  "sidebar": "@neurosity/sdk",
+  "previous": {
+    "title": "PowerByBand",
+    "permalink": "/docs/reference/interfaces/powerbyband"
+  },
+  "next": {
+    "title": "Settings",
+    "permalink": "/docs/reference/interfaces/settings"
+  }
+}
