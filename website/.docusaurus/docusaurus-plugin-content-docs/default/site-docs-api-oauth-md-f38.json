@@ -21,5 +21,9 @@
   "previous": {
     "title": "Signal Quality",
     "permalink": "/docs/api/signal-quality"
+  },
+  "next": {
+    "title": "Migrating from v5 to v6",
+    "permalink": "/docs/api/v6"
   }
 }

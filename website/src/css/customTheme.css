@@ -40,3 +40,7 @@ html[data-theme="dark"] {
 .navbar__brand {
   margin-right: 2rem;
 }
+
+.theme-doc-sidebar-menu {
+  padding-bottom: 100px;
+}

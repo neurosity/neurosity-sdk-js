@@ -6,7 +6,7 @@ title: Haptics
 The haptics API is the way to communicate to the user without a screen or speaker. There are two haptic motors on both Crown and Notion 2, none on DK1. We assume the number of haptics will change, so our approach to haptic control became a dynamic strategy. Each haptic motor's location is positioned in reference to the 10-10 EEG system used to label the channels of the Crown's EEG sensors. Notion 2 and Crown have haptics at P7 and P8.
 
 <p align="center">
-  <img alt="EEG-10-10" src="../assets/images/api/eeg-10-10.png" />
+  <img alt="EEG-10-10" src="..//img/api/eeg-10-10.png" />
   <b>FIG. 1</b><i> International standard for EEG 10-10 channel locations</i>
 </p>
 

@@ -16,6 +16,16 @@
               "sidebar": "docs"
             },
             {
+              "id": "api/bluetooth-react-native",
+              "path": "/docs/api/bluetooth-react-native",
+              "sidebar": "docs"
+            },
+            {
+              "id": "api/bluetooth-web",
+              "path": "/docs/api/bluetooth-web",
+              "sidebar": "docs"
+            },
+            {
               "id": "api/brainwaves",
               "path": "/docs/api/brainwaves",
               "sidebar": "docs"
@@ -78,6 +88,16 @@
             {
               "id": "api/status",
               "path": "/docs/api/status",
+              "sidebar": "docs"
+            },
+            {
+              "id": "api/streaming",
+              "path": "/docs/api/streaming",
+              "sidebar": "docs"
+            },
+            {
+              "id": "api/v6",
+              "path": "/docs/api/v6",
               "sidebar": "docs"
             },
             {

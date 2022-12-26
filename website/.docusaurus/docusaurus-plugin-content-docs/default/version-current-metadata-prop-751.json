@@ -168,6 +168,30 @@
             "label": "OAuth",
             "href": "/docs/api/oauth",
             "docId": "api/oauth"
+          },
+          {
+            "type": "link",
+            "label": "Migrating from v5 to v6",
+            "href": "/docs/api/v6",
+            "docId": "api/v6"
+          },
+          {
+            "type": "link",
+            "label": "Wi-Fi & Bluetooth",
+            "href": "/docs/api/streaming",
+            "docId": "api/streaming"
+          },
+          {
+            "type": "link",
+            "label": "Bluetooth for Web",
+            "href": "/docs/api/bluetooth-web",
+            "docId": "api/bluetooth-web"
+          },
+          {
+            "type": "link",
+            "label": "Bluetooth for React Native",
+            "href": "/docs/api/bluetooth-react-native",
+            "docId": "api/bluetooth-react-native"
           }
         ],
         "collapsed": true,
@@ -286,6 +310,18 @@
       "description": "We take data privacy very seriously at Neurosity. Should you find a bug or vulnerability, please submit a request, and we will take your inquiry seriously and work as fast as possible to fix the issue for all.",
       "sidebar": "docs"
     },
+    "api/bluetooth-react-native": {
+      "id": "api/bluetooth-react-native",
+      "title": "Bluetooth for React Native",
+      "description": "Adding the Bluetooth transport for React Native requires the react-native-ble-manager library. Install the library and set up the permission as per their documentation before moving to the next step.",
+      "sidebar": "docs"
+    },
+    "api/bluetooth-web": {
+      "id": "api/bluetooth-web",
+      "title": "Bluetooth for Web",
+      "description": "Not all browsers support Web Bluetooth. You can refer to browser-specific support here.",
+      "sidebar": "docs"
+    },
     "api/brainwaves": {
       "id": "api/brainwaves",
       "title": "Brainwaves",
@@ -362,6 +398,18 @@
       "id": "api/status",
       "title": "Device Status",
       "description": "Metrics:",
+      "sidebar": "docs"
+    },
+    "api/streaming": {
+      "id": "api/streaming",
+      "title": "Wi-Fi & Bluetooth",
+      "description": "By default, the Neurosity SDK uses Wi-Fi and the cloud. This means that all the metrics streaming by the Crown will go through the secured Neurosity servers.",
+      "sidebar": "docs"
+    },
+    "api/v6": {
+      "id": "api/v6",
+      "title": "Migrating from v5 to v6",
+      "description": "The new version 6 of the SDK is mostly backwards compatible with v5.",
       "sidebar": "docs"
     },
     "getting-started": {

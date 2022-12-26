@@ -16,9 +16,9 @@
       "name": "@docusaurus/plugin-content-pages",
       "version": "2.2.0"
     },
-    "docusaurus-plugin-debug": {
+    "docusaurus-plugin-sitemap": {
       "type": "package",
-      "name": "@docusaurus/plugin-debug",
+      "name": "@docusaurus/plugin-sitemap",
       "version": "2.2.0"
     },
     "docusaurus-theme-classic": {
