@@ -7,3 +7,4 @@ node_modules_bak
 .DS_Store
 docs/reference
 .vscode/launch.json
+website/.docusaurus
