@@ -1,172 +1,215 @@
 {
-  "/docs-d82": {
-    "__comp": "1be78505",
+  "/__docusaurus/debug-ba5": {
+    "__comp": "__comp---theme-debug-config-23-a-2ff",
     "__context": {
-      "plugin": "c9c024ca"
+      "plugin": "plugin---docusaurus-debugdb-8-269"
+    }
+  },
+  "/__docusaurus/debug/config-a19": {
+    "__comp": "__comp---theme-debug-config-23-a-2ff",
+    "__context": {
+      "plugin": "plugin---docusaurus-debugdb-8-269"
+    }
+  },
+  "/__docusaurus/debug/content-dd3": {
+    "__comp": "__comp---theme-debug-contentba-8-ce7",
+    "__context": {
+      "plugin": "plugin---docusaurus-debugdb-8-269"
     },
-    "versionMetadata": "935f2afb"
+    "allContent": "allContent---docusaurus-debug-content-246-9aa"
+  },
+  "/__docusaurus/debug/globalData-789": {
+    "__comp": "__comp---theme-debug-global-dataede-0fa",
+    "__context": {
+      "plugin": "plugin---docusaurus-debugdb-8-269"
+    }
+  },
+  "/__docusaurus/debug/metadata-042": {
+    "__comp": "__comp---theme-debug-site-metadata-68-e-3d4",
+    "__context": {
+      "plugin": "plugin---docusaurus-debugdb-8-269"
+    }
+  },
+  "/__docusaurus/debug/registry-0b8": {
+    "__comp": "__comp---theme-debug-registry-679-501",
+    "__context": {
+      "plugin": "plugin---docusaurus-debugdb-8-269"
+    }
+  },
+  "/__docusaurus/debug/routes-472": {
+    "__comp": "__comp---theme-debug-routes-946-699",
+    "__context": {
+      "plugin": "plugin---docusaurus-debugdb-8-269"
+    }
+  },
+  "/docs-d82": {
+    "__comp": "__comp---theme-doc-page-1-be-9be",
+    "__context": {
+      "plugin": "plugin---docsc-9-c-8b5"
+    },
+    "versionMetadata": "versionMetadata---docs-935-398"
   },
   "/docs/api/authentication-5dd": {
-    "__comp": "17896441",
-    "content": "23a4bd47"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-authentication-23-a-c52"
   },
   "/docs/api/bluetooth-react-native-e0e": {
-    "__comp": "17896441",
-    "content": "1ed8112d"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-bluetooth-react-native-1-ed-2f3"
   },
   "/docs/api/bluetooth-web-078": {
-    "__comp": "17896441",
-    "content": "51811708"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-bluetooth-web-518-ba1"
   },
   "/docs/api/brainwaves-10a": {
-    "__comp": "17896441",
-    "content": "2314cd33"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-brainwaves-231-3be"
   },
   "/docs/api/calm-f52": {
-    "__comp": "17896441",
-    "content": "e1308986"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-calme-13-338"
   },
   "/docs/api/device-selection-f79": {
-    "__comp": "17896441",
-    "content": "af74beb4"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-device-selectionaf-7-d88"
   },
   "/docs/api/disconnect-440": {
-    "__comp": "17896441",
-    "content": "88c0e341"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-disconnect-88-c-6d4"
   },
   "/docs/api/focus-6a9": {
-    "__comp": "17896441",
-    "content": "8a3570b8"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-focus-8-a-3-e69"
   },
   "/docs/api/haptics-9aa": {
-    "__comp": "17896441",
-    "content": "b257af83"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-hapticsb-25-223"
   },
   "/docs/api/info-b72": {
-    "__comp": "17896441",
-    "content": "e3db76c9"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-infoe-3-d-e57"
   },
   "/docs/api/kinesis-16e": {
-    "__comp": "17896441",
-    "content": "55f3f5cb"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-kinesis-55-f-325"
   },
   "/docs/api/oauth-04b": {
-    "__comp": "17896441",
-    "content": "f384321f"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-oauthf-38-5c8"
   },
   "/docs/api/predictions-169": {
-    "__comp": "17896441",
-    "content": "6d120f63"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-predictions-6-d-1-4a5"
   },
   "/docs/api/settings-962": {
-    "__comp": "17896441",
-    "content": "a0f35985"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-settingsa-0-f-f95"
   },
   "/docs/api/signal-quality-7ec": {
-    "__comp": "17896441",
-    "content": "53e6e720"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-signal-quality-53-e-d51"
   },
   "/docs/api/status-a21": {
-    "__comp": "17896441",
-    "content": "716721f1"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-status-716-e7d"
   },
   "/docs/api/streaming-5c3": {
-    "__comp": "17896441",
-    "content": "fc7723d7"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-streamingfc-7-d2a"
   },
   "/docs/api/v6-57d": {
-    "__comp": "17896441",
-    "content": "5354ee93"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-v-6535-56c"
   },
   "/docs/getting-started-0ee": {
-    "__comp": "17896441",
-    "content": "8d0344ba"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-getting-started-8-d-0-4ab"
   },
   "/docs/guides/ethics-cbc": {
-    "__comp": "17896441",
-    "content": "af7e2c2c"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-guides-ethicsaf-7-650"
   },
   "/docs/guides/importing-639": {
-    "__comp": "17896441",
-    "content": "aa3fbf31"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-guides-importingaa-3-58f"
   },
   "/docs/guides/signal-83e": {
-    "__comp": "17896441",
-    "content": "c35b9a01"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-guides-signalc-35-70e"
   },
   "/docs/guides/training-ebd": {
-    "__comp": "17896441",
-    "content": "bc476dbb"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-guides-trainingbc-4-fae"
   },
   "/docs/overview-5f6": {
-    "__comp": "17896441",
-    "content": "0454310e"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-overview-045-f4a"
   },
   "/docs/reference/-eec": {
-    "__comp": "17896441",
-    "content": "39aec3f4"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-reference-39-a-d45"
   },
   "/docs/reference/classes/neurosity-b3d": {
-    "__comp": "17896441",
-    "content": "7b693717"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-reference-classes-neurosity-7-b-6-3a3"
   },
   "/docs/reference/interfaces/accelerometer-85d": {
-    "__comp": "17896441",
-    "content": "b7b9b94d"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-reference-interfaces-accelerometerb-7-b-47e"
   },
   "/docs/reference/interfaces/calm-a8a": {
-    "__comp": "17896441",
-    "content": "5634ff9f"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-reference-interfaces-calm-563-c0f"
   },
   "/docs/reference/interfaces/deviceinfo-e05": {
-    "__comp": "17896441",
-    "content": "176b0cee"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-reference-interfaces-deviceinfo-176-4e9"
   },
   "/docs/reference/interfaces/devicestatus-a0e": {
-    "__comp": "17896441",
-    "content": "b52b9ba4"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-reference-interfaces-devicestatusb-52-f4f"
   },
   "/docs/reference/interfaces/focus-5f6": {
-    "__comp": "17896441",
-    "content": "8526d54d"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-reference-interfaces-focus-852-6dd"
   },
   "/docs/reference/interfaces/kinesis-9a7": {
-    "__comp": "17896441",
-    "content": "7c8fabc0"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-reference-interfaces-kinesis-7-c-8-ee7"
   },
   "/docs/reference/interfaces/powerbyband-d8f": {
-    "__comp": "17896441",
-    "content": "65ed0329"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-reference-interfaces-powerbyband-65-e-376"
   },
   "/docs/reference/interfaces/psd-454": {
-    "__comp": "17896441",
-    "content": "008a34f5"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-reference-interfaces-psd-008-d10"
   },
   "/docs/reference/interfaces/sdkoptions-329": {
-    "__comp": "17896441",
-    "content": "acbd450d"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-reference-interfaces-sdkoptionsacb-5e5"
   },
   "/docs/reference/interfaces/settings-f77": {
-    "__comp": "17896441",
-    "content": "489b2c17"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-reference-interfaces-settings-489-554"
   },
   "/docs/reference/interfaces/signalquality-8bd": {
-    "__comp": "17896441",
-    "content": "88eade71"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-reference-interfaces-signalquality-88-e-930"
   },
   "/docs/resources-8f2": {
-    "__comp": "17896441",
-    "content": "cc01f7f9"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-resourcescc-0-0b2"
   },
   "/docs/tutorials/your-first-web-app-537": {
-    "__comp": "17896441",
-    "content": "7a8c380e"
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-tutorials-your-first-web-app-7-a-8-25d"
   },
   "/-04c": {
-    "__comp": "c4f5d8e4",
+    "__comp": "__comp---site-src-pages-index-jsc-4-f-f99",
     "__context": {
-      "plugin": "67423f8b"
+      "plugin": "plugin---674-b0e"
     },
-    "config": "5e9f5e1a"
+    "config": "config---5-e-9-4f3"
   }
 }

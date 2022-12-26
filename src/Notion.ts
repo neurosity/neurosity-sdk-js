@@ -54,6 +54,8 @@ const defaultOptions = {
 };
 
 /**
+ * import StreamingModes from "@site/src/components/StreamingModes";
+ *
  * Example
  * ```typescript
  * import { Neurosity } from "@neurosity/sdk";
@@ -583,7 +585,7 @@ export class Neurosity {
   }
 
   /**
-   * `wifi` `bluetooth`
+   * <StreamingModes wifi={true} bluetooth={true} />
    *
    * Ends database connection
    *
@@ -599,7 +601,7 @@ export class Neurosity {
   }
 
   /**
-   * `wifi` `bluetooth`
+   * <StreamingModes wifi={true} bluetooth={true} />
    *
    * @internal
    * Not user facing
@@ -625,7 +627,7 @@ export class Neurosity {
   }
 
   /**
-   * `wifi` `bluetooth`
+   * <StreamingModes wifi={true} bluetooth={true} />
    *
    * Injects an EEG marker to data stream
    *
@@ -663,7 +665,7 @@ export class Neurosity {
   }
 
   /**
-   * `wifi` `bluetooth`
+   * <StreamingModes wifi={true} bluetooth={true} />
    *
    * Queue haptic motor commands
    *
@@ -753,7 +755,7 @@ export class Neurosity {
   }
 
   /**
-   * `wifi` `bluetooth`
+   * <StreamingModes wifi={true} bluetooth={true} />
    *
    * Observes accelerometer data
    * Supported by the Crown and Notion 2 devices.
@@ -806,7 +808,7 @@ export class Neurosity {
   }
 
   /**
-   * `wifi` `bluetooth`
+   * <StreamingModes wifi={true} bluetooth={true} />
    * 
    * The `raw` brainwaves parameter emits epochs of 16 samples for Crown and 25 for Notion 1 and 2.
    *
@@ -874,7 +876,7 @@ export class Neurosity {
   }
 
   /**
-   * `wifi` `bluetooth`
+   * <StreamingModes wifi={true} bluetooth={true} />
    *
    * Example
    * ```typescript
@@ -913,7 +915,7 @@ export class Neurosity {
   }
 
   /**
-   * `wifi` `bluetooth`
+   * <StreamingModes wifi={true} bluetooth={true} />
    *
    * Observes signal quality data where each property is the name
    * of the channel and the value includes the standard deviation and
@@ -953,7 +955,7 @@ export class Neurosity {
   }
 
   /**
-   * `wifi`
+   * <StreamingModes wifi={true} />
    *
    * Observes last state of `settings` and all subsequent `settings` changes
    *
@@ -982,7 +984,7 @@ export class Neurosity {
   }
 
   /**
-   * `wifi` `bluetooth`
+   * <StreamingModes wifi={true} bluetooth={true} />
    *
    * Example
    * ```typescript
@@ -1021,7 +1023,7 @@ export class Neurosity {
   }
 
   /**
-   * `wifi`
+   * <StreamingModes wifi={true} />
    *
    * @param labels Name of metric properties to filter by
    * @returns Observable of kinesis metric events
@@ -1046,7 +1048,7 @@ export class Neurosity {
   }
 
   /**
-   * `wifi`
+   * <StreamingModes wifi={true} />
    *
    * @param labels Name of metric properties to filter by
    * @returns Observable of predictions metric events
@@ -1071,7 +1073,7 @@ export class Neurosity {
   }
 
   /**
-   * `wifi` `bluetooth`
+   * <StreamingModes wifi={true} bluetooth={true} />
    *
    * Observes last state of `status` and all subsequent `status` changes
    *
@@ -1106,7 +1108,7 @@ export class Neurosity {
    * @internal
    * Not user facing yet
    *
-   * `wifi`
+   * <StreamingModes wifi={true} />
    *
    * Changes device settings programmatically. These settings can be
    * also changed from the developer console under device settings.
@@ -1138,7 +1140,7 @@ export class Neurosity {
   }
 
   /**
-   * `wifi`
+   * <StreamingModes wifi={true} />
    *
    * ```typescript
    * neurosity.training.record({
@@ -1157,7 +1159,7 @@ export class Neurosity {
   public get training(): Training {
     return {
       /**
-       * `wifi`
+       * <StreamingModes wifi={true} />
        *
        * Records a training for a metric/label pair
        * @category Training
@@ -1186,7 +1188,7 @@ export class Neurosity {
         });
       },
       /**
-       * `wifi`
+       * <StreamingModes wifi={true} />
        *
        * Stops the training for a metric/label pair
        * @category Training
@@ -1205,7 +1207,7 @@ export class Neurosity {
         });
       },
       /**
-       * `wifi`
+       * <StreamingModes wifi={true} />
        *
        * Stops all trainings
        * @category Training
@@ -1490,7 +1492,7 @@ export class Neurosity {
   }
 
   /**
-   * `wifi`
+   * <StreamingModes wifi={true} />
    *
    * Observes and returns a list of all Kinesis `experiments` and all subsequent experiment changes.
    * Here's an example of how to get a list of all Kinesis labels that have been trained:
@@ -1519,7 +1521,7 @@ export class Neurosity {
   }
 
   /**
-   * `wifi`
+   * <StreamingModes wifi={true} />
    *
    * Deletes a specific experiment provided an experiment ID
    *

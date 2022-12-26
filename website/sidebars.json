@@ -1,6 +1,8 @@
 {
   "docs": {
-    "Overview": ["overview"],
+    "Overview": [
+      "overview"
+    ],
     "Get Started": [
       "getting-started",
       "tutorials/your-first-web-app",
@@ -34,8 +36,12 @@
     ]
   },
   "@neurosity/sdk": {
-    "Introduction": ["reference/index"],
-    "Classes": ["reference/classes/neurosity"],
+    "Introduction": [
+      "reference/index"
+    ],
+    "Classes": [
+      "reference/classes/neurosity"
+    ],
     "Interfaces": [
       "reference/interfaces/accelerometer",
       "reference/interfaces/calm",
