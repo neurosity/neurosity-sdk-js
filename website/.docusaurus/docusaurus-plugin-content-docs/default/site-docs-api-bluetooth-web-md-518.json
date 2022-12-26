@@ -1,0 +1,26 @@
+{
+  "unversionedId": "api/bluetooth-web",
+  "id": "api/bluetooth-web",
+  "title": "Bluetooth for Web",
+  "description": "Not all browsers support Web Bluetooth. You can refer to browser-specific support here.",
+  "source": "@site/../docs/api/bluetooth-web.md",
+  "sourceDirName": "api",
+  "slug": "/api/bluetooth-web",
+  "permalink": "/docs/api/bluetooth-web",
+  "draft": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "bluetooth-web",
+    "title": "Bluetooth for Web"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Wi-Fi & Bluetooth",
+    "permalink": "/docs/api/streaming"
+  },
+  "next": {
+    "title": "Bluetooth for React Native",
+    "permalink": "/docs/api/bluetooth-react-native"
+  }
+}

@@ -59,7 +59,7 @@ license: (ISC) MIT
 ```
 
 <p align="center">
-  <img alt="Initial set up of NPM project" src="assets/images/tutorial/npm_init.png" />
+  <img alt="Initial set up of NPM project" src="/img/tutorial/npm_init.png" />
 </p>
 
 Next, you'll want to launch a VSCode window for the newly created project.
@@ -73,19 +73,19 @@ code .
 You'll need to launch a terminal window inside VS Code, you may toggle the terminal with `CTRL+~`.
 
 <p align="center">
-  <img alt="Toggle command line" src="assets/images/tutorial/vscode-toggle-command-line.png" />
+  <img alt="Toggle command line" src="/img/tutorial/vscode-toggle-command-line.png" />
 </p>
 
 To create a new file, you may select the new file button.
 
 <p align="center">
-  <img alt="Highlighting new file button in vscode" src="assets/images/tutorial/vscode-new-file-button.png" />
+  <img alt="Highlighting new file button in vscode" src="/img/tutorial/vscode-new-file-button.png" />
 </p>
 
 Go ahead and make a new file called `index.js`, we'll use it soon as the base of our new project.
 
 <p align="center">
-  <img alt="Created a new file called index.js" src="assets/images/tutorial/vscode-make-index-js-file.png" />
+  <img alt="Created a new file called index.js" src="/img/tutorial/vscode-make-index-js-file.png" />
 </p>
 
 ## Adding the Neurosity SDK to a Node Project
@@ -105,7 +105,7 @@ On MacOS, we'll go ahead and add another commonly ignored file:
 ```
 
 <p align="center">
-  <img alt="Add a .gitignore file with node_modules" src="assets/images/tutorial/vscode-gitignore.png" />
+  <img alt="Add a .gitignore file with node_modules" src="/img/tutorial/vscode-gitignore.png" />
 </p>
 
 Adding `node_modules` will help VS Code run a little bit better because we're telling it that we don't need to track anything in that folder.
@@ -119,7 +119,7 @@ npm install @neurosity/sdk dotenv
 ```
 
 <p align="center">
-  <img alt="Install dependencies using npm install in the terminal" src="assets/images/tutorial/vscode-install-dependencies.png" />
+  <img alt="Install dependencies using npm install in the terminal" src="/img/tutorial/vscode-install-dependencies.png" />
 </p>
 
 ### Add Dependencies to `index.js`
@@ -132,7 +132,7 @@ require("dotenv").config();
 ```
 
 <p align="center">
-  <img alt="Add dependencies to the index.js file" src="assets/images/tutorial/vscode-add-dependencies-to-index.png" />
+  <img alt="Add dependencies to the index.js file" src="/img/tutorial/vscode-add-dependencies-to-index.png" />
 </p>
 
 ### Add start script to package.json
@@ -178,7 +178,7 @@ npm start
 You should see the program run and exit successfully.
 
 <p align="center">
-  <img alt="Ran our node program with no errors" src="assets/images/tutorial/vscode-run-empty-program.png" />
+  <img alt="Ran our node program with no errors" src="/img/tutorial/vscode-run-empty-program.png" />
 </p>
 
 ## Add Authentication
@@ -217,7 +217,7 @@ console.log(`${email} attempting to authenticate to ${deviceId}`);
 Now, if we run our program, we should see an error print out! Run with `npm start` from the CLI.
 
 <p align="center">
-  <img alt="Ran our node program with no envs found error" src="assets/images/tutorial/vscode-no-env-found.png" />
+  <img alt="Ran our node program with no envs found error" src="/img/tutorial/vscode-no-env-found.png" />
 </p>
 
 ### Add `.env` file
@@ -231,13 +231,13 @@ PASSWORD=Password#1!
 ```
 
 <p align="center">
-  <img alt="Created a new file called .env" src="assets/images/tutorial/vscode-env-file.png" />
+  <img alt="Created a new file called .env" src="/img/tutorial/vscode-env-file.png" />
 </p>
 
 Now, if we run our program, we should see a success message print out, informing us that our variables have been extracted successfully.
 
 <p align="center">
-  <img alt="Pulled out three variables from .env" src="assets/images/tutorial/vscode-got-env-variables.png" />
+  <img alt="Pulled out three variables from .env" src="/img/tutorial/vscode-got-env-variables.png" />
 </p>
 
 ### Instantiate the Neurosity class
@@ -274,7 +274,7 @@ main();
 Then run the program with `npm start` in the CLI. If all worked, then you should see:
 
 <p align="center">
-  <img alt="Made a function that authenticated with Neurosity" src="assets/images/tutorial/vscode-main-logged-in.png" />
+  <img alt="Made a function that authenticated with Neurosity" src="/img/tutorial/vscode-main-logged-in.png" />
 </p>
 
 ## Add Subscriptions
@@ -296,7 +296,7 @@ neurosity.calm().subscribe((calm) => {
 Your index.js file is now ready to print `Hello World!`
 
 <p align="center">
-  <img alt="Add code to subscribe to the calm score" src="assets/images/tutorial/vscode-main-calm-subscribe.png" />
+  <img alt="Add code to subscribe to the calm score" src="/img/tutorial/vscode-main-calm-subscribe.png" />
 </p>
 
 ### Kinesis Training
@@ -322,7 +322,7 @@ neurosity.kinesis("leftHandPinch").subscribe((intent) => {
 Your `index.js` file should look like:
 
 <p align="center">
-  <img alt="Add kinesis code to index.js" src="assets/images/tutorial/vscode-hello-kinesis.png" />
+  <img alt="Add kinesis code to index.js" src="/img/tutorial/vscode-hello-kinesis.png" />
 </p>
 
 ## Conclusion

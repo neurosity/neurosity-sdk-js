@@ -3,47 +3,24 @@ import ComponentCreator from '@docusaurus/ComponentCreator';
 
 export default [
   {
-    path: '/__docusaurus/debug',
-    component: ComponentCreator('/__docusaurus/debug', 'ba5'),
-    exact: true
-  },
-  {
-    path: '/__docusaurus/debug/config',
-    component: ComponentCreator('/__docusaurus/debug/config', 'a19'),
-    exact: true
-  },
-  {
-    path: '/__docusaurus/debug/content',
-    component: ComponentCreator('/__docusaurus/debug/content', 'dd3'),
-    exact: true
-  },
-  {
-    path: '/__docusaurus/debug/globalData',
-    component: ComponentCreator('/__docusaurus/debug/globalData', '789'),
-    exact: true
-  },
-  {
-    path: '/__docusaurus/debug/metadata',
-    component: ComponentCreator('/__docusaurus/debug/metadata', '042'),
-    exact: true
-  },
-  {
-    path: '/__docusaurus/debug/registry',
-    component: ComponentCreator('/__docusaurus/debug/registry', '0b8'),
-    exact: true
-  },
-  {
-    path: '/__docusaurus/debug/routes',
-    component: ComponentCreator('/__docusaurus/debug/routes', '472'),
-    exact: true
-  },
-  {
     path: '/docs',
-    component: ComponentCreator('/docs', '69f'),
+    component: ComponentCreator('/docs', 'd82'),
     routes: [
       {
         path: '/docs/api/authentication',
         component: ComponentCreator('/docs/api/authentication', '5dd'),
+        exact: true,
+        sidebar: "docs"
+      },
+      {
+        path: '/docs/api/bluetooth-react-native',
+        component: ComponentCreator('/docs/api/bluetooth-react-native', 'e0e'),
+        exact: true,
+        sidebar: "docs"
+      },
+      {
+        path: '/docs/api/bluetooth-web',
+        component: ComponentCreator('/docs/api/bluetooth-web', '078'),
         exact: true,
         sidebar: "docs"
       },
@@ -122,6 +99,18 @@ export default [
       {
         path: '/docs/api/status',
         component: ComponentCreator('/docs/api/status', 'a21'),
+        exact: true,
+        sidebar: "docs"
+      },
+      {
+        path: '/docs/api/streaming',
+        component: ComponentCreator('/docs/api/streaming', '5c3'),
+        exact: true,
+        sidebar: "docs"
+      },
+      {
+        path: '/docs/api/v6',
+        component: ComponentCreator('/docs/api/v6', '57d'),
         exact: true,
         sidebar: "docs"
       },

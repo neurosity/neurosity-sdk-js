@@ -47,6 +47,60 @@
               }
             },
             {
+              "unversionedId": "api/bluetooth-react-native",
+              "id": "api/bluetooth-react-native",
+              "title": "Bluetooth for React Native",
+              "description": "Adding the Bluetooth transport for React Native requires the react-native-ble-manager library. Install the library and set up the permission as per their documentation before moving to the next step.",
+              "source": "@site/../docs/api/bluetooth-react-native.md",
+              "sourceDirName": "api",
+              "slug": "/api/bluetooth-react-native",
+              "permalink": "/docs/api/bluetooth-react-native",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "bluetooth-react-native",
+                "title": "Bluetooth for React Native"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Bluetooth for Web",
+                "permalink": "/docs/api/bluetooth-web"
+              }
+            },
+            {
+              "unversionedId": "api/bluetooth-web",
+              "id": "api/bluetooth-web",
+              "title": "Bluetooth for Web",
+              "description": "Not all browsers support Web Bluetooth. You can refer to browser-specific support here.",
+              "source": "@site/../docs/api/bluetooth-web.md",
+              "sourceDirName": "api",
+              "slug": "/api/bluetooth-web",
+              "permalink": "/docs/api/bluetooth-web",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "bluetooth-web",
+                "title": "Bluetooth for Web"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Wi-Fi & Bluetooth",
+                "permalink": "/docs/api/streaming"
+              },
+              "next": {
+                "title": "Bluetooth for React Native",
+                "permalink": "/docs/api/bluetooth-react-native"
+              }
+            },
+            {
               "unversionedId": "api/brainwaves",
               "id": "api/brainwaves",
               "title": "Brainwaves",
@@ -301,6 +355,10 @@
               "previous": {
                 "title": "Signal Quality",
                 "permalink": "/docs/api/signal-quality"
+              },
+              "next": {
+                "title": "Migrating from v5 to v6",
+                "permalink": "/docs/api/v6"
               }
             },
             {
@@ -417,6 +475,64 @@
               "next": {
                 "title": "Focus",
                 "permalink": "/docs/api/focus"
+              }
+            },
+            {
+              "unversionedId": "api/streaming",
+              "id": "api/streaming",
+              "title": "Wi-Fi & Bluetooth",
+              "description": "By default, the Neurosity SDK uses Wi-Fi and the cloud. This means that all the metrics streaming by the Crown will go through the secured Neurosity servers.",
+              "source": "@site/../docs/api/streaming.md",
+              "sourceDirName": "api",
+              "slug": "/api/streaming",
+              "permalink": "/docs/api/streaming",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "streaming",
+                "title": "Wi-Fi & Bluetooth"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "Migrating from v5 to v6",
+                "permalink": "/docs/api/v6"
+              },
+              "next": {
+                "title": "Bluetooth for Web",
+                "permalink": "/docs/api/bluetooth-web"
+              }
+            },
+            {
+              "unversionedId": "api/v6",
+              "id": "api/v6",
+              "title": "Migrating from v5 to v6",
+              "description": "The new version 6 of the SDK is mostly backwards compatible with v5.",
+              "source": "@site/../docs/api/v6.md",
+              "sourceDirName": "api",
+              "slug": "/api/v6",
+              "permalink": "/docs/api/v6",
+              "draft": false,
+              "tags": [],
+              "version": "current",
+              "lastUpdatedBy": "Author",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "Oct 14, 2018",
+              "frontMatter": {
+                "id": "v6",
+                "title": "Migrating from v5 to v6"
+              },
+              "sidebar": "docs",
+              "previous": {
+                "title": "OAuth",
+                "permalink": "/docs/api/oauth"
+              },
+              "next": {
+                "title": "Wi-Fi & Bluetooth",
+                "permalink": "/docs/api/streaming"
               }
             },
             {
@@ -1148,6 +1264,22 @@
                   {
                     "type": "doc",
                     "id": "api/oauth"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/v6"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/streaming"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/bluetooth-web"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/bluetooth-react-native"
                   }
                 ],
                 "collapsed": true,

@@ -1,0 +1,29 @@
+{
+  "unversionedId": "api/v6",
+  "id": "api/v6",
+  "title": "Migrating from v5 to v6",
+  "description": "The new version 6 of the SDK is mostly backwards compatible with v5.",
+  "source": "@site/../docs/api/v6.md",
+  "sourceDirName": "api",
+  "slug": "/api/v6",
+  "permalink": "/docs/api/v6",
+  "draft": false,
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Author",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "Oct 14, 2018",
+  "frontMatter": {
+    "id": "v6",
+    "title": "Migrating from v5 to v6"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "OAuth",
+    "permalink": "/docs/api/oauth"
+  },
+  "next": {
+    "title": "Wi-Fi & Bluetooth",
+    "permalink": "/docs/api/streaming"
+  }
+}
