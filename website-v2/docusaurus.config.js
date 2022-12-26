@@ -49,6 +49,14 @@ module.exports = {
   ],
   plugins: [],
   themeConfig: {
+    colorMode: {
+      defaultMode: "dark",
+      disableSwitch: true,
+      respectPrefersColorScheme: false
+    },
+    prism: {
+      theme: require("prism-react-renderer/themes/nightOwl")
+    },
     navbar: {
       title: "Neurosity SDK",
       logo: {
@@ -71,7 +79,7 @@ module.exports = {
           position: "left"
         },
         {
-          href: "https://support.neurosity.co",
+          href: "https://neurosity.co/discord",
           label: "Need Help?",
           position: "left"
         }
@@ -81,19 +89,49 @@ module.exports = {
     footer: {
       links: [
         {
+          title: "Docs",
+          items: [
+            {
+              label: "Getting Started",
+              to: "/docs/getting-started"
+            },
+            {
+              label: "Guides",
+              to: "/docs/guides/ethics"
+            },
+            {
+              label: "Tutorials",
+              to: "/docs/tutorials/your-first-web-app"
+            },
+            {
+              label: "SDK Reference",
+              to: "/docs/reference/classes/neurosity"
+            }
+          ]
+        },
+        {
           title: "Community",
           items: [
             {
               label: "Twitter",
-              to: "https://twitter.com/neurosity"
+              href: "https://twitter.com/neurosity"
+            },
+            {
+              label: "Discord",
+              href: "https://neurosity.co/discord"
+            },
+            {
+              label: "Knowledge Base",
+              href: "https://support.neurosity.co/hc/en-us"
+            },
+            {
+              label: "Feedback Base",
+              href: "https://feedback.neurosity.co/"
             }
           ]
         }
       ],
-      copyright: "Copyright © 2022 Neurosity, Inc",
-      logo: {
-        src: "img/favicon.png"
-      }
+      copyright: `Copyright © ${new Date().getFullYear()} Neurosity, Inc`
     }
   }
 };

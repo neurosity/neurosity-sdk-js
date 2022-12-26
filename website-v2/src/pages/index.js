@@ -1,6 +1,6 @@
-import Layout from "@theme/Layout";
 import React from "react";
+import { Redirect } from "react-router-dom";
 
 export default () => {
-  return <Layout />;
+  return <Redirect to="/docs/overview" />;
 };
