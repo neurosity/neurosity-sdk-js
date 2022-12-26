@@ -9,16 +9,18 @@ As of Neurosity OS v16, there is the option to use Bluetooth as a streaming tran
 
 ## Comparison table
 
-|                                                       | Wi-Fi | Bluetooth |
-| ----------------------------------------------------- | ----- | --------- |
-| Metrics Streaming                                     | ✅    | ✅        |
-| Automatic Device Connection                           | ✅    | ✅        |
-| Crown can be used without internet                    | 🚫    | ✅        |
-| SDK can be run at a different location from the Crown | ✅    | 🚫        |
-| Device Settings (read/write)                          | ✅    | 🚫        |
-| All browsers support                                  | ✅    | 🚫        |
-| NodeJS support                                        | ✅    | 🚫        |
-| Electron support                                      | ✅    | 🚫        |
+|                                        | Wi-Fi | Bluetooth |
+| -------------------------------------- | ----- | --------- |
+| Metrics streaming                      | ✅    | ✅        |
+| Secure & private (encryption & auth)   | ✅    | ✅        |
+| Automatic device connection            | ✅    | ✅        |
+| Crown can be used without internet     | 🚫    | ✅        |
+| Crown can be located far away from app | ✅    | 🚫        |
+| Kinesis                                | ✅    | 🚫        |
+| Device settings (read/write)           | ✅    | 🚫        |
+| Support all browsers                   | ✅    | 🚫        |
+| NodeJS support                         | ✅    | 🚫        |
+| Electron support                       | ✅    | 🚫        |
 
 When building your app, there are 3 streaming strategies you can choose from:
 
