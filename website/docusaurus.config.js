@@ -38,9 +38,6 @@ module.exports = {
           path: "../docs",
           sidebarPath: "../website/sidebars.json"
         },
-        blog: {
-          path: "blog"
-        },
         theme: {
           customCss: "./src/css/customTheme.css"
         }

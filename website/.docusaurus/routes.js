@@ -4,77 +4,42 @@ import ComponentCreator from '@docusaurus/ComponentCreator';
 export default [
   {
     path: '/__docusaurus/debug',
-    component: ComponentCreator('/__docusaurus/debug', 'b83'),
+    component: ComponentCreator('/__docusaurus/debug', 'ba5'),
     exact: true
   },
   {
     path: '/__docusaurus/debug/config',
-    component: ComponentCreator('/__docusaurus/debug/config', '3d4'),
+    component: ComponentCreator('/__docusaurus/debug/config', 'a19'),
     exact: true
   },
   {
     path: '/__docusaurus/debug/content',
-    component: ComponentCreator('/__docusaurus/debug/content', '68a'),
+    component: ComponentCreator('/__docusaurus/debug/content', 'dd3'),
     exact: true
   },
   {
     path: '/__docusaurus/debug/globalData',
-    component: ComponentCreator('/__docusaurus/debug/globalData', '438'),
+    component: ComponentCreator('/__docusaurus/debug/globalData', '789'),
     exact: true
   },
   {
     path: '/__docusaurus/debug/metadata',
-    component: ComponentCreator('/__docusaurus/debug/metadata', '4f4'),
+    component: ComponentCreator('/__docusaurus/debug/metadata', '042'),
     exact: true
   },
   {
     path: '/__docusaurus/debug/registry',
-    component: ComponentCreator('/__docusaurus/debug/registry', 'f05'),
+    component: ComponentCreator('/__docusaurus/debug/registry', '0b8'),
     exact: true
   },
   {
     path: '/__docusaurus/debug/routes',
-    component: ComponentCreator('/__docusaurus/debug/routes', '40b'),
-    exact: true
-  },
-  {
-    path: '/blog',
-    component: ComponentCreator('/blog', 'b18'),
-    exact: true
-  },
-  {
-    path: '/blog/2016/03/11/blog-post',
-    component: ComponentCreator('/blog/2016/03/11/blog-post', 'b81'),
-    exact: true
-  },
-  {
-    path: '/blog/2017/04/10/blog-post-two',
-    component: ComponentCreator('/blog/2017/04/10/blog-post-two', 'b70'),
-    exact: true
-  },
-  {
-    path: '/blog/2017/09/25/testing-rss',
-    component: ComponentCreator('/blog/2017/09/25/testing-rss', 'e6d'),
-    exact: true
-  },
-  {
-    path: '/blog/2017/09/26/adding-rss',
-    component: ComponentCreator('/blog/2017/09/26/adding-rss', '144'),
-    exact: true
-  },
-  {
-    path: '/blog/2017/10/24/new-version-1.0.0',
-    component: ComponentCreator('/blog/2017/10/24/new-version-1.0.0', '4a4'),
-    exact: true
-  },
-  {
-    path: '/blog/archive',
-    component: ComponentCreator('/blog/archive', 'b31'),
+    component: ComponentCreator('/__docusaurus/debug/routes', '472'),
     exact: true
   },
   {
     path: '/docs',
-    component: ComponentCreator('/docs', '0cb'),
+    component: ComponentCreator('/docs', '69f'),
     routes: [
       {
         path: '/docs/api/authentication',
@@ -290,7 +255,7 @@ export default [
   },
   {
     path: '/',
-    component: ComponentCreator('/', '553'),
+    component: ComponentCreator('/', '04c'),
     exact: true
   },
   {
