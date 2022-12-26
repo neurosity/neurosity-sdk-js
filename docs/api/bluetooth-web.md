@@ -3,6 +3,8 @@ id: bluetooth-web
 title: Bluetooth for Web
 ---
 
+> :warning: **Requires**: Neurosity OS v16+
+
 Not all browsers support Web Bluetooth. You can refer to browser-specific support [here](https://caniuse.com/web-bluetooth).
 
 Additionally, there are some Browser Bluetooth flags that need to be enabled:

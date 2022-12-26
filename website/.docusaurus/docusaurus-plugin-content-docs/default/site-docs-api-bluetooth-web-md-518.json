@@ -2,7 +2,7 @@
   "unversionedId": "api/bluetooth-web",
   "id": "api/bluetooth-web",
   "title": "Bluetooth for Web",
-  "description": "Not all browsers support Web Bluetooth. You can refer to browser-specific support here.",
+  "description": "Requires: Neurosity OS v16+",
   "source": "@site/../docs/api/bluetooth-web.md",
   "sourceDirName": "api",
   "slug": "/api/bluetooth-web",

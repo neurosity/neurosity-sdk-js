@@ -2,7 +2,7 @@
   "unversionedId": "api/bluetooth-react-native",
   "id": "api/bluetooth-react-native",
   "title": "Bluetooth for React Native",
-  "description": "Adding the Bluetooth transport for React Native requires the react-native-ble-manager library. Install the library and set up the permission as per their documentation before moving to the next step.",
+  "description": "Requires: Neurosity OS v16+",
   "source": "@site/../docs/api/bluetooth-react-native.md",
   "sourceDirName": "api",
   "slug": "/api/bluetooth-react-native",
