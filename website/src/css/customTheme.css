@@ -14,9 +14,6 @@
 html[data-theme="dark"] {
   --ifm-background-color: #000000;
   --ifm-background-surface-color: #090909;
-}
-
-[data-theme="dark"] {
   --ifm-color-primary: #2ac7dc;
   --ifm-color-primary-dark: #21b7cb;
   --ifm-color-primary-darker: #1facbf;
@@ -24,8 +21,9 @@ html[data-theme="dark"] {
   --ifm-color-primary-light: #41cde0;
   --ifm-color-primary-lighter: #4cd0e2;
   --ifm-color-primary-lightest: #6ed9e7;
-  --ifm-background-color: #000000;
   --ifm-footer-background-color: #000000;
+  --docusaurus-highlighted-code-line-bg: rgba(255, 255, 255, 0.05);
+  --ifm-pre-background: #0a0d0f !important;
 }
 
 .footer {
@@ -43,4 +41,12 @@ html[data-theme="dark"] {
 
 .theme-doc-sidebar-menu {
   padding-bottom: 100px;
+}
+
+.prism-code {
+  background-color: rgb(0, 0, 0) !important;
+}
+
+.theme-doc-markdown img {
+  border-radius: 6px;
 }
