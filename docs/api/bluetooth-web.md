@@ -25,7 +25,7 @@ export const neurosity = new Neurosity({
 
 After
 
-```jsx
+```ts {1,5-6}
 import { Neurosity, WebBluetoothTransport } from "@neurosity/sdk";
 
 export const neurosity = new Neurosity({

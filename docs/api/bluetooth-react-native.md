@@ -17,7 +17,7 @@ export const neurosity = new Notion({
 
 After
 
-```jsx
+```ts {1-3,7-12}
 import { Neurosity, ReactNativeTransport } from "@neurosity/sdk";
 import { NativeModules, NativeEventEmitter, Platform } from "react-native";
 import BleManager from "react-native-ble-manager";
