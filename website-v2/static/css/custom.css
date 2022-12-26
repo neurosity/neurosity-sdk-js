@@ -1,7 +1,22 @@
 /* your custom css */
+@font-face {
+  font-family: "Eina02-Regular";
+  src: url("../static/fonts/Eina02-Regular.ttf");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Eina02-SemiBold";
+  src: url("../static/fonts/Eina02-SemiBold.ttf");
+  font-style: medium;
+  font-weight: 500;
+  font-display: swap;
+}
 
 body {
-  font-family: "Roboto", sans-serif;
+  font-family: "Eina02-Regular", "Roboto", "Helvetica Neue", "Helvetica",
+    "Arial", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 18px;

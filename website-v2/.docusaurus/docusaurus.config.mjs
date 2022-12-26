@@ -54,91 +54,70 @@ export default {
   ],
   "plugins": [],
   "themeConfig": {
-    "navbar": {
-      "title": "Neurosity SDK",
-      "logo": {
-        "src": "img/logo.png"
-      },
-      "items": [
-        {
-          "to": "docs/getting-started",
-          "label": "Docs",
-          "position": "left"
-        },
-        {
-          "to": "docs/reference/classes/neurosity",
-          "label": "Reference",
-          "position": "left"
-        },
-        {
-          "href": "https://github.com/neurosity/neurosity-sdk-js",
-          "label": "GitHub",
-          "position": "left"
-        },
-        {
-          "href": "https://support.neurosity.co",
-          "label": "Need Help?",
-          "position": "left"
-        }
-      ],
-      "hideOnScroll": false
-    },
-    "image": "img/undraw_online.svg",
-    "footer": {
-      "links": [
-        {
-          "title": "Community",
-          "items": [
-            {
-              "label": "Twitter",
-              "to": "https://twitter.com/neurosity"
-            }
-          ]
-        }
-      ],
-      "copyright": "Copyright © 2022 Neurosity, Inc",
-      "logo": {
-        "src": "img/favicon.png"
-      },
-      "style": "light"
-    },
     "colorMode": {
-      "defaultMode": "light",
-      "disableSwitch": false,
+      "defaultMode": "dark",
+      "disableSwitch": true,
       "respectPrefersColorScheme": false
     },
-    "docs": {
-      "versionPersistence": "localStorage",
-      "sidebar": {
-        "hideable": false,
-        "autoCollapseCategories": false
-      }
-    },
-    "metadata": [],
     "prism": {
-      "additionalLanguages": [],
       "theme": {
         "plain": {
-          "color": "#bfc7d5",
-          "backgroundColor": "#292d3e"
+          "color": "#d6deeb",
+          "backgroundColor": "#011627"
         },
         "styles": [
+          {
+            "types": [
+              "changed"
+            ],
+            "style": {
+              "color": "rgb(162, 191, 252)",
+              "fontStyle": "italic"
+            }
+          },
+          {
+            "types": [
+              "deleted"
+            ],
+            "style": {
+              "color": "rgba(239, 83, 80, 0.56)",
+              "fontStyle": "italic"
+            }
+          },
+          {
+            "types": [
+              "inserted",
+              "attr-name"
+            ],
+            "style": {
+              "color": "rgb(173, 219, 103)",
+              "fontStyle": "italic"
+            }
+          },
           {
             "types": [
               "comment"
             ],
             "style": {
-              "color": "rgb(105, 112, 152)",
+              "color": "rgb(99, 119, 119)",
               "fontStyle": "italic"
             }
           },
           {
             "types": [
               "string",
-              "inserted"
+              "url"
             ],
             "style": {
-              "color": "rgb(195, 232, 141)"
+              "color": "rgb(173, 219, 103)"
+            }
+          },
+          {
+            "types": [
+              "variable"
+            ],
+            "style": {
+              "color": "rgb(214, 222, 235)"
             }
           },
           {
@@ -162,8 +141,7 @@ export default {
           },
           {
             "types": [
-              "punctuation",
-              "selector"
+              "punctuation"
             ],
             "style": {
               "color": "rgb(199, 146, 234)"
@@ -171,36 +149,30 @@ export default {
           },
           {
             "types": [
-              "variable"
+              "selector",
+              "doctype"
             ],
             "style": {
-              "color": "rgb(191, 199, 213)"
+              "color": "rgb(199, 146, 234)",
+              "fontStyle": "italic"
             }
           },
           {
             "types": [
-              "class-name",
-              "attr-name"
+              "class-name"
             ],
             "style": {
-              "color": "rgb(255, 203, 107)"
+              "color": "rgb(255, 203, 139)"
             }
           },
           {
             "types": [
               "tag",
-              "deleted"
+              "operator",
+              "keyword"
             ],
             "style": {
-              "color": "rgb(255, 85, 114)"
-            }
-          },
-          {
-            "types": [
-              "operator"
-            ],
-            "style": {
-              "color": "rgb(137, 221, 255)"
+              "color": "rgb(127, 219, 202)"
             }
           },
           {
@@ -213,19 +185,10 @@ export default {
           },
           {
             "types": [
-              "keyword"
+              "property"
             ],
             "style": {
-              "fontStyle": "italic"
-            }
-          },
-          {
-            "types": [
-              "doctype"
-            ],
-            "style": {
-              "color": "rgb(199, 146, 234)",
-              "fontStyle": "italic"
+              "color": "rgb(128, 203, 196)"
             }
           },
           {
@@ -235,17 +198,10 @@ export default {
             "style": {
               "color": "rgb(178, 204, 214)"
             }
-          },
-          {
-            "types": [
-              "url"
-            ],
-            "style": {
-              "color": "rgb(221, 221, 221)"
-            }
           }
         ]
       },
+      "additionalLanguages": [],
       "magicComments": [
         {
           "className": "theme-code-block-highlighted-line",
@@ -257,6 +213,92 @@ export default {
         }
       ]
     },
+    "navbar": {
+      "title": "Neurosity SDK",
+      "logo": {
+        "src": "img/logo.png"
+      },
+      "items": [
+        {
+          "to": "docs/getting-started",
+          "label": "Docs",
+          "position": "left"
+        },
+        {
+          "to": "docs/reference/classes/neurosity",
+          "label": "Reference",
+          "position": "left"
+        },
+        {
+          "href": "https://github.com/neurosity/neurosity-sdk-js",
+          "label": "GitHub",
+          "position": "left"
+        },
+        {
+          "href": "https://neurosity.co/discord",
+          "label": "Need Help?",
+          "position": "left"
+        }
+      ],
+      "hideOnScroll": false
+    },
+    "image": "img/undraw_online.svg",
+    "footer": {
+      "links": [
+        {
+          "title": "Docs",
+          "items": [
+            {
+              "label": "Getting Started",
+              "to": "/docs/getting-started"
+            },
+            {
+              "label": "Guides",
+              "to": "/docs/guides/ethics"
+            },
+            {
+              "label": "Tutorials",
+              "to": "/docs/tutorials/your-first-web-app"
+            },
+            {
+              "label": "SDK Reference",
+              "to": "/docs/reference/classes/neurosity"
+            }
+          ]
+        },
+        {
+          "title": "Community",
+          "items": [
+            {
+              "label": "Twitter",
+              "href": "https://twitter.com/neurosity"
+            },
+            {
+              "label": "Discord",
+              "href": "https://neurosity.co/discord"
+            },
+            {
+              "label": "Knowledge Base",
+              "href": "https://support.neurosity.co/hc/en-us"
+            },
+            {
+              "label": "Feedback Base",
+              "href": "https://feedback.neurosity.co/"
+            }
+          ]
+        }
+      ],
+      "copyright": "Copyright © 2022 Neurosity, Inc",
+      "style": "light"
+    },
+    "docs": {
+      "versionPersistence": "localStorage",
+      "sidebar": {
+        "hideable": false,
+        "autoCollapseCategories": false
+      }
+    },
+    "metadata": [],
     "tableOfContents": {
       "minHeadingLevel": 2,
       "maxHeadingLevel": 3
