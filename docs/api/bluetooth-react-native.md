@@ -3,6 +3,8 @@ id: bluetooth-react-native
 title: Bluetooth for React Native
 ---
 
+> :warning: **Requires**: Neurosity OS v16+
+
 Adding the Bluetooth transport for React Native requires the [`react-native-ble-manager`](https://github.com/innoveit/react-native-ble-manager/) library. Install the library and set up the permission as per their documentation before moving to the next step.
 
 Before
