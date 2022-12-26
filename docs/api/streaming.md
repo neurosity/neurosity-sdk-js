@@ -28,6 +28,44 @@ When building your app, there are 3 streaming strategies you can choose from:
 
 Neurosity's recommendation is to start your app with `wifi-only` streaming and add Bluetooth later as needed.
 
+Starting with v6, it is possible to subscribe to real-time streaming state changes. For example, if you chose `wifi-with-bluetooth-fallback`, you could do:
+
+```ts
+import { Neurosity, WebBluetoothTransport } from "@neurosity/sdk";
+
+const neurosity = new Neurosity({
+  bluetoothTransport: new WebBluetoothTransport(),
+  streamingMode: "wifi-with-bluetooth-fallback"
+});
+
+neurosity.streamingState().subscribe((streamingState) => {
+  console.log(streamingState);
+});
+
+// { streamingMode: "wifi-with-bluetooth-fallback", activeMode: "wifi", connected: true }
+// If wifi went offline, the subscribe callback would fire again with:
+// { streamingMode: "wifi-with-bluetooth-fallback", activeMode: "bluetooth", connected: true }
+```
+
+The same way, if you chose `bluetooth-with-wifi-fallback`:
+
+```ts
+import { Neurosity, WebBluetoothTransport } from "@neurosity/sdk";
+
+const neurosity = new Neurosity({
+  bluetoothTransport: new WebBluetoothTransport(),
+  streamingMode: "bluetooth-with-wifi-fallback"
+});
+
+neurosity.streamingState().subscribe((streamingState) => {
+  console.log(streamingState);
+});
+
+// { streamingMode: "bluetooth-with-wifi-fallback", activeMode: "bluetooth", connected: true }
+// If bluetooth went out of proximity range, the subscribe callback would fire again with:
+// { streamingMode: "bluetooth-with-wifi-fallback", activeMode: "wifi", connected: true }
+```
+
 Start building:
 
 - [Bluetooth for Web tutorial](/docs/api/bluetooth-web)
