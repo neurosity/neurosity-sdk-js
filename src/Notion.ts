@@ -846,12 +846,11 @@ export class Neurosity {
    * });
    * ```
    *
-   * @param labels Name of metric properties to filter by
+   * @param label Name of metric properties to filter by
    * @returns Observable of brainwaves metric events
    */
   public brainwaves(
-    label: BrainwavesLabel,
-    ...otherLabels: BrainwavesLabel[]
+    label: BrainwavesLabel
   ): Observable<Epoch | PowerByBand | PSD> {
     const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
       this.cloudClient.userClaims,
@@ -866,7 +865,7 @@ export class Neurosity {
       wifi: () =>
         getCloudMetric(this._getCloudMetricDependencies(), {
           metric: "brainwaves",
-          labels: label ? [label, ...otherLabels] : [],
+          labels: label ? [label] : [],
           atomic: false
         }),
       // @TODO: doesn't support multiple labels, we should make the higher
@@ -1025,10 +1024,10 @@ export class Neurosity {
   /**
    * <StreamingModes wifi={true} />
    *
-   * @param labels Name of metric properties to filter by
+   * @param label Name of metric properties to filter by
    * @returns Observable of kinesis metric events
    */
-  public kinesis(label: string, ...otherLabels: string[]): Observable<Kinesis> {
+  public kinesis(label: string): Observable<Kinesis> {
     const metric = "kinesis";
 
     const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
@@ -1042,7 +1041,7 @@ export class Neurosity {
 
     return getCloudMetric(this._getCloudMetricDependencies(), {
       metric,
-      labels: label ? [label, ...otherLabels] : [],
+      labels: label ? [label] : [],
       atomic: false
     });
   }
@@ -1050,10 +1049,10 @@ export class Neurosity {
   /**
    * <StreamingModes wifi={true} />
    *
-   * @param labels Name of metric properties to filter by
+   * @param label Name of metric properties to filter by
    * @returns Observable of predictions metric events
    */
-  public predictions(label: string, ...otherLabels: string[]): Observable<any> {
+  public predictions(label: string): Observable<any> {
     const metric = "predictions";
 
     const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
@@ -1067,7 +1066,7 @@ export class Neurosity {
 
     return getCloudMetric(this._getCloudMetricDependencies(), {
       metric,
-      labels: label ? [label, ...otherLabels] : [],
+      labels: label ? [label] : [],
       atomic: false
     });
   }
