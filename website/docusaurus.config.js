@@ -83,7 +83,7 @@ module.exports = {
         }
       ]
     },
-    image: "img/undraw_online.svg",
+    image: "img/social-preview.jpg",
     footer: {
       links: [
         {
