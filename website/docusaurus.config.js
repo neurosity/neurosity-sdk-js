@@ -1,7 +1,7 @@
 module.exports = {
   title: "Neurosity SDK",
   tagline: "Empowering the Mind",
-  url: "https://neurosity.co",
+  url: "https://docs.neurosity.co",
   baseUrl: "/",
   organizationName: "neurosity",
   projectName: "neurosity-sdk-js",
