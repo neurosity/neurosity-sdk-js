@@ -74,6 +74,13 @@ export class WebBluetoothTransport implements BluetoothTransport {
       switchMap(async (selectedDevice) => {
         const { deviceNickname } = selectedDevice;
 
+        if (this.isConnected()) {
+          this.addLog(
+            `Auto connect: ${deviceNickname} is already connected. Skipping auto connect.`
+          );
+          return;
+        }
+
         const [devicesError, devices] = await this._getPairedDevices()
           .then((devices) => [null, devices])
           .catch((error) => [error, null]);
