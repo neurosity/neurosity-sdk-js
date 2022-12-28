@@ -1,6 +1,6 @@
 import { defer, Observable, firstValueFrom, timer } from "rxjs";
 import { ReplaySubject, EMPTY } from "rxjs";
-import { switchMap, tap } from "rxjs/operators";
+import { switchMap, share, tap } from "rxjs/operators";
 import { distinctUntilChanged } from "rxjs/operators";
 
 import { WebBluetoothTransport } from "./web/WebBluetoothTransport";
@@ -33,6 +33,19 @@ export class BluetoothClient {
   deviceInfo: DeviceInfo;
   selectedDevice$ = new ReplaySubject<DeviceInfo>(1);
   isAuthenticated$ = new ReplaySubject<IsAuthenticated>(1);
+
+  _focus$: Observable<any>;
+  _calm$: Observable<any>;
+  _accelerometer$: Observable<any>;
+  _brainwavesRaw$: Observable<any>;
+  _brainwavesRawUnfiltered$: Observable<any>;
+  _brainwavesPSD$: Observable<any>;
+  _brainwavesPowerByBand$: Observable<any>;
+  _signalQuality$: Observable<any>;
+  _status$: Observable<any>;
+  _settings$: Observable<any>;
+  _wifiNearbyNetworks$: Observable<any>;
+  _wifiConnections$: Observable<any>;
 
   constructor(options: Options) {
     const { transport, selectedDevice$, createBluetoothToken } = options ?? {};
@@ -67,6 +80,24 @@ export class BluetoothClient {
 
     // Auto manage action notifications
     this.transport._autoToggleActionNotifications(this.selectedDevice$);
+
+    // Multicast metrics (share)
+    this._focus$ = this._subscribeWhileAuthenticated("focus");
+    this._calm$ = this._subscribeWhileAuthenticated("calm");
+    this._accelerometer$ = this._subscribeWhileAuthenticated("accelerometer");
+    this._brainwavesRaw$ = this._subscribeWhileAuthenticated("raw");
+    this._brainwavesRawUnfiltered$ =
+      this._subscribeWhileAuthenticated("rawUnfiltered");
+    this._brainwavesPSD$ = this._subscribeWhileAuthenticated("psd");
+    this._brainwavesPowerByBand$ =
+      this._subscribeWhileAuthenticated("powerByBand");
+    this._signalQuality$ = this._subscribeWhileAuthenticated("signalQuality");
+    this._status$ = this._subscribeWhileAuthenticated("status");
+    this._settings$ = this._subscribeWhileAuthenticated("settings");
+    this._wifiNearbyNetworks$ =
+      this._subscribeWhileAuthenticated("wifiNearbyNetworks");
+    this._wifiConnections$ =
+      this._subscribeWhileAuthenticated("wifiConnections");
   }
 
   _autoAuthenticate(createBluetoothToken: CreateBluetoothToken) {
@@ -217,40 +248,50 @@ export class BluetoothClient {
                   : EMPTY
               )
             )
-      )
+      ),
+      share()
     );
   }
 
   focus() {
-    return this._subscribeWhileAuthenticated("focus");
+    return this._focus$;
   }
 
   calm() {
-    return this._subscribeWhileAuthenticated("calm");
+    return this._calm$;
   }
 
   accelerometer() {
-    return this._subscribeWhileAuthenticated("accelerometer");
+    return this._accelerometer$;
   }
 
   brainwaves(label: string): Observable<Epoch | any> {
     switch (label) {
+      default:
       case "raw":
+        return defer(() => this.getInfo()).pipe(
+          switchMap((deviceInfo: DeviceInfo) =>
+            this._brainwavesRaw$.pipe(csvBufferToEpoch(deviceInfo))
+          )
+        );
+
       case "rawUnfiltered":
         return defer(() => this.getInfo()).pipe(
           switchMap((deviceInfo: DeviceInfo) =>
-            this._subscribeWhileAuthenticated(label).pipe(
-              csvBufferToEpoch(deviceInfo)
-            )
+            this._brainwavesRawUnfiltered$.pipe(csvBufferToEpoch(deviceInfo))
           )
         );
-      default:
-        return this._subscribeWhileAuthenticated(label);
+
+      case "psd":
+        return this._brainwavesPSD$;
+
+      case "powerByBand":
+        return this._brainwavesPowerByBand$;
     }
   }
 
   signalQuality() {
-    return this._subscribeWhileAuthenticated("signalQuality");
+    return this._signalQuality$;
   }
 
   async addMarker(label: string): Promise<void> {
@@ -274,9 +315,8 @@ export class BluetoothClient {
     );
   }
 
-  // Tested
   status() {
-    return this._subscribeWhileAuthenticated("status");
+    return this._status$;
   }
 
   async dispatchAction(action: Action): Promise<any> {
@@ -289,7 +329,7 @@ export class BluetoothClient {
   }
 
   settings() {
-    return this._subscribeWhileAuthenticated("settings");
+    return this._settings$;
   }
 
   haptics(effects) {
@@ -307,11 +347,9 @@ export class BluetoothClient {
 
   get wifi() {
     return {
-      nearbyNetworks: (): Observable<any> =>
-        this._subscribeWhileAuthenticated("wifiNearbyNetworks"),
+      nearbyNetworks: (): Observable<any> => this._wifiNearbyNetworks$,
 
-      connections: (): Observable<any> =>
-        this._subscribeWhileAuthenticated("wifiConnections"),
+      connections: (): Observable<any> => this._wifiConnections$,
 
       connect: (ssid: string, password?: string) => {
         if (!ssid) {
