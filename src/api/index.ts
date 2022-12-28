@@ -1,10 +1,10 @@
 import { Observable, ReplaySubject, EMPTY } from "rxjs";
 import { fromEventPattern, firstValueFrom } from "rxjs";
-import { filter, switchMap } from "rxjs/operators";
+import { filter, shareReplay, share, switchMap } from "rxjs/operators";
 import { FirebaseApp, FirebaseUser, FirebaseDevice } from "./firebase";
 import { Timesync } from "../timesync";
 import { SubscriptionManager } from "../subscriptions/SubscriptionManager";
-import { offlineIfLostHeartbeat } from "../utils/heartbeat";
+import { heartbeatAwareStatus } from "../utils/heartbeat";
 import { filterInternalKeys } from "../utils/filterInternalKeys";
 import { Client } from "../types/client";
 import { Action, Actions } from "../types/actions";
@@ -36,6 +36,7 @@ export class CloudClient implements Client {
   protected firebaseDevice: FirebaseDevice;
   protected timesync: Timesync;
   protected subscriptionManager: SubscriptionManager;
+  protected status$: Observable<DeviceStatus>;
 
   /**
    * @internal
@@ -49,6 +50,10 @@ export class CloudClient implements Client {
     this.firebaseUser = new FirebaseUser(this.firebaseApp);
 
     this._selectedDevice.next(undefined);
+
+    this.status$ = heartbeatAwareStatus(
+      this.observeNamespace("status").pipe(share())
+    ).pipe(filterInternalKeys(), shareReplay(1));
 
     this.firebaseUser.onAuthStateChanged().subscribe((user) => {
       this.user = user;
@@ -280,21 +285,19 @@ export class CloudClient implements Client {
   }
 
   public status(): Observable<DeviceStatus> {
-    return this.observeNamespace("status").pipe(
-      offlineIfLostHeartbeat(),
-      filterInternalKeys()
-    );
+    return this.status$;
   }
 
   public observeNamespace(namespace: string): Observable<any> {
-    const namespaceValues$ = fromEventPattern(
-      (handler) => this.firebaseDevice.onNamespace(namespace, handler),
-      (handler) => this.firebaseDevice.offNamespace(namespace, handler)
-    );
+    const getNamespaceValues = () =>
+      fromEventPattern(
+        (handler) => this.firebaseDevice.onNamespace(namespace, handler),
+        (handler) => this.firebaseDevice.offNamespace(namespace, handler)
+      );
 
     return this.onDeviceChange().pipe(
       switchMap((selectedDevice) => {
-        return selectedDevice ? namespaceValues$ : EMPTY;
+        return selectedDevice ? getNamespaceValues() : EMPTY;
       })
     );
   }

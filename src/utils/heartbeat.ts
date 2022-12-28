@@ -1,53 +1,64 @@
-import { MonoTypeOperatorFunction, pipe, timer } from "rxjs";
-import { distinctUntilChanged, map, switchMap } from "rxjs/operators";
+import { combineLatest, Observable, timer } from "rxjs";
+import { map, startWith, switchMap } from "rxjs/operators";
+import { withLatestFrom, distinctUntilChanged } from "rxjs/operators";
+import isEqual from "fast-deep-equal";
 
-import { DeviceStatus } from "../types/status";
+import { DeviceStatus, STATUS } from "../types/status";
 
-// `lastHeartbeat` is updated every 30 seconds via os
-const lastHeartbeatUpdateInterval = 30000;
-const maxHeartbeatsSkipped = 3;
-const gracePeriod = 5000;
+const HEARTBEAT_UPDATE_INTERVAL = 30_000; // 30 seconds - set by the OS
+const LOST_HEARTBEAT_AFTER = HEARTBEAT_UPDATE_INTERVAL * 2.5; // 75 seconds
 
-// 65 seconds
-const lostHeartbeatThreshold =
-  lastHeartbeatUpdateInterval * maxHeartbeatsSkipped + gracePeriod;
+export function heartbeatAwareStatus(
+  status$: Observable<DeviceStatus>
+): Observable<DeviceStatus> {
+  const lastLocalHeartbeat$: Observable<number> = status$.pipe(
+    map(({ lastHeartbeat }) => lastHeartbeat),
+    distinctUntilChanged(),
+    map(() => Date.now())
+  );
 
-export function offlineIfLostHeartbeat(): MonoTypeOperatorFunction<DeviceStatus> {
-  return pipe(
-    switchMap((status: DeviceStatus) =>
-      timer(0, lostHeartbeatThreshold).pipe(
-        map(() => {
-          if (deviceHasLostHeartbeat(status)) {
-            return {
-              ...status,
-              state: "offline"
-            };
+  const lostHeartbeat$: Observable<void> = lastLocalHeartbeat$.pipe(
+    switchMap(() => timer(LOST_HEARTBEAT_AFTER)),
+    map(() => null),
+    startWith(null)
+  );
+
+  return combineLatest({
+    status: status$,
+    lostHeartbeat: lostHeartbeat$ // @important - do not remove, adeed for state synchronization, value not used
+  }).pipe(
+    withLatestFrom(lastLocalHeartbeat$),
+    map(([{ status }, lastLocalHeartbeat]) => {
+      if (!lastLocalHeartbeat) {
+        return status;
+      }
+
+      const lostHeartbeat = deviceHasLostHeartbeat(status, lastLocalHeartbeat);
+
+      return lostHeartbeat
+        ? {
+            ...status,
+            state: STATUS.OFFLINE
           }
-
-          return status;
-        })
-      )
-    ),
-    distinctUntilChanged(didObjectChange)
+        : status;
+    }),
+    distinctUntilChanged((a, b) => isEqual(a, b))
   );
 }
 
-export function deviceHasLostHeartbeat(status: DeviceStatus): boolean {
+export function deviceHasLostHeartbeat(
+  status: DeviceStatus,
+  lastLocalHeartbeat: number
+): boolean {
   if (!("lastHeartbeat" in status)) {
     return false;
   }
 
-  const { lastHeartbeat } = status;
-
-  const timeSinceLastHeartbeat = Date.now() - lastHeartbeat;
-  const lostHeartbeat = timeSinceLastHeartbeat > lostHeartbeatThreshold;
+  // We are converting the heartbeat to the local time because the previous
+  // implementation that used the server timestamp had bug where SDK clients
+  // running on hardware with drifted/out-of-sync clocks (cough cough Android)
+  // would override the state to offline when the heartbeat was active.
+  const lostHeartbeat = Date.now() - lastLocalHeartbeat > LOST_HEARTBEAT_AFTER;
 
   return lostHeartbeat;
-}
-
-function didObjectChange(a: any, b: any): boolean {
-  return (
-    JSON.stringify(a).split("").sort().join("") ===
-    JSON.stringify(b).split("").sort().join("")
-  );
 }
