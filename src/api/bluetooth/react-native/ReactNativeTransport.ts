@@ -3,7 +3,14 @@ import { BLUETOOTH_CHUNK_DELIMITER } from "@neurosity/ipk";
 import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
 import { BehaviorSubject, defer, merge, of, ReplaySubject, timer } from "rxjs";
 import { fromEventPattern, Observable, NEVER, EMPTY } from "rxjs";
-import { switchMap, map, filter, takeUntil, tap } from "rxjs/operators";
+import {
+  switchMap,
+  map,
+  filter,
+  takeUntil,
+  tap,
+  combineLatestWith
+} from "rxjs/operators";
 import { shareReplay, distinctUntilChanged, finalize } from "rxjs/operators";
 import { take, share, scan, distinct } from "rxjs/operators";
 
@@ -38,6 +45,7 @@ type Options = {
   BleManager: BleManager;
   bleManagerEmitter: NativeEventEmitter;
   platform: PlatformOSType;
+  autoConnectionEnabled: boolean;
 };
 
 type BleManagerEvents = {
@@ -61,6 +69,7 @@ export class ReactNativeTransport implements BluetoothTransport {
   connection$ = new BehaviorSubject<BLUETOOTH_CONNECTION>(
     BLUETOOTH_CONNECTION.DISCONNECTED
   );
+  _autoConnectionEnabled$ = new ReplaySubject<boolean>(1);
   pendingActions$ = new BehaviorSubject<any[]>([]);
   logs$ = new ReplaySubject<string>(10);
   onDisconnected$: Observable<void>;
@@ -73,7 +82,8 @@ export class ReactNativeTransport implements BluetoothTransport {
     );
 
   constructor(options: Options) {
-    const { BleManager, bleManagerEmitter, platform } = options;
+    const { BleManager, bleManagerEmitter, platform, autoConnectionEnabled } =
+      options;
 
     if (!BleManager) {
       const errorMessage = "React Native option: BleManager not provided.";
@@ -94,6 +104,7 @@ export class ReactNativeTransport implements BluetoothTransport {
       throw new Error(errorMessage);
     }
 
+    this._autoConnectionEnabled$.next(autoConnectionEnabled);
     this.BleManager = BleManager;
     this.bleManagerEmitter = bleManagerEmitter;
     this.platform = platform;
@@ -145,8 +156,9 @@ export class ReactNativeTransport implements BluetoothTransport {
     );
 
     return merge(selectedDevice$, selectedDeviceAfterDisconnect$).pipe(
-      switchMap((selectedDevice) =>
-        !osHasBluetoothSupport(selectedDevice)
+      combineLatestWith(this._autoConnectionEnabled$),
+      switchMap(([selectedDevice, autoConnectionEnabled]) =>
+        !osHasBluetoothSupport(selectedDevice) || !autoConnectionEnabled
           ? NEVER
           : this.scan().pipe(
               switchMap((peripherals: Peripheral[]) => {
@@ -165,6 +177,10 @@ export class ReactNativeTransport implements BluetoothTransport {
         return await this.connect(peripheral);
       })
     );
+  }
+
+  toggleAutoConnection(value: boolean) {
+    this._autoConnectionEnabled$.next(value);
   }
 
   connection(): Observable<BLUETOOTH_CONNECTION> {

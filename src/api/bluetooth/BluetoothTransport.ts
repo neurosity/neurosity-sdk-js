@@ -24,6 +24,7 @@ export interface BluetoothTransport {
 
   // React Native only
   scan?(options?: { seconds?: number }): Observable<Peripheral[]>;
+  toggleAutoConnection?(value: boolean);
 
   subscribeToCharacteristic(args: {
     characteristicName: string;
