@@ -3,7 +3,7 @@ id: bluetooth-web
 title: Bluetooth for Web
 ---
 
-> :warning: **Requires**: Neurosity OS v16+
+> :warning: **Requires**: Neurosity OS v16+, to be released in January 2023
 
 Not all browsers support Web Bluetooth. You can refer to browser-specific support [here](https://caniuse.com/web-bluetooth).
 
@@ -41,3 +41,25 @@ When using Bluetooth, there are 2 streaming modes you can choose from:
 
 - `wifi-with-bluetooth-fallback`
 - `bluetooth-with-wifi-fallback`
+
+## Bluetooth Connection State
+
+```ts
+const { bluetooth } = neurosity;
+
+bluetooth.connection().subscribe((connection) => {
+  console.log(`Bluetooth connected is ${connection}`);
+});
+```
+
+The following connection states are possible:
+
+```ts
+enum BLUETOOTH_CONNECTION {
+  SCANNING = "scanning",
+  CONNECTED = "connected",
+  CONNECTING = "connecting",
+  DISCONNECTING = "disconnecting",
+  DISCONNECTED = "disconnected"
+}
+```
