@@ -249,3 +249,11 @@ export function RemoveNeurosityAccessButton() {
   return <button onClick={removeNeurosityAccess}>Remove Access</button>;
 }
 ```
+
+## Authenticating the Neurosity App
+
+It is possible to authenticate the Neurosity mobile app with an OAuth token. To do this, simply add a deep link navigation to your mobile app containing using the following URI scheme:
+
+```ts
+neurosity://oauth/YOUR_OAUTH_TOKEN_HERE
+```
