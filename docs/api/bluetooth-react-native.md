@@ -3,7 +3,7 @@ id: bluetooth-react-native
 title: Bluetooth for React Native
 ---
 
-> :warning: **Requires**: Neurosity OS v16+
+> :warning: **Requires**: Neurosity OS v16+, to be released in January 2023
 
 Adding the Bluetooth transport for React Native requires the [`react-native-ble-manager`](https://github.com/innoveit/react-native-ble-manager/) library. Install the library and set up the permission as per their documentation before moving to the next step.
 
@@ -39,3 +39,25 @@ When using Bluetooth, there are 2 streaming modes you can choose from:
 
 - `wifi-with-bluetooth-fallback`
 - `bluetooth-with-wifi-fallback`
+
+## Bluetooth Connection State
+
+```ts
+const { bluetooth } = neurosity;
+
+bluetooth.connection().subscribe((connection) => {
+  console.log(`Bluetooth connected is ${connection}`);
+});
+```
+
+The following connection states are possible:
+
+```ts
+enum BLUETOOTH_CONNECTION {
+  SCANNING = "scanning",
+  CONNECTED = "connected",
+  CONNECTING = "connecting",
+  DISCONNECTING = "disconnecting",
+  DISCONNECTED = "disconnected"
+}
+```
