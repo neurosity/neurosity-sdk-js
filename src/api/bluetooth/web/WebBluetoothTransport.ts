@@ -20,8 +20,17 @@ import { CHARACTERISTIC_UUIDS_TO_NAMES } from "../constants";
 import { DeviceInfo } from "../../../types/deviceInfo";
 import { osHasBluetoothSupport } from "../utils/osHasBluetoothSupport";
 
+type Options = {
+  autoConnect?: boolean;
+};
+
+const defaultOptions: Options = {
+  autoConnect: true
+};
+
 export class WebBluetoothTransport implements BluetoothTransport {
   type: TRANSPORT_TYPE = TRANSPORT_TYPE.WEB;
+  options: Options;
   device: BluetoothDevice;
   server: BluetoothRemoteGATTServer;
   service: BluetoothRemoteGATTService;
@@ -43,12 +52,22 @@ export class WebBluetoothTransport implements BluetoothTransport {
       shareReplay(1)
     );
 
-  constructor() {
+  _isAutoConnectEnabled$ = new ReplaySubject<boolean>(1);
+
+  constructor(options: Options = {}) {
+    this.options = { ...defaultOptions, ...options };
+
     if (!isWebBluetoothSupported()) {
       const errorMessage = "Web Bluetooth is not supported";
       this.addLog(errorMessage);
       throw new Error(errorMessage);
     }
+
+    this._isAutoConnectEnabled$.subscribe((autoConnect) => {
+      this.addLog(`Auto connect: ${autoConnect ? "enabled" : "disabled"}`);
+    });
+
+    this._isAutoConnectEnabled$.next(this.options.autoConnect);
 
     this.connection$.asObservable().subscribe((connection) => {
       this.addLog(`connection status is ${connection}`);
@@ -64,10 +83,15 @@ export class WebBluetoothTransport implements BluetoothTransport {
   }
 
   _autoConnect(selectedDevice$: Observable<DeviceInfo>): Observable<void> {
-    return merge(
-      selectedDevice$,
-      this.onDisconnected$.pipe(switchMap(() => selectedDevice$))
-    ).pipe(
+    return this._isAutoConnectEnabled$.pipe(
+      switchMap((isAutoConnectEnabled) =>
+        isAutoConnectEnabled
+          ? merge(
+              selectedDevice$,
+              this.onDisconnected$.pipe(switchMap(() => selectedDevice$))
+            )
+          : NEVER
+      ),
       switchMap((selectedDevice) =>
         osHasBluetoothSupport(selectedDevice) ? of(selectedDevice) : EMPTY
       ),
@@ -126,6 +150,10 @@ export class WebBluetoothTransport implements BluetoothTransport {
         );
       })
     );
+  }
+
+  enableAutoConnect(autoConnect: boolean): void {
+    this._isAutoConnectEnabled$.next(autoConnect);
   }
 
   addLog(log: string) {

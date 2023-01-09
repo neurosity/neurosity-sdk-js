@@ -38,6 +38,7 @@ type Options = {
   BleManager: BleManager;
   bleManagerEmitter: NativeEventEmitter;
   platform: PlatformOSType;
+  autoConnect?: boolean;
 };
 
 type BleManagerEvents = {
@@ -48,8 +49,13 @@ type BleManagerEvents = {
   didUpdateValueForCharacteristic$: Observable<any>;
 };
 
+const defaultOptions: Pick<Options, "autoConnect"> = {
+  autoConnect: true
+};
+
 export class ReactNativeTransport implements BluetoothTransport {
   type: TRANSPORT_TYPE = TRANSPORT_TYPE.REACT_NATIVE;
+  options: Options;
   BleManager: BleManager;
   bleManagerEmitter: NativeEventEmitter;
   platform: PlatformOSType;
@@ -72,8 +78,19 @@ export class ReactNativeTransport implements BluetoothTransport {
       shareReplay(1)
     );
 
+  _isAutoConnectEnabled$ = new ReplaySubject<boolean>(1);
+
   constructor(options: Options) {
-    const { BleManager, bleManagerEmitter, platform } = options;
+    if (!options) {
+      const errorMessage = "React Native transport: missing options.";
+      this.addLog(errorMessage);
+      throw new Error(errorMessage);
+    }
+
+    this.options = { ...defaultOptions, ...options };
+
+    const { BleManager, bleManagerEmitter, platform, autoConnect } =
+      this.options;
 
     if (!BleManager) {
       const errorMessage = "React Native option: BleManager not provided.";
@@ -97,6 +114,12 @@ export class ReactNativeTransport implements BluetoothTransport {
     this.BleManager = BleManager;
     this.bleManagerEmitter = bleManagerEmitter;
     this.platform = platform;
+
+    this._isAutoConnectEnabled$.next(autoConnect);
+
+    this._isAutoConnectEnabled$.subscribe((autoConnect) => {
+      this.addLog(`Auto connect: ${autoConnect ? "enabled" : "disabled"}`);
+    });
 
     // We create a single listener per event type to
     // avoid missing events when multiple listeners are attached.
@@ -144,7 +167,12 @@ export class ReactNativeTransport implements BluetoothTransport {
       switchMap(() => selectedDevice$)
     );
 
-    return merge(selectedDevice$, selectedDeviceAfterDisconnect$).pipe(
+    return this._isAutoConnectEnabled$.pipe(
+      switchMap((isAutoConnectEnabled) =>
+        isAutoConnectEnabled
+          ? merge(selectedDevice$, selectedDeviceAfterDisconnect$)
+          : NEVER
+      ),
       switchMap((selectedDevice) =>
         !osHasBluetoothSupport(selectedDevice)
           ? NEVER
@@ -165,6 +193,10 @@ export class ReactNativeTransport implements BluetoothTransport {
         return await this.connect(peripheral);
       })
     );
+  }
+
+  enableAutoConnect(autoConnect: boolean): void {
+    this._isAutoConnectEnabled$.next(autoConnect);
   }
 
   connection(): Observable<BLUETOOTH_CONNECTION> {

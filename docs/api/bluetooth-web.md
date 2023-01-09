@@ -63,3 +63,31 @@ enum BLUETOOTH_CONNECTION {
   DISCONNECTED = "disconnected"
 }
 ```
+
+## Auto Connect
+
+By default, the Web Bluetooth transport will attempt to auto connect to the [selected device](/docs/api/device-selection). To disable this behavior, set the `autoConnect` transport option to `false`:
+
+```ts
+import { Neurosity, WebBluetoothTransport } from "@neurosity/sdk";
+
+export const neurosity = new Neurosity({
+  autoSelectDevice: true,
+  bluetoothTransport: new WebBluetoothTransport({
+    autoConnect: false
+  }),
+  streamingMode: "bluetooth-with-wifi-fallback"
+});
+```
+
+It is also possible to enable or disable this behavior at runtime:
+
+```ts
+const { bluetooth } = neurosity;
+
+bluetooth.enableAutoConnect(true);
+
+// or
+
+bluetooth.enableAutoConnect(false);
+```

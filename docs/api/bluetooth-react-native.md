@@ -61,3 +61,36 @@ enum BLUETOOTH_CONNECTION {
   DISCONNECTED = "disconnected"
 }
 ```
+
+## Auto Connect
+
+By default, the Web Bluetooth transport will attempt to auto connect to the [selected device](/docs/api/device-selection). To disable this behavior, set the `autoConnect` transport option to `false`:
+
+```ts {8}
+import { Neurosity, ReactNativeTransport } from "@neurosity/sdk";
+import { NativeModules, NativeEventEmitter, Platform } from "react-native";
+import BleManager from "react-native-ble-manager";
+
+export const neurosity = new Neurosity({
+  autoSelectDevice: true,
+  bluetoothTransport: new ReactNativeTransport({
+    autoConnect: false
+    BleManager,
+    bleManagerEmitter: new NativeEventEmitter(NativeModules.BleManager),
+    platform: Platform.OS
+  }),
+  streamingMode: "bluetooth-with-wifi-fallback"
+});
+```
+
+It is also possible to enable or disable this behavior at runtime:
+
+```ts
+const { bluetooth } = neurosity;
+
+bluetooth.enableAutoConnect(true);
+
+// or
+
+bluetooth.enableAutoConnect(false);
+```

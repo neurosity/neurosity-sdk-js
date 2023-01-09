@@ -132,6 +132,10 @@ export class BluetoothClient {
     );
   }
 
+  enableAutoConnect(autoConnect: boolean): void {
+    this.transport.enableAutoConnect(autoConnect);
+  }
+
   async _hasBluetoothSupport(): Promise<boolean> {
     const selectedDevice = await firstValueFrom(this.selectedDevice$);
     return osHasBluetoothSupport(selectedDevice);

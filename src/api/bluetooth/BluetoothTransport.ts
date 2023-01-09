@@ -22,6 +22,8 @@ export interface BluetoothTransport {
   addLog: (log: string) => void;
   logs$: Subject<string>;
 
+  enableAutoConnect?(value: boolean): void;
+
   // React Native only
   scan?(options?: { seconds?: number }): Observable<Peripheral[]>;
 
