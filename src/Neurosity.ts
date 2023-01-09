@@ -7,7 +7,6 @@ import { credentialWithLink, SERVER_TIMESTAMP } from "./api/index";
 import { SDKOptions } from "./types/options";
 import { STREAMING_MODE, STREAMING_TYPE } from "./types/streaming";
 import { Training } from "./types/training";
-import { SkillInstance } from "./types/skill";
 import { Credentials, EmailAndPassword } from "./types/credentials";
 import { CustomToken } from "./types/credentials";
 import { Settings, ChangeSettings } from "./types/settings";
@@ -16,7 +15,6 @@ import { Kinesis } from "./types/kinesis";
 import { Calm } from "./types/calm";
 import { Focus } from "./types/focus";
 import { getLabels } from "./utils/subscription";
-import { Subscription } from "./types/subscriptions";
 import { BrainwavesLabel, Epoch, PowerByBand, PSD } from "./types/brainwaves";
 import { Accelerometer } from "./types/accelerometer";
 import { DeviceInfo } from "./types/deviceInfo";
@@ -1426,68 +1424,6 @@ export class Neurosity {
    */
   public removeOAuthAccess(): Promise<OAuthRemoveResponse> {
     return this.cloudClient.removeOAuthAccess();
-  }
-
-  /**
-   * @internal
-   * Proof of Concept for Skills - Not user facing yet
-   *
-   * Accesses a skill by Bundle ID. Additionally, allows to observe
-   * and push skill metrics
-   *
-   * @param bundleId Bundle ID of skill
-   * @returns Skill instance
-   */
-  public async skill(bundleId: string): Promise<SkillInstance> {
-    if (!(await this.cloudClient.didSelectDevice())) {
-      return Promise.reject(errors.mustSelectDevice);
-    }
-
-    const skillData = await this.cloudClient.skills.get(bundleId);
-
-    if (skillData === null) {
-      return Promise.reject(
-        new Error(
-          `${errors.prefix}Access denied for: ${bundleId}. Make sure the skill is installed.`
-        )
-      );
-    }
-
-    return {
-      metric: (label: string) => {
-        const metricName = `skill~${skillData.id}~${label}`;
-        const subscription = new Observable((observer) => {
-          const subscription: Subscription = this.cloudClient.metrics.subscribe(
-            {
-              metric: metricName,
-              labels: [label],
-              atomic: true
-            }
-          );
-
-          const listener = this.cloudClient.metrics.on(
-            subscription,
-            (...data: any) => {
-              observer.next(...data);
-            }
-          );
-
-          return () => {
-            this.cloudClient.metrics.unsubscribe(subscription, listener);
-          };
-        }).pipe(map((metric) => metric[label]));
-
-        Object.defineProperty(subscription, "next", {
-          value: (metricValue: { [label: string]: any }): void => {
-            this.cloudClient.metrics.next(metricName, {
-              [label]: metricValue
-            });
-          }
-        });
-
-        return subscription;
-      }
-    };
   }
 
   /**
