@@ -47,6 +47,7 @@ type BleManagerEvents = {
   connectPeripheral$: Observable<void>;
   disconnectPeripheral$: Observable<void>;
   didUpdateValueForCharacteristic$: Observable<any>;
+  didUpdateState$: Observable<any>;
 };
 
 const defaultOptions: Pick<Options, "autoConnect"> = {
@@ -130,7 +131,8 @@ export class ReactNativeTransport implements BluetoothTransport {
       disconnectPeripheral$: this._fromEvent("BleManagerDisconnectPeripheral"),
       didUpdateValueForCharacteristic$: this._fromEvent(
         "BleManagerDidUpdateValueForCharacteristic"
-      )
+      ),
+      didUpdateState$: this._fromEvent("BleManagerDidUpdateState")
     };
 
     this.onDisconnected$ = this.bleEvents.disconnectPeripheral$.pipe(share());
