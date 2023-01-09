@@ -1,4 +1,4 @@
-import { Neurosity } from "../Notion";
+import { Neurosity } from "../Neurosity";
 import { SDKOptions } from "../types/options";
 import { Skill, SkillInstance } from "../types/skill";
 
