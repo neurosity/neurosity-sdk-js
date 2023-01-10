@@ -1,6 +1,6 @@
 {
   "name": "@neurosity/sdk",
-  "version": "6.2.1",
+  "version": "6.2.1-next.0",
   "description": "Neurosity SDK",
   "type": "module",
   "main": "dist/index.m.js",
