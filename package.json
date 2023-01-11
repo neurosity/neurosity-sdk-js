@@ -3,13 +3,16 @@
   "version": "6.2.1-next.0",
   "description": "Neurosity SDK",
   "type": "module",
-  "main": "dist/index.m.js",
-  "module": "dist/index.m.js",
-  "types": "dist/index.d.ts",
+  "source": "/src/index.ts",
+  "main": "./dist/index.m.js",
+  "module": "./dist/index.m.js",
+  "unpkg": "./dist/index.umd.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/index.m.js",
       "require": "./dist/index.cjs",
+      "default": "./dist/index.modern.js",
       "types": "./dist/index.d.ts"
     }
   },
@@ -20,6 +23,7 @@
     "build:typedoc": "del docs/reference && typedoc",
     "examples:node": "npm run build && node ./examples/node",
     "start": "tsc -w",
+    "dev": "microbundle watch",
     "clean": "del dist",
     "prepublishOnly": "npm run build"
   },
