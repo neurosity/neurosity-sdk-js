@@ -1,7 +1,7 @@
 import { pipe } from "rxjs";
 import { bufferCount, scan, filter, map } from "rxjs/operators";
 
-import { Sample } from "../types/sample";
+import { Sample } from "../types/sample.js";
 
 const defaultDataProp = "data";
 const defaultSamplingRate = 256;

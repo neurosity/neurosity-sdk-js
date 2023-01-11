@@ -1,7 +1,6 @@
-import { Skill } from "./skill";
-import { SubscriptionManager } from "../subscriptions/SubscriptionManager";
-import { BluetoothTransport } from "../api/bluetooth/BluetoothClient";
-import { STREAMING_MODE } from "./streaming";
+import { SubscriptionManager } from "../subscriptions/SubscriptionManager.js";
+import { BluetoothTransport } from "../api/bluetooth/BluetoothClient.js";
+import { STREAMING_MODE } from "./streaming.js";
 
 export interface SDKOptions {
   deviceId?: string;
@@ -39,10 +38,6 @@ export interface SDKOptions {
    * @hidden
    */
   emulatorFirestorePort?: number;
-  /**
-   * @hidden
-   */
-  skill?: Skill;
 }
 
 /**

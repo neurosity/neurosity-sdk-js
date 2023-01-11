@@ -3,8 +3,8 @@ import { map, concatWith, filter, take } from "rxjs/operators";
 import { bufferCount, concatMap, switchMap } from "rxjs/operators";
 import outliers from "outliers";
 
-import { whileOnline } from "../utils/whileOnline";
-import { DeviceStatus } from "../types/status";
+import { whileOnline } from "../utils/whileOnline.js";
+import { DeviceStatus } from "../types/status.js";
 
 type Options = {
   getTimesync: () => Promise<number>;
@@ -95,9 +95,7 @@ export class Timesync {
   }
 
   private average(list: number[]): number {
-    return Math.round(
-      list.reduce((acc, number) => acc + number) / list.length
-    );
+    return Math.round(list.reduce((acc, number) => acc + number) / list.length);
   }
 
   public get offset(): number {

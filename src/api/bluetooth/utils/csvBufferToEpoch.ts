@@ -1,10 +1,10 @@
 import { pipe, from, Observable, UnaryFunction } from "rxjs";
 import { mergeMap, map } from "rxjs/operators";
 
-import { epoch, addInfo } from "../../../utils/pipes";
-import { Sample, CSVSample } from "../../../types/sample";
-import { Epoch } from "../../../types/epoch";
-import { DeviceInfo } from "../../../types/deviceInfo";
+import { epoch, addInfo } from "../../../utils/pipes.js";
+import { Sample, CSVSample } from "../../../types/sample.js";
+import { Epoch } from "../../../types/epoch.js";
+import { DeviceInfo } from "../../../types/deviceInfo.js";
 
 const EPOCH_BUFFER_SIZE = 16;
 const SAMPLING_RATE_FALLBACK = 256; // Crown's sampling rate

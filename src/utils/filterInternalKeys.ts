@@ -1,6 +1,6 @@
 import { MonoTypeOperatorFunction, pipe } from "rxjs";
 import { map } from "rxjs/operators";
-import { DeviceStatus } from "../types/status";
+import { DeviceStatus } from "../types/status.js";
 
 export function filterInternalKeys(): MonoTypeOperatorFunction<DeviceStatus> {
   return pipe(

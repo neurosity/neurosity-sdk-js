@@ -1,25 +1,19 @@
 import axios from "axios";
 
-import { getFunctionsBaseURL } from "./utils";
-import { SDKOptions } from "../../types/options";
-import { OAuthConfig } from "../../types/oauth";
+import { getFunctionsBaseURL } from "./utils.js";
+import { SDKOptions } from "../../types/options.js";
+import { OAuthConfig } from "../../types/oauth.js";
 
 export function createOAuthURL(
   config: OAuthConfig,
   sdkOptions: SDKOptions
 ): Promise<string> {
-  const {
-    clientId,
-    clientSecret,
-    responseType,
-    redirectUri,
-    scope,
-    state
-  } = config;
+  const { clientId, clientSecret, responseType, redirectUri, scope, state } =
+    config;
 
   const baseUrl = getFunctionsBaseURL(sdkOptions);
 
-  return axios
+  return axios.default
     .get(`${baseUrl}/authorize/entry`, {
       params: {
         client_id: clientId,

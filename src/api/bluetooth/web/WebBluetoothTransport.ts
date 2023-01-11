@@ -8,17 +8,17 @@ import { switchMap, map, filter, tap } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged } from "rxjs/operators";
 import { take, share } from "rxjs/operators";
 
-import { BluetoothTransport } from "../BluetoothTransport";
-import { isWebBluetoothSupported } from "./isWebBluetoothSupported";
-import { create6DigitPin } from "../utils/create6DigitPin";
-import { stitchChunks } from "../utils/stitch";
-import { encode, decode } from "../utils/encoding";
-import { ActionOptions, SubscribeOptions } from "../types";
-import { TRANSPORT_TYPE, BLUETOOTH_CONNECTION } from "../types";
-import { DEFAULT_ACTION_RESPONSE_TIMEOUT } from "../constants";
-import { CHARACTERISTIC_UUIDS_TO_NAMES } from "../constants";
-import { DeviceInfo } from "../../../types/deviceInfo";
-import { osHasBluetoothSupport } from "../utils/osHasBluetoothSupport";
+import { BluetoothTransport } from "../BluetoothTransport.js";
+import { isWebBluetoothSupported } from "./isWebBluetoothSupported.js";
+import { create6DigitPin } from "../utils/create6DigitPin.js";
+import { stitchChunks } from "../utils/stitch.js";
+import { encode, decode } from "../utils/encoding.js";
+import { ActionOptions, SubscribeOptions } from "../types/index.js";
+import { TRANSPORT_TYPE, BLUETOOTH_CONNECTION } from "../types/index.js";
+import { DEFAULT_ACTION_RESPONSE_TIMEOUT } from "../constants.js";
+import { CHARACTERISTIC_UUIDS_TO_NAMES } from "../constants.js";
+import { DeviceInfo } from "../../../types/deviceInfo.js";
+import { osHasBluetoothSupport } from "../utils/osHasBluetoothSupport.js";
 
 type Options = {
   autoConnect?: boolean;

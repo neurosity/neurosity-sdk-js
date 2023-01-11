@@ -1,5 +1,5 @@
-import * as errors from "../utils/errors";
-import { Action } from "../types/actions";
+import * as errors from "../utils/errors.js";
+import { Action } from "../types/actions.js";
 
 type OAuthClaims = {
   oauth?: true;
@@ -55,8 +55,7 @@ export function validateOAuthScopeForAction(
   const scopes = scopesString.split(",");
 
   const { command, action: actionName } = action;
-  const requiredScope =
-    scopeRequiredByAction[`${command}/${actionName}`];
+  const requiredScope = scopeRequiredByAction[`${command}/${actionName}`];
   const hasRequireScopes = scopes.includes(requiredScope);
 
   if (hasRequireScopes) {

@@ -1,11 +1,11 @@
-import firebase from "firebase/app";
+import firebase from "firebase/app/dist/index.esm.js";
 import "firebase/database";
 import "firebase/auth";
 import "firebase/functions";
 import "firebase/firestore";
 
-import { config } from "./config";
-import { SDKOptions } from "../../types/options";
+import { config } from "./config.js";
+import { SDKOptions } from "../../types/options.js";
 
 export const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
 
@@ -30,7 +30,7 @@ export class FirebaseApp {
     const browserApps =
       typeof window !== "undefined" &&
       "firebase" in window &&
-      "apps" in window.firebase
+      "apps" in (window as any).firebase
         ? window["firebase"]["apps"]
         : [];
 

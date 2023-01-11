@@ -1,3 +1,3 @@
-export * from "./FirebaseApp";
-export * from "./FirebaseUser";
-export * from "./FirebaseDevice";
+export * from "./FirebaseApp.js";
+export * from "./FirebaseUser.js";
+export * from "./FirebaseDevice.js";

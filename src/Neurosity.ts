@@ -2,41 +2,46 @@ import { combineLatest, Observable, of, throwError } from "rxjs";
 import { ReplaySubject, firstValueFrom, EMPTY } from "rxjs";
 import { distinctUntilChanged, map, switchMap } from "rxjs/operators";
 import isEqual from "fast-deep-equal";
-import { CloudClient, createUser } from "./api/index";
-import { credentialWithLink, SERVER_TIMESTAMP } from "./api/index";
-import { SDKOptions } from "./types/options";
-import { STREAMING_MODE, STREAMING_TYPE } from "./types/streaming";
-import { Training } from "./types/training";
-import { Credentials, EmailAndPassword } from "./types/credentials";
-import { CustomToken } from "./types/credentials";
-import { Settings, ChangeSettings } from "./types/settings";
-import { SignalQuality } from "./types/signalQuality";
-import { Kinesis } from "./types/kinesis";
-import { Calm } from "./types/calm";
-import { Focus } from "./types/focus";
-import { getLabels } from "./utils/subscription";
-import { BrainwavesLabel, Epoch, PowerByBand, PSD } from "./types/brainwaves";
-import { Accelerometer } from "./types/accelerometer";
-import { DeviceInfo } from "./types/deviceInfo";
-import { DeviceStatus, STATUS } from "./types/status";
-import { Action } from "./types/actions";
-import { HapticEffects } from "./types/hapticEffects";
-import * as errors from "./utils/errors";
-import * as platform from "./utils/platform";
-import * as hapticEffects from "./utils/hapticEffects";
-import { validateOAuthScopeForFunctionName } from "./utils/oauth";
-import { validateOAuthScopeForAction } from "./utils/oauth";
-import { createOAuthURL } from "./api/https/createOAuthURL";
-import { getOAuthToken } from "./api/https/getOAuthToken";
-import { OAuthConfig, OAuthQuery } from "./types/oauth";
-import { OAuthQueryResult, OAuthRemoveResponse } from "./types/oauth";
-import { UserClaims } from "./types/user";
-import { isNode } from "./utils/is-node";
-import { getCloudMetric } from "./utils/metrics";
-import { Experiment } from "./types/experiment";
-import { TransferDeviceOptions } from "./utils/transferDevice";
-import { BluetoothClient } from "./api/bluetooth";
-import { BLUETOOTH_CONNECTION } from "./api/bluetooth/types";
+import { CloudClient, createUser } from "./api/index.js";
+import { credentialWithLink, SERVER_TIMESTAMP } from "./api/index.js";
+import { SDKOptions } from "./types/options.js";
+import { STREAMING_MODE, STREAMING_TYPE } from "./types/streaming.js";
+import { Training } from "./types/training.js";
+import { Credentials, EmailAndPassword } from "./types/credentials.js";
+import { CustomToken } from "./types/credentials.js";
+import { Settings, ChangeSettings } from "./types/settings.js";
+import { SignalQuality } from "./types/signalQuality.js";
+import { Kinesis } from "./types/kinesis.js";
+import { Calm } from "./types/calm.js";
+import { Focus } from "./types/focus.js";
+import { getLabels } from "./utils/subscription.js";
+import {
+  BrainwavesLabel,
+  Epoch,
+  PowerByBand,
+  PSD
+} from "./types/brainwaves.js";
+import { Accelerometer } from "./types/accelerometer.js";
+import { DeviceInfo } from "./types/deviceInfo.js";
+import { DeviceStatus, STATUS } from "./types/status.js";
+import { Action } from "./types/actions.js";
+import { HapticEffects } from "./types/hapticEffects.js";
+import * as errors from "./utils/errors.js";
+import * as platform from "./utils/platform.js";
+import * as hapticEffects from "./utils/hapticEffects.js";
+import { validateOAuthScopeForFunctionName } from "./utils/oauth.js";
+import { validateOAuthScopeForAction } from "./utils/oauth.js";
+import { createOAuthURL } from "./api/https/createOAuthURL.js";
+import { getOAuthToken } from "./api/https/getOAuthToken.js";
+import { OAuthConfig, OAuthQuery } from "./types/oauth.js";
+import { OAuthQueryResult, OAuthRemoveResponse } from "./types/oauth.js";
+import { UserClaims } from "./types/user.js";
+import { isNode } from "./utils/is-node.js";
+import { getCloudMetric } from "./utils/metrics.js";
+import { Experiment } from "./types/experiment.js";
+import { TransferDeviceOptions } from "./utils/transferDevice.js";
+import { BluetoothClient } from "./api/bluetooth/index.js";
+import { BLUETOOTH_CONNECTION } from "./api/bluetooth/types/index.js";
 
 const defaultOptions = {
   timesync: false,

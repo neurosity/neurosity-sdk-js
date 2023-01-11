@@ -1,10 +1,10 @@
 import { Observable, throwError, EMPTY } from "rxjs";
 import { switchMap } from "rxjs/operators";
 
-import { whileOnline } from "./whileOnline";
-import { validate } from "./subscription";
-import { PendingSubscription, Subscription } from "../types/subscriptions";
-import { DeviceInfo } from "../types/deviceInfo";
+import { whileOnline } from "./whileOnline.js";
+import { validate } from "./subscription.js";
+import { PendingSubscription, Subscription } from "../types/subscriptions.js";
+import { DeviceInfo } from "../types/deviceInfo.js";
 
 /**
  * @internal

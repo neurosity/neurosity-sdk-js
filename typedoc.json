@@ -3,12 +3,7 @@
   "out": "./docs/reference",
   "toc": ["classes/neurosity"],
   "includes": "./src",
-  "exclude": [
-    "**/timesync/**/*.ts",
-    "**/skills/**/*.ts",
-    "**/api/**/*.ts",
-    "**/utils/**/*.ts"
-  ],
+  "exclude": ["**/timesync/**/*.ts", "**/api/**/*.ts", "**/utils/**/*.ts"],
   "excludeExternals": true,
   "excludeNotExported": false,
   "excludePrivate": true,

@@ -3,16 +3,16 @@ import { ReplaySubject, EMPTY } from "rxjs";
 import { switchMap, share, tap } from "rxjs/operators";
 import { distinctUntilChanged } from "rxjs/operators";
 
-import { WebBluetoothTransport } from "./web/WebBluetoothTransport";
-import { ReactNativeTransport } from "./react-native/ReactNativeTransport";
-import { csvBufferToEpoch } from "./utils/csvBufferToEpoch";
-import { DeviceInfo } from "../../types/deviceInfo";
-import { Action } from "../../types/actions";
-import { Epoch } from "../../types/epoch";
-import { BLUETOOTH_CONNECTION } from "./types";
-import { DeviceNicknameOrPeripheral } from "./BluetoothTransport";
-import { Peripheral } from "./react-native/types/BleManagerTypes";
-import { osHasBluetoothSupport } from "./utils/osHasBluetoothSupport";
+import { WebBluetoothTransport } from "./web/WebBluetoothTransport.js";
+import { ReactNativeTransport } from "./react-native/ReactNativeTransport.js";
+import { csvBufferToEpoch } from "./utils/csvBufferToEpoch.js";
+import { DeviceInfo } from "../../types/deviceInfo.js";
+import { Action } from "../../types/actions.js";
+import { Epoch } from "../../types/epoch.js";
+import { BLUETOOTH_CONNECTION } from "./types/index.js";
+import { DeviceNicknameOrPeripheral } from "./BluetoothTransport.js";
+import { Peripheral } from "./react-native/types/BleManagerTypes.js";
+import { osHasBluetoothSupport } from "./utils/osHasBluetoothSupport.js";
 
 export type BluetoothTransport = WebBluetoothTransport | ReactNativeTransport;
 

@@ -7,22 +7,22 @@ import { switchMap, map, filter, takeUntil, tap } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged, finalize } from "rxjs/operators";
 import { take, share, scan, distinct } from "rxjs/operators";
 
-import { BluetoothTransport } from "../BluetoothTransport";
-import { create6DigitPin } from "../utils/create6DigitPin";
-import { stitchChunks } from "../utils/stitch";
-import { encode, decode } from "../utils/encoding";
-import { ActionOptions, SubscribeOptions } from "../types";
-import { TRANSPORT_TYPE, BLUETOOTH_CONNECTION } from "../types";
-import { BleManager } from "./types/BleManagerTypes";
-import { Peripheral, PeripheralInfo } from "./types/BleManagerTypes";
-import { NativeEventEmitter } from "./types/ReactNativeTypes";
-import { PlatformOSType } from "./types/ReactNativeTypes";
-import { DEFAULT_ACTION_RESPONSE_TIMEOUT } from "../constants";
-import { CHARACTERISTIC_UUIDS_TO_NAMES } from "../constants";
-import { ANDROID_MAX_MTU } from "../constants";
-import { REACT_NATIVE_MAX_BYTE_SIZE } from "../constants";
-import { DeviceInfo } from "../../../types/deviceInfo";
-import { osHasBluetoothSupport } from "../utils/osHasBluetoothSupport";
+import { BluetoothTransport } from "../BluetoothTransport.js";
+import { create6DigitPin } from "../utils/create6DigitPin.js";
+import { stitchChunks } from "../utils/stitch.js";
+import { encode, decode } from "../utils/encoding.js";
+import { ActionOptions, SubscribeOptions } from "../types/index.js";
+import { TRANSPORT_TYPE, BLUETOOTH_CONNECTION } from "../types/index.js";
+import { BleManager } from "./types/BleManagerTypes.js";
+import { Peripheral, PeripheralInfo } from "./types/BleManagerTypes.js";
+import { NativeEventEmitter } from "./types/ReactNativeTypes.js";
+import { PlatformOSType } from "./types/ReactNativeTypes.js";
+import { DEFAULT_ACTION_RESPONSE_TIMEOUT } from "../constants.js";
+import { CHARACTERISTIC_UUIDS_TO_NAMES } from "../constants.js";
+import { ANDROID_MAX_MTU } from "../constants.js";
+import { REACT_NATIVE_MAX_BYTE_SIZE } from "../constants.js";
+import { DeviceInfo } from "../../../types/deviceInfo.js";
+import { osHasBluetoothSupport } from "../utils/osHasBluetoothSupport.js";
 
 type Characteristic = {
   characteristicUUID: string;

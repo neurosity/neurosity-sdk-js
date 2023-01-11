@@ -1,8 +1,8 @@
-import firebase from "firebase/app";
+import firebase from "firebase/app/dist/index.esm.js";
 
-import { FirebaseApp } from "./FirebaseApp";
-import { createDeviceStore } from "./deviceStore";
-import { SDKDependencies } from "../../types/options";
+import { FirebaseApp } from "./FirebaseApp.js";
+import { createDeviceStore } from "./deviceStore.js";
+import { SDKDependencies } from "../../types/options.js";
 
 const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
 
@@ -21,11 +21,7 @@ export class FirebaseDevice {
   protected deviceStore;
   public deviceId: string;
 
-  constructor({
-    deviceId,
-    firebaseApp,
-    dependencies
-  }: FirebaseDeviceOptions) {
+  constructor({ deviceId, firebaseApp, dependencies }: FirebaseDeviceOptions) {
     if (!deviceId) {
       throw new Error(`No Device ID provided.`);
     }
@@ -133,14 +129,6 @@ export class FirebaseDevice {
 
   public async changeSettings(settings): Promise<void> {
     return this.deviceStore.update("settings", settings);
-  }
-
-  public async getSkill(bundleId): Promise<any> {
-    return await this.deviceStore.lastOfChildValue(
-      "skills",
-      "bundleId",
-      bundleId
-    );
   }
 
   public async createBluetoothToken(): Promise<string> {

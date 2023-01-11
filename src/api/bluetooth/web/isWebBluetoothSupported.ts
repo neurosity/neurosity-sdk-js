@@ -1,4 +1,4 @@
-import { isMaybeWebWorkerContext } from "./isMaybeWebWorkerContext";
+import { isMaybeWebWorkerContext } from "./isMaybeWebWorkerContext.js";
 
 export function isWebBluetoothSupported() {
   return (

@@ -1,6 +1,6 @@
-import semverGte from "semver/functions/gte";
+import semverGte from "semver/functions/gte.js";
 
-import { DeviceInfo } from "../../../types/deviceInfo";
+import { DeviceInfo } from "../../../types/deviceInfo.js";
 
 export function osHasBluetoothSupport(selectedDevice: DeviceInfo) {
   if (!selectedDevice) {

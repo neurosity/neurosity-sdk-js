@@ -1,28 +1,31 @@
 import { Observable, ReplaySubject, EMPTY } from "rxjs";
 import { fromEventPattern, firstValueFrom } from "rxjs";
 import { filter, shareReplay, share, switchMap } from "rxjs/operators";
-import { FirebaseApp, FirebaseUser, FirebaseDevice } from "./firebase";
-import { Timesync } from "../timesync";
-import { SubscriptionManager } from "../subscriptions/SubscriptionManager";
-import { heartbeatAwareStatus } from "../utils/heartbeat";
-import { filterInternalKeys } from "../utils/filterInternalKeys";
-import { Client } from "../types/client";
-import { Action, Actions } from "../types/actions";
-import { Metrics } from "../types/metrics";
-import { SDKOptions } from "../types/options";
-import { SkillsClient, DeviceSkill } from "../types/skill";
-import { Credentials, CustomToken } from "../types/credentials";
-import { EmailAndPassword } from "../types/credentials";
-import { ChangeSettings } from "../types/settings";
-import { Subscription } from "../types/subscriptions";
-import { DeviceStatus } from "../types/status";
-import { DeviceInfo, DeviceSelector } from "../types/deviceInfo";
-import { UserClaims } from "../types/user";
-import { OAuthRemoveResponse } from "../types/oauth";
-import { Experiment } from "../types/experiment";
-import { TransferDeviceOptions } from "../utils/transferDevice";
+import { FirebaseApp, FirebaseUser, FirebaseDevice } from "./firebase/index.js";
+import { Timesync } from "../timesync/index.js";
+import { SubscriptionManager } from "../subscriptions/SubscriptionManager.js";
+import { heartbeatAwareStatus } from "../utils/heartbeat.js";
+import { filterInternalKeys } from "../utils/filterInternalKeys.js";
+import { Client } from "../types/client.js";
+import { Action, Actions } from "../types/actions.js";
+import { Metrics } from "../types/metrics.js";
+import { SDKOptions } from "../types/options.js";
+import { Credentials, CustomToken } from "../types/credentials.js";
+import { EmailAndPassword } from "../types/credentials.js";
+import { ChangeSettings } from "../types/settings.js";
+import { Subscription } from "../types/subscriptions.js";
+import { DeviceStatus } from "../types/status.js";
+import { DeviceInfo, DeviceSelector } from "../types/deviceInfo.js";
+import { UserClaims } from "../types/user.js";
+import { OAuthRemoveResponse } from "../types/oauth.js";
+import { Experiment } from "../types/experiment.js";
+import { TransferDeviceOptions } from "../utils/transferDevice.js";
 
-export { credentialWithLink, createUser, SERVER_TIMESTAMP } from "./firebase";
+export {
+  credentialWithLink,
+  createUser,
+  SERVER_TIMESTAMP
+} from "./firebase/index.js";
 
 /**
  * @hidden
@@ -354,14 +357,6 @@ export class CloudClient implements Client {
 
   public deleteUserExperiment(experimentId: string): Promise<void> {
     return this.firebaseUser.deleteUserExperiment(experimentId);
-  }
-
-  public get skills(): SkillsClient {
-    return {
-      get: async (bundleId: string): Promise<DeviceSkill> => {
-        return this.firebaseDevice.getSkill(bundleId);
-      }
-    };
   }
 
   public get timestamp(): number {

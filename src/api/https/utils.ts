@@ -1,5 +1,5 @@
-import { prodFunctionsBaseUrl } from "./config";
-import { SDKOptions } from "../../types/options";
+import { prodFunctionsBaseUrl } from "./config.js";
+import { SDKOptions } from "../../types/options.js";
 
 export function getFunctionsBaseURL(sdkOptions: SDKOptions) {
   if (!sdkOptions.emulator) {

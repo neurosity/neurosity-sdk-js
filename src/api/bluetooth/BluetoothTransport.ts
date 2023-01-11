@@ -1,9 +1,9 @@
 import { Observable, Subject } from "rxjs";
 
-import { BLUETOOTH_CONNECTION, TRANSPORT_TYPE } from "./types";
-import { Action } from "../../types/actions";
-import { DeviceInfo } from "../../types/deviceInfo";
-import { Peripheral } from "./react-native/types/BleManagerTypes";
+import { BLUETOOTH_CONNECTION, TRANSPORT_TYPE } from "./types/index.js";
+import { Action } from "../../types/actions.js";
+import { DeviceInfo } from "../../types/deviceInfo.js";
+import { Peripheral } from "./react-native/types/BleManagerTypes.js";
 
 export type DeviceNicknameOrPeripheral = string | Peripheral;
 

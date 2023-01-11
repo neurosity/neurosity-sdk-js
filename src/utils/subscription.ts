@@ -1,7 +1,7 @@
 import { metrics } from "@neurosity/ipk";
 
-import * as errors from "../utils/errors";
-import { SDKOptions } from "../types/options";
+import * as errors from "../utils/errors.js";
+import { SDKOptions } from "../types/options.js";
 
 export const isMetric = (metric: string): boolean =>
   Object.keys(metrics).includes(metric);
@@ -14,14 +14,6 @@ export const hasInvalidLabels = (metric: string, labels: string[]): boolean => {
   return !labels.every((label) => validLabels.includes(label));
 };
 
-export const isMetricDisallowed = (
-  metricName: string,
-  options: SDKOptions
-): boolean =>
-  "skill" in options &&
-  "metrics" in options.skill &&
-  !options.skill.metrics.includes(metricName);
-
 export const validate = (
   metric: string,
   labels: string[],
@@ -32,12 +24,6 @@ export const validate = (
   if (!labels.length) {
     return new Error(
       `${errors.prefix}At least one label is required for ${metric} metric. Please add one of the following labels: ${validLabels}`
-    );
-  }
-
-  if (isMetricDisallowed(metric, options)) {
-    return new Error(
-      `${errors.prefix}No permission to access the ${metric} metric. To access this metric, edit the skill's permissions`
     );
   }
 

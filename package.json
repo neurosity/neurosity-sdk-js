@@ -58,6 +58,7 @@
     "semver": "^7.3.8"
   },
   "devDependencies": {
+    "@types/firebase": "^3.2.1",
     "@types/node": "^12.0.4",
     "@types/web-bluetooth": "^0.0.16",
     "copyfiles": "^2.3.0",

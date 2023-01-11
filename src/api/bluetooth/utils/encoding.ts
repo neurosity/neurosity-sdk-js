@@ -1,4 +1,4 @@
-import { TRANSPORT_TYPE } from "../types";
+import { TRANSPORT_TYPE } from "../types/index.js";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder("utf-8");

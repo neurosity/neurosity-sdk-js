@@ -1,2 +1,2 @@
-export * from "./Neurosity";
-export * from "./api/bluetooth";
+export * from "./Neurosity.js";
+export * from "./api/bluetooth/index.js";

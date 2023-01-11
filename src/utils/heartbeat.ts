@@ -3,7 +3,7 @@ import { map, startWith, switchMap } from "rxjs/operators";
 import { withLatestFrom, distinctUntilChanged } from "rxjs/operators";
 import isEqual from "fast-deep-equal";
 
-import { DeviceStatus, STATUS } from "../types/status";
+import { DeviceStatus, STATUS } from "../types/status.js";
 
 const HEARTBEAT_UPDATE_INTERVAL = 30_000; // 30 seconds - set by the OS
 const LOST_HEARTBEAT_AFTER = HEARTBEAT_UPDATE_INTERVAL * 2.5; // 75 seconds

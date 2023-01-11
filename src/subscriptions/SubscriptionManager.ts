@@ -1,4 +1,4 @@
-import { Subscription, Subscriptions } from "../types/subscriptions";
+import { Subscription, Subscriptions } from "../types/subscriptions.js";
 
 /**
  * @hidden
