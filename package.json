@@ -3,7 +3,6 @@
   "version": "6.2.1-next.1",
   "description": "Neurosity SDK",
   "type": "module",
-  "source": "/src/index.ts",
   "main": "./dist/index.m.js",
   "module": "./dist/index.m.js",
   "unpkg": "./dist/index.umd.js",
