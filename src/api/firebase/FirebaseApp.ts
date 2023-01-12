@@ -34,7 +34,7 @@ export class FirebaseApp {
         ? window["firebase"]["apps"]
         : [];
 
-    const neurosityApp = [...moduleApps, ...browserApps].find(
+    const neurosityApp = [...moduleApps, ...(browserApps as any[])].find(
       (app: any) =>
         app.name === "[DEFAULT]" &&
         app.options.databaseURL === config.databaseURL
