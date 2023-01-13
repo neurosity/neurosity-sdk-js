@@ -333,7 +333,7 @@ export class ReactNativeTransport implements BluetoothTransport {
 
         if (!peripheralInfo) {
           this.addLog("Could not retreive services");
-          reject(`Could not retreive services`);
+          reject(new Error(`Could not retreive services`));
           return;
         }
 
@@ -485,7 +485,7 @@ export class ReactNativeTransport implements BluetoothTransport {
 
     if (!characteristicUUID) {
       return Promise.reject(
-        `Did not find characteristic matching ${characteristicName}`
+        new Error(`Did not find characteristic matching ${characteristicName}`)
       );
     }
 
@@ -506,9 +506,11 @@ export class ReactNativeTransport implements BluetoothTransport {
       return data;
     } catch (error) {
       return Promise.reject(
+        new Error(
         `readCharacteristic ${characteristicName} error. ${
           error?.message ?? error
         }`
+        )
       );
     }
   }
@@ -524,7 +526,7 @@ export class ReactNativeTransport implements BluetoothTransport {
 
     if (!characteristicUUID) {
       return Promise.reject(
-        `Did not find characteristic matching ${characteristicName}`
+        new Error(`Did not find characteristic matching ${characteristicName}`)
       );
     }
 
@@ -636,7 +638,9 @@ export class ReactNativeTransport implements BluetoothTransport {
         const timeout = timer(responseTimeout).subscribe(() => {
           this._removePendingAction(actionId);
           reject(
+            new Error(
             `Action with id ${actionId} timed out after ${responseTimeout}ms`
+            )
           );
         });
 
@@ -658,7 +662,7 @@ export class ReactNativeTransport implements BluetoothTransport {
         // register action by writing
         this.writeCharacteristic(characteristicName, payload).catch((error) => {
           this._removePendingAction(actionId);
-          reject(error.message);
+          reject(error);
         });
       } else {
         this.writeCharacteristic(characteristicName, payload)
@@ -666,7 +670,7 @@ export class ReactNativeTransport implements BluetoothTransport {
             resolve(null);
           })
           .catch((error) => {
-            reject(error.message);
+            reject(error);
           });
       }
     });
