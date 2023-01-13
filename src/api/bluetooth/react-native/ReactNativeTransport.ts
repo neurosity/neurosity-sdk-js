@@ -359,8 +359,17 @@ export class ReactNativeTransport implements BluetoothTransport {
         this.addLog(`Got characteristics.`);
 
         if (this.platform === "android") {
-          this.addLog(`Setting Android MTU to ${ANDROID_MAX_MTU}`);
-          await this.BleManager.requestMTU(peripheral.id, ANDROID_MAX_MTU);
+          await this.BleManager.requestMTU(peripheral.id, ANDROID_MAX_MTU)
+            .then((updatedMTU) => {
+              this.addLog(
+                `Successfully updated Android MTU to ${updatedMTU} bytes. Requested MTU: ${ANDROID_MAX_MTU} bytes.`
+              );
+            })
+            .catch((error) => {
+              this.addLog(
+                `Failed to set Android MTU of ${ANDROID_MAX_MTU} bytes. Error: ${error}`
+              );
+            });
         }
 
         this.addLog(`Successfully connected to peripheral ${peripheral.id}`);
