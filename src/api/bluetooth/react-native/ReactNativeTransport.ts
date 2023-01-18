@@ -223,10 +223,15 @@ export class ReactNativeTransport implements BluetoothTransport {
   scan(options?: {
     seconds?: number;
     once?: boolean;
+    skipConnectionUpdate?: boolean;
   }): Observable<Peripheral[]> {
     const RESCAN_INTERVAL = 10_000; // 10 seconds
     const seconds = options?.seconds ?? RESCAN_INTERVAL / 1000;
     const once = options?.once ?? false;
+    // If we are already connected to a peripheral and start scanning,
+    // be default, it will set the connection status to SCANNING and not
+    // update it back if no device is connected to
+    const skipConnectionUpdate = options?.skipConnectionUpdate ?? false;
     const serviceUUIDs = [BLUETOOTH_PRIMARY_SERVICE_UUID_STRING];
     const allowDuplicates = true;
     const scanOptions = {};
@@ -262,7 +267,9 @@ export class ReactNativeTransport implements BluetoothTransport {
 
     const peripherals$ = scan$.pipe(
       tap(() => {
-        this.connection$.next(BLUETOOTH_CONNECTION.SCANNING);
+        if (!skipConnectionUpdate) {
+          this.connection$.next(BLUETOOTH_CONNECTION.SCANNING);
+        }
       }),
       takeUntil(this.onDisconnected$),
       switchMap(() => this.bleEvents.discoverPeripheral$),
@@ -516,9 +523,9 @@ export class ReactNativeTransport implements BluetoothTransport {
     } catch (error) {
       return Promise.reject(
         new Error(
-        `readCharacteristic ${characteristicName} error. ${
-          error?.message ?? error
-        }`
+          `readCharacteristic ${characteristicName} error. ${
+            error?.message ?? error
+          }`
         )
       );
     }
@@ -648,7 +655,7 @@ export class ReactNativeTransport implements BluetoothTransport {
           this._removePendingAction(actionId);
           reject(
             new Error(
-            `Action with id ${actionId} timed out after ${responseTimeout}ms`
+              `Action with id ${actionId} timed out after ${responseTimeout}ms`
             )
           );
         });
