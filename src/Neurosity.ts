@@ -35,7 +35,7 @@ import { isNode } from "./utils/is-node";
 import { getCloudMetric } from "./utils/metrics";
 import { Experiment } from "./types/experiment";
 import { TransferDeviceOptions } from "./utils/transferDevice";
-import { BluetoothClient } from "./api/bluetooth";
+import { BluetoothClient, osHasBluetoothSupport } from "./api/bluetooth";
 import { BLUETOOTH_CONNECTION } from "./api/bluetooth/types";
 
 const defaultOptions = {
@@ -192,69 +192,73 @@ export class Neurosity {
 
     return this.streamingMode$.pipe(
       switchMap((streamingMode: STREAMING_MODE) => {
-        if (this.isMissingBluetoothTransport) {
-          return this.cloudClient.status().pipe(
-            map(({ state }) => ({
-              connected: isWifiOnline(state),
-              streamingMode,
-              activeMode: STREAMING_TYPE.WIFI
-            }))
-          );
-        }
-
         return this.onDeviceChange().pipe(
-          switchMap((selectDevice) =>
-            !selectDevice
-              ? EMPTY
-              : combineLatest({
-                  wifiStatus: this.cloudClient.status(),
-                  bluetoothConnection: !!this?.bluetoothClient
-                    ? this.bluetoothClient.connection()
-                    : of(BLUETOOTH_CONNECTION.DISCONNECTED)
-                }).pipe(
-                  map(({ wifiStatus, bluetoothConnection }) => {
-                    const isBluetoothConnected =
-                      bluetoothConnection === BLUETOOTH_CONNECTION.CONNECTED;
+          switchMap((selectDevice) => {
+            if (!selectDevice) {
+              return EMPTY;
+            }
 
-                    switch (streamingMode) {
-                      default:
-                      case STREAMING_MODE.WIFI_ONLY:
-                        return {
-                          connected: isWifiOnline(wifiStatus.state),
-                          streamingMode,
-                          activeMode: STREAMING_TYPE.WIFI
-                        };
+            const isUnableToUseBluetooth =
+              this.isMissingBluetoothTransport ||
+              !osHasBluetoothSupport(selectDevice);
 
-                      case STREAMING_MODE.WIFI_WITH_BLUETOOTH_FALLBACK:
-                        return {
-                          connected:
-                            isWifiOnline(wifiStatus.state) ||
-                            !isBluetoothConnected
-                              ? isWifiOnline(wifiStatus.state)
-                              : isBluetoothConnected,
-                          streamingMode,
-                          activeMode:
-                            isWifiOnline(wifiStatus.state) ||
-                            !isBluetoothConnected
-                              ? STREAMING_TYPE.WIFI
-                              : STREAMING_TYPE.BLUETOOTH
-                        };
+            if (isUnableToUseBluetooth) {
+              return this.cloudClient.status().pipe(
+                map(({ state }) => ({
+                  connected: isWifiOnline(state),
+                  streamingMode,
+                  activeMode: STREAMING_TYPE.WIFI
+                }))
+              );
+            }
 
-                      case STREAMING_MODE.BLUETOOTH_WITH_WIFI_FALLBACK:
-                        return {
-                          connected: isBluetoothConnected
-                            ? true
-                            : isWifiOnline(wifiStatus.state),
-                          streamingMode,
-                          activeMode: isBluetoothConnected
-                            ? STREAMING_TYPE.BLUETOOTH
-                            : STREAMING_TYPE.WIFI
-                        };
-                    }
-                  }),
-                  distinctUntilChanged((a, b) => isEqual(a, b))
-                )
-          )
+            return combineLatest({
+              wifiStatus: this.cloudClient.status(),
+              bluetoothConnection: !!this?.bluetoothClient
+                ? this.bluetoothClient.connection()
+                : of(BLUETOOTH_CONNECTION.DISCONNECTED)
+            }).pipe(
+              map(({ wifiStatus, bluetoothConnection }) => {
+                const isBluetoothConnected =
+                  bluetoothConnection === BLUETOOTH_CONNECTION.CONNECTED;
+
+                switch (streamingMode) {
+                  default:
+                  case STREAMING_MODE.WIFI_ONLY:
+                    return {
+                      connected: isWifiOnline(wifiStatus.state),
+                      streamingMode,
+                      activeMode: STREAMING_TYPE.WIFI
+                    };
+
+                  case STREAMING_MODE.WIFI_WITH_BLUETOOTH_FALLBACK:
+                    return {
+                      connected:
+                        isWifiOnline(wifiStatus.state) || !isBluetoothConnected
+                          ? isWifiOnline(wifiStatus.state)
+                          : isBluetoothConnected,
+                      streamingMode,
+                      activeMode:
+                        isWifiOnline(wifiStatus.state) || !isBluetoothConnected
+                          ? STREAMING_TYPE.WIFI
+                          : STREAMING_TYPE.BLUETOOTH
+                    };
+
+                  case STREAMING_MODE.BLUETOOTH_WITH_WIFI_FALLBACK:
+                    return {
+                      connected: isBluetoothConnected
+                        ? true
+                        : isWifiOnline(wifiStatus.state),
+                      streamingMode,
+                      activeMode: isBluetoothConnected
+                        ? STREAMING_TYPE.BLUETOOTH
+                        : STREAMING_TYPE.WIFI
+                    };
+                }
+              }),
+              distinctUntilChanged((a, b) => isEqual(a, b))
+            );
+          })
         );
       })
     );
