@@ -1,3 +1,5 @@
+export type OSVersion = string;
+
 export interface DeviceInfo {
   deviceId: string;
   deviceNickname: string;
@@ -8,7 +10,7 @@ export interface DeviceInfo {
   model: string;
   modelName: string;
   modelVersion: string;
-  osVersion: string;
+  osVersion: OSVersion;
   apiVersion: string;
   emulator?: boolean;
 }

@@ -33,6 +33,7 @@ const scopeRequiredByFunctionName = {
   selectDevice: "read:devices-info",
   onDeviceChange: "read:devices-info",
   onUserDevicesChange: "read:devices-info",
+  osVersion: "read:devices-info",
   // end device info
   settings: "read:devices-settings",
   changeSettings: "write:devices-settings",
@@ -55,8 +56,7 @@ export function validateOAuthScopeForAction(
   const scopes = scopesString.split(",");
 
   const { command, action: actionName } = action;
-  const requiredScope =
-    scopeRequiredByAction[`${command}/${actionName}`];
+  const requiredScope = scopeRequiredByAction[`${command}/${actionName}`];
   const hasRequireScopes = scopes.includes(requiredScope);
 
   if (hasRequireScopes) {

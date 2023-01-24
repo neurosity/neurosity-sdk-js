@@ -17,7 +17,7 @@ import { Focus } from "./types/focus";
 import { getLabels } from "./utils/subscription";
 import { BrainwavesLabel, Epoch, PowerByBand, PSD } from "./types/brainwaves";
 import { Accelerometer } from "./types/accelerometer";
-import { DeviceInfo } from "./types/deviceInfo";
+import { DeviceInfo, OSVersion } from "./types/deviceInfo";
 import { DeviceStatus, STATUS } from "./types/status";
 import { Action } from "./types/actions";
 import { HapticEffects } from "./types/hapticEffects";
@@ -982,6 +982,34 @@ export class Neurosity {
     }
 
     return this.cloudClient.observeNamespace("settings");
+  }
+
+  /**
+   * <StreamingModes wifi={true} />
+   *
+   * Observes the current OS version and all subsequent version changes in real-time.
+   *
+   * ```typescript
+   * neurosity.osVersion().subscribe((osVersion) => {
+   *   console.log(osVersion);
+   * });
+   *
+   * // "16.0.0"
+   * ```
+   *
+   * @returns Observable of `osVersion` events. e.g 16.0.0
+   */
+  public osVersion(): Observable<OSVersion> {
+    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
+      this.cloudClient.userClaims,
+      "osVersion"
+    );
+
+    if (hasOAuthError) {
+      return throwError(() => OAuthError);
+    }
+
+    return this.cloudClient.observeNamespace("info/osVersion");
   }
 
   /**
