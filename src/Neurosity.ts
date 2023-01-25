@@ -1,6 +1,7 @@
 import { combineLatest, Observable, of, throwError } from "rxjs";
 import { ReplaySubject, firstValueFrom, EMPTY } from "rxjs";
 import { distinctUntilChanged, map, switchMap } from "rxjs/operators";
+import { combineLatestWith } from "rxjs/operators";
 import isEqual from "fast-deep-equal";
 import { CloudClient, createUser } from "./api/index";
 import { credentialWithLink, SERVER_TIMESTAMP } from "./api/index";
@@ -127,6 +128,7 @@ export class Neurosity {
     if (!!bluetoothTransport) {
       this.bluetoothClient = new BluetoothClient({
         selectedDevice$: this.onDeviceChange(),
+        osVersion$: this.osVersion(),
         createBluetoothToken: this.createBluetoothToken.bind(this),
         transport: bluetoothTransport
       });
@@ -193,14 +195,15 @@ export class Neurosity {
     return this.streamingMode$.pipe(
       switchMap((streamingMode: STREAMING_MODE) => {
         return this.onDeviceChange().pipe(
-          switchMap((selectDevice) => {
+          combineLatestWith(this.osVersion()),
+          switchMap(([selectDevice, osVersion]) => {
             if (!selectDevice) {
               return EMPTY;
             }
 
             const isUnableToUseBluetooth =
               this.isMissingBluetoothTransport ||
-              !osHasBluetoothSupport(selectDevice);
+              !osHasBluetoothSupport(selectDevice, osVersion);
 
             if (isUnableToUseBluetooth) {
               return this.cloudClient.status().pipe(
@@ -1009,7 +1012,7 @@ export class Neurosity {
       return throwError(() => OAuthError);
     }
 
-    return this.cloudClient.observeNamespace("info/osVersion");
+    return this.cloudClient.osVersion();
   }
 
   /**

@@ -1,12 +1,12 @@
 import { defer, Observable, firstValueFrom, timer } from "rxjs";
 import { ReplaySubject, EMPTY } from "rxjs";
-import { switchMap, share, tap } from "rxjs/operators";
+import { switchMap, share, tap, combineLatestWith } from "rxjs/operators";
 import { distinctUntilChanged } from "rxjs/operators";
 
 import { WebBluetoothTransport } from "./web/WebBluetoothTransport";
 import { ReactNativeTransport } from "./react-native/ReactNativeTransport";
 import { csvBufferToEpoch } from "./utils/csvBufferToEpoch";
-import { DeviceInfo } from "../../types/deviceInfo";
+import { DeviceInfo, OSVersion } from "../../types/deviceInfo";
 import { Action } from "../../types/actions";
 import { Epoch } from "../../types/epoch";
 import { BLUETOOTH_CONNECTION } from "./types";
@@ -25,6 +25,7 @@ type CreateBluetoothToken = () => Promise<string>;
 type Options = {
   transport: BluetoothTransport;
   selectedDevice$: Observable<DeviceInfo>;
+  osVersion$: Observable<OSVersion>;
   createBluetoothToken: CreateBluetoothToken;
 };
 
@@ -32,6 +33,7 @@ export class BluetoothClient {
   transport: BluetoothTransport;
   deviceInfo: DeviceInfo;
   selectedDevice$ = new ReplaySubject<DeviceInfo>(1);
+  osVersion$ = new ReplaySubject<OSVersion>(1);
   isAuthenticated$ = new ReplaySubject<IsAuthenticated>(1);
 
   _focus$: Observable<any>;
@@ -62,13 +64,15 @@ export class BluetoothClient {
     }
 
     // Auto Connect
-    this.transport._autoConnect(this.selectedDevice$).subscribe({
-      error: (error: Error) => {
-        this.transport.addLog(
-          `Auto connect: error -> ${error?.message ?? error}`
-        );
-      }
-    });
+    this.transport
+      ._autoConnect(this.selectedDevice$, this.osVersion$)
+      .subscribe({
+        error: (error: Error) => {
+          this.transport.addLog(
+            `Auto connect: error -> ${error?.message ?? error}`
+          );
+        }
+      });
 
     // Auto authentication
     if (typeof createBluetoothToken === "function") {
@@ -79,7 +83,10 @@ export class BluetoothClient {
     }
 
     // Auto manage action notifications
-    this.transport._autoToggleActionNotifications(this.selectedDevice$);
+    this.transport._autoToggleActionNotifications(
+      this.selectedDevice$,
+      this.osVersion$
+    );
 
     // Multicast metrics (share)
     this._focus$ = this._subscribeWhileAuthenticated("focus");
@@ -109,8 +116,9 @@ export class BluetoothClient {
     );
 
     return this.selectedDevice$.pipe(
-      switchMap((selectedDevice) =>
-        !osHasBluetoothSupport(selectedDevice)
+      combineLatestWith(this.osVersion$),
+      switchMap(([selectedDevice, osVersion]) =>
+        !osHasBluetoothSupport(selectedDevice, osVersion)
           ? EMPTY
           : this.connection().pipe(
               switchMap((connection) =>
@@ -138,7 +146,8 @@ export class BluetoothClient {
 
   async _hasBluetoothSupport(): Promise<boolean> {
     const selectedDevice = await firstValueFrom(this.selectedDevice$);
-    return osHasBluetoothSupport(selectedDevice);
+    const osVersion = await firstValueFrom(this.osVersion$);
+    return osHasBluetoothSupport(selectedDevice, osVersion);
   }
 
   async authenticate(token: string): Promise<IsAuthenticatedResponse> {
@@ -239,8 +248,9 @@ export class BluetoothClient {
 
   _subscribeWhileAuthenticated(characteristicName: string): Observable<any> {
     return this.selectedDevice$.pipe(
-      switchMap((selectedDevice) =>
-        !osHasBluetoothSupport(selectedDevice)
+      combineLatestWith(this.osVersion$),
+      switchMap(([selectedDevice, osVersion]) =>
+        !osHasBluetoothSupport(selectedDevice, osVersion)
           ? EMPTY
           : this.isAuthenticated$.pipe(
               distinctUntilChanged(),

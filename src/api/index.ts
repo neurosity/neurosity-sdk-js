@@ -16,7 +16,7 @@ import { EmailAndPassword } from "../types/credentials";
 import { ChangeSettings } from "../types/settings";
 import { Subscription } from "../types/subscriptions";
 import { DeviceStatus } from "../types/status";
-import { DeviceInfo, DeviceSelector } from "../types/deviceInfo";
+import { DeviceInfo, DeviceSelector, OSVersion } from "../types/deviceInfo";
 import { UserClaims } from "../types/user";
 import { OAuthRemoveResponse } from "../types/oauth";
 import { Experiment } from "../types/experiment";
@@ -37,6 +37,7 @@ export class CloudClient implements Client {
   protected timesync: Timesync;
   protected subscriptionManager: SubscriptionManager;
   protected status$: Observable<DeviceStatus>;
+  protected osVersion$: Observable<OSVersion>;
 
   /**
    * @internal
@@ -54,6 +55,10 @@ export class CloudClient implements Client {
     this.status$ = heartbeatAwareStatus(
       this.observeNamespace("status").pipe(share())
     ).pipe(filterInternalKeys(), shareReplay(1));
+
+    this.osVersion$ = this.observeNamespace("info/osVersion").pipe(
+      shareReplay(1)
+    );
 
     this.firebaseUser.onAuthStateChanged().subscribe((user) => {
       this.user = user;
@@ -93,6 +98,10 @@ export class CloudClient implements Client {
     return this._selectedDevice
       .asObservable()
       .pipe(filter((value) => value !== undefined));
+  }
+
+  public osVersion(): Observable<OSVersion> {
+    return this.osVersion$;
   }
 
   // Automatically select device when user logs in

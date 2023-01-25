@@ -1,8 +1,11 @@
 import semverGte from "semver/functions/gte";
 
-import { DeviceInfo } from "../../../types/deviceInfo";
+import { DeviceInfo, OSVersion } from "../../../types/deviceInfo";
 
-export function osHasBluetoothSupport(selectedDevice: DeviceInfo) {
+export function osHasBluetoothSupport(
+  selectedDevice: DeviceInfo,
+  osVersion?: OSVersion
+) {
   if (!selectedDevice) {
     return false;
   }
@@ -18,5 +21,7 @@ export function osHasBluetoothSupport(selectedDevice: DeviceInfo) {
     return false;
   }
 
-  return semverGte(selectedDevice.osVersion, "16.0.0");
+  // `osVersion` is updated in real time,
+  // unlike accessing via `selectedDevice.osVersion`
+  return semverGte(osVersion ?? selectedDevice.osVersion, "16.0.0");
 }

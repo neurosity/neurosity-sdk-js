@@ -4,7 +4,7 @@ import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
 import { BLUETOOTH_COMPANY_IDENTIFIER_HEX } from "@neurosity/ipk";
 import { BehaviorSubject, defer, merge, of, ReplaySubject, timer } from "rxjs";
 import { fromEventPattern, Observable, EMPTY, NEVER } from "rxjs";
-import { switchMap, map, filter, tap } from "rxjs/operators";
+import { switchMap, map, filter, tap, combineLatestWith } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged } from "rxjs/operators";
 import { take, share } from "rxjs/operators";
 
@@ -17,7 +17,7 @@ import { ActionOptions, SubscribeOptions } from "../types";
 import { TRANSPORT_TYPE, BLUETOOTH_CONNECTION } from "../types";
 import { DEFAULT_ACTION_RESPONSE_TIMEOUT } from "../constants";
 import { CHARACTERISTIC_UUIDS_TO_NAMES } from "../constants";
-import { DeviceInfo } from "../../../types/deviceInfo";
+import { DeviceInfo, OSVersion } from "../../../types/deviceInfo";
 import { osHasBluetoothSupport } from "../utils/osHasBluetoothSupport";
 
 type Options = {
@@ -82,7 +82,10 @@ export class WebBluetoothTransport implements BluetoothTransport {
     return await navigator.bluetooth.getDevices();
   }
 
-  _autoConnect(selectedDevice$: Observable<DeviceInfo>): Observable<void> {
+  _autoConnect(
+    selectedDevice$: Observable<DeviceInfo>,
+    osVersion$: Observable<OSVersion>
+  ): Observable<void> {
     return this._isAutoConnectEnabled$.pipe(
       switchMap((isAutoConnectEnabled) =>
         isAutoConnectEnabled
@@ -92,8 +95,11 @@ export class WebBluetoothTransport implements BluetoothTransport {
             )
           : NEVER
       ),
-      switchMap((selectedDevice) =>
-        osHasBluetoothSupport(selectedDevice) ? of(selectedDevice) : EMPTY
+      combineLatestWith(osVersion$),
+      switchMap(([selectedDevice, osVersion]) =>
+        osHasBluetoothSupport(selectedDevice, osVersion)
+          ? of(selectedDevice)
+          : EMPTY
       ),
       switchMap(async (selectedDevice) => {
         const { deviceNickname } = selectedDevice;
@@ -444,7 +450,8 @@ export class WebBluetoothTransport implements BluetoothTransport {
   }
 
   async _autoToggleActionNotifications(
-    selectedDevice$: Observable<DeviceInfo>
+    selectedDevice$: Observable<DeviceInfo>,
+    osVersion$: Observable<OSVersion>
   ): Promise<void> {
     let actionsCharacteristic: BluetoothRemoteGATTCharacteristic;
     let started: boolean = false;
@@ -495,8 +502,11 @@ export class WebBluetoothTransport implements BluetoothTransport {
 
     selectedDevice$
       .pipe(
-        switchMap((selectedDevice: DeviceInfo) =>
-          !osHasBluetoothSupport(selectedDevice) ? EMPTY : sideEffects$
+        combineLatestWith(osVersion$),
+        switchMap(([selectedDevice, osVersion]: [DeviceInfo, OSVersion]) =>
+          !osHasBluetoothSupport(selectedDevice, osVersion)
+            ? EMPTY
+            : sideEffects$
         )
       )
       .subscribe();

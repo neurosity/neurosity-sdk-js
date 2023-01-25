@@ -2,7 +2,7 @@ import { Observable, Subject } from "rxjs";
 
 import { BLUETOOTH_CONNECTION, TRANSPORT_TYPE } from "./types";
 import { Action } from "../../types/actions";
-import { DeviceInfo } from "../../types/deviceInfo";
+import { DeviceInfo, OSVersion } from "../../types/deviceInfo";
 import { Peripheral } from "./react-native/types/BleManagerTypes";
 
 export type DeviceNicknameOrPeripheral = string | Peripheral;
@@ -15,7 +15,10 @@ export interface BluetoothTransport {
   connect(
     deviceNicknameORPeripheral?: DeviceNicknameOrPeripheral
   ): Promise<void>;
-  _autoConnect(selectedDevice$: Observable<DeviceInfo>): Observable<void>;
+  _autoConnect(
+    selectedDevice$: Observable<DeviceInfo>,
+    osVersion: Observable<OSVersion>
+  ): Observable<void>;
   disconnect(): Promise<void>;
   connection(): Observable<BLUETOOTH_CONNECTION>;
   requestDevice?(): any;

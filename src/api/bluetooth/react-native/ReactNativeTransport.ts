@@ -5,7 +5,7 @@ import { BehaviorSubject, defer, merge, of, ReplaySubject, timer } from "rxjs";
 import { fromEventPattern, Observable, NEVER, EMPTY } from "rxjs";
 import { switchMap, map, filter, takeUntil, tap } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged, finalize } from "rxjs/operators";
-import { take, share, scan, distinct } from "rxjs/operators";
+import { take, share, scan, distinct, combineLatestWith } from "rxjs/operators";
 
 import { BluetoothTransport } from "../BluetoothTransport";
 import { create6DigitPin } from "../utils/create6DigitPin";
@@ -21,7 +21,7 @@ import { DEFAULT_ACTION_RESPONSE_TIMEOUT } from "../constants";
 import { CHARACTERISTIC_UUIDS_TO_NAMES } from "../constants";
 import { ANDROID_MAX_MTU } from "../constants";
 import { REACT_NATIVE_MAX_BYTE_SIZE } from "../constants";
-import { DeviceInfo } from "../../../types/deviceInfo";
+import { DeviceInfo, OSVersion } from "../../../types/deviceInfo";
 import { osHasBluetoothSupport } from "../utils/osHasBluetoothSupport";
 
 type Characteristic = {
@@ -164,7 +164,10 @@ export class ReactNativeTransport implements BluetoothTransport {
     return connection === BLUETOOTH_CONNECTION.CONNECTED;
   }
 
-  _autoConnect(selectedDevice$: Observable<DeviceInfo>): Observable<void> {
+  _autoConnect(
+    selectedDevice$: Observable<DeviceInfo>,
+    osVersion$: Observable<OSVersion>
+  ): Observable<void> {
     const selectedDeviceAfterDisconnect$ = this.onDisconnected$.pipe(
       switchMap(() => selectedDevice$)
     );
@@ -175,8 +178,9 @@ export class ReactNativeTransport implements BluetoothTransport {
           ? merge(selectedDevice$, selectedDeviceAfterDisconnect$)
           : NEVER
       ),
-      switchMap((selectedDevice) =>
-        !osHasBluetoothSupport(selectedDevice)
+      combineLatestWith(osVersion$),
+      switchMap(([selectedDevice, osVersion]) =>
+        !osHasBluetoothSupport(selectedDevice, osVersion)
           ? NEVER
           : this.scan().pipe(
               switchMap((peripherals: Peripheral[]) => {
@@ -570,7 +574,8 @@ export class ReactNativeTransport implements BluetoothTransport {
   }
 
   async _autoToggleActionNotifications(
-    selectedDevice$: Observable<DeviceInfo>
+    selectedDevice$: Observable<DeviceInfo>,
+    osVersion$: Observable<OSVersion>
   ): Promise<void> {
     let started: boolean = false;
 
@@ -626,8 +631,11 @@ export class ReactNativeTransport implements BluetoothTransport {
 
     selectedDevice$
       .pipe(
-        switchMap((selectedDevice: DeviceInfo) =>
-          !osHasBluetoothSupport(selectedDevice) ? EMPTY : sideEffects$
+        combineLatestWith(osVersion$),
+        switchMap(([selectedDevice, osVersion]: [DeviceInfo, OSVersion]) =>
+          !osHasBluetoothSupport(selectedDevice, osVersion)
+            ? EMPTY
+            : sideEffects$
         )
       )
       .subscribe();
