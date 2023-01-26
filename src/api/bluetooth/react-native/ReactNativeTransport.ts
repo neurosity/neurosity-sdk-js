@@ -1,11 +1,11 @@
 import { BLUETOOTH_PRIMARY_SERVICE_UUID_STRING } from "@neurosity/ipk";
 import { BLUETOOTH_CHUNK_DELIMITER } from "@neurosity/ipk";
 import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
-import { BehaviorSubject, defer, merge, of, ReplaySubject, timer } from "rxjs";
-import { fromEventPattern, Observable, NEVER, EMPTY } from "rxjs";
+import { Observable, BehaviorSubject, ReplaySubject, NEVER } from "rxjs";
+import { defer, merge, of, timer, fromEventPattern } from "rxjs";
 import { switchMap, map, filter, takeUntil, tap } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged, finalize } from "rxjs/operators";
-import { take, share, scan, distinct, combineLatestWith } from "rxjs/operators";
+import { take, share, scan, distinct } from "rxjs/operators";
 
 import { BluetoothTransport } from "../BluetoothTransport";
 import { create6DigitPin } from "../utils/create6DigitPin";
@@ -164,10 +164,7 @@ export class ReactNativeTransport implements BluetoothTransport {
     return connection === BLUETOOTH_CONNECTION.CONNECTED;
   }
 
-  _autoConnect(
-    selectedDevice$: Observable<DeviceInfo>,
-    osVersion$: Observable<OSVersion>
-  ): Observable<void> {
+  _autoConnect(selectedDevice$: Observable<DeviceInfo>): Observable<void> {
     const selectedDeviceAfterDisconnect$ = this.onDisconnected$.pipe(
       switchMap(() => selectedDevice$)
     );
@@ -178,22 +175,18 @@ export class ReactNativeTransport implements BluetoothTransport {
           ? merge(selectedDevice$, selectedDeviceAfterDisconnect$)
           : NEVER
       ),
-      combineLatestWith(osVersion$),
-      switchMap(([selectedDevice, osVersion]) =>
-        !osHasBluetoothSupport(selectedDevice, osVersion)
-          ? NEVER
-          : this.scan().pipe(
-              switchMap((peripherals: Peripheral[]) => {
-                const peripheralMatch = peripherals.find(
-                  (peripheral) =>
-                    peripheral.name === selectedDevice?.deviceNickname
-                );
+      switchMap((selectedDevice) =>
+        this.scan().pipe(
+          switchMap((peripherals: Peripheral[]) => {
+            const peripheralMatch = peripherals.find(
+              (peripheral) => peripheral.name === selectedDevice?.deviceNickname
+            );
 
-                return peripheralMatch ? of(peripheralMatch) : NEVER;
-              }),
-              distinct((peripheral: Peripheral) => peripheral.id),
-              take(1)
-            )
+            return peripheralMatch ? of(peripheralMatch) : NEVER;
+          }),
+          distinct((peripheral: Peripheral) => peripheral.id),
+          take(1)
+        )
       ),
       switchMap(async (peripheral) => {
         return await this.connect(peripheral);
@@ -573,13 +566,10 @@ export class ReactNativeTransport implements BluetoothTransport {
     );
   }
 
-  async _autoToggleActionNotifications(
-    selectedDevice$: Observable<DeviceInfo>,
-    osVersion$: Observable<OSVersion>
-  ): Promise<void> {
+  _autoToggleActionNotifications(): Observable<any> {
     let started: boolean = false;
 
-    const sideEffects$ = this.connection$.asObservable().pipe(
+    return this.connection$.asObservable().pipe(
       switchMap((connection) =>
         connection === BLUETOOTH_CONNECTION.CONNECTED
           ? this.pendingActions$
@@ -628,17 +618,6 @@ export class ReactNativeTransport implements BluetoothTransport {
         }
       })
     );
-
-    selectedDevice$
-      .pipe(
-        combineLatestWith(osVersion$),
-        switchMap(([selectedDevice, osVersion]: [DeviceInfo, OSVersion]) =>
-          !osHasBluetoothSupport(selectedDevice, osVersion)
-            ? EMPTY
-            : sideEffects$
-        )
-      )
-      .subscribe();
   }
 
   async dispatchAction({

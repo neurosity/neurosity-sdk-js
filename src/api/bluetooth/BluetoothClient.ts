@@ -1,18 +1,16 @@
-import { defer, Observable, firstValueFrom, timer } from "rxjs";
-import { ReplaySubject, EMPTY } from "rxjs";
-import { switchMap, share, tap, combineLatestWith } from "rxjs/operators";
-import { distinctUntilChanged } from "rxjs/operators";
+import { defer, Observable, timer } from "rxjs";
+import { ReplaySubject, firstValueFrom, EMPTY } from "rxjs";
+import { switchMap, share, tap, distinctUntilChanged } from "rxjs/operators";
 
 import { WebBluetoothTransport } from "./web/WebBluetoothTransport";
 import { ReactNativeTransport } from "./react-native/ReactNativeTransport";
 import { csvBufferToEpoch } from "./utils/csvBufferToEpoch";
-import { DeviceInfo, OSVersion } from "../../types/deviceInfo";
+import { DeviceInfo } from "../../types/deviceInfo";
 import { Action } from "../../types/actions";
 import { Epoch } from "../../types/epoch";
 import { BLUETOOTH_CONNECTION } from "./types";
 import { DeviceNicknameOrPeripheral } from "./BluetoothTransport";
 import { Peripheral } from "./react-native/types/BleManagerTypes";
-import { osHasBluetoothSupport } from "./utils/osHasBluetoothSupport";
 
 export type BluetoothTransport = WebBluetoothTransport | ReactNativeTransport;
 
@@ -25,7 +23,7 @@ type CreateBluetoothToken = () => Promise<string>;
 type Options = {
   transport: BluetoothTransport;
   selectedDevice$: Observable<DeviceInfo>;
-  osVersion$: Observable<OSVersion>;
+  osHasBluetoothSupport$: Observable<boolean>;
   createBluetoothToken: CreateBluetoothToken;
 };
 
@@ -33,7 +31,7 @@ export class BluetoothClient {
   transport: BluetoothTransport;
   deviceInfo: DeviceInfo;
   selectedDevice$ = new ReplaySubject<DeviceInfo>(1);
-  osVersion$ = new ReplaySubject<OSVersion>(1);
+  osHasBluetoothSupport$ = new ReplaySubject<boolean>(1);
   isAuthenticated$ = new ReplaySubject<IsAuthenticated>(1);
 
   _focus$: Observable<any>;
@@ -50,7 +48,12 @@ export class BluetoothClient {
   _wifiConnections$: Observable<any>;
 
   constructor(options: Options) {
-    const { transport, selectedDevice$, createBluetoothToken } = options ?? {};
+    const {
+      transport,
+      selectedDevice$,
+      osHasBluetoothSupport$,
+      createBluetoothToken
+    } = options ?? {};
 
     if (!transport) {
       throw new Error(`No bluetooth transport provided.`);
@@ -63,9 +66,19 @@ export class BluetoothClient {
       selectedDevice$.subscribe(this.selectedDevice$);
     }
 
-    // Auto Connect
-    this.transport
-      ._autoConnect(this.selectedDevice$, this.osVersion$)
+    // Pass events to the internal osHasBluetoothSupport$ if osHasBluetoothSupport$ is passed via options
+    if (osHasBluetoothSupport$) {
+      osHasBluetoothSupport$.subscribe(this.osHasBluetoothSupport$);
+    }
+
+    this.osHasBluetoothSupport$
+      .pipe(
+        switchMap((osHasBluetoothSupport: boolean) =>
+          osHasBluetoothSupport
+            ? this.transport._autoConnect(this.selectedDevice$)
+            : EMPTY
+        )
+      )
       .subscribe({
         error: (error: Error) => {
           this.transport.addLog(
@@ -83,10 +96,15 @@ export class BluetoothClient {
     }
 
     // Auto manage action notifications
-    this.transport._autoToggleActionNotifications(
-      this.selectedDevice$,
-      this.osVersion$
-    );
+    this.osHasBluetoothSupport$
+      .pipe(
+        switchMap((osHasBluetoothSupport: boolean) =>
+          osHasBluetoothSupport
+            ? this.transport._autoToggleActionNotifications()
+            : EMPTY
+        )
+      )
+      .subscribe();
 
     // Multicast metrics (share)
     this._focus$ = this._subscribeWhileAuthenticated("focus");
@@ -115,28 +133,24 @@ export class BluetoothClient {
       })
     );
 
-    return this.selectedDevice$.pipe(
-      combineLatestWith(this.osVersion$),
-      switchMap(([selectedDevice, osVersion]) =>
-        !osHasBluetoothSupport(selectedDevice, osVersion)
-          ? EMPTY
-          : this.connection().pipe(
-              switchMap((connection) =>
-                connection === BLUETOOTH_CONNECTION.CONNECTED
-                  ? reauthenticateInterval$
-                  : EMPTY
-              ),
-              switchMap(async () => await this.isAuthenticated()),
-              tap(async ([isAuthenticated]) => {
-                if (!isAuthenticated) {
-                  const token = await createBluetoothToken();
-                  await this.authenticate(token);
-                } else {
-                  this.transport.addLog(`Already authenticated`);
-                }
-              })
-            )
-      )
+    return this.osHasBluetoothSupport$.pipe(
+      switchMap((osHasBluetoothSupport) =>
+        osHasBluetoothSupport ? this.connection() : EMPTY
+      ),
+      switchMap((connection) =>
+        connection === BLUETOOTH_CONNECTION.CONNECTED
+          ? reauthenticateInterval$
+          : EMPTY
+      ),
+      switchMap(async () => await this.isAuthenticated()),
+      tap(async ([isAuthenticated]) => {
+        if (!isAuthenticated) {
+          const token = await createBluetoothToken();
+          await this.authenticate(token);
+        } else {
+          this.transport.addLog(`Already authenticated`);
+        }
+      })
     );
   }
 
@@ -145,9 +159,7 @@ export class BluetoothClient {
   }
 
   async _hasBluetoothSupport(): Promise<boolean> {
-    const selectedDevice = await firstValueFrom(this.selectedDevice$);
-    const osVersion = await firstValueFrom(this.osVersion$);
-    return osHasBluetoothSupport(selectedDevice, osVersion);
+    return await firstValueFrom(this.osHasBluetoothSupport$);
   }
 
   async authenticate(token: string): Promise<IsAuthenticatedResponse> {
@@ -247,21 +259,17 @@ export class BluetoothClient {
   }
 
   _subscribeWhileAuthenticated(characteristicName: string): Observable<any> {
-    return this.selectedDevice$.pipe(
-      combineLatestWith(this.osVersion$),
-      switchMap(([selectedDevice, osVersion]) =>
-        !osHasBluetoothSupport(selectedDevice, osVersion)
-          ? EMPTY
-          : this.isAuthenticated$.pipe(
-              distinctUntilChanged(),
-              switchMap((isAuthenticated) =>
-                isAuthenticated
-                  ? this.transport.subscribeToCharacteristic({
-                      characteristicName
-                    })
-                  : EMPTY
-              )
-            )
+    return this.osHasBluetoothSupport$.pipe(
+      switchMap((osHasBluetoothSupport) =>
+        osHasBluetoothSupport ? this.isAuthenticated$ : EMPTY
+      ),
+      distinctUntilChanged(),
+      switchMap((isAuthenticated) =>
+        isAuthenticated
+          ? this.transport.subscribeToCharacteristic({
+              characteristicName
+            })
+          : EMPTY
       ),
       share()
     );
