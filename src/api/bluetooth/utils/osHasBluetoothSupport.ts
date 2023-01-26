@@ -1,4 +1,5 @@
 import semverGte from "semver/functions/gte";
+import valid from "semver/functions/valid";
 
 import { DeviceInfo, OSVersion } from "../../../types/deviceInfo";
 

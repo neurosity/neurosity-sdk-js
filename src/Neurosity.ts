@@ -1,7 +1,7 @@
 import { combineLatest, Observable, of, throwError } from "rxjs";
 import { ReplaySubject, firstValueFrom, EMPTY } from "rxjs";
-import { distinctUntilChanged, map, switchMap } from "rxjs/operators";
-import { combineLatestWith } from "rxjs/operators";
+import { map, startWith, switchMap } from "rxjs/operators";
+import { distinctUntilChanged } from "rxjs/operators";
 import isEqual from "fast-deep-equal";
 import { CloudClient, createUser } from "./api/index";
 import { credentialWithLink, SERVER_TIMESTAMP } from "./api/index";
@@ -128,7 +128,7 @@ export class Neurosity {
     if (!!bluetoothTransport) {
       this.bluetoothClient = new BluetoothClient({
         selectedDevice$: this.onDeviceChange(),
-        osVersion$: this.osVersion(),
+        osHasBluetoothSupport$: this._osHasBluetoothSupport(),
         createBluetoothToken: this.createBluetoothToken.bind(this),
         transport: bluetoothTransport
       });
@@ -173,6 +173,21 @@ export class Neurosity {
   }
 
   /**
+   *
+   * @hidden
+   */
+  _osHasBluetoothSupport() {
+    return combineLatest({
+      selectedDevice: this.onDeviceChange(),
+      osVersion: this.osVersion().pipe(startWith(null))
+    }).pipe(
+      map(({ selectedDevice, osVersion }) =>
+        osHasBluetoothSupport(selectedDevice, osVersion)
+      )
+    );
+  }
+
+  /**
    * Subscribe to the device's streaming state changes and the current strategy
    *
    * Streams the current mode of streaming (wifi or bluetooth).
@@ -194,16 +209,17 @@ export class Neurosity {
 
     return this.streamingMode$.pipe(
       switchMap((streamingMode: STREAMING_MODE) => {
-        return this.onDeviceChange().pipe(
-          combineLatestWith(this.osVersion()),
-          switchMap(([selectDevice, osVersion]) => {
-            if (!selectDevice) {
+        return combineLatest({
+          selectedDevice: this.onDeviceChange(),
+          osHasBluetoothSupport: this._osHasBluetoothSupport()
+        }).pipe(
+          switchMap(({ selectedDevice, osHasBluetoothSupport }) => {
+            if (!selectedDevice) {
               return EMPTY;
             }
 
             const isUnableToUseBluetooth =
-              this.isMissingBluetoothTransport ||
-              !osHasBluetoothSupport(selectDevice, osVersion);
+              this.isMissingBluetoothTransport || !osHasBluetoothSupport;
 
             if (isUnableToUseBluetooth) {
               return this.cloudClient.status().pipe(
