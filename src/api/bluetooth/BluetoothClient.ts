@@ -186,12 +186,22 @@ export class BluetoothClient {
   }
 
   async isAuthenticated(): Promise<IsAuthenticatedResponse> {
-    const [isAuthenticated, expiresIn] =
-      await this.transport.readCharacteristic("auth", true);
+    try {
+      const [isAuthenticated, expiresIn] =
+        await this.transport.readCharacteristic("auth", true);
 
-    this.isAuthenticated$.next(isAuthenticated);
+      this.isAuthenticated$.next(isAuthenticated);
 
-    return [isAuthenticated, expiresIn];
+      return [isAuthenticated, expiresIn];
+    } catch (error) {
+      const failedResponse: IsAuthenticatedResponse = [false, null];
+
+      this.transport.addLog(`Authentication error -> ${error}`);
+
+      this.isAuthenticated$.next(false);
+
+      return failedResponse;
+    }
   }
 
   // Method for React Native only
