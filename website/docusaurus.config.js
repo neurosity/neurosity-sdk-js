@@ -5,24 +5,20 @@ module.exports = {
   baseUrl: "/",
   organizationName: "neurosity",
   projectName: "neurosity-sdk-js",
-  // staticDirectories: ['public', 'static'],
   scripts: [
     "https://buttons.github.io/buttons.js",
     "https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js",
     "/js/code-block-buttons.js"
   ],
-  stylesheets: [
-    "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700",
-    "/css/code-block-buttons.css"
-  ],
+  stylesheets: ["/css/code-block-buttons.css"],
   favicon: "img/favicon.png",
   customFields: {
     repoUrl: "https://github.com/neurosity/neurosity-sdk-js",
     users: [
       {
-        caption: "User1",
-        image: "/img/undraw_open_source.svg",
-        infoLink: "https://www.facebook.com",
+        caption: "Neurosity SDK",
+        image: "img/social-preview.jpg",
+        infoLink: "https://github.com/neurosity/neurosity-sdk-js",
         pinned: true
       }
     ]

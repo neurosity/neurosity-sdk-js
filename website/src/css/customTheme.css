@@ -1,5 +1,22 @@
+/* your custom css */
+@font-face {
+  font-family: "Eina02-Regular";
+  src: url("/static/fonts/Eina02-Regular.ttf");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Eina02-SemiBold";
+  src: url("/static/fonts/Eina02-SemiBold.ttf");
+  font-style: medium;
+  font-weight: 500;
+  font-display: swap;
+}
+
 :root {
-  --ifm-font-family-base: "Eina02-Regular";
+  --ifm-font-family-base: "Eina02-Regular", Helvetica, Arial, sans-serif;
   --ifm-color-primary-lightest: #000000;
   --ifm-color-primary-lighter: #000000;
   --ifm-color-primary-light: #000000;
