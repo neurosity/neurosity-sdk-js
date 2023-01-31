@@ -41,6 +41,14 @@ html[data-theme="dark"] {
   --ifm-footer-background-color: #000000;
   --docusaurus-highlighted-code-line-bg: rgba(255, 255, 255, 0.05);
   --ifm-pre-background: #0a0d0f !important;
+  --ifm-font-color-base: rgb(92, 113, 123);
+  --ifm-heading-color: rgb(42, 199, 220);
+  --ifm-navbar-link-color: #ffffff;
+}
+
+.markdown {
+  --ifm-link-decoration: underline;
+  --ifm-link-color: rgb(92, 113, 123);
 }
 
 .footer {
