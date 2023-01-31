@@ -17,26 +17,24 @@ The quickest way to implement OAuth is to fork the [example project](https://git
 
 The following individual scopes will allow your app to access certain Neurosity resources.
 
-| Scope                    | Description               |
-| ------------------------ | ------------------------- |
-| read:accelerometer       | Live Accelerometer        |
-| write:brainwave-markers  | Add Brainwave Markers     |
-| read:brainwaves          | Live Brainwaves           |
-| write:brainwaves         | Record Brainwaves         |
-| read:memories:brainwaves | Read Brainwave Datasets   |
-| read:calm                | Live Calm                 |
-| read:memories:calm       | Historical Calm           |
-| read:focus               | Live Focus                |
-| read:memories:focus      | Historical Focus          |
-| read:devices-info        | Live Device(s) Info       |
-| write:haptics            | Activate Haptics          |
-| read:kinesis             | Live Kinesis              |
-| write:kinesis            | Create Kinesis Trainings  |
-| read:devices-settings    | Read Device(s) Settings   |
-| write:devices-settings   | Change Device(s) Settings |
-| write:wifi-settings      | Reset Wi-Fi Settings      |
-| read:signal-quality      | Live Signal Quality       |
-| read:status              | Live Device(s) Status     |
+| Scope                    | Description              |
+| ------------------------ | ------------------------ |
+| read:accelerometer       | Live Accelerometer       |
+| write:brainwave-markers  | Add Brainwave Markers    |
+| read:brainwaves          | Live Brainwaves          |
+| write:brainwaves         | Record Brainwaves        |
+| read:memories:brainwaves | Read Brainwave Datasets  |
+| read:calm                | Live Calm                |
+| read:memories:calm       | Historical Calm          |
+| read:focus               | Live Focus               |
+| read:memories:focus      | Historical Focus         |
+| read:devices-info        | Live Device(s) Info      |
+| write:haptics            | Activate Haptics         |
+| read:kinesis             | Live Kinesis             |
+| write:kinesis            | Create Kinesis Trainings |
+| read:devices-settings    | Read Device(s) Settings  |
+| read:signal-quality      | Live Signal Quality      |
+| read:status              | Live Device(s) Status    |
 
 > Only request scopes that you inted to use in your app.
 
