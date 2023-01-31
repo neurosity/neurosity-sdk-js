@@ -3,7 +3,7 @@ id: authentication
 title: Authentication
 ---
 
-We take data privacy very seriously at Neurosity. Should you find a bug or vulnerability, please [submit a request](support.neurosity.co), and we will take your inquiry seriously and work as fast as possible to fix the issue for all.
+We take data privacy very seriously at Neurosity. Should you find a bug or vulnerability, please [submit a request](https://support.neurosity.co), and we will take your inquiry seriously and work as fast as possible to fix the issue for all.
 
 There are two ways to authenticate with Neurosity: Email and password and ID Token
 
