@@ -2,7 +2,7 @@ import { BLUETOOTH_PRIMARY_SERVICE_UUID_HEX } from "@neurosity/ipk";
 import { BLUETOOTH_CHUNK_DELIMITER } from "@neurosity/ipk";
 import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
 import { BLUETOOTH_COMPANY_IDENTIFIER_HEX } from "@neurosity/ipk";
-import { Observable, BehaviorSubject, ReplaySubject } from "rxjs";
+import { Observable, BehaviorSubject, ReplaySubject, identity } from "rxjs";
 import { defer, merge, timer, fromEventPattern, NEVER } from "rxjs";
 import { switchMap, map, filter, tap } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged } from "rxjs/operators";
@@ -11,13 +11,13 @@ import { take, share } from "rxjs/operators";
 import { BluetoothTransport } from "../BluetoothTransport";
 import { isWebBluetoothSupported } from "./isWebBluetoothSupported";
 import { create6DigitPin } from "../utils/create6DigitPin";
-import { stitchChunks } from "../utils/stitch";
 import { encode, decode } from "../utils/encoding";
 import { ActionOptions, SubscribeOptions } from "../types";
 import { TRANSPORT_TYPE, BLUETOOTH_CONNECTION } from "../types";
 import { DEFAULT_ACTION_RESPONSE_TIMEOUT } from "../constants";
 import { CHARACTERISTIC_UUIDS_TO_NAMES } from "../constants";
 import { DeviceInfo } from "../../../types/deviceInfo";
+import { decodeJSONChunks } from "../utils/decodeJSONChunks";
 
 type Options = {
   autoConnect?: boolean;
@@ -284,7 +284,8 @@ export class WebBluetoothTransport implements BluetoothTransport {
 
   subscribeToCharacteristic({
     characteristicName,
-    manageNotifications = true
+    manageNotifications = true,
+    skipJSONDecoding = false
   }: SubscribeOptions): Observable<any> {
     const data$ = defer(() =>
       this.getCharacteristicByName(characteristicName)
@@ -329,45 +330,23 @@ export class WebBluetoothTransport implements BluetoothTransport {
           }
         );
       }),
-      map((event: any): string => {
-        const buffer: Uint8Array = event.target.value;
-        const decoded = decode(this.type, buffer);
-
-        this.addLog(
-          `Received chunk with buffer size of ${buffer.byteLength} and decoded size ${decoded.length} for ${characteristicName} characteristic: \n${decoded}`
-        );
-
-        return decoded;
-      }),
-      stitchChunks({ delimiter: BLUETOOTH_CHUNK_DELIMITER }),
-      map((payload: any) => {
-        try {
-          return JSON.parse(payload);
-        } catch (error) {
-          this.addLog(
-            `Failed to parse JSON for ${characteristicName} characteristic. Falling back to unparsed string. ${
-              error?.message ?? error
-            }`
-          );
-
-          return payload;
-        }
-      })
-      // when streaming at ultra-low latency, the logs will slow down rendering
-      // tap((data) => {
-      //   this.addLog(
-      //     `Received data for ${characteristicName} characteristic: \n${JSON.stringify(
-      //       data,
-      //       null,
-      //       2
-      //     )}`
-      //   );
-      // })
+      map((event): Uint8Array => event.target.value)
     );
 
     return this.connection$.pipe(
       switchMap((connection) =>
-        connection === BLUETOOTH_CONNECTION.CONNECTED ? data$ : NEVER
+        connection === BLUETOOTH_CONNECTION.CONNECTED
+          ? data$.pipe(
+              skipJSONDecoding
+                ? identity // noop
+                : decodeJSONChunks({
+                    transportType: this.type,
+                    characteristicName,
+                    delimiter: BLUETOOTH_CHUNK_DELIMITER,
+                    addLog: (message: string) => this.addLog(message)
+                  })
+            )
+          : NEVER
       )
     );
   }
