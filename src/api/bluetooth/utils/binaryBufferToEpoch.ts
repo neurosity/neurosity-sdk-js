@@ -51,7 +51,7 @@ export function binaryBufferToSamples(
 ): UnaryFunction<any, any> {
   return pipe(
     mergeMap((arrayBuffer: Uint8Array): Observable<Sample> => {
-      const buffer = Buffer.from(arrayBuffer.buffer);
+      const buffer = Buffer.from(arrayBuffer);
       const decoded = decode(buffer, channelCount);
       return from(decoded); // `from` creates an Observable emission from each item (Sample) in the array
     })

@@ -294,7 +294,6 @@ export class ReactNativeTransport implements BluetoothTransport {
           peripheral?.advertising?.localName ?? peripheral.name ?? "";
 
         const manufactureDataString = decode(
-          this.type,
           peripheral?.advertising?.manufacturerData?.bytes ?? []
         )?.slice?.(2); // First 2 bytes are reserved for the Neurosity company code
 
@@ -460,8 +459,12 @@ export class ReactNativeTransport implements BluetoothTransport {
         }),
         filter(({ characteristic }) => characteristic === characteristicUUID),
         map(
-          ({ value }: { value: number[]; characteristic: string }): number[] =>
+          ({
             value
+          }: {
+            value: number[];
+            characteristic: string;
+          }): Uint8Array => new Uint8Array(value)
         )
       );
 
@@ -472,7 +475,6 @@ export class ReactNativeTransport implements BluetoothTransport {
               skipJSONDecoding
                 ? identity // noop
                 : decodeJSONChunks({
-                    transportType: this.type,
                     characteristicName,
                     delimiter: BLUETOOTH_CHUNK_DELIMITER,
                     addLog: (message: string) => this.addLog(message)
@@ -499,13 +501,13 @@ export class ReactNativeTransport implements BluetoothTransport {
     }
 
     try {
-      const value = await this.BleManager.read(
+      const value: number[] = await this.BleManager.read(
         peripheralId,
         serviceUUID,
         characteristicUUID
       );
 
-      const decodedValue = decode(this.type, value);
+      const decodedValue = decode(new Uint8Array(value));
       const data = parse ? JSON.parse(decodedValue) : decodedValue;
 
       this.addLog(

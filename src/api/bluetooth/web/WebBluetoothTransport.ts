@@ -330,7 +330,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
           }
         );
       }),
-      map((event): Uint8Array => event.target.value)
+      map((event): Uint8Array => event.target.value.buffer)
     );
 
     return this.connection$.pipe(
@@ -340,7 +340,6 @@ export class WebBluetoothTransport implements BluetoothTransport {
               skipJSONDecoding
                 ? identity // noop
                 : decodeJSONChunks({
-                    transportType: this.type,
                     characteristicName,
                     delimiter: BLUETOOTH_CHUNK_DELIMITER,
                     addLog: (message: string) => this.addLog(message)
@@ -369,9 +368,9 @@ export class WebBluetoothTransport implements BluetoothTransport {
         );
       }
 
-      const value: unknown = await characteristic.readValue();
-      const uint8Array = value as Uint8Array;
-      const decodedValue: string = decode(this.type, uint8Array);
+      const dataview: DataView = await characteristic.readValue();
+      const arrayBuffer = dataview.buffer as Uint8Array;
+      const decodedValue: string = decode(arrayBuffer);
       const data = parse ? JSON.parse(decodedValue) : decodedValue;
 
       this.addLog(

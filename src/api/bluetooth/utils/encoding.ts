@@ -21,14 +21,6 @@ export function encode(
   return encoder.encode(data);
 }
 
-export function decode(
-  transportType: TRANSPORT_TYPE,
-  data: BufferLike
-): string {
-  if (transportType === TRANSPORT_TYPE.REACT_NATIVE) {
-    // React Native outpouts a plain array of numbers and not a Uint8Array
-    return decoder.decode(new Uint8Array(data as number[]));
-  }
-
-  return decoder.decode(data as Uint8Array);
+export function decode(arrayBuffer: Uint8Array): string {
+  return decoder.decode(arrayBuffer);
 }
