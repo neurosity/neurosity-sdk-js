@@ -2,14 +2,13 @@ import { BLUETOOTH_PRIMARY_SERVICE_UUID_STRING } from "@neurosity/ipk";
 import { BLUETOOTH_CHUNK_DELIMITER } from "@neurosity/ipk";
 import { BLUETOOTH_DEVICE_NAME_PREFIXES } from "@neurosity/ipk";
 import { Observable, BehaviorSubject, ReplaySubject, NEVER } from "rxjs";
-import { defer, merge, of, timer, fromEventPattern } from "rxjs";
+import { defer, merge, of, timer, fromEventPattern, identity } from "rxjs";
 import { switchMap, map, filter, takeUntil, tap } from "rxjs/operators";
 import { shareReplay, distinctUntilChanged, finalize } from "rxjs/operators";
 import { take, share, scan, distinct } from "rxjs/operators";
 
 import { BluetoothTransport } from "../BluetoothTransport";
 import { create6DigitPin } from "../utils/create6DigitPin";
-import { stitchChunks } from "../utils/stitch";
 import { encode, decode } from "../utils/encoding";
 import { ActionOptions, SubscribeOptions } from "../types";
 import { TRANSPORT_TYPE, BLUETOOTH_CONNECTION } from "../types";
@@ -21,8 +20,8 @@ import { DEFAULT_ACTION_RESPONSE_TIMEOUT } from "../constants";
 import { CHARACTERISTIC_UUIDS_TO_NAMES } from "../constants";
 import { ANDROID_MAX_MTU } from "../constants";
 import { REACT_NATIVE_MAX_BYTE_SIZE } from "../constants";
-import { DeviceInfo, OSVersion } from "../../../types/deviceInfo";
-import { osHasBluetoothSupport } from "../utils/osHasBluetoothSupport";
+import { DeviceInfo } from "../../../types/deviceInfo";
+import { decodeJSONChunks } from "../utils/decodeJSONChunks";
 
 type Characteristic = {
   characteristicUUID: string;
@@ -409,7 +408,8 @@ export class ReactNativeTransport implements BluetoothTransport {
 
   subscribeToCharacteristic({
     characteristicName,
-    manageNotifications = true
+    manageNotifications = true,
+    skipJSONDecoding = false
   }: SubscribeOptions): Observable<any> {
     const getData = ({
       peripheralId,
@@ -459,29 +459,25 @@ export class ReactNativeTransport implements BluetoothTransport {
           }
         }),
         filter(({ characteristic }) => characteristic === characteristicUUID),
-        map(({ value }: { value: number[]; characteristic: string }): string =>
-          decode(this.type, value)
-        ),
-        stitchChunks({ delimiter: BLUETOOTH_CHUNK_DELIMITER }),
-        map((payload: any) => {
-          try {
-            return JSON.parse(payload);
-          } catch (error) {
-            this.addLog(
-              `Failed to parse JSON for ${characteristicName} characteristic. Falling back to unparsed string. ${
-                error?.message ?? error
-              }`
-            );
-
-            return payload;
-          }
-        })
+        map(
+          ({ value }: { value: number[]; characteristic: string }): number[] =>
+            value
+        )
       );
 
     return this.connection$.pipe(
       switchMap((connection) =>
         connection === BLUETOOTH_CONNECTION.CONNECTED
-          ? getData(this.getCharacteristicByName(characteristicName))
+          ? getData(this.getCharacteristicByName(characteristicName)).pipe(
+              skipJSONDecoding
+                ? identity // noop
+                : decodeJSONChunks({
+                    transportType: this.type,
+                    characteristicName,
+                    delimiter: BLUETOOTH_CHUNK_DELIMITER,
+                    addLog: (message: string) => this.addLog(message)
+                  })
+            )
           : NEVER
       )
     );

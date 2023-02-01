@@ -4,7 +4,7 @@ import { switchMap, share, tap, distinctUntilChanged } from "rxjs/operators";
 
 import { WebBluetoothTransport } from "./web/WebBluetoothTransport";
 import { ReactNativeTransport } from "./react-native/ReactNativeTransport";
-import { csvBufferToEpoch } from "./utils/csvBufferToEpoch";
+import { binaryBufferToEpoch } from "./utils/binaryBufferToEpoch";
 import { DeviceInfo } from "../../types/deviceInfo";
 import { Action } from "../../types/actions";
 import { Epoch } from "../../types/epoch";
@@ -110,9 +110,14 @@ export class BluetoothClient {
     this._focus$ = this._subscribeWhileAuthenticated("focus");
     this._calm$ = this._subscribeWhileAuthenticated("calm");
     this._accelerometer$ = this._subscribeWhileAuthenticated("accelerometer");
-    this._brainwavesRaw$ = this._subscribeWhileAuthenticated("raw");
-    this._brainwavesRawUnfiltered$ =
-      this._subscribeWhileAuthenticated("rawUnfiltered");
+    this._brainwavesRaw$ = this._subscribeWhileAuthenticated(
+      "raw",
+      true // skipJSONDecoding
+    );
+    this._brainwavesRawUnfiltered$ = this._subscribeWhileAuthenticated(
+      "rawUnfiltered",
+      true // skipJSONDecoding
+    );
     this._brainwavesPSD$ = this._subscribeWhileAuthenticated("psd");
     this._brainwavesPowerByBand$ =
       this._subscribeWhileAuthenticated("powerByBand");
@@ -268,7 +273,10 @@ export class BluetoothClient {
     return await getter();
   }
 
-  _subscribeWhileAuthenticated(characteristicName: string): Observable<any> {
+  _subscribeWhileAuthenticated(
+    characteristicName: string,
+    skipJSONDecoding = false
+  ): Observable<any> {
     return this.osHasBluetoothSupport$.pipe(
       switchMap((osHasBluetoothSupport) =>
         osHasBluetoothSupport ? this.isAuthenticated$ : EMPTY
@@ -277,7 +285,8 @@ export class BluetoothClient {
       switchMap((isAuthenticated) =>
         isAuthenticated
           ? this.transport.subscribeToCharacteristic({
-              characteristicName
+              characteristicName,
+              skipJSONDecoding
             })
           : EMPTY
       ),
@@ -303,14 +312,14 @@ export class BluetoothClient {
       case "raw":
         return defer(() => this.getInfo()).pipe(
           switchMap((deviceInfo: DeviceInfo) =>
-            this._brainwavesRaw$.pipe(csvBufferToEpoch(deviceInfo))
+            this._brainwavesRaw$.pipe(binaryBufferToEpoch(deviceInfo))
           )
         );
 
       case "rawUnfiltered":
         return defer(() => this.getInfo()).pipe(
           switchMap((deviceInfo: DeviceInfo) =>
-            this._brainwavesRawUnfiltered$.pipe(csvBufferToEpoch(deviceInfo))
+            this._brainwavesRawUnfiltered$.pipe(binaryBufferToEpoch(deviceInfo))
           )
         );
 

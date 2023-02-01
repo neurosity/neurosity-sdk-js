@@ -12,6 +12,7 @@ export type ActionOptions = {
 export type SubscribeOptions = {
   characteristicName: string;
   manageNotifications?: boolean;
+  skipJSONDecoding?: boolean;
 };
 
 /**
