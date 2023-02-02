@@ -6,7 +6,8 @@ import isEqual from "fast-deep-equal";
 import { DeviceStatus, STATUS } from "../types/status";
 
 const HEARTBEAT_UPDATE_INTERVAL = 30_000; // 30 seconds - set by the OS
-const LOST_HEARTBEAT_AFTER = HEARTBEAT_UPDATE_INTERVAL * 2.5; // 75 seconds
+const LOST_LOCAL_HEARTBEAT_AFTER = HEARTBEAT_UPDATE_INTERVAL * 2.5; // 75 seconds
+const LOST_REMOTE_HEARTBEAT_AFTER = 8.64e7; // 24 hours
 
 export function heartbeatAwareStatus(
   status$: Observable<DeviceStatus>
@@ -18,7 +19,7 @@ export function heartbeatAwareStatus(
   );
 
   const lostHeartbeat$: Observable<void> = lastLocalHeartbeat$.pipe(
-    switchMap(() => timer(LOST_HEARTBEAT_AFTER)),
+    switchMap(() => timer(LOST_LOCAL_HEARTBEAT_AFTER)),
     map(() => null),
     startWith(null)
   );
@@ -58,7 +59,20 @@ export function deviceHasLostHeartbeat(
   // implementation that used the server timestamp had bug where SDK clients
   // running on hardware with drifted/out-of-sync clocks (cough cough Android)
   // would override the state to offline when the heartbeat was active.
-  const lostHeartbeat = Date.now() - lastLocalHeartbeat > LOST_HEARTBEAT_AFTER;
+  const lostLocalHeartbeat =
+    Date.now() - lastLocalHeartbeat > LOST_LOCAL_HEARTBEAT_AFTER;
 
-  return lostHeartbeat;
+  if (lostLocalHeartbeat) {
+    return true;
+  }
+
+  // Addresses devices with wrongful "online" state. This rarely happens, the
+  // OS would have to crash without updating the state to "offline".
+  const lostRemoteHeartbeat =
+    Date.now() - status.lastHeartbeat > LOST_REMOTE_HEARTBEAT_AFTER;
+  if (lostRemoteHeartbeat) {
+    return true;
+  }
+
+  return false;
 }
