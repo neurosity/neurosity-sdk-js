@@ -9,7 +9,7 @@ import { take, share, scan, distinct } from "rxjs/operators";
 
 import { BluetoothTransport } from "../BluetoothTransport";
 import { create6DigitPin } from "../utils/create6DigitPin";
-import { encode, decode } from "../utils/encoding";
+import { encodeText, decodeText } from "../utils/textEncoding";
 import { ActionOptions, SubscribeOptions } from "../types";
 import { TRANSPORT_TYPE, BLUETOOTH_CONNECTION } from "../types";
 import { BleManager } from "./types/BleManagerTypes";
@@ -293,7 +293,7 @@ export class ReactNativeTransport implements BluetoothTransport {
         const peripheralName: string =
           peripheral?.advertising?.localName ?? peripheral.name ?? "";
 
-        const manufactureDataString = decode(
+        const manufactureDataString = decodeText(
           peripheral?.advertising?.manufacturerData?.bytes ?? []
         )?.slice?.(2); // First 2 bytes are reserved for the Neurosity company code
 
@@ -507,7 +507,7 @@ export class ReactNativeTransport implements BluetoothTransport {
         characteristicUUID
       );
 
-      const decodedValue = decode(new Uint8Array(value));
+      const decodedValue = decodeText(new Uint8Array(value));
       const data = parse ? JSON.parse(decodedValue) : decodedValue;
 
       this.addLog(
@@ -541,7 +541,7 @@ export class ReactNativeTransport implements BluetoothTransport {
       );
     }
 
-    const encoded = encode(this.type, data);
+    const encoded = encodeText(this.type, data);
 
     await this.BleManager.write(
       peripheralId,

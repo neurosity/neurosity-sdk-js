@@ -1,7 +1,7 @@
 import { map, pipe } from "rxjs";
 
 import { stitchChunks } from "./stitch";
-import { decode } from "./encoding";
+import { decodeText } from "./textEncoding";
 
 /**
  * @hidden
@@ -22,7 +22,7 @@ export function decodeJSONChunks({
 }: Options) {
   return pipe(
     map((arrayBuffer: Uint8Array): string => {
-      const decoded = decode(arrayBuffer);
+      const decoded: string = decodeText(arrayBuffer);
 
       addLog(
         `Received chunk with buffer size of ${arrayBuffer.byteLength} and decoded size ${decoded.length} for ${characteristicName} characteristic: \n${decoded}`

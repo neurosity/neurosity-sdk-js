@@ -1,7 +1,7 @@
 import { TRANSPORT_TYPE } from "../types";
 
-const encoder = new TextEncoder();
-const decoder = new TextDecoder("utf-8");
+const textEncoder = new TextEncoder();
+const textDecoder = new TextDecoder("utf-8");
 
 /**
  * @hidden
@@ -9,18 +9,18 @@ const decoder = new TextDecoder("utf-8");
  */
 export type BufferLike = Uint8Array | number[];
 
-export function encode(
+export function encodeText(
   transportType: TRANSPORT_TYPE,
   data: string
 ): BufferLike {
   if (transportType === TRANSPORT_TYPE.REACT_NATIVE) {
     // React Native expects a plain array  of numbers and not a Uint8Array
-    return [...encoder.encode(data)];
+    return [...textEncoder.encode(data)];
   }
 
-  return encoder.encode(data);
+  return textEncoder.encode(data);
 }
 
-export function decode(arrayBuffer: Uint8Array): string {
-  return decoder.decode(arrayBuffer);
+export function decodeText(arrayBuffer: Uint8Array): string {
+  return textDecoder.decode(arrayBuffer);
 }

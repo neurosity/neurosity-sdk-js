@@ -11,7 +11,7 @@ import { take, share } from "rxjs/operators";
 import { BluetoothTransport } from "../BluetoothTransport";
 import { isWebBluetoothSupported } from "./isWebBluetoothSupported";
 import { create6DigitPin } from "../utils/create6DigitPin";
-import { encode, decode } from "../utils/encoding";
+import { encodeText, decodeText } from "../utils/textEncoding";
 import { ActionOptions, SubscribeOptions } from "../types";
 import { TRANSPORT_TYPE, BLUETOOTH_CONNECTION } from "../types";
 import { DEFAULT_ACTION_RESPONSE_TIMEOUT } from "../constants";
@@ -370,7 +370,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
 
       const dataview: DataView = await characteristic.readValue();
       const arrayBuffer = dataview.buffer as Uint8Array;
-      const decodedValue: string = decode(arrayBuffer);
+      const decodedValue: string = decodeText(arrayBuffer);
       const data = parse ? JSON.parse(decodedValue) : decodedValue;
 
       this.addLog(
@@ -400,7 +400,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
       );
     }
 
-    const encoded = encode(this.type, data);
+    const encoded = encodeText(this.type, data);
 
     await characteristic.writeValueWithResponse(encoded as Uint8Array);
   }
