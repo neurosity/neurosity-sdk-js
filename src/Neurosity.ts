@@ -1,5 +1,5 @@
 import { combineLatest, Observable, of, throwError } from "rxjs";
-import { ReplaySubject, firstValueFrom, EMPTY } from "rxjs";
+import { ReplaySubject, firstValueFrom } from "rxjs";
 import { map, startWith, switchMap } from "rxjs/operators";
 import { distinctUntilChanged } from "rxjs/operators";
 import isEqual from "fast-deep-equal";
@@ -215,7 +215,11 @@ export class Neurosity {
         }).pipe(
           switchMap(({ selectedDevice, osHasBluetoothSupport }) => {
             if (!selectedDevice) {
-              return EMPTY;
+              return of({
+                connected: false,
+                streamingMode,
+                activeMode: STREAMING_TYPE.WIFI
+              });
             }
 
             const isUnableToUseBluetooth =
