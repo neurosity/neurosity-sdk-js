@@ -11,7 +11,7 @@ import { take, share } from "rxjs/operators";
 import { BluetoothTransport } from "../BluetoothTransport";
 import { isWebBluetoothSupported } from "./isWebBluetoothSupported";
 import { create6DigitPin } from "../utils/create6DigitPin";
-import { encodeText, decodeText } from "../utils/textEncoding";
+import { TextCodec } from "../utils/textCodec";
 import { ActionOptions, SubscribeOptions } from "../types";
 import { TRANSPORT_TYPE, BLUETOOTH_CONNECTION } from "../types";
 import { DEFAULT_ACTION_RESPONSE_TIMEOUT } from "../constants";
@@ -29,6 +29,7 @@ const defaultOptions: Options = {
 
 export class WebBluetoothTransport implements BluetoothTransport {
   type: TRANSPORT_TYPE = TRANSPORT_TYPE.WEB;
+  textCodec = new TextCodec(this.type);
   options: Options;
   device: BluetoothDevice;
   server: BluetoothRemoteGATTServer;
@@ -340,6 +341,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
               skipJSONDecoding
                 ? identity // noop
                 : decodeJSONChunks({
+                    textCodec: this.textCodec,
                     characteristicName,
                     delimiter: BLUETOOTH_CHUNK_DELIMITER,
                     addLog: (message: string) => this.addLog(message)
@@ -370,7 +372,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
 
       const dataview: DataView = await characteristic.readValue();
       const arrayBuffer = dataview.buffer as Uint8Array;
-      const decodedValue: string = decodeText(arrayBuffer);
+      const decodedValue: string = this.textCodec.decode(arrayBuffer);
       const data = parse ? JSON.parse(decodedValue) : decodedValue;
 
       this.addLog(
@@ -400,7 +402,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
       );
     }
 
-    const encoded = encodeText(this.type, data);
+    const encoded = this.textCodec.encode(data);
 
     await characteristic.writeValueWithResponse(encoded as Uint8Array);
   }

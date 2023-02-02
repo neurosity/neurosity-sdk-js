@@ -9,7 +9,7 @@ import { take, share, scan, distinct } from "rxjs/operators";
 
 import { BluetoothTransport } from "../BluetoothTransport";
 import { create6DigitPin } from "../utils/create6DigitPin";
-import { encodeText, decodeText } from "../utils/textEncoding";
+import { TextCodec } from "../utils/textCodec";
 import { ActionOptions, SubscribeOptions } from "../types";
 import { TRANSPORT_TYPE, BLUETOOTH_CONNECTION } from "../types";
 import { BleManager } from "./types/BleManagerTypes";
@@ -55,6 +55,7 @@ const defaultOptions: Pick<Options, "autoConnect"> = {
 
 export class ReactNativeTransport implements BluetoothTransport {
   type: TRANSPORT_TYPE = TRANSPORT_TYPE.REACT_NATIVE;
+  textCodec = new TextCodec(this.type);
   options: Options;
   BleManager: BleManager;
   bleManagerEmitter: NativeEventEmitter;
@@ -293,9 +294,9 @@ export class ReactNativeTransport implements BluetoothTransport {
         const peripheralName: string =
           peripheral?.advertising?.localName ?? peripheral.name ?? "";
 
-        const manufactureDataString = decodeText(
-          peripheral?.advertising?.manufacturerData?.bytes ?? []
-        )?.slice?.(2); // First 2 bytes are reserved for the Neurosity company code
+        const manufactureDataString = this.textCodec
+          .decode(peripheral?.advertising?.manufacturerData?.bytes ?? [])
+          ?.slice?.(2); // First 2 bytes are reserved for the Neurosity company code
 
         return {
           ...acc,
@@ -475,6 +476,7 @@ export class ReactNativeTransport implements BluetoothTransport {
               skipJSONDecoding
                 ? identity // noop
                 : decodeJSONChunks({
+                    textCodec: this.textCodec,
                     characteristicName,
                     delimiter: BLUETOOTH_CHUNK_DELIMITER,
                     addLog: (message: string) => this.addLog(message)
@@ -507,7 +509,7 @@ export class ReactNativeTransport implements BluetoothTransport {
         characteristicUUID
       );
 
-      const decodedValue = decodeText(new Uint8Array(value));
+      const decodedValue = this.textCodec.decode(new Uint8Array(value));
       const data = parse ? JSON.parse(decodedValue) : decodedValue;
 
       this.addLog(
@@ -541,7 +543,7 @@ export class ReactNativeTransport implements BluetoothTransport {
       );
     }
 
-    const encoded = encodeText(this.type, data);
+    const encoded = this.textCodec.encode(data);
 
     await this.BleManager.write(
       peripheralId,
