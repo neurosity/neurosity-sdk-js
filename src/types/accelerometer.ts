@@ -1,4 +1,5 @@
 export interface Accelerometer {
+  timestamp: number;
   acceleration: number;
   inclination: number;
   orientation: number;
