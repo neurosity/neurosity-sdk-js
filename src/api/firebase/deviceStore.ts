@@ -1,4 +1,4 @@
-import firebase from "firebase/app";
+import firebase from "firebase/compat/app";
 
 const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
 
@@ -12,11 +12,7 @@ export interface IDevice {
 /**
  * @hidden
  */
-export const createDeviceStore = (
-  app,
-  deviceId,
-  subscriptionManager
-) => {
+export const createDeviceStore = (app, deviceId, subscriptionManager) => {
   const deviceRef = app.database().ref(`devices/${deviceId}`);
   const clientId = deviceRef.child("subscriptions").push().key;
   const clientRef = deviceRef.child(`clients/${clientId}`);
@@ -35,11 +31,9 @@ export const createDeviceStore = (
   };
 
   const on = (eventType: any = "value", namespace, callback) => {
-    const listener = deviceRef
-      .child(namespace)
-      .on(eventType, (snapshot) => {
-        callback(snapshot.val(), snapshot);
-      });
+    const listener = deviceRef.child(namespace).on(eventType, (snapshot) => {
+      callback(snapshot.val(), snapshot);
+    });
 
     listenersToRemove.push(() => {
       deviceRef.child(namespace).off(eventType, listener);
@@ -108,22 +102,17 @@ export const createDeviceStore = (
           clientRef.set(SERVER_TIMESTAMP);
 
           // NOTION-115: Re-subscribe when internet connection is lost and regained
-          update("subscriptions", subscriptionManager.get()).then(
-            () => {
-              subscriptionManager.toList().forEach((subscription) => {
-                const childPath = `subscriptions/${subscription.id}`;
-                deviceRef.child(childPath).onDisconnect().remove();
-              });
-            }
-          );
+          update("subscriptions", subscriptionManager.get()).then(() => {
+            subscriptionManager.toList().forEach((subscription) => {
+              const childPath = `subscriptions/${subscription.id}`;
+              deviceRef.child(childPath).onDisconnect().remove();
+            });
+          });
         });
     });
 
   listenersToRemove.push(() => {
-    app
-      .database()
-      .ref(".info/connected")
-      .off("value", connectedListener);
+    app.database().ref(".info/connected").off("value", connectedListener);
   });
 
   return {
@@ -152,9 +141,7 @@ export const createDeviceStore = (
           const id = setTimeout(() => {
             clearTimeout(id);
             snapshot.remove();
-            reject(
-              `Action response timed out in ${responseTimeout}ms.`
-            );
+            reject(`Action response timed out in ${responseTimeout}ms.`);
           }, responseTimeout);
         });
 

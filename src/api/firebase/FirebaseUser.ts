@@ -1,6 +1,6 @@
 import { Observable, fromEventPattern, from, EMPTY } from "rxjs";
 import { map, switchMap } from "rxjs/operators";
-import firebase from "firebase/app";
+import firebase from "firebase/compat/app";
 import { User } from "@firebase/auth-types";
 
 import { FirebaseApp } from "./FirebaseApp";
@@ -117,14 +117,12 @@ export class FirebaseUser {
 
   onLogin(): Observable<User> {
     return new Observable((subscriber) => {
-      const unsubscribe = this.app
-        .auth()
-        .onAuthStateChanged((user: User) => {
-          if (!!user) {
-            subscriber.next(user);
-            subscriber.complete();
-          }
-        });
+      const unsubscribe = this.app.auth().onAuthStateChanged((user: User) => {
+        if (!!user) {
+          subscriber.next(user);
+          subscriber.complete();
+        }
+      });
       return () => unsubscribe();
     });
   }
@@ -136,18 +134,14 @@ export class FirebaseUser {
     }
 
     if ("idToken" in credentials && "providerId" in credentials) {
-      const provider = new firebase.auth.OAuthProvider(
-        credentials.providerId
-      );
+      const provider = new firebase.auth.OAuthProvider(credentials.providerId);
       const oAuthCredential = provider.credential(credentials.idToken);
       return this.app.auth().signInWithCredential(oAuthCredential);
     }
 
     if ("email" in credentials && "password" in credentials) {
       const { email, password } = credentials;
-      return this.app
-        .auth()
-        .signInWithEmailAndPassword(email, password);
+      return this.app.auth().signInWithEmailAndPassword(email, password);
     }
 
     throw new Error(
@@ -237,14 +231,10 @@ export class FirebaseUser {
       devices.map(({ deviceId }) => deviceId).includes(deviceId);
 
     if (deviceAlreadyInAccount) {
-      return Promise.reject(
-        `The device is already added to this account.`
-      );
+      return Promise.reject(`The device is already added to this account.`);
     }
 
-    const [isValid, invalidErrorMessage] = await this.isDeviceIdValid(
-      deviceId
-    )
+    const [isValid, invalidErrorMessage] = await this.isDeviceIdValid(deviceId)
       .then((isValid) => [isValid])
       .catch((error) => [false, error]);
 
@@ -297,21 +287,14 @@ export class FirebaseUser {
     }
   }
 
-  public async transferDevice(
-    options: TransferDeviceOptions
-  ): Promise<void> {
+  public async transferDevice(options: TransferDeviceOptions): Promise<void> {
     const userId = this.user?.uid;
 
     if (!userId) {
-      return Promise.reject(
-        new Error(`transferDevice: auth is required.`)
-      );
+      return Promise.reject(new Error(`transferDevice: auth is required.`));
     }
 
-    if (
-      !("recipientsEmail" in options) &&
-      !("recipientsUserId" in options)
-    ) {
+    if (!("recipientsEmail" in options) && !("recipientsUserId" in options)) {
       return Promise.reject(
         new Error(
           `transferDevice: either 'recipientsEmail' or 'recipientsUserId' key is required.`
@@ -339,11 +322,7 @@ export class FirebaseUser {
   async isDeviceIdValid(deviceId: string): Promise<boolean> {
     // hex string of 32 characters
     const hexRegEx = /[0-9A-Fa-f]{32}/g;
-    if (
-      !deviceId ||
-      deviceId.length !== 32 ||
-      !hexRegEx.test(deviceId)
-    ) {
+    if (!deviceId || deviceId.length !== 32 || !hexRegEx.test(deviceId)) {
       return Promise.reject("The device id is incorrectly formatted.");
     }
 
@@ -375,9 +354,7 @@ export class FirebaseUser {
           (handler) => userDevicesRef.on("value", handler),
           (handler) => userDevicesRef.off("value", handler)
         ).pipe(
-          map(([snapshot]: [firebase.database.DataSnapshot]) =>
-            snapshot.val()
-          ),
+          map(([snapshot]: [firebase.database.DataSnapshot]) => snapshot.val()),
           switchMap((userDevices: UserDevices | null) => {
             return from(this.userDevicesToDeviceInfoList(userDevices));
           })
@@ -395,17 +372,13 @@ export class FirebaseUser {
 
         const claimsUpdatedOnPath = this.getUserClaimsUpdatedOnPath();
 
-        const claimsUpdatedOnRef = this.app
-          .database()
-          .ref(claimsUpdatedOnPath);
+        const claimsUpdatedOnRef = this.app.database().ref(claimsUpdatedOnPath);
 
         return fromEventPattern(
           (handler) => claimsUpdatedOnRef.on("value", handler),
           (handler) => claimsUpdatedOnRef.off("value", handler)
         ).pipe(
-          map(([snapshot]: [firebase.database.DataSnapshot]) =>
-            snapshot.val()
-          ),
+          map(([snapshot]: [firebase.database.DataSnapshot]) => snapshot.val()),
           switchMap(() => {
             // Force refresh of auth id token
             return from(this.getIdToken(true)).pipe(
@@ -421,9 +394,7 @@ export class FirebaseUser {
     const user = this.app.auth()?.currentUser;
 
     if (!user) {
-      return Promise.reject(
-        `getUserIdToken: unable to get currentUser`
-      );
+      return Promise.reject(`getUserIdToken: unable to get currentUser`);
     }
 
     await user.getIdToken(forceRefresh).catch((error) => {
@@ -452,10 +423,7 @@ export class FirebaseUser {
   ): Promise<DeviceInfo[]> {
     const devicesInfoSnapshots = Object.keys(userDevices ?? {}).map(
       (deviceId) =>
-        this.app
-          .database()
-          .ref(this.getDeviceInfoPath(deviceId))
-          .once("value")
+        this.app.database().ref(this.getDeviceInfoPath(deviceId)).once("value")
     );
 
     const devicesList: DeviceInfo[] = await Promise.all(
@@ -466,8 +434,7 @@ export class FirebaseUser {
 
     validDevices.sort((a, b) => {
       return (
-        userDevices[a.deviceId].claimedOn -
-        userDevices[b.deviceId].claimedOn
+        userDevices[a.deviceId].claimedOn - userDevices[b.deviceId].claimedOn
       );
     });
 
@@ -530,9 +497,7 @@ export class FirebaseUser {
           (handler) => userExperimentsRef.on("value", handler),
           (handler) => userExperimentsRef.off("value", handler)
         ).pipe(
-          map(([snapshot]: [firebase.database.DataSnapshot]) =>
-            snapshot.val()
-          ),
+          map(([snapshot]: [firebase.database.DataSnapshot]) => snapshot.val()),
           // transform experiments map into sorted list
           map((experimentsMaps): Experiment[] => {
             return Object.entries(experimentsMaps ?? {})

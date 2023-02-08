@@ -1,4 +1,4 @@
-import firebase from "firebase/app";
+import firebase from "firebase/compat/app";
 
 import { FirebaseApp } from "./FirebaseApp";
 import { createDeviceStore } from "./deviceStore";
@@ -21,11 +21,7 @@ export class FirebaseDevice {
   protected deviceStore;
   public deviceId: string;
 
-  constructor({
-    deviceId,
-    firebaseApp,
-    dependencies
-  }: FirebaseDeviceOptions) {
+  constructor({ deviceId, firebaseApp, dependencies }: FirebaseDeviceOptions) {
     if (!deviceId) {
       throw new Error(`No Device ID provided.`);
     }
