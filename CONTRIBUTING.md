@@ -11,7 +11,7 @@ The following is a small set of guidelines for how to contribute to the project
 ### Code of Conduct
 
 This project adheres to the Contributor Covenant [Code of Conduct](CODE_OF_CONDUCT.md).
-By participating you are expected to adhere to these expectations. Please report unacceptable behaviour to [contact@neursoity.co](mailto:contact@neursoity.co).
+By participating you are expected to adhere to these expectations. Please report unacceptable behaviour to [contact@neurosity.co](mailto:contact@neurosity.co).
 
 ### Contributing on Github
 
