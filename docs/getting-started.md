@@ -25,7 +25,7 @@ We'll be using [VSCode](https://code.visualstudio.com/download) to program this 
 
 ### Tutorial Repository
 
-Want to see the complete project before reading anymore? You can view all the code from this project in it's [repository on Github](https://github.com/neurosity/app-hello-world-neurosity-sdk-js).
+Want to see the complete project before reading anymore? You can view all the code from this project in it's [repository on Github](https://github.com/neurosity/app-hello-world-notion-js).
 
 ## Setup your Project
 
