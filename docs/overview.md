@@ -41,7 +41,7 @@ Building a good application with the SDK can take a lot of effort. Here is what 
 
 - **Get Started** teaches fundamental concepts for using the SDK
 - **Guides** includes in-depth guides on various SDK development topics, such as [ethics](guides/ethics) and [training](guides/training).
-- **References** contains exhaustive references for the [SDK](references/classes/neurosity).
+- **References** contains exhaustive references for the [SDK](reference/classes/neurosity).
 
 ## Looking for help?
 
