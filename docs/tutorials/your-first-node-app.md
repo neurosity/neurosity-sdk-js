@@ -1,5 +1,5 @@
 ---
-id: getting-started
+id: your-first-node-app
 title: Your First Node App
 ---
 

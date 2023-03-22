@@ -20,7 +20,7 @@ This documentation describes:
 Jump right over to building your first:
 
 - [Web App](tutorials/your-first-web-app)
-- [Node App](getting-started)
+- [Node App](tutorials/your-first-node-app)
 
 ## What can the SDK do?
 
@@ -41,7 +41,7 @@ Building a good application with the SDK can take a lot of effort. Here is what 
 
 - **Get Started** teaches fundamental concepts for using the SDK
 - **Guides** includes in-depth guides on various SDK development topics, such as [ethics](guides/ethics) and [training](guides/training).
-- **References** contains exhaustive references for the [SDK](docs/api).
+- **References** contains exhaustive references for the [SDK](references/classes/neurosity).
 
 ## Looking for help?
 
