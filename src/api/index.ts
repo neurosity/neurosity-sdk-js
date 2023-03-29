@@ -1,7 +1,9 @@
 import { Observable, ReplaySubject, EMPTY } from "rxjs";
 import { fromEventPattern, firstValueFrom } from "rxjs";
 import { filter, shareReplay, share, switchMap } from "rxjs/operators";
+
 import { FirebaseApp, FirebaseUser, FirebaseDevice } from "./firebase";
+import { UserWithMetadata } from "./firebase";
 import { Timesync } from "../timesync";
 import { SubscriptionManager } from "../subscriptions/SubscriptionManager";
 import { heartbeatAwareStatus } from "../utils/heartbeat";
@@ -170,7 +172,7 @@ export class CloudClient implements Client {
 
   public onAuthStateChanged() {
     return this.firebaseUser.onAuthStateChanged().pipe(
-      switchMap(async (user) => {
+      switchMap(async (user): Promise<UserWithMetadata> => {
         if (!user) {
           return null;
         }
@@ -179,10 +181,11 @@ export class CloudClient implements Client {
           ? await this.getSelectedDevice()
           : await this.setAutoSelectedDevice();
 
-        return {
-          ...user,
+        const userWithMetadata: UserWithMetadata = Object.assign(user, {
           selectedDevice
-        };
+        });
+
+        return userWithMetadata;
       })
     );
   }

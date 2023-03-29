@@ -20,6 +20,13 @@ const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
 /**
  * @hidden
  */
+export type UserWithMetadata = User & {
+  selectedDevice: DeviceInfo | null;
+};
+
+/**
+ * @hidden
+ */
 export const credentialWithLink: Function =
   firebase.auth.EmailAuthProvider.credentialWithLink;
 
