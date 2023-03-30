@@ -1,6 +1,6 @@
 import { Observable, fromEventPattern, from, EMPTY } from "rxjs";
 import { map, switchMap } from "rxjs/operators";
-import firebase from "firebase/app";
+import firebase from "firebase/compat/app";
 import { User } from "@firebase/auth-types";
 
 import { FirebaseApp } from "./FirebaseApp";

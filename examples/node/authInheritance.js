@@ -1,6 +1,6 @@
 const { Neurosity } = require("../..");
-const firebase = require("firebase/app");
-require("firebase/auth");
+const firebase = require("firebase/compat/app");
+require("firebase/compat/auth");
 
 const config = {
   apiKey: "AIzaSyB0TkZ83Fj0CIzn8AAmE-Osc92s3ER8hy8",
