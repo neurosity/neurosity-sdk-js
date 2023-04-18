@@ -42,6 +42,9 @@
     "Classes": [
       "reference/classes/neurosity"
     ],
+    "Enums": [
+      "reference/enums/streaming_mode"
+    ],
     "Interfaces": [
       "reference/interfaces/accelerometer",
       "reference/interfaces/calm",
