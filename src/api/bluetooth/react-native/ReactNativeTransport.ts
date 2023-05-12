@@ -12,10 +12,13 @@ import { create6DigitPin } from "../utils/create6DigitPin";
 import { TextCodec } from "../utils/textCodec";
 import { ActionOptions, SubscribeOptions } from "../types";
 import { TRANSPORT_TYPE, BLUETOOTH_CONNECTION } from "../types";
-import { BleManager } from "./types/BleManagerTypes";
-import { Peripheral, PeripheralInfo } from "./types/BleManagerTypes";
-import { NativeEventEmitter } from "./types/ReactNativeTypes";
-import { PlatformOSType } from "./types/ReactNativeTypes";
+import {
+  PlatformOSType,
+  NativeEventEmitter,
+  BleManager,
+  Peripheral,
+  PeripheralInfo
+} from "./types";
 import { DEFAULT_ACTION_RESPONSE_TIMEOUT } from "../constants";
 import { CHARACTERISTIC_UUIDS_TO_NAMES } from "../constants";
 import { ANDROID_MAX_MTU } from "../constants";

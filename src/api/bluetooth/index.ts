@@ -3,3 +3,4 @@ export * from "./web/WebBluetoothTransport";
 export * from "./react-native/ReactNativeTransport";
 export * from "./utils/osHasBluetoothSupport";
 export * from "./types/index";
+export * from "./constants";
