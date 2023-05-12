@@ -4,38 +4,53 @@ import { map, startWith, switchMap } from "rxjs/operators";
 import { distinctUntilChanged } from "rxjs/operators";
 import isEqual from "fast-deep-equal";
 import { CloudClient, createUser, credentialWithLink, SERVER_TIMESTAMP } from "./api";
-import { SDKOptions } from "./types/options";
-import { STREAMING_MODE, STREAMING_TYPE } from "./types/streaming";
-import { Training } from "./types/training";
-import { Credentials, EmailAndPassword } from "./types/credentials";
-import { CustomToken } from "./types/credentials";
-import { Settings, ChangeSettings } from "./types/settings";
-import { SignalQuality } from "./types/signalQuality";
-import { Kinesis } from "./types/kinesis";
-import { Calm } from "./types/calm";
-import { Focus } from "./types/focus";
-import { getLabels } from "./utils/subscription";
-import { BrainwavesLabel, Epoch, PowerByBand, PSD } from "./types/brainwaves";
-import { Accelerometer } from "./types/accelerometer";
-import { DeviceInfo, OSVersion } from "./types/deviceInfo";
-import { DeviceStatus, STATUS } from "./types/status";
-import { Action } from "./types/actions";
-import { HapticEffects } from "./types/hapticEffects";
-import * as errors from "./utils/errors";
-import * as platform from "./utils/platform";
-import * as hapticEffects from "./utils/hapticEffects";
-import { validateOAuthScopeForFunctionName } from "./utils/oauth";
-import { validateOAuthScopeForAction } from "./utils/oauth";
+import {
+  SDKOptions,
+  STREAMING_MODE,
+  STREAMING_TYPE,
+  Training,
+  Credentials,
+  EmailAndPassword,
+  CustomToken,
+  Settings,
+  ChangeSettings,
+  SignalQuality,
+  Kinesis,
+  Calm,
+  Focus,
+  BrainwavesLabel,
+  Epoch,
+  PowerByBand,
+  PSD,
+  Accelerometer,
+  DeviceInfo,
+  OSVersion,
+  DeviceStatus,
+  STATUS,
+  Action,
+  HapticEffects,
+  OAuthConfig,
+  OAuthQuery,
+  OAuthQueryResult,
+  OAuthRemoveResponse,
+  UserClaims,
+  Experiment
+} from "./types";
+import {
+  getLabels,
+  validateOAuthScopeForFunctionName,
+  validateOAuthScopeForAction,
+  isNode,
+  getCloudMetric,
+  TransferDeviceOptions,
+  errors,
+  platform,
+  hapticEffects
+} from "./utils";
 import { createOAuthURL } from "./api/https/createOAuthURL";
 import { getOAuthToken } from "./api/https/getOAuthToken";
-import { OAuthConfig, OAuthQuery } from "./types/oauth";
-import { OAuthQueryResult, OAuthRemoveResponse } from "./types/oauth";
-import { UserClaims } from "./types/user";
-import { isNode } from "./utils/is-node";
-import { getCloudMetric } from "./utils/metrics";
-import { Experiment } from "./types/experiment";
-import { TransferDeviceOptions } from "./utils/transferDevice";
 import { BLUETOOTH_CONNECTION, BluetoothClient, osHasBluetoothSupport } from "./api/bluetooth";
+import {UserWithMetadata} from "./api/firebase";
 
 const defaultOptions = {
   timesync: false,
@@ -400,7 +415,7 @@ export class Neurosity {
    * });
    * ```
    */
-  public onAuthStateChanged(): Observable<any> {
+  public onAuthStateChanged(): Observable<UserWithMetadata> {
     return this.cloudClient.onAuthStateChanged();
   }
 
