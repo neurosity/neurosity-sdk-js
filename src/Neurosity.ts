@@ -621,9 +621,6 @@ export class Neurosity {
 
   /**
    * <StreamingModes wifi={true} bluetooth={true} />
-   *
-   * @internal
-   * Not user facing
    */
   private async dispatchAction(action: Action): Promise<Action> {
     if (!(await this.cloudClient.didSelectDevice())) {
