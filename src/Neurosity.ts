@@ -1539,3 +1539,9 @@ export class Notion extends Neurosity {
     );
   }
 }
+
+/**
+ * @hidden
+ * Internal use only. Will be removed in next versions.
+ */
+export { __firebase } from "./api/firebase";
