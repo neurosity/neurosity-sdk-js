@@ -24,7 +24,12 @@ import { OAuthRemoveResponse } from "../types/oauth";
 import { Experiment } from "../types/experiment";
 import { TransferDeviceOptions } from "../utils/transferDevice";
 
-export { credentialWithLink, createUser, SERVER_TIMESTAMP } from "./firebase";
+export {
+  credentialWithLink,
+  createUser,
+  SERVER_TIMESTAMP,
+  __firebase
+} from "./firebase";
 
 /**
  * @hidden

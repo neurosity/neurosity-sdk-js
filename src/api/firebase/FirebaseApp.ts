@@ -8,6 +8,7 @@ import { config } from "./config";
 import { SDKOptions } from "../../types/options";
 
 export const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
+export const __firebase = firebase;
 
 /**
  * @hidden
