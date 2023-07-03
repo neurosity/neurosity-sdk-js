@@ -40,9 +40,11 @@ async function runFile(exampleFileName) {
     return;
   }
 
-  const neurosity = new Neurosity({
-    deviceId
-  });
+  const neurosity = deviceId
+    ? new Neurosity({
+        deviceId
+      })
+    : new Neurosity();
 
   await neurosity.login({
     email: process.env.NEUROSITY_EMAIL,
