@@ -25,7 +25,7 @@ We'll be using [VSCode](https://code.visualstudio.com/download) to program this 
 
 ### Tutorial Repository
 
-Want to see the complete project before reading anymore? You can view all the code from this project in it's [repository on Github](https://github.com/neurosity/app-hello-world-notion-js).
+Want to see the complete project before reading anymore? You can view all the code from this project in it's [repository on Github](https://github.com/neurosity/app-hello-world-node-js-sdk).
 
 ## Setup your Project
 
@@ -225,9 +225,9 @@ Now, if we run our program, we should see an error print out! Run with `npm star
 Next, we'll add a `.env` to store our deviceId, login, and password. Add a new file called `.env` and add your deviceId, email, and password. Learn how to [find your device ID](https://support.neurosity.co/hc/en-us/articles/360037198152-Get-Notion-Device-ID).
 
 ```.env
-DEVICE_ID=442333d1bcea35533daba9b51234abcd
-EMAIL=hans.berger@neurosity.co
-PASSWORD=Password#1!
+DEVICE_ID="442333d1bcea35533daba9b51234abcd"
+EMAIL="hans.berger@neurosity.co"
+PASSWORD="Password#1!"
 ```
 
 <p align="center">
