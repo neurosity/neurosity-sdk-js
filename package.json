@@ -49,7 +49,7 @@
   "homepage": "https://docs.neurosity.co",
   "dependencies": {
     "@neurosity/ipk": "^2.12.0",
-    "axios": "^0.25.0",
+    "axios": "^1.6.2",
     "buffer": "^6.0.3",
     "fast-deep-equal": "^3.1.3",
     "firebase": "^8.10.1",
