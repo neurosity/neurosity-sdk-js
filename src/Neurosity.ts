@@ -3,41 +3,54 @@ import { ReplaySubject, firstValueFrom } from "rxjs";
 import { map, startWith, switchMap } from "rxjs/operators";
 import { distinctUntilChanged } from "rxjs/operators";
 import isEqual from "fast-deep-equal";
-import { CloudClient, createUser } from "./api/index";
-import { credentialWithLink, SERVER_TIMESTAMP } from "./api/index";
-import { SDKOptions } from "./types/options";
-import { STREAMING_MODE, STREAMING_TYPE } from "./types/streaming";
-import { Training } from "./types/training";
-import { Credentials, EmailAndPassword } from "./types/credentials";
-import { CustomToken } from "./types/credentials";
-import { Settings, ChangeSettings } from "./types/settings";
-import { SignalQuality } from "./types/signalQuality";
-import { Kinesis } from "./types/kinesis";
-import { Calm } from "./types/calm";
-import { Focus } from "./types/focus";
-import { getLabels } from "./utils/subscription";
-import { BrainwavesLabel, Epoch, PowerByBand, PSD } from "./types/brainwaves";
-import { Accelerometer } from "./types/accelerometer";
-import { DeviceInfo, OSVersion } from "./types/deviceInfo";
-import { DeviceStatus, STATUS } from "./types/status";
-import { Action } from "./types/actions";
-import { HapticEffects } from "./types/hapticEffects";
-import * as errors from "./utils/errors";
-import * as platform from "./utils/platform";
-import * as hapticEffects from "./utils/hapticEffects";
-import { validateOAuthScopeForFunctionName } from "./utils/oauth";
-import { validateOAuthScopeForAction } from "./utils/oauth";
+import { CloudClient, createUser, credentialWithLink, SERVER_TIMESTAMP } from "./api";
+import {
+  SDKOptions,
+  STREAMING_MODE,
+  STREAMING_TYPE,
+  Training,
+  Credentials,
+  EmailAndPassword,
+  CustomToken,
+  Settings,
+  ChangeSettings,
+  SignalQuality,
+  Kinesis,
+  Calm,
+  Focus,
+  BrainwavesLabel,
+  Epoch,
+  PowerByBand,
+  PSD,
+  Accelerometer,
+  DeviceInfo,
+  OSVersion,
+  DeviceStatus,
+  STATUS,
+  Action,
+  HapticEffects,
+  OAuthConfig,
+  OAuthQuery,
+  OAuthQueryResult,
+  OAuthRemoveResponse,
+  UserClaims,
+  Experiment
+} from "./types";
+import {
+  getLabels,
+  validateOAuthScopeForFunctionName,
+  validateOAuthScopeForAction,
+  isNode,
+  getCloudMetric,
+  TransferDeviceOptions,
+  errors,
+  platform,
+  hapticEffects
+} from "./utils";
 import { createOAuthURL } from "./api/https/createOAuthURL";
 import { getOAuthToken } from "./api/https/getOAuthToken";
-import { OAuthConfig, OAuthQuery } from "./types/oauth";
-import { OAuthQueryResult, OAuthRemoveResponse } from "./types/oauth";
-import { UserClaims } from "./types/user";
-import { isNode } from "./utils/is-node";
-import { getCloudMetric } from "./utils/metrics";
-import { Experiment } from "./types/experiment";
-import { TransferDeviceOptions } from "./utils/transferDevice";
-import { BluetoothClient, osHasBluetoothSupport } from "./api/bluetooth";
-import { BLUETOOTH_CONNECTION } from "./api/bluetooth/types";
+import { BLUETOOTH_CONNECTION, BluetoothClient, osHasBluetoothSupport } from "./api/bluetooth";
+import {UserWithMetadata} from "./api/firebase";
 
 const defaultOptions = {
   timesync: false,
@@ -108,7 +121,7 @@ export class Neurosity {
 
   /**
    * Creates new instance of the Neurosity SDK
-   * 
+   *
    * ```typescript
    * const neurosity = new Neurosity();
    * ```
@@ -387,10 +400,6 @@ export class Neurosity {
     return await this.cloudClient.logout();
   }
 
-  /**
-   * @internal
-   * Not user facing.
-   */
   public __getApp() {
     return this.cloudClient.__getApp();
   }
@@ -406,14 +415,10 @@ export class Neurosity {
    * });
    * ```
    */
-  public onAuthStateChanged(): Observable<any> {
+  public onAuthStateChanged(): Observable<UserWithMetadata> {
     return this.cloudClient.onAuthStateChanged();
   }
 
-  /**
-   * @internal
-   * Not user facing yet
-   */
   public addDevice(deviceId: string): Promise<void> {
     const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
       this.cloudClient.userClaims,
@@ -427,10 +432,6 @@ export class Neurosity {
     return this.cloudClient.addDevice(deviceId);
   }
 
-  /**
-   * @internal
-   * Not user facing yet
-   */
   public removeDevice(deviceId: string): Promise<void> {
     const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
       this.cloudClient.userClaims,
@@ -461,10 +462,6 @@ export class Neurosity {
     return this.cloudClient.transferDevice(options);
   }
 
-  /**
-   * @internal
-   * Not user facing yet
-   */
   public onUserDevicesChange(): Observable<DeviceInfo[]> {
     const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
       this.cloudClient.userClaims,
@@ -478,10 +475,7 @@ export class Neurosity {
     return this.cloudClient.onUserDevicesChange();
   }
 
-  /**
-   * @internal
-   * Not user facing yet
-   */
+
   public onUserClaimsChange(): Observable<UserClaims> {
     return this.cloudClient.onUserClaimsChange();
   }
@@ -627,9 +621,6 @@ export class Neurosity {
 
   /**
    * <StreamingModes wifi={true} bluetooth={true} />
-   *
-   * @internal
-   * Not user facing
    */
   private async dispatchAction(action: Action): Promise<Action> {
     if (!(await this.cloudClient.didSelectDevice())) {
@@ -834,7 +825,7 @@ export class Neurosity {
 
   /**
    * <StreamingModes wifi={true} bluetooth={true} />
-   * 
+   *
    * The `raw` brainwaves parameter emits epochs of 16 samples for Crown and 25 for Notion 1 and 2.
    *
    * Example
@@ -844,7 +835,7 @@ export class Neurosity {
    * });
    * ```
    *
-   * Raw Unfiltered - The `rawUnfiltered` brainwaves parameter emits epochs of 16 samples for Crown and 25 for Notion 1 and 2. 
+   * Raw Unfiltered - The `rawUnfiltered` brainwaves parameter emits epochs of 16 samples for Crown and 25 for Notion 1 and 2.
 
    * Example
    * ```typescript
@@ -854,7 +845,7 @@ export class Neurosity {
    * ```
    *
    * Power By Band - The `powerByBand` brainwaves parameter emits epochs 4 times a second. Every frequency label (e.g. beta) contains an average power value per channel.
-   * 
+   *
    * Example
    * ```typescript
    * neurosity.brainwaves("powerByBand").subscribe(brainwaves => {
@@ -863,7 +854,7 @@ export class Neurosity {
    * ```
    *
    * Power Spectral Density (PSD) - The `psd` brainwaves parameter emits epochs 4 times a second. Every frequency label (e.g. alpha) contains the computed FFT (Fast Fourier transform) value per channel (see the `psd` property), as well as the frequency ranges (see the `freqs` property).
-   * 
+   *
    * Example
    * ```typescript
    * neurosity.brainwaves("psd").subscribe(brainwaves => {
@@ -1157,8 +1148,6 @@ export class Neurosity {
   }
 
   /**
-   * @internal
-   * Not user facing yet
    *
    * <StreamingModes wifi={true} />
    *

@@ -3,7 +3,7 @@ import { Observable, Subject } from "rxjs";
 import { BLUETOOTH_CONNECTION, TRANSPORT_TYPE } from "./types";
 import { Action } from "../../types/actions";
 import { DeviceInfo, OSVersion } from "../../types/deviceInfo";
-import { Peripheral } from "./react-native/types/BleManagerTypes";
+import { Peripheral } from "./react-native";
 
 export type DeviceNicknameOrPeripheral = string | Peripheral;
 
