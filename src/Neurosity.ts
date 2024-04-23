@@ -18,7 +18,7 @@ import { Focus } from "./types/focus";
 import { getLabels } from "./utils/subscription";
 import { BrainwavesLabel, Epoch, PowerByBand, PSD } from "./types/brainwaves";
 import { Accelerometer } from "./types/accelerometer";
-import { DeviceInfo, OSVersion } from "./types/deviceInfo";
+import { DeviceInfo, DeviceSelector, OSVersion } from "./types/deviceInfo";
 import { DeviceStatus, STATUS } from "./types/status";
 import { Action } from "./types/actions";
 import { HapticEffects } from "./types/hapticEffects";
@@ -526,7 +526,7 @@ export class Neurosity {
    * For more info, check out the "Device Selection" guide.
    */
   public async selectDevice(
-    deviceSelector: (devices: DeviceInfo[]) => DeviceInfo
+    deviceSelector: DeviceSelector
   ): Promise<DeviceInfo> {
     const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
       this.cloudClient.userClaims,
