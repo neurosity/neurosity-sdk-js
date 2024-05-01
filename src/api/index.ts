@@ -18,7 +18,7 @@ import { EmailAndPassword } from "../types/credentials";
 import { ChangeSettings } from "../types/settings";
 import { Subscription } from "../types/subscriptions";
 import { DeviceStatus } from "../types/status";
-import { DeviceInfo, DeviceSelector, OSVersion } from "../types/deviceInfo";
+import { DeviceInfo, DeviceSelector, DeviceSelectorFunction, OSVersion } from "../types/deviceInfo";
 import { UserClaims } from "../types/user";
 import { OAuthRemoveResponse } from "../types/oauth";
 import { Experiment } from "../types/experiment";
@@ -250,6 +250,56 @@ export class CloudClient implements Client {
     return !!selectedDevice;
   }
 
+  private async finalizeDeviceSelection(device: DeviceInfo): Promise<DeviceInfo> {
+    const hasPermission = await this.firebaseUser.hasDevicePermission(
+      device.deviceId
+    );
+
+    if (!hasPermission) {
+      return Promise.reject(`Rejected device access due to permissions.`);
+    }
+
+    this._selectedDevice.next(device);
+
+    return device;
+  }
+
+  public async selectDeviceByKeyValue<K extends keyof DeviceInfo>(
+    key: K,
+    value: DeviceInfo[K]
+  ): Promise<DeviceInfo> {
+    const devices = await this.getDevices();
+    if (!devices.length) {
+      throw new Error("No devices found for this user.");
+    }
+
+    const selectedDevice = devices.find(device => JSON.stringify(device[key]) === JSON.stringify(value));
+    if (!selectedDevice) {
+      throw new Error("Device not found with specified key-value pair.");
+    }
+
+    return this.finalizeDeviceSelection(selectedDevice);
+  }
+
+  public async selectDeviceBySelector(
+    deviceSelector: DeviceSelectorFunction
+  ): Promise<DeviceInfo> {
+    const devices = await this.getDevices();
+    if (!devices.length) {
+      throw new Error("No devices found for this user.");
+    }
+
+    const selectedDevice = deviceSelector(devices);
+    if (!selectedDevice) {
+      throw new Error("Device not found with specified selector.");
+    }
+
+    return this.finalizeDeviceSelection(selectedDevice);
+  }
+
+  /**
+   * @deprecated Use `selectDeviceByKeyValue` or `selectDeviceBySelector` instead.
+   */
   public async selectDevice(
     deviceSelector: DeviceSelector
   ): Promise<DeviceInfo> {
