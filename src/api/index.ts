@@ -264,6 +264,15 @@ export class CloudClient implements Client {
     return device;
   }
 
+  /**
+   * Selects a device from the list of available devices based on a key-value pair of the device information.
+   * 
+   * @template K The type of the key.
+   * @param {K} key The key to search for in the device information.
+   * @param {DeviceInfo[K]} value The value to match with the specified key.
+   * @returns {Promise<DeviceInfo>} A promise that resolves to the selected device information.
+   * @throws {Error} If no devices are found for the user or if no device is found with the specified key-value pair.
+   */
   public async selectDeviceByKeyValue<K extends keyof DeviceInfo>(
     key: K,
     value: DeviceInfo[K]
@@ -281,6 +290,13 @@ export class CloudClient implements Client {
     return this.finalizeDeviceSelection(selectedDevice);
   }
 
+  /**
+   * Selects a device based on the provided device selector function.
+   * 
+   * @param deviceSelector The device selector function used to select a device from the available devices.
+   * @returns A promise that resolves to the selected device information.
+   * @throws {Error} An error if no devices are found for the user or if the specified device is not found.
+   */
   public async selectDeviceBySelector(
     deviceSelector: DeviceSelectorFunction
   ): Promise<DeviceInfo> {
