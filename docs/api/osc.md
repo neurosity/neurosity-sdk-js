@@ -9,7 +9,7 @@ The Neurosity SDK supports Open Sound Control (OSC) protocol for real-time data 
 
 ## Overview
 
-OSC data is streamed over UDP in two modes:
+OSC data is streamed over port *9000* inUDP in two modes:
 
 - **Perform Mode**: Streams processed metrics like focus, calm, and power by band data
 - **Raw Mode**: Streams raw EEG data samples
