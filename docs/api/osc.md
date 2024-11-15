@@ -135,15 +135,17 @@ Argument:
 
 
 ```javascript
-const udpreceive = new Max.UDPReceive(12345); // Configure port
+const osc = require("osc");
 
-udpreceive.on('/crown123/alpha', (values) => {
-    // Handle alpha band power values
-    console.log('Alpha power:', values);
+// Set up an OSC UDP port listening on port 9000
+const udpPort = new osc.UDPPort({
+  localAddress: "0.0.0.0",
+  localPort: 9000,
 });
 
-udpreceive.on('/neurosity/notion/device-id/raw', (data) => {
-    // Handle raw EEG data
-    console.log('Raw EEG:', data);
+udpPort.on("message", (oscMessage) => {
+  console.log("Received OSC message:", oscMessage);
 });
+
+udpPort.open();
 ```
