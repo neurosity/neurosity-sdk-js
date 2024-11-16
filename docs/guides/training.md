@@ -24,7 +24,7 @@ async function main() {
   await neurosity.login({
     email: process.env.NEUROSITY_EMAIL,
     password: process.env.NEUROSITY_PASSWORD
-  });
+  })
   .catch(error => {
     console.log("error", error);
   });
