@@ -1,17 +1,17 @@
 {
   "compilerOptions": {
-    "target": "es2015",
-    "outDir": "dist/typings",
-    "lib": ["ES2020", "dom"],
+    "target": "es2020",
+    "module": "es2020",
     "moduleResolution": "node",
-    "esModuleInterop": true,
     "declaration": true,
-    "pretty": true,
-    "newLine": "lf",
-    "stripInternal": true,
-    "strict": false,
-    "sourceMap": false,
-    "allowSyntheticDefaultImports": true
+    "sourceMap": true,
+    "outDir": "./dist/esm",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["jest", "node"]
   },
-  "exclude": ["node_modules", "dist", "examples"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
