@@ -8,3 +8,4 @@ node_modules_bak
 docs/reference
 .vscode/launch.json
 website/.docusaurus
+coverage/
