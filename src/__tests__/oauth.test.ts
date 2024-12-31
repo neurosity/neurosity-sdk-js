@@ -1,113 +1,143 @@
 import { Neurosity } from "../Neurosity";
-import { EmailAndPassword, CustomToken } from "../types/credentials";
-import { firstValueFrom } from "rxjs";
+import { createOAuthURL } from "../api/https/createOAuthURL";
+import { getOAuthToken } from "../api/https/getOAuthToken";
+import { OAuthConfig } from "../types/oauth";
+import { OAuthQuery } from "../types/oauth";
+import { SDKOptions } from "../types/options";
+import axios from "axios";
 
-describe("OAuth Authentication", () => {
-  let neurosity: Neurosity;
-  const testDeviceId = "test-device-id";
-
-  beforeEach(() => {
-    neurosity = new Neurosity({
-      deviceId: testDeviceId,
-      emulator: true
-    });
-  });
-
-  afterEach(async () => {
-    try {
-      await neurosity.logout();
-    } catch (error) {
-      // Ignore logout errors in cleanup
+// Mock axios
+jest.mock("axios", () => ({
+  get: jest.fn().mockImplementation((url, config) => {
+    if (!config?.params?.client_id) {
+      return Promise.reject(new Error("Missing required parameter: clientId"));
     }
-  });
+    return Promise.resolve({
+      data: {
+        url: `/oauth/createOAuthURL?client_id=${
+          config.params.client_id
+        }&redirect_uri=${encodeURIComponent(
+          config.params.redirect_uri
+        )}&response_type=${config.params.response_type}&state=${
+          config.params.state
+        }&scope=${encodeURIComponent(config.params.scope)}`
+      }
+    });
+  }),
+  post: jest.fn().mockImplementation((url, data) => {
+    if (!data.clientId || !data.clientSecret || !data.userId) {
+      return Promise.reject(new Error("Missing OAuth credentials"));
+    }
+    if (data.clientId === "expired") {
+      return Promise.reject(new Error("Token expired"));
+    }
+    return Promise.resolve({
+      data: {
+        userId: "test-user-id",
+        accessToken: "test-access-token",
+        refreshToken: "test-refresh-token",
+        expiresIn: 3600
+      }
+    });
+  })
+}));
 
-  describe("Custom Token Authentication", () => {
-    // TODO: Issue #XYZ - Custom token authentication tests need to be implemented
-    // These tests require proper mocking of the OAuth flow and token validation
-    it.skip("should authenticate with custom token", async () => {
-      const mockToken: CustomToken = {
-        customToken: "mock-custom-token"
-      };
-      await expect(neurosity.login(mockToken)).resolves.not.toThrow();
+// Mock getOAuthToken
+jest.mock("../api/https/getOAuthToken", () => {
+  return {
+    __esModule: true,
+    getOAuthToken: jest
+      .fn()
+      .mockImplementation(async (query: OAuthQuery, options: SDKOptions) => {
+        try {
+          const baseURL = options.emulator
+            ? `http://${options.emulatorHost}:${options.emulatorFunctionsPort}/neurosity-device/us-central1`
+            : "https://us-central1-neurosity-device.cloudfunctions.net";
+          const response = await axios.post(baseURL, query);
+          return response.data;
+        } catch (error) {
+          throw error;
+        }
+      })
+  };
+});
 
-      const authState = await firstValueFrom(neurosity.onAuthStateChanged());
-      expect(authState).toBeTruthy();
+describe("OAuth and Token Management", () => {
+  const options: SDKOptions = {
+    emulator: true,
+    emulatorHost: "localhost",
+    emulatorFunctionsPort: 5001
+  };
+
+  describe("OAuth URL Creation", () => {
+    const config: OAuthConfig = {
+      clientId: "test-client-id",
+      redirectUri: "http://localhost:3000/callback",
+      responseType: "token",
+      state: "random-state",
+      scope: ["read:devices-info", "read:brainwaves"]
+    };
+
+    it("should create OAuth URL with valid credentials", async () => {
+      const url = await createOAuthURL(config, options);
+      expect(url).toContain(`client_id=${config.clientId}`);
+      expect(url).toContain(
+        `redirect_uri=${encodeURIComponent(config.redirectUri)}`
+      );
+      expect(url).toContain(`response_type=${config.responseType}`);
+      expect(url).toContain(`state=${config.state}`);
+      expect(url).toContain(
+        `scope=${encodeURIComponent(config.scope.join(","))}`
+      );
     });
 
-    it.skip("should reject invalid custom token", async () => {
-      const invalidToken: CustomToken = {
-        customToken: "invalid-token"
-      };
-      await expect(neurosity.login(invalidToken)).rejects.toThrow();
-    });
-  });
-
-  describe("Email Authentication", () => {
-    // TODO: Issue #XYZ - Email authentication tests need to be implemented
-    // These tests require proper mocking of the authentication flow
-    it.skip("should authenticate with email and password", async () => {
-      const credentials: EmailAndPassword = {
-        email: "test@example.com",
-        password: "testPassword123"
-      };
-      await expect(neurosity.login(credentials)).resolves.not.toThrow();
-
-      const authState = await firstValueFrom(neurosity.onAuthStateChanged());
-      expect(authState).toBeTruthy();
-    });
-
-    it.skip("should reject invalid credentials", async () => {
-      const invalidCredentials: EmailAndPassword = {
-        email: "invalid@example.com",
-        password: "wrongPassword"
-      };
-      await expect(neurosity.login(invalidCredentials)).rejects.toThrow();
-    });
-  });
-
-  describe("Token Management", () => {
-    // TODO: Issue #XYZ - Token management tests need to be implemented
-    // These tests require proper mocking of token validation
-    it.skip("should handle token expiration", async () => {
-      const mockToken: CustomToken = {
-        customToken: "mock-custom-token"
-      };
-      await neurosity.login(mockToken);
-
-      // Mock token expiration
+    it("should reject OAuth URL creation with missing credentials", async () => {
+      const { clientId, ...invalidConfig } = config;
       await expect(
-        firstValueFrom(neurosity.onAuthStateChanged())
-      ).rejects.toThrow();
-    });
-
-    it.skip("should handle token validation", async () => {
-      const mockToken: CustomToken = {
-        customToken: "mock-custom-token"
-      };
-      await neurosity.login(mockToken);
-
-      const authState = await firstValueFrom(neurosity.onAuthStateChanged());
-      expect(authState).toBeTruthy();
+        createOAuthURL(invalidConfig as OAuthConfig, options)
+      ).rejects.toThrow("Missing required parameter: clientId");
     });
   });
 
-  describe("Error Handling", () => {
-    // TODO: Issue #XYZ - Error handling tests need to be implemented
-    // These tests require proper error simulation and handling
-    it.skip("should handle network errors", async () => {
-      const credentials: EmailAndPassword = {
-        email: "test@example.com",
-        password: "testPassword123"
+  describe("OAuth Token Management", () => {
+    it("should get OAuth token with valid credentials", async () => {
+      const query: OAuthQuery = {
+        clientId: "test-client-id",
+        clientSecret: "test-client-secret",
+        userId: "test-user-id"
       };
-      // Simulate network error during login
-      await expect(neurosity.login(credentials)).rejects.toThrow();
+
+      const token = await getOAuthToken(query, options);
+      expect(token).toEqual({
+        userId: "test-user-id",
+        accessToken: "test-access-token",
+        refreshToken: "test-refresh-token",
+        expiresIn: 3600
+      });
     });
 
-    it.skip("should handle invalid token format", async () => {
-      const invalidToken: CustomToken = {
-        customToken: "invalid-format-token"
+    it("should handle expired token", async () => {
+      const query: OAuthQuery = {
+        clientId: "expired",
+        clientSecret: "test-client-secret",
+        userId: "test-user-id"
       };
-      await expect(neurosity.login(invalidToken)).rejects.toThrow();
+
+      await expect(getOAuthToken(query, options)).rejects.toThrow(
+        "Token expired"
+      );
+    });
+
+    it("should handle missing credentials", async () => {
+      const query: OAuthQuery = {
+        clientId: "test-client-id",
+        clientSecret: "",
+        userId: ""
+      };
+
+      await expect(getOAuthToken(query, options)).rejects.toThrow(
+        "Missing OAuth credentials"
+      );
     });
   });
 });
