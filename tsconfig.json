@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2020",
+    "target": "es2023",
     "module": "es2020",
     "moduleResolution": "node",
     "declaration": true,
@@ -10,7 +10,8 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["jest", "node"]
+    "types": ["jest", "node", "web-bluetooth"],
+    "lib": ["es2020", "dom"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

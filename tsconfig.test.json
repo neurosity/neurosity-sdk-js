@@ -2,8 +2,10 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "commonjs",
-    "types": ["node"],
-    "sourceMap": true
+    "types": ["jest", "node", "web-bluetooth"],
+    "lib": ["es2020", "dom"],
+    "sourceMap": true,
+    "target": "es2020"
   },
   "include": ["src/**/*.ts", "src/**/*.test.ts"],
   "exclude": ["node_modules", "dist"]
