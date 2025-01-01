@@ -17,6 +17,9 @@ module.exports = {
       "ts-jest",
       {
         isolatedModules: true,
+        tsconfig: {
+          target: "es2020"
+        },
         diagnostics: {
           ignoreCodes: [
             2345, // Argument type not assignable
