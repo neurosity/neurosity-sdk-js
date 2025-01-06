@@ -1,3 +1,11 @@
+# v6.6.0
+
+- FEAT: Added comprehensive test suite for WebBluetoothTransport
+- FEAT: Added test utilities for Web Bluetooth functionality
+- FEAT: Enhanced TypeScript configuration with web-bluetooth types
+- TEST: Added extensive tests for Bluetooth utilities (create6DigitPin, decodeJSONChunks, stitch, TextCodec)
+- CHORE: Updated TypeScript target to ES2020
+
 # v5.0.0
 
 - FEAT: Auto & manual device selection via `neurosity.selectDevice(...)` method
