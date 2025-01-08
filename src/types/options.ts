@@ -29,7 +29,7 @@ export interface SDKOptions {
    * @hidden
    */
   emulatorOptions?: {
-    mockUserToken?: any;
+    mockUserToken?: Record<string, unknown>;
   };
   /**
    * @hidden

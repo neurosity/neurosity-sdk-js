@@ -12,6 +12,22 @@ type FirebaseDeviceOptions = {
   dependencies: SDKDependencies;
 };
 
+interface DeviceAction {
+  command: string;
+  action: string;
+  responseRequired?: boolean;
+  responseTimeout?: number;
+}
+
+interface MetricValue {
+  [label: string]: unknown;
+}
+
+interface MetricSubscription {
+  bundleId?: string;
+  [key: string]: unknown;
+}
+
 /**
  * @hidden
  */
@@ -21,11 +37,7 @@ export class FirebaseDevice {
   protected deviceStore;
   public deviceId: string;
 
-  constructor({
-    deviceId,
-    firebaseApp,
-    dependencies
-  }: FirebaseDeviceOptions) {
+  constructor({ deviceId, firebaseApp, dependencies }: FirebaseDeviceOptions) {
     if (!deviceId) {
       throw new Error(`No Device ID provided.`);
     }
@@ -39,27 +51,33 @@ export class FirebaseDevice {
     );
   }
 
-  public get timestamp(): any {
+  public get timestamp(): Record<string, number> {
     return SERVER_TIMESTAMP;
   }
 
-  public dispatchAction(action): Promise<any> {
+  public dispatchAction(action: DeviceAction): Promise<unknown> {
     return this.deviceStore.dispatchAction(action);
   }
 
-  public async getInfo(): Promise<any> {
+  public async getInfo(): Promise<Record<string, unknown>> {
     return await this.deviceStore.once("info");
   }
 
-  public onNamespace(namespace: string, callback: Function): Function {
+  public onNamespace(
+    namespace: string,
+    callback: (data: unknown) => void
+  ): () => void {
     return this.deviceStore.onNamespace(namespace, callback);
   }
 
-  public async onceNamespace(namespace: string): Promise<any> {
+  public async onceNamespace(namespace: string): Promise<unknown> {
     return await this.deviceStore.once(namespace);
   }
 
-  public offNamespace(namespace: string, listener: Function): void {
+  public offNamespace(
+    namespace: string,
+    listener: (data: unknown) => void
+  ): void {
     this.deviceStore.offNamespace(namespace, listener);
   }
 
@@ -77,10 +95,7 @@ export class FirebaseDevice {
    * Pushes metric for each subscriptions in path:
    * /devices/:deviceId/metrics/:metricName
    */
-  public nextMetric(
-    metricName: string,
-    metricValue: { [label: string]: any }
-  ): void {
+  public nextMetric(metricName: string, metricValue: MetricValue): void {
     this.deviceStore.nextMetric(metricName, metricValue);
   }
 
@@ -88,7 +103,10 @@ export class FirebaseDevice {
    * Listens for metrics in path:
    * /devices/:deviceId/metrics/:metricName
    */
-  public onMetric(subscription, callback): Function {
+  public onMetric(
+    subscription: MetricSubscription,
+    callback: (data: unknown) => void
+  ): () => void {
     return this.deviceStore.onMetric(subscription, callback);
   }
 
@@ -100,7 +118,7 @@ export class FirebaseDevice {
    * @param subscription
    * @returns subscriptionId
    */
-  public subscribeToMetric(subscription) {
+  public subscribeToMetric(subscription: MetricSubscription): string {
     const subscriptionId = this.deviceStore.subscribeToMetric({
       ...subscription,
       serverType: FirebaseDevice.serverType // @deprecated
@@ -114,7 +132,7 @@ export class FirebaseDevice {
    *
    * @param subscription
    */
-  public unsubscribeFromMetric(subscription): void {
+  public unsubscribeFromMetric(subscription: MetricSubscription): void {
     this.deviceStore.unsubscribeFromMetric(subscription);
   }
 
@@ -127,15 +145,20 @@ export class FirebaseDevice {
    * @param subscription
    * @param listener
    */
-  public removeMetricListener(subscription, listener: Function): void {
+  public removeMetricListener(
+    subscription: MetricSubscription,
+    listener: (data: unknown) => void
+  ): void {
     this.deviceStore.removeMetricListener(subscription, listener);
   }
 
-  public async changeSettings(settings): Promise<void> {
+  public async changeSettings(
+    settings: Record<string, unknown>
+  ): Promise<void> {
     return this.deviceStore.update("settings", settings);
   }
 
-  public async getSkill(bundleId): Promise<any> {
+  public async getSkill(bundleId: string): Promise<unknown> {
     return await this.deviceStore.lastOfChildValue(
       "skills",
       "bundleId",

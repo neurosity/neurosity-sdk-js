@@ -1,4 +1,3 @@
-import { Neurosity } from "../Neurosity";
 import { createOAuthURL } from "../api/https/createOAuthURL";
 import { getOAuthToken } from "../api/https/getOAuthToken";
 import { OAuthConfig } from "../types/oauth";

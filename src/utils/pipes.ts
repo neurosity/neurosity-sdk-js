@@ -1,22 +1,27 @@
-import { pipe } from "rxjs";
+import { pipe, Observable, UnaryFunction } from "rxjs";
 import { bufferCount, scan, filter, map } from "rxjs/operators";
-
 import { Sample } from "../types/sample";
+import { Epoch } from "../types/epoch";
 
-const defaultDataProp = "data";
 const defaultSamplingRate = 256;
 
-const isObject = (object) =>
+const isObject = (object: unknown): object is Record<string, unknown> =>
   object instanceof Object && object === Object(object);
-const isFunction = (object) => typeof object === "function";
 
-const patch = (sample: Sample) => (info: any) => ({
-  ...sample,
-  info: {
-    ...(sample?.info ?? {}),
-    ...(info || {})
-  }
-});
+type InfoFunction = (sample: Sample) => Record<string, unknown>;
+
+const isFunction = (object: unknown): object is InfoFunction =>
+  typeof object === "function";
+
+const patch =
+  (sample: Sample) =>
+  (info: Record<string, unknown>): Sample => ({
+    ...sample,
+    info: {
+      ...(sample?.info ?? {}),
+      ...(info || {})
+    }
+  });
 
 /**
  * Annotates stream with user-defined metadata
@@ -25,33 +30,38 @@ const patch = (sample: Sample) => (info: any) => ({
  * @param {Object} info Info to be added to the EEG stream. Relevant info may include: `samplingRate` and `channelNames`
  * @returns {Observable<Sample|Epoch|PSD>}
  */
-export const addInfo = (infoValue: any) =>
+export const addInfo = (
+  infoValue: Record<string, unknown> | InfoFunction
+): UnaryFunction<Observable<Sample>, Observable<Sample>> =>
   pipe(
-    map((sample: any) => {
+    map((sample: Sample) => {
       if (
         !isObject(sample) ||
         (!isObject(infoValue) && !isFunction(infoValue))
       ) {
         return sample;
       }
-      const info: any = isFunction(infoValue) ? infoValue(sample) : infoValue;
+      const info: Record<string, unknown> = isFunction(infoValue)
+        ? infoValue(sample)
+        : infoValue;
       return patch(sample)(info);
     })
   );
 
 /**
- * Get a 2D data array organized by channel from an array of Samples. Credit to Ken from Seattle's elegant transposition
- * http://www.codesuck.com/2012/02/transpose-javascript-array-in-one-line.html
+ * Get a 2D array organized by channel from an array of Samples.
  * @method groupByChannel
  * @param {Array<Sample>} samplesBuffer Array of Samples to be grouped
- * @param {string} [dataProp] Name of the key associated with EEG data
  * @returns {Array<Array<number>>}
  */
-
-const groupByChannel = (samplesBuffer, dataProp = defaultDataProp) =>
-  samplesBuffer[0][dataProp].map((_, channelIndex) =>
-    samplesBuffer.map((sample) => sample[dataProp][channelIndex])
+const groupByChannel = (samplesBuffer: Sample[]): number[][] => {
+  if (!samplesBuffer.length || !samplesBuffer[0].data) {
+    return [];
+  }
+  return samplesBuffer[0].data.map((_, channelIndex: number) =>
+    samplesBuffer.map((sample: Sample) => sample.data[channelIndex])
   );
+};
 
 /**
  * Takes an array or RxJS buffer of EEG Samples and returns an Epoch.
@@ -60,52 +70,68 @@ const groupByChannel = (samplesBuffer, dataProp = defaultDataProp) =>
  *
  * @param {Object} options - Data structure options
  * @param {number} [options.samplingRate] Sampling rate
- * @param {string} [options.dataProp='data'] Name of the key associated with eeg data
  *
  * @returns {Observable<Epoch>}
  */
 export const bufferToEpoch = ({
-  samplingRate = defaultSamplingRate,
-  dataProp = defaultDataProp
-} = {}) =>
+  samplingRate = defaultSamplingRate
+} = {}): UnaryFunction<Observable<Sample[]>, Observable<Epoch>> =>
   pipe(
-    map((samplesArray) => ({
-      [dataProp]: groupByChannel(samplesArray, dataProp),
-      info: {
-        ...(samplesArray[0] && samplesArray[0].info
-          ? samplesArray[0].info
-          : {}),
-        startTime: samplesArray[0].timestamp,
-        samplingRate:
-          samplesArray[0].info && samplesArray[0].info.samplingRate
-            ? samplesArray[0].info.samplingRate
-            : samplingRate
+    map((samplesArray: Sample[]): Epoch => {
+      if (!samplesArray.length) {
+        return {
+          data: [],
+          info: {
+            startTime: 0,
+            samplingRate,
+            channelNames: []
+          }
+        };
       }
-    }))
+
+      const info = samplesArray[0]?.info ?? {};
+      const samplingRateFromInfo =
+        typeof info.samplingRate === "number"
+          ? info.samplingRate
+          : samplingRate;
+
+      return {
+        data: groupByChannel(samplesArray),
+        info: {
+          ...info,
+          startTime: samplesArray[0]?.timestamp ?? 0,
+          samplingRate: samplingRateFromInfo
+        }
+      };
+    })
   );
 
 /**
- * Converts a stream of individual Samples of EEG data into a stream of Epochs of a given duration emitted at specified interval. This operator functions similarly to a circular buffer internally and allows overlapping Epochs of data to be emitted (e.g. emitting the last one second of data every 100ms).
+ * Converts a stream of individual Samples of EEG data into a stream of Epochs of a given duration emitted at specified interval.
+ * This operator functions similarly to a circular buffer internally and allows overlapping Epochs of data to be emitted
+ * (e.g. emitting the last one second of data every 100ms).
  * @method epoch
  * @example eeg$.pipe(epoch({ duration: 1024, interval: 100, samplingRate: 256 }))
  * @param {Object} options - Epoching options
  * @param {number} [options.duration=256] Number of samples to include in each epoch
  * @param {number} [options.interval=100] Time (ms) between emitted Epochs
  * @param {number} [options.samplingRate=256] Sampling rate
- * @param {string} [options.dataProp='data'] Name of the key associated with eeg data
  * @returns {Observable} Epoch
  */
 export const epoch = ({
-  duration,
-  interval,
-  samplingRate,
-  dataProp = defaultDataProp
-}) =>
+  duration = 256,
+  interval = 100,
+  samplingRate = defaultSamplingRate
+}: {
+  duration?: number;
+  interval?: number;
+  samplingRate?: number;
+} = {}): UnaryFunction<Observable<Sample>, Observable<Epoch>> =>
   pipe(
     bufferCount(interval),
-    scan((acc, val) =>
+    scan((acc: Sample[], val: Sample[]) =>
       acc.concat(val).slice(acc.length < duration ? 0 : -duration)
     ),
-    filter((samplesArray) => samplesArray.length === duration),
-    bufferToEpoch({ samplingRate, dataProp })
+    filter((samplesArray: Sample[]) => samplesArray.length === duration),
+    bufferToEpoch({ samplingRate })
   );

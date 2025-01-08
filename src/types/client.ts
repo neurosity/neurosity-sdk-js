@@ -12,10 +12,10 @@ import { ChangeSettings } from "./settings";
 export interface Client {
   user: User | null;
   actions: Actions;
-  disconnect(): Promise<any>;
-  getInfo(): Promise<any>;
-  login?(credentials: Credentials): Promise<any>;
-  observeNamespace(namespace: string): Observable<any>;
+  disconnect(): Promise<void>;
+  getInfo(): Promise<Record<string, unknown>>;
+  login?(credentials: Credentials): Promise<User>;
+  observeNamespace(namespace: string): Observable<Record<string, unknown>>;
   metrics: Metrics;
   skills: SkillsClient;
   timestamp: number;

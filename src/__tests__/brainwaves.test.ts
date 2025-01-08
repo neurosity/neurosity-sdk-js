@@ -1,6 +1,6 @@
 import { Neurosity } from "../Neurosity";
-import { firstValueFrom, of, ReplaySubject } from "rxjs";
 import { DeviceInfo } from "../types/deviceInfo";
+import { firstValueFrom, of, ReplaySubject } from "rxjs";
 import { STATUS } from "../types/status";
 import { DeviceStatus } from "../types/status";
 import { MODEL_VERSION_2 } from "../utils/platform";
@@ -8,7 +8,6 @@ import {
   Epoch,
   PowerByBand,
   PSD,
-  BrainwavesLabel,
   RawUnfilteredEpoch
 } from "../types/brainwaves";
 

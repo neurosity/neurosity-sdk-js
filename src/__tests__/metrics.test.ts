@@ -1,9 +1,7 @@
 import { Neurosity } from "../Neurosity";
-import { BehaviorSubject, Observable, of, throwError } from "rxjs";
+import { BehaviorSubject, of, throwError } from "rxjs";
 import { take } from "rxjs/operators";
-import { DeviceInfo } from "../types/deviceInfo";
-import { STATUS } from "../types/status";
-import { DeviceStatus } from "../types/status";
+import { DeviceStatus, STATUS } from "../types/status";
 import { PendingSubscription, Subscription } from "../types/subscriptions";
 
 // Mock CloudClient

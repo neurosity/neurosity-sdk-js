@@ -1,11 +1,37 @@
-import { BLUETOOTH_CHARACTERISTICS } from "@neurosity/ipk";
+/**
+ * @hidden
+ */
+export enum BLUETOOTH_CONNECTION {
+  DISCONNECTED = "disconnected",
+  SCANNING = "scanning",
+  CONNECTING = "connecting",
+  CONNECTED = "connected"
+}
 
-export const ANDROID_MAX_MTU: number = 512;
-export const REACT_NATIVE_MAX_BYTE_SIZE: number = 512; // the default is 20
+/**
+ * @hidden
+ */
+export const BLUETOOTH_PRIMARY_SERVICE_UUID_HEX =
+  "0000fe84-0000-1000-8000-00805f9b34fb";
 
-export const DEFAULT_ACTION_RESPONSE_TIMEOUT: number = 1000 * 60; // 1 minute
+/**
+ * @hidden
+ */
+export const BLUETOOTH_COMPANY_IDENTIFIER_HEX = 0x0438;
 
-// Reverse BLUETOOTH_CHARACTERISTICS key/values for easy lookup
-export const CHARACTERISTIC_UUIDS_TO_NAMES = Object.fromEntries(
-  Object.entries(BLUETOOTH_CHARACTERISTICS).map((entries) => entries.reverse())
-);
+/**
+ * @hidden
+ */
+export const BLUETOOTH_DEVICE_NAME_PREFIXES = ["Crown", "Notion"];
+
+/**
+ * @hidden
+ */
+export const BLUETOOTH_CHARACTERISTICS = {
+  COMMAND: "command",
+  ACTION: "action",
+  STATUS: "status",
+  INFO: "info"
+} as const;
+
+export type BluetoothCharacteristic = keyof typeof BLUETOOTH_CHARACTERISTICS;

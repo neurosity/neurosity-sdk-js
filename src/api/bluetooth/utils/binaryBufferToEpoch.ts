@@ -22,7 +22,7 @@ const SampleFixedSize = TimestampSize + MarkerSize;
  */
 export function binaryBufferToEpoch(
   deviceInfo: DeviceInfo
-): UnaryFunction<Observable<Epoch>, any> {
+): UnaryFunction<Observable<Epoch>, Observable<Epoch>> {
   if (!deviceInfo?.samplingRate) {
     console.warn(
       `Didn't receive a sampling rate, defaulting to ${SAMPLING_RATE_FALLBACK}`
@@ -48,7 +48,7 @@ export function binaryBufferToEpoch(
  */
 export function binaryBufferToSamples(
   channelCount: number
-): UnaryFunction<any, any> {
+): UnaryFunction<Observable<Uint8Array>, Observable<Sample>> {
   return pipe(
     mergeMap((arrayBuffer: Uint8Array): Observable<Sample> => {
       const buffer = Buffer.from(arrayBuffer);

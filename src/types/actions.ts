@@ -4,7 +4,7 @@
 export interface Action {
   command: string;
   action: string;
-  message?: any;
+  message?: unknown;
   responseRequired?: boolean;
   responseTimeout?: number;
 }
@@ -13,5 +13,5 @@ export interface Action {
  * @hidden
  */
 export interface Actions {
-  dispatch(action: Action): Promise<any>;
+  dispatch(action: Action): Promise<unknown>;
 }

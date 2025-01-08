@@ -3,13 +3,13 @@ import { Marker } from "./marker";
 /**
  * @hidden
  */
-export type Sample = {
+export interface Sample {
   data: number[];
   timestamp: number;
   count?: number;
   marker?: Marker;
-  info?: any;
-};
+  info?: Record<string, unknown>;
+}
 
 /**
  * @hidden

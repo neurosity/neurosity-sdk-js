@@ -3,7 +3,7 @@ import { Observable } from "rxjs";
 /**
  * @hidden
  */
-type SkillProps = { [key: string]: string | number | boolean };
+type SkillProps = Record<string, string | number | boolean>;
 
 /**
  * @hidden
@@ -30,14 +30,14 @@ export interface DeviceSkill {
   id: string;
   bundleId: string;
   installedDate: number;
-  manifest: { [key: string]: any };
+  manifest: Record<string, unknown>;
   status: string;
 }
 
 /**
  * @hidden
  */
-type SkillMetric = { [key: string]: any };
+type SkillMetric = Record<string, unknown>;
 
 /**
  * @hidden

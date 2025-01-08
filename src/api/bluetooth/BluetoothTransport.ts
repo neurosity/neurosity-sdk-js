@@ -1,46 +1,36 @@
-import { Observable, Subject } from "rxjs";
+import { Observable } from "rxjs";
+import { BLUETOOTH_CONNECTION } from "./constants";
 
-import { BLUETOOTH_CONNECTION, TRANSPORT_TYPE } from "./types";
-import { Action } from "../../types/actions";
-import { DeviceInfo, OSVersion } from "../../types/deviceInfo";
-import { Peripheral } from "./react-native/types/BleManagerTypes";
+export abstract class BluetoothTransport {
+  abstract device: BluetoothDevice;
+  abstract server: BluetoothRemoteGATTServer;
+  abstract service: BluetoothRemoteGATTService;
+  abstract characteristicsByName: Record<
+    string,
+    BluetoothRemoteGATTCharacteristic
+  >;
 
-export type DeviceNicknameOrPeripheral = string | Peripheral;
+  abstract connection$: Observable<BLUETOOTH_CONNECTION>;
+  abstract pendingActions$: Observable<Record<string, unknown>[]>;
+  abstract logs$: Observable<string>;
+  abstract onDisconnected$: Observable<void>;
 
-/**
- * @hidden
- */
-export interface BluetoothTransport {
-  type: TRANSPORT_TYPE;
-  connect(
-    deviceNicknameORPeripheral?: DeviceNicknameOrPeripheral
-  ): Promise<void>;
-  _autoConnect(
-    selectedDevice$: Observable<DeviceInfo>,
-    osVersion: Observable<OSVersion>
-  ): Observable<void>;
-  disconnect(): Promise<void>;
-  connection(): Observable<BLUETOOTH_CONNECTION>;
-  requestDevice?(): any;
-  addLog: (log: string) => void;
-  logs$: Subject<string>;
+  abstract subscribe(
+    characteristicName: string,
+    options?: {
+      manageNotifications?: boolean;
+      skipJSONDecoding?: boolean;
+    }
+  ): Observable<unknown>;
 
-  enableAutoConnect?(value: boolean): void;
-
-  // React Native only
-  scan?(options?: { seconds?: number }): Observable<Peripheral[]>;
-
-  subscribeToCharacteristic(args: {
-    characteristicName: string;
-    manageNotifications?: boolean;
-  }): Observable<any>;
-
-  readCharacteristic(characteristicName: string, parse?: boolean): Promise<any>;
-
-  writeCharacteristic(characteristicName: string, data: string): Promise<void>;
-
-  dispatchAction(args: {
-    characteristicName: string;
-    action: Action;
-  }): Promise<any>;
+  protected abstract _onDisconnected(): Observable<void>;
+  protected abstract _manageNotifications(
+    characteristic: BluetoothRemoteGATTCharacteristic
+  ): Observable<unknown>;
+  protected abstract _startNotifications(
+    characteristic: BluetoothRemoteGATTCharacteristic
+  ): Observable<unknown>;
+  protected abstract getCharacteristicByName(
+    characteristicName: string
+  ): Promise<BluetoothRemoteGATTCharacteristic>;
 }

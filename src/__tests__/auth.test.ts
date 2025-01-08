@@ -1,8 +1,7 @@
 import { Neurosity } from "../Neurosity";
-import { firstValueFrom, of, ReplaySubject, BehaviorSubject, take } from "rxjs";
-import { EmailAndPassword } from "../types/credentials";
 import { DeviceInfo } from "../types/deviceInfo";
-import { STATUS } from "../types/status";
+import { BehaviorSubject, take } from "rxjs";
+import { EmailAndPassword } from "../types/credentials";
 
 // Mock CloudClient
 jest.mock("../api", () => {

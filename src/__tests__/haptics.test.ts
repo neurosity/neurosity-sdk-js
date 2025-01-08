@@ -1,8 +1,7 @@
 import { Neurosity } from "../Neurosity";
-import { firstValueFrom, of, ReplaySubject } from "rxjs";
+import { of, ReplaySubject } from "rxjs";
 import { DeviceInfo } from "../types/deviceInfo";
-import { STATUS } from "../types/status";
-import { DeviceStatus } from "../types/status";
+import { STATUS, DeviceStatus } from "../types/status";
 import {
   strongClick100,
   strongBuzz100,

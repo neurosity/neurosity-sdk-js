@@ -1,7 +1,11 @@
+/**
+ * @hidden
+ */
 export interface Settings {
   lsl: boolean;
-  supportAccess: boolean;
-  activityLogging: boolean;
+  bluetooth: boolean;
+  timesync: boolean;
+  deviceNickname: string;
 }
 
 /**
@@ -9,6 +13,7 @@ export interface Settings {
  */
 export interface ChangeSettings {
   lsl?: boolean;
-  supportAccess?: boolean;
-  activityLogging?: boolean;
+  bluetooth?: boolean;
+  timesync?: boolean;
+  deviceNickname?: string;
 }

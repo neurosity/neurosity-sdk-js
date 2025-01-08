@@ -1,5 +1,14 @@
-const self: any = this;
+declare class WorkerGlobalScope {
+  readonly self: WorkerGlobalScope;
+}
 
 export const isMaybeWebWorkerContext = (): boolean => {
-  return self && self?.document === undefined;
+  try {
+    return (
+      typeof WorkerGlobalScope !== "undefined" &&
+      self instanceof WorkerGlobalScope
+    );
+  } catch {
+    return false;
+  }
 };

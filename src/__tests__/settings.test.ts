@@ -12,7 +12,21 @@ jest.mock("../api/index", () => {
     deviceNickname: "test-device"
   });
 
-  const mockCloudClient = {
+  interface MockCloudClient {
+    login: jest.Mock;
+    logout: jest.Mock;
+    onAuthStateChanged: jest.Mock;
+    onDeviceChange: jest.Mock;
+    status: jest.Mock;
+    didSelectDevice: jest.Mock;
+    observeNamespace: jest.Mock;
+    changeSettings: (settings: Partial<Settings>) => Promise<void>;
+    userClaims: {
+      scopes: string[];
+    };
+  }
+
+  const mockCloudClient: MockCloudClient = {
     login: jest.fn(),
     logout: jest.fn(),
     onAuthStateChanged: jest.fn(),
@@ -25,8 +39,7 @@ jest.mock("../api/index", () => {
       }
       return of(null);
     }),
-    changeSettings: jest.fn(async (settings) => {
-      // Validate settings
+    changeSettings: async (settings) => {
       const validKeys = ["lsl", "bluetooth", "timesync", "deviceNickname"];
       const hasInvalidKey = Object.keys(settings).some(
         (key) => !validKeys.includes(key)
@@ -37,7 +50,7 @@ jest.mock("../api/index", () => {
 
       mockSettings.next({ ...mockSettings.value, ...settings });
       return Promise.resolve();
-    }),
+    },
     userClaims: {
       scopes: ["settings"]
     }
@@ -52,14 +65,11 @@ const testDeviceId = "mock-device-id";
 
 describe("Settings", () => {
   let neurosity: Neurosity;
-  let cloudClient: any;
 
   beforeEach(() => {
     neurosity = new Neurosity({
       deviceId: testDeviceId
     });
-
-    cloudClient = (neurosity as any).cloudClient;
   });
 
   describe("Settings Management", () => {
@@ -133,7 +143,7 @@ describe("Settings", () => {
         invalidSetting: true
       };
 
-      // @ts-ignore - Testing invalid settings
+      // @ts-expect-error - Testing invalid settings
       await expect(neurosity.changeSettings(invalidChanges)).rejects.toThrow(
         "Invalid settings"
       );

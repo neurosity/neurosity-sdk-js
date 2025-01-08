@@ -1,5 +1,5 @@
 import { Neurosity } from "../Neurosity";
-import { firstValueFrom, of, ReplaySubject, BehaviorSubject, take } from "rxjs";
+import { firstValueFrom, of, BehaviorSubject, take } from "rxjs";
 import { DeviceInfo } from "../types/deviceInfo";
 import { STATUS, SLEEP_MODE_REASON, DeviceStatus } from "../types/status";
 import { SignalQuality } from "../types/signalQuality";

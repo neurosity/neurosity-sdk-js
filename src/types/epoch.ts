@@ -3,11 +3,11 @@ import { Marker } from "./marker";
 /**
  * @hidden
  */
-export type Epoch = {
-  data: number[];
-  info?: {
-    channelNames?: string[];
-    samplingRate?: number;
-    marker?: Marker[];
+export interface Epoch {
+  data: number[][];
+  info: {
+    startTime: number;
+    samplingRate: number;
+    [key: string]: unknown;
   };
-};
+}

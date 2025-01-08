@@ -33,13 +33,13 @@ export function decodeJSONChunks({
       return decoded;
     }),
     stitchChunks({ delimiter }),
-    map((payload: any) => {
+    map((payload: string) => {
       try {
-        return JSON.parse(payload);
-      } catch (error) {
+        return JSON.parse(payload) as Record<string, unknown>;
+      } catch (error: unknown) {
         addLog(
           `Failed to parse JSON for ${characteristicName} characteristic. Falling back to unparsed string. ${
-            error?.message ?? error
+            error instanceof Error ? error.message : String(error)
           }`
         );
 

@@ -1,6 +1,7 @@
 import { Observable, ReplaySubject, EMPTY } from "rxjs";
 import { fromEventPattern, firstValueFrom } from "rxjs";
-import { filter, shareReplay, share, switchMap } from "rxjs/operators";
+import { filter, shareReplay, share, switchMap, map } from "rxjs/operators";
+import { User } from "@firebase/auth-types";
 
 import { FirebaseApp, FirebaseUser, FirebaseDevice } from "./firebase";
 import { UserWithMetadata } from "./firebase";
@@ -10,13 +11,13 @@ import { heartbeatAwareStatus } from "../utils/heartbeat";
 import { filterInternalKeys } from "../utils/filterInternalKeys";
 import { Client } from "../types/client";
 import { Action, Actions } from "../types/actions";
-import { Metrics } from "../types/metrics";
+import { Metrics, MetricValue } from "../types/metrics";
 import { SDKOptions } from "../types/options";
 import { SkillsClient, DeviceSkill } from "../types/skill";
 import { Credentials, CustomToken } from "../types/credentials";
 import { EmailAndPassword } from "../types/credentials";
 import { ChangeSettings } from "../types/settings";
-import { Subscription } from "../types/subscriptions";
+import { Subscription, PendingSubscription } from "../types/subscriptions";
 import { DeviceStatus } from "../types/status";
 import { DeviceInfo, DeviceSelector, OSVersion } from "../types/deviceInfo";
 import { UserClaims } from "../types/user";
@@ -35,16 +36,17 @@ export {
  * @hidden
  */
 export class CloudClient implements Client {
-  public user;
-  public userClaims;
+  public user: UserWithMetadata | null = null;
+  public userClaims: UserClaims | null = null;
   protected options: SDKOptions;
   protected firebaseApp: FirebaseApp;
   protected firebaseUser: FirebaseUser;
-  protected firebaseDevice: FirebaseDevice;
-  protected timesync: Timesync;
+  protected firebaseDevice!: FirebaseDevice;
+  protected timesync!: Timesync;
   protected subscriptionManager: SubscriptionManager;
-  protected status$: Observable<DeviceStatus>;
+  protected status$!: Observable<DeviceStatus>;
   protected osVersion$: Observable<OSVersion>;
+  protected deviceId: string = "";
 
   /**
    * @internal
@@ -59,16 +61,19 @@ export class CloudClient implements Client {
 
     this._selectedDevice.next(undefined);
 
-    this.status$ = heartbeatAwareStatus(
-      this.observeNamespace("status").pipe(share())
-    ).pipe(filterInternalKeys(), shareReplay(1));
+    this.setupStatus();
 
     this.osVersion$ = this.observeNamespace("info/osVersion").pipe(
+      map((value) => value as unknown as OSVersion),
       shareReplay(1)
     );
 
     this.firebaseUser.onAuthStateChanged().subscribe((user) => {
-      this.user = user;
+      if (user) {
+        this.user = { ...user, selectedDevice: null };
+      } else {
+        this.user = null;
+      }
     });
 
     this.firebaseUser.onUserClaimsChange().subscribe((userClaims) => {
@@ -104,7 +109,11 @@ export class CloudClient implements Client {
   public onDeviceChange(): Observable<DeviceInfo> {
     return this._selectedDevice
       .asObservable()
-      .pipe(filter((value) => value !== undefined));
+      .pipe(
+        filter(
+          (value): value is DeviceInfo => value !== undefined && value !== null
+        )
+      );
   }
 
   public osVersion(): Observable<OSVersion> {
@@ -115,19 +124,34 @@ export class CloudClient implements Client {
   private async setAutoSelectedDevice(): Promise<DeviceInfo | null> {
     // Select based on `deviceId` passed
     if (this.options.deviceId) {
-      return await this.selectDevice((devices) => {
-        return devices.find(
-          (device) => device.deviceId === this.options.deviceId
-        );
-      });
+      try {
+        return await this.selectDevice((devices) => {
+          const device = devices.find(
+            (device) => device.deviceId === this.options.deviceId
+          );
+          if (!device) {
+            throw new Error("Device not found");
+          }
+          return device;
+        });
+      } catch {
+        return null;
+      }
     }
 
     // Auto select first-claimed device
     if (!this.options.deviceId && this.options.autoSelectDevice) {
-      return await this.selectDevice((devices) => {
-        // Auto select first device
-        return devices[0];
-      });
+      try {
+        return await this.selectDevice((devices) => {
+          const device = devices[0];
+          if (!device) {
+            throw new Error("No devices available");
+          }
+          return device;
+        });
+      } catch {
+        return null;
+      }
     }
 
     return null;
@@ -141,19 +165,19 @@ export class CloudClient implements Client {
     };
   }
 
-  public async dispatchAction(action: Action): Promise<any> {
+  public async dispatchAction(action: Action): Promise<unknown> {
     return await this.firebaseDevice.dispatchAction(action);
   }
 
-  public async disconnect(): Promise<any> {
+  public async disconnect(): Promise<void> {
     return this.firebaseApp.disconnect();
   }
 
-  public async getInfo(): Promise<any> {
+  public async getInfo(): Promise<Record<string, unknown>> {
     return await this.firebaseDevice.getInfo();
   }
 
-  public async login(credentials: Credentials): Promise<any> {
+  public async login(credentials: Credentials): Promise<UserWithMetadata> {
     if (this.user) {
       return Promise.reject(`Already logged in.`);
     }
@@ -161,13 +185,17 @@ export class CloudClient implements Client {
     const auth = await this.firebaseUser.login(credentials);
     const selectedDevice = await this.setAutoSelectedDevice();
 
+    if (!auth.user) {
+      throw new Error("Login failed: No user returned");
+    }
+
     return {
-      ...auth,
+      ...auth.user,
       selectedDevice
-    };
+    } as UserWithMetadata;
   }
 
-  public async logout(): Promise<any> {
+  public async logout(): Promise<void> {
     if (this.firebaseDevice) {
       this.firebaseDevice.disconnect();
     }
@@ -177,18 +205,20 @@ export class CloudClient implements Client {
 
   public onAuthStateChanged() {
     return this.firebaseUser.onAuthStateChanged().pipe(
-      switchMap(async (user): Promise<UserWithMetadata> => {
+      switchMap(async (user): Promise<UserWithMetadata | null> => {
         if (!user) {
           return null;
         }
 
-        const selectedDevice = this.didSelectDevice()
-          ? await this.getSelectedDevice()
-          : await this.setAutoSelectedDevice();
+        const hasSelectedDevice = await this.didSelectDevice();
+        const selectedDevice = await (hasSelectedDevice
+          ? this.getSelectedDevice()
+          : this.setAutoSelectedDevice());
 
-        const userWithMetadata: UserWithMetadata = Object.assign(user, {
+        const userWithMetadata: UserWithMetadata = {
+          ...user,
           selectedDevice
-        });
+        };
 
         return userWithMetadata;
       })
@@ -246,8 +276,12 @@ export class CloudClient implements Client {
   }
 
   public async didSelectDevice(): Promise<boolean> {
-    const selectedDevice = await this.getSelectedDevice();
-    return !!selectedDevice;
+    try {
+      const selectedDevice = await this.getSelectedDevice();
+      return selectedDevice !== null;
+    } catch {
+      return false;
+    }
   }
 
   public async selectDevice(
@@ -268,9 +302,8 @@ export class CloudClient implements Client {
         }
 
         const [deviceKey, deviceValue] = deviceSelector;
-        return (
-          JSON.stringify(device?.[deviceKey]) === JSON.stringify(deviceValue)
-        );
+        const deviceKeyValue = device[deviceKey as keyof DeviceInfo];
+        return JSON.stringify(deviceKeyValue) === JSON.stringify(deviceValue);
       });
 
     const device =
@@ -298,49 +331,94 @@ export class CloudClient implements Client {
   }
 
   public async getSelectedDevice(): Promise<DeviceInfo | null> {
-    return await firstValueFrom(this._selectedDevice);
+    const device = await firstValueFrom(this._selectedDevice);
+    return device === undefined ? null : device;
   }
 
   public status(): Observable<DeviceStatus> {
     return this.status$;
   }
 
-  public observeNamespace(namespace: string): Observable<any> {
+  public observeNamespace(
+    namespace: string
+  ): Observable<Record<string, unknown>> {
     const getNamespaceValues = () =>
-      fromEventPattern(
-        (handler) => this.firebaseDevice.onNamespace(namespace, handler),
-        (handler) => this.firebaseDevice.offNamespace(namespace, handler)
+      fromEventPattern<Record<string, unknown>>(
+        (handler: (value: Record<string, unknown>) => void) =>
+          this.firebaseDevice.onNamespace(
+            namespace,
+            handler as (value: unknown) => void
+          ),
+        (handler: (value: Record<string, unknown>) => void) =>
+          this.firebaseDevice.offNamespace(
+            namespace,
+            handler as (value: unknown) => void
+          )
       );
 
-    return this.onDeviceChange().pipe(
-      switchMap((selectedDevice) => {
-        return selectedDevice ? getNamespaceValues() : EMPTY;
-      })
-    );
+    return this.firebaseDevice ? getNamespaceValues() : EMPTY;
   }
 
-  public async onceNamespace(namespace: string): Promise<any> {
-    return await this.firebaseDevice.onceNamespace(namespace);
+  public async onceNamespace(
+    namespace: string
+  ): Promise<Record<string, unknown>> {
+    const result = await this.firebaseDevice.onceNamespace(namespace);
+    return result as Record<string, unknown>;
   }
 
   public get metrics(): Metrics {
     return {
-      next: (metricName: string, metricValue: any): void => {
+      next: (metricName: string, metricValue: MetricValue): void => {
         this.firebaseDevice.nextMetric(metricName, metricValue);
       },
-      on: (subscription: Subscription, callback: Function): Function => {
-        return this.firebaseDevice.onMetric(subscription, callback);
+      on: (
+        subscription: PendingSubscription,
+        callback: (metricValue: MetricValue) => void
+      ): ((metricValue: MetricValue) => void) => {
+        return this.firebaseDevice.onMetric(
+          {
+            ...subscription,
+            id: "",
+            clientId: "",
+            serverType: "firebase",
+            [Symbol.iterator]: undefined as any
+          },
+          (data: unknown) => callback(data as MetricValue)
+        );
       },
-      subscribe: (subscription: Subscription): Subscription => {
-        const subscriptionCreated =
-          this.firebaseDevice.subscribeToMetric(subscription);
-        this.subscriptionManager.add(subscriptionCreated);
-        return subscriptionCreated;
+      subscribe: (subscription: PendingSubscription): Subscription => {
+        const subscriptionId = this.firebaseDevice.subscribeToMetric({
+          ...subscription,
+          id: "",
+          clientId: "",
+          serverType: "firebase",
+          [Symbol.iterator]: undefined as any
+        });
+        const fullSubscription: Subscription = {
+          ...subscription,
+          id: subscriptionId,
+          clientId: "",
+          serverType: "firebase"
+        };
+        this.subscriptionManager.add(fullSubscription);
+        return fullSubscription;
       },
-      unsubscribe: (subscription: Subscription, listener: Function): void => {
+      unsubscribe: (
+        subscription: Subscription,
+        listener: (metricValue: MetricValue) => void
+      ): void => {
         this.subscriptionManager.remove(subscription);
-        this.firebaseDevice.unsubscribeFromMetric(subscription);
-        this.firebaseDevice.removeMetricListener(subscription, listener);
+        this.firebaseDevice.unsubscribeFromMetric({
+          ...subscription,
+          [Symbol.iterator]: undefined as any
+        });
+        this.firebaseDevice.removeMetricListener(
+          {
+            ...subscription,
+            [Symbol.iterator]: undefined as any
+          },
+          (data: unknown) => listener(data as MetricValue)
+        );
       }
     };
   }
@@ -376,7 +454,11 @@ export class CloudClient implements Client {
   public get skills(): SkillsClient {
     return {
       get: async (bundleId: string): Promise<DeviceSkill> => {
-        return this.firebaseDevice.getSkill(bundleId);
+        const skill = await this.firebaseDevice.getSkill(bundleId);
+        if (!skill) {
+          throw new Error(`Skill ${bundleId} not found`);
+        }
+        return skill as DeviceSkill;
       }
     };
   }
@@ -390,7 +472,9 @@ export class CloudClient implements Client {
   }
 
   public changeSettings(settings: ChangeSettings): Promise<void> {
-    return this.firebaseDevice.changeSettings(settings);
+    return this.firebaseDevice.changeSettings(
+      settings as Record<string, unknown>
+    );
   }
 
   public goOffline() {
@@ -406,5 +490,14 @@ export class CloudClient implements Client {
    */
   public __getApp() {
     return this.firebaseApp.app;
+  }
+
+  protected setupStatus(): void {
+    this.status$ = heartbeatAwareStatus(
+      this.observeNamespace("status").pipe(
+        map((value) => value as unknown as DeviceStatus),
+        share()
+      )
+    ).pipe(filterInternalKeys(), shareReplay(1));
   }
 }
