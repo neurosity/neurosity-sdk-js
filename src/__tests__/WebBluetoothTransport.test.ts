@@ -1,6 +1,21 @@
 import { WebBluetoothTransport } from "../api/bluetooth/web/WebBluetoothTransport";
 import { BLUETOOTH_CONNECTION } from "../api/bluetooth/constants";
 
+// Mock isWebBluetoothSupported
+jest.mock("../api/bluetooth/web/isWebBluetoothSupported", () => ({
+  isWebBluetoothSupported: () => true
+}));
+
+// Mock Web Bluetooth API
+(global as any).window = {
+  navigator: {
+    bluetooth: {
+      requestDevice: jest.fn(),
+      getAvailability: jest.fn().mockResolvedValue(true)
+    }
+  }
+};
+
 describe("WebBluetoothTransport", () => {
   let transport: WebBluetoothTransport;
 

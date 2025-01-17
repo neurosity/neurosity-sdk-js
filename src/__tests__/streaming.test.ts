@@ -4,6 +4,7 @@ import { PowerByBand, PSD, Epoch } from "../types/brainwaves";
 import { STATUS } from "../types/status";
 import { Metrics } from "../types/metrics";
 import { SubscriptionManager } from "../subscriptions/SubscriptionManager";
+import { STREAMING_MODE } from "../types/streaming";
 
 // Mock Firebase modules
 jest.mock("../api/firebase", () => ({
@@ -188,29 +189,50 @@ describe("Data Streaming", () => {
     });
 
     it("should throw error when OAuth scope is missing", async () => {
-      // Remove brainwaves scope
+      expect.assertions(1);
+
+      // Remove brainwaves scope and set OAuth to true
       if (neurosity["cloudClient"]?.userClaims) {
-        neurosity["cloudClient"].userClaims.scopes = "other-scope";
+        neurosity["cloudClient"].userClaims = {
+          oauth: true,
+          scopes: "other-scope"
+        };
       }
 
-      // Mock the getCloudMetric function to throw an error
+      // Mock streaming state to ensure we're using WiFi mode
+      neurosity["streamingMode$"].next(STREAMING_MODE.WIFI_ONLY);
+
+      // Mock device status
+      neurosity["cloudClient"].status = jest
+        .fn()
+        .mockReturnValue(of({ state: STATUS.ONLINE }));
+
+      // Mock device change
+      neurosity["cloudClient"].onDeviceChange = jest
+        .fn()
+        .mockReturnValue(of({ deviceId: testDeviceId, status: STATUS.ONLINE }));
+
+      // Mock bluetooth support
+      neurosity["_osHasBluetoothSupport"] = jest
+        .fn()
+        .mockReturnValue(of(false));
+
+      // Mock the dependencies to ensure error propagation
       neurosity["_getCloudMetricDependencies"] = jest.fn().mockReturnValue({
         options,
         cloudClient: neurosity["cloudClient"],
         onDeviceChange: neurosity["cloudClient"].onDeviceChange,
         status: neurosity["cloudClient"].status,
-        getCloudMetric: jest.fn().mockImplementation(() => {
-          throw new Error(
-            "Neurosity SDK: No permission to access the brainwaves metric. To access this metric, edit the skill's permissions"
-          );
-        })
+        getCloudMetric: jest.fn()
       });
 
-      await expect(
-        firstValueFrom(neurosity.brainwaves("raw").pipe(take(1)))
-      ).rejects.toThrow(
-        "Neurosity SDK: No permission to access the brainwaves metric. To access this metric, edit the skill's permissions"
-      );
+      try {
+        await firstValueFrom(neurosity.brainwaves("raw"));
+      } catch (error: any) {
+        expect(error.message).toBe(
+          "Neurosity SDK: You are trying to access data with an OAuth token without access to the following scopes: read:brainwaves."
+        );
+      }
     });
   });
 });

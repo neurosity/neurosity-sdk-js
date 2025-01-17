@@ -102,13 +102,15 @@ export class WebBluetoothTransport extends BluetoothTransport {
     characteristic: BluetoothRemoteGATTCharacteristic
   ): Observable<unknown> {
     return new Observable((subscriber) => {
+      let cleanup: (() => void) | undefined;
+
       characteristic
         .startNotifications()
         .then(() => {
           const onCharacteristicValueChanged = (event: Event) => {
             const target = event.target as BluetoothRemoteGATTCharacteristic;
             if (target?.value) {
-              subscriber.next(target.value.buffer);
+              subscriber.next(new Uint8Array(target.value.buffer));
             }
           };
 
@@ -117,7 +119,7 @@ export class WebBluetoothTransport extends BluetoothTransport {
             onCharacteristicValueChanged
           );
 
-          return () => {
+          cleanup = () => {
             characteristic
               .stopNotifications()
               .then(() => {
@@ -134,6 +136,12 @@ export class WebBluetoothTransport extends BluetoothTransport {
         .catch((error) => {
           subscriber.error(error);
         });
+
+      return () => {
+        if (cleanup) {
+          cleanup();
+        }
+      };
     });
   }
 
@@ -153,7 +161,7 @@ export class WebBluetoothTransport extends BluetoothTransport {
     ).pipe(
       map((event) => {
         const target = event.target as BluetoothRemoteGATTCharacteristic;
-        return target?.value?.buffer;
+        return target?.value ? new Uint8Array(target.value.buffer) : undefined;
       })
     );
   }
