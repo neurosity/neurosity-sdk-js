@@ -60,7 +60,7 @@ export class CloudClient implements Client {
     this._selectedDevice.next(undefined);
 
     this.status$ = heartbeatAwareStatus(
-      this.observeNamespace("status").pipe(share())
+      this.observeNamespace("status").pipe(shareReplay(1))
     ).pipe(filterInternalKeys(), shareReplay(1));
 
     this.osVersion$ = this.observeNamespace("info/osVersion").pipe(
