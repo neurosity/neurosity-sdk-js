@@ -42,7 +42,7 @@ export function getCloudMetric(
     const subscriptionWithListeners = subscriptions.map((subscription) => ({
       subscription,
       listener: cloudClient.metrics.on(subscription, (...data: any) => {
-        observer.next(...data);
+        observer.next(data.length === 1 ? data[0] : data);
       })
     }));
 

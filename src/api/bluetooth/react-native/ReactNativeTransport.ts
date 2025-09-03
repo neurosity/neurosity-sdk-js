@@ -242,7 +242,7 @@ export class ReactNativeTransport implements BluetoothTransport {
           scanOptions
         ).then(() => {
           this.addLog(`BleManger scanning ${once ? "once" : "indefintely"}`);
-          subscriber.next();
+          subscriber.next([]);
         });
       } catch (error) {
         this.addLog(
