@@ -1,18 +1,17 @@
 {
   "compilerOptions": {
-    "target": "es2023",
-    "module": "es2020",
+    "target": "es2015",
+    "outDir": "dist/typings",
+    "lib": ["es2020", "dom"],
     "moduleResolution": "node",
-    "declaration": true,
-    "sourceMap": true,
-    "outDir": "./dist/esm",
-    "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "types": ["jest", "node", "web-bluetooth"],
-    "lib": ["es2020", "dom"]
+    "declaration": true,
+    "pretty": true,
+    "newLine": "lf",
+    "stripInternal": true,
+    "strict": false,
+    "sourceMap": false,
+    "allowSyntheticDefaultImports": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist", "examples"]
 }
