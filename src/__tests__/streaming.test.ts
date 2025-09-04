@@ -96,7 +96,8 @@ describe("Data Streaming", () => {
         ],
         info: {
           samplingRate: 256,
-          startTime: Date.now()
+          startTime: Date.now(),
+          channelNames: ["test-channel-1", "test-channel-2"]
         }
       };
 
@@ -128,7 +129,12 @@ describe("Data Streaming", () => {
         beta: [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
         alpha: [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
         theta: [0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1],
-        delta: [0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2]
+        delta: [0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2],
+        info: {
+          samplingRate: 256,
+          startTime: Date.now(),
+          channelNames: ["test-channel-1", "test-channel-2"]
+        }
       };
 
       // Mock the getCloudMetric function to return our mock data
@@ -157,6 +163,7 @@ describe("Data Streaming", () => {
 
     it("should stream PSD data", async () => {
       const mockPSD: PSD = {
+        label: "psd",
         psd: [
           [1, 2, 3, 4],
           [5, 6, 7, 8]
@@ -164,7 +171,9 @@ describe("Data Streaming", () => {
         freqs: [0, 2, 4, 6],
         info: {
           samplingRate: 256,
-          startTime: Date.now()
+          startTime: Date.now(),
+          notchFrequency: "50",
+          channelNames: ["test-channel-1", "test-channel-2"]
         }
       };
 

@@ -7,9 +7,8 @@ import { Neurosity } from "../Neurosity";
 jest.mock("../api/index", () => {
   const mockSettings = new BehaviorSubject<Settings>({
     lsl: false,
-    bluetooth: false,
-    timesync: false,
-    deviceNickname: "test-device"
+    supportAccess: false,
+    activityLogging: false
   });
 
   const mockCloudClient = {
@@ -71,9 +70,8 @@ describe("Settings", () => {
           next: (settings) => {
             expect(settings).toBeDefined();
             expect(settings.lsl).toBe(false);
-            expect(settings.bluetooth).toBe(false);
-            expect(settings.timesync).toBe(false);
-            expect(settings.deviceNickname).toBe("test-device");
+            expect(settings.supportAccess).toBe(false);
+            expect(settings.activityLogging).toBe(false);
             done();
           },
           error: done
@@ -96,8 +94,8 @@ describe("Settings", () => {
             .subscribe({
               next: (settings) => {
                 expect(settings.lsl).toBe(true);
-                expect(settings.bluetooth).toBe(true);
-                expect(settings.timesync).toBe(true);
+                expect(settings.supportAccess).toBe(true);
+                expect(settings.activityLogging).toBe(true);
                 done();
               },
               error: done
@@ -107,17 +105,15 @@ describe("Settings", () => {
     });
 
     it("should update device nickname", (done) => {
-      const newNickname = "my-crown";
-
       neurosity
-        .changeSettings({ deviceNickname: newNickname })
+        .changeSettings({ supportAccess: true })
         .then(() => {
           neurosity
             .settings()
             .pipe(take(1))
             .subscribe({
               next: (settings) => {
-                expect(settings.deviceNickname).toBe(newNickname);
+                expect(settings.supportAccess).toBe(true);
                 done();
               },
               error: done
