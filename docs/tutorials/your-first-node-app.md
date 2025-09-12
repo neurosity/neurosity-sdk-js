@@ -311,7 +311,7 @@ Now that the `leftHandPinch` thought is trained, you'll be able to load it into 
 
 In the `index.js` file we can remove the `calm` subscription from above and replace it with the code below.
 
-Check out the [Kinesis guide](https://docs.neurosity.co/docs/api/kinesis) or [Kinesis API docs](https://docs.neurosity.co/docs/reference/interfaces/kinesis).
+Check out the [Kinesis guide](https://docs.neurosity.co/docs/api/kinesis) or [Kinesis API docs](https://docs.neurosity.co/docs/reference/interfaces/Kinesis).
 
 ```js
 neurosity.kinesis("leftHandPinch").subscribe((intent) => {

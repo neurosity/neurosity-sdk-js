@@ -242,6 +242,7 @@ export class ReactNativeTransport implements BluetoothTransport {
           scanOptions
         ).then(() => {
           this.addLog(`BleManger scanning ${once ? "once" : "indefintely"}`);
+          // @ts-expect-error - BleManager.scan returns void
           subscriber.next();
         });
       } catch (error) {
@@ -304,7 +305,7 @@ export class ReactNativeTransport implements BluetoothTransport {
             ...peripheral,
             name: peripheralName,
             manufactureDataString
-          }
+          } as Peripheral & { manufactureDataString: string }
         };
       }, {}),
       distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),

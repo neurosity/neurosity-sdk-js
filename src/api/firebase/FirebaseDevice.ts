@@ -1,10 +1,10 @@
-import firebase from "firebase/app";
+import { FirebaseApp as FirebaseAppType } from "firebase/app";
+import { serverTimestamp } from "firebase/database";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 import { FirebaseApp } from "./FirebaseApp";
 import { createDeviceStore } from "./deviceStore";
 import { SDKDependencies } from "../../types/options";
-
-const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
 
 type FirebaseDeviceOptions = {
   deviceId: string;
@@ -17,15 +17,11 @@ type FirebaseDeviceOptions = {
  */
 export class FirebaseDevice {
   static serverType = "firebase";
-  protected app: firebase.app.App;
+  protected app: FirebaseAppType;
   protected deviceStore;
   public deviceId: string;
 
-  constructor({
-    deviceId,
-    firebaseApp,
-    dependencies
-  }: FirebaseDeviceOptions) {
+  constructor({ deviceId, firebaseApp, dependencies }: FirebaseDeviceOptions) {
     if (!deviceId) {
       throw new Error(`No Device ID provided.`);
     }
@@ -40,7 +36,7 @@ export class FirebaseDevice {
   }
 
   public get timestamp(): any {
-    return SERVER_TIMESTAMP;
+    return serverTimestamp();
   }
 
   public dispatchAction(action): Promise<any> {
@@ -144,12 +140,16 @@ export class FirebaseDevice {
   }
 
   public async createBluetoothToken(): Promise<string> {
-    const [error, token] = await this.app
-      .functions()
-      .httpsCallable("createBluetoothToken")({
-        deviceId: this.deviceId
-      })
-      .then(({ data }) => [null, data?.token])
+    const functions = getFunctions(this.app);
+    const createBluetoothTokenFn = httpsCallable(
+      functions,
+      "createBluetoothToken"
+    );
+
+    const [error, token] = await createBluetoothTokenFn({
+      deviceId: this.deviceId
+    })
+      .then((result) => [null, (result.data as any)?.token])
       .catch((error) => [error, null]);
 
     if (error) {

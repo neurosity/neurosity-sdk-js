@@ -1,7 +1,33 @@
 import { Observable, fromEventPattern, from, EMPTY } from "rxjs";
 import { map, switchMap } from "rxjs/operators";
-import firebase from "firebase/app";
-import { User } from "@firebase/auth-types";
+import { FirebaseApp as FirebaseAppType } from "firebase/app";
+import {
+  getAuth,
+  onAuthStateChanged,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signInWithCustomToken,
+  signInWithCredential,
+  signOut,
+  User,
+  OAuthProvider
+} from "firebase/auth";
+import {
+  getDatabase,
+  ref,
+  update,
+  remove,
+  get,
+  onValue,
+  off,
+  serverTimestamp,
+  DataSnapshot,
+  query,
+  orderByChild,
+  equalTo,
+  limitToFirst
+} from "firebase/database";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 import { FirebaseApp } from "./FirebaseApp";
 import {
@@ -14,8 +40,13 @@ import { DeviceInfo } from "../../types/deviceInfo";
 import { OAuthRemoveResponse } from "../../types/oauth";
 import { Experiment } from "../../types/experiment";
 import { TransferDeviceOptions } from "../../utils/transferDevice";
-
-const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
+import {
+  ApiKeyRecord,
+  CreateApiKeyRequest,
+  CreateCustomTokenForApiKeyRequest,
+  CreateCustomTokenForApiKeyResponse,
+  RemoveApiKeyResponse
+} from "../../types/apiKey";
 
 /**
  * @hidden
@@ -27,40 +58,31 @@ export type UserWithMetadata = User & {
 /**
  * @hidden
  */
-export const credentialWithLink: Function =
-  firebase.auth.EmailAuthProvider.credentialWithLink;
-
-/**
- * @hidden
- */
-export function createUser(...args) {
-  return new (firebase as any).User(...args);
-}
-
-/**
- * @hidden
- */
 export class FirebaseUser {
-  public app: firebase.app.App;
+  public app: FirebaseAppType;
   public user: User | null;
 
   constructor(firebaseApp: FirebaseApp) {
     this.app = firebaseApp.app;
+    const auth = getAuth(this.app);
 
-    this.app.auth().onAuthStateChanged((user: User | null) => {
+    onAuthStateChanged(auth, (user: User | null) => {
       this.user = user;
     });
   }
 
   public auth() {
-    return this.app.auth();
+    return getAuth(this.app);
   }
 
   async createAccount(credentials: EmailAndPassword) {
     const { email, password } = credentials;
-    const [error, user] = await this.app
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
+    const auth = getAuth(this.app);
+    const [error, user] = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    )
       .then((user) => [null, user])
       .catch((error) => [error, null]);
 
@@ -72,7 +94,8 @@ export class FirebaseUser {
   }
 
   async deleteAccount() {
-    const user = this.app.auth().currentUser;
+    const auth = getAuth(this.app);
+    const user = auth.currentUser;
 
     if (!user) {
       return Promise.reject(
@@ -108,7 +131,9 @@ export class FirebaseUser {
   onAuthStateChanged(): Observable<User | null> {
     return new Observable((subscriber) => {
       try {
-        this.app.auth().onAuthStateChanged(
+        const auth = getAuth(this.app);
+        onAuthStateChanged(
+          auth,
           (user: User | null) => {
             subscriber.next(user);
           },
@@ -124,52 +149,63 @@ export class FirebaseUser {
 
   onLogin(): Observable<User> {
     return new Observable((subscriber) => {
-      const unsubscribe = this.app
-        .auth()
-        .onAuthStateChanged((user: User) => {
-          if (!!user) {
-            subscriber.next(user);
-            subscriber.complete();
-          }
-        });
+      const auth = getAuth(this.app);
+      const unsubscribe = onAuthStateChanged(auth, (user: User) => {
+        if (!!user) {
+          subscriber.next(user);
+          subscriber.complete();
+        }
+      });
       return () => unsubscribe();
     });
   }
 
-  login(credentials: Credentials) {
+  async login(credentials: Credentials) {
+    const auth = getAuth(this.app);
+
+    if ("apiKey" in credentials) {
+      const { apiKey } = credentials;
+
+      const { customToken } = await this._createCustomTokenForApiKey({
+        apiKey
+      });
+
+      return await signInWithCustomToken(auth, customToken);
+    }
+
     if ("customToken" in credentials) {
       const { customToken } = credentials;
-      return this.app.auth().signInWithCustomToken(customToken);
+      return await signInWithCustomToken(auth, customToken);
     }
 
     if ("idToken" in credentials && "providerId" in credentials) {
-      const provider = new firebase.auth.OAuthProvider(
-        credentials.providerId
-      );
-      const oAuthCredential = provider.credential(credentials.idToken);
-      return this.app.auth().signInWithCredential(oAuthCredential);
+      const provider = new OAuthProvider(credentials.providerId);
+      const oAuthCredential = provider.credential({
+        idToken: credentials.idToken
+      });
+      return await signInWithCredential(auth, oAuthCredential);
     }
 
     if ("email" in credentials && "password" in credentials) {
       const { email, password } = credentials;
-      return this.app
-        .auth()
-        .signInWithEmailAndPassword(email, password);
+      return await signInWithEmailAndPassword(auth, email, password);
     }
 
     throw new Error(
-      `Either {email,password}, {customToken}, or {idToken,providerId} is required`
+      `Either {email,password}, {apiKey}, {customToken}, or {idToken,providerId} is required`
     );
   }
 
   logout() {
-    return this.app.auth().signOut();
+    const auth = getAuth(this.app);
+    return signOut(auth);
   }
 
   public async createCustomToken(): Promise<CustomToken> {
-    const [error, customToken] = await this.app
-      .functions()
-      .httpsCallable("createCustomToken")()
+    const functions = getFunctions(this.app);
+    const createCustomTokenFn = httpsCallable(functions, "createCustomToken");
+
+    const [error, customToken] = await createCustomTokenFn()
       .then(({ data }) => [null, data])
       .catch((error) => [error, null]);
 
@@ -178,6 +214,71 @@ export class FirebaseUser {
     }
 
     return customToken;
+  }
+
+  public async createApiKey(data: CreateApiKeyRequest): Promise<ApiKeyRecord> {
+    const { description, scopes } = data;
+
+    if (!description) {
+      return Promise.reject("createApiKey: description is required");
+    }
+
+    if (!scopes) {
+      return Promise.reject("createApiKey: scopes is required");
+    }
+
+    const functions = getFunctions(this.app);
+    const createApiKeyFn = httpsCallable(functions, "createApiKey");
+
+    const [error, apiKeyRecord] = await createApiKeyFn(data)
+      .then(({ data }) => [null, data as ApiKeyRecord])
+      .catch((error) => [error, null]);
+
+    if (error) {
+      return Promise.reject(error);
+    }
+
+    return apiKeyRecord;
+  }
+
+  public async removeApiKey(apiKeyId: string): Promise<RemoveApiKeyResponse> {
+    if (!apiKeyId) {
+      return Promise.reject("removeApiKey: apiKeyId is required");
+    }
+
+    const functions = getFunctions(this.app);
+    const removeApiKeyFn = httpsCallable(functions, "removeApiKey");
+
+    const [error, removeApiKeyResponse] = await removeApiKeyFn({ apiKeyId })
+      .then(({ data }) => [null, data as RemoveApiKeyResponse])
+      .catch((error) => [error, null]);
+
+    if (error) {
+      return Promise.reject(error);
+    }
+
+    return removeApiKeyResponse;
+  }
+
+  private async _createCustomTokenForApiKey({
+    apiKey
+  }: CreateCustomTokenForApiKeyRequest): Promise<CreateCustomTokenForApiKeyResponse> {
+    const functions = getFunctions(this.app);
+    const createCustomTokenForApiKeyFn = httpsCallable(
+      functions,
+      "createCustomTokenForApiKey"
+    );
+
+    const [error, createCustomTokenForApiKeyResponse] =
+      await createCustomTokenForApiKeyFn({ apiKey })
+        .then(({ data }) => [null, data as CreateCustomTokenForApiKeyResponse])
+        .catch((error) => [error, null]);
+
+    if (error) {
+      return Promise.reject(error);
+    }
+
+    return createCustomTokenForApiKeyResponse;
   }
 
   public async removeOAuthAccess(): Promise<OAuthRemoveResponse> {
@@ -189,9 +290,13 @@ export class FirebaseUser {
       );
     }
 
-    const [error, response] = await this.app
-      .functions()
-      .httpsCallable("removeAccessOAuthApp")()
+    const functions = getFunctions(this.app);
+    const removeAccessOAuthAppFn = httpsCallable(
+      functions,
+      "removeAccessOAuthApp"
+    );
+
+    const [error, response] = await removeAccessOAuthAppFn()
       .then(({ data }) => [null, data])
       .catch((error) => [error, null]);
 
@@ -217,10 +322,9 @@ export class FirebaseUser {
       return Promise.reject(`Please login.`);
     }
 
-    const snapshot = await this.app
-      .database()
-      .ref(this.getUserDevicesPath())
-      .once("value");
+    const database = getDatabase(this.app);
+    const userDevicesRef = ref(database, this.getUserDevicesPath());
+    const snapshot = await get(userDevicesRef);
 
     const userDevices: UserDevices | null = snapshot.val();
 
@@ -244,14 +348,10 @@ export class FirebaseUser {
       devices.map(({ deviceId }) => deviceId).includes(deviceId);
 
     if (deviceAlreadyInAccount) {
-      return Promise.reject(
-        `The device is already added to this account.`
-      );
+      return Promise.reject(`The device is already added to this account.`);
     }
 
-    const [isValid, invalidErrorMessage] = await this.isDeviceIdValid(
-      deviceId
-    )
+    const [isValid, invalidErrorMessage] = await this.isDeviceIdValid(deviceId)
       .then((isValid) => [isValid])
       .catch((error) => [false, error]);
 
@@ -262,15 +362,13 @@ export class FirebaseUser {
     const claimedByPath = this.getDeviceClaimedByPath(deviceId);
     const userDevicePath = this.getUserClaimedDevicePath(deviceId);
 
-    const [hasError, errorMessage] = await this.app
-      .database()
-      .ref()
-      .update({
-        [claimedByPath]: userId,
-        [userDevicePath]: {
-          claimedOn: SERVER_TIMESTAMP
-        }
-      })
+    const database = getDatabase(this.app);
+    const [hasError, errorMessage] = await update(ref(database), {
+      [claimedByPath]: userId,
+      [userDevicePath]: {
+        claimedOn: serverTimestamp()
+      }
+    })
       .then(() => [false])
       .catch((error) => [true, error]);
 
@@ -289,12 +387,13 @@ export class FirebaseUser {
     const claimedByPath = this.getDeviceClaimedByPath(deviceId);
     const userDevicePath = this.getUserClaimedDevicePath(deviceId);
 
-    const claimedByRef = this.app.database().ref(claimedByPath);
-    const userDeviceRef = this.app.database().ref(userDevicePath);
+    const database = getDatabase(this.app);
+    const claimedByRef = ref(database, claimedByPath);
+    const userDeviceRef = ref(database, userDevicePath);
 
     const [hasError, errorMessage] = await Promise.all([
-      claimedByRef.remove(),
-      userDeviceRef.remove()
+      remove(claimedByRef),
+      remove(userDeviceRef)
     ])
       .then(() => [false])
       .catch((error) => [true, error]);
@@ -304,21 +403,14 @@ export class FirebaseUser {
     }
   }
 
-  public async transferDevice(
-    options: TransferDeviceOptions
-  ): Promise<void> {
+  public async transferDevice(options: TransferDeviceOptions): Promise<void> {
     const userId = this.user?.uid;
 
     if (!userId) {
-      return Promise.reject(
-        new Error(`transferDevice: auth is required.`)
-      );
+      return Promise.reject(new Error(`transferDevice: auth is required.`));
     }
 
-    if (
-      !("recipientsEmail" in options) &&
-      !("recipientsUserId" in options)
-    ) {
+    if (!("recipientsEmail" in options) && !("recipientsUserId" in options)) {
       return Promise.reject(
         new Error(
           `transferDevice: either 'recipientsEmail' or 'recipientsUserId' key is required.`
@@ -332,9 +424,13 @@ export class FirebaseUser {
       );
     }
 
-    const [error, response] = await this.app
-      .functions()
-      .httpsCallable("transferDeviceOwnership")(options)
+    const functions = getFunctions(this.app);
+    const transferDeviceOwnershipFn = httpsCallable(
+      functions,
+      "transferDeviceOwnership"
+    );
+
+    const [error, response] = await transferDeviceOwnershipFn(options)
       .then(({ data }) => [null, data])
       .catch((error) => [error, null]);
 
@@ -346,20 +442,15 @@ export class FirebaseUser {
   async isDeviceIdValid(deviceId: string): Promise<boolean> {
     // hex string of 32 characters
     const hexRegEx = /[0-9A-Fa-f]{32}/g;
-    if (
-      !deviceId ||
-      deviceId.length !== 32 ||
-      !hexRegEx.test(deviceId)
-    ) {
+    if (!deviceId || deviceId.length !== 32 || !hexRegEx.test(deviceId)) {
       return Promise.reject("The device id is incorrectly formatted.");
     }
 
     const claimedByPath = this.getDeviceClaimedByPath(deviceId);
-    const claimedByRef = this.app.database().ref(claimedByPath);
+    const database = getDatabase(this.app);
+    const claimedByRef = ref(database, claimedByPath);
 
-    const claimedBySnapshot = await claimedByRef
-      .once("value")
-      .catch(() => null);
+    const claimedBySnapshot = await get(claimedByRef).catch(() => null);
 
     if (!claimedBySnapshot || claimedBySnapshot.exists()) {
       return Promise.reject("The device has already been claimed.");
@@ -376,15 +467,17 @@ export class FirebaseUser {
         }
 
         const userDevicesPath = this.getUserDevicesPath();
-        const userDevicesRef = this.app.database().ref(userDevicesPath);
+        const database = getDatabase(this.app);
+        const userDevicesRef = ref(database, userDevicesPath);
 
         return fromEventPattern(
-          (handler) => userDevicesRef.on("value", handler),
-          (handler) => userDevicesRef.off("value", handler)
+          (handler) =>
+            onValue(userDevicesRef, (snapshot: DataSnapshot) =>
+              handler(snapshot)
+            ),
+          (handler) => off(userDevicesRef)
         ).pipe(
-          map(([snapshot]: [firebase.database.DataSnapshot]) =>
-            snapshot.val()
-          ),
+          map((snapshot: DataSnapshot) => snapshot.val()),
           switchMap((userDevices: UserDevices | null) => {
             return from(this.userDevicesToDeviceInfoList(userDevices));
           })
@@ -401,18 +494,17 @@ export class FirebaseUser {
         }
 
         const claimsUpdatedOnPath = this.getUserClaimsUpdatedOnPath();
-
-        const claimsUpdatedOnRef = this.app
-          .database()
-          .ref(claimsUpdatedOnPath);
+        const database = getDatabase(this.app);
+        const claimsUpdatedOnRef = ref(database, claimsUpdatedOnPath);
 
         return fromEventPattern(
-          (handler) => claimsUpdatedOnRef.on("value", handler),
-          (handler) => claimsUpdatedOnRef.off("value", handler)
+          (handler) =>
+            onValue(claimsUpdatedOnRef, (snapshot: DataSnapshot) =>
+              handler(snapshot)
+            ),
+          (handler) => off(claimsUpdatedOnRef)
         ).pipe(
-          map(([snapshot]: [firebase.database.DataSnapshot]) =>
-            snapshot.val()
-          ),
+          map((snapshot: DataSnapshot) => snapshot.val()),
           switchMap(() => {
             // Force refresh of auth id token
             return from(this.getIdToken(true)).pipe(
@@ -425,12 +517,11 @@ export class FirebaseUser {
   }
 
   async getIdToken(forceRefresh = false): Promise<void> {
-    const user = this.app.auth()?.currentUser;
+    const auth = getAuth(this.app);
+    const user = auth?.currentUser;
 
     if (!user) {
-      return Promise.reject(
-        `getUserIdToken: unable to get currentUser`
-      );
+      return Promise.reject(`getUserIdToken: unable to get currentUser`);
     }
 
     await user.getIdToken(forceRefresh).catch((error) => {
@@ -439,7 +530,8 @@ export class FirebaseUser {
   }
 
   getClaims(): Promise<UserClaims> {
-    const user = this.app.auth()?.currentUser;
+    const auth = getAuth(this.app);
+    const user = auth?.currentUser;
 
     if (!user) {
       return Promise.reject(`getUserClaims: unable to get currentUser`);
@@ -457,12 +549,12 @@ export class FirebaseUser {
   private async userDevicesToDeviceInfoList(
     userDevices: UserDevices | null
   ): Promise<DeviceInfo[]> {
+    const database = getDatabase(this.app);
     const devicesInfoSnapshots = Object.keys(userDevices ?? {}).map(
-      (deviceId) =>
-        this.app
-          .database()
-          .ref(this.getDeviceInfoPath(deviceId))
-          .once("value")
+      (deviceId) => {
+        const deviceInfoRef = ref(database, this.getDeviceInfoPath(deviceId));
+        return get(deviceInfoRef);
+      }
     );
 
     const devicesList: DeviceInfo[] = await Promise.all(
@@ -473,8 +565,7 @@ export class FirebaseUser {
 
     validDevices.sort((a, b) => {
       return (
-        userDevices[a.deviceId].claimedOn -
-        userDevices[b.deviceId].claimedOn
+        userDevices[a.deviceId].claimedOn - userDevices[b.deviceId].claimedOn
       );
     });
 
@@ -483,11 +574,10 @@ export class FirebaseUser {
 
   public async hasDevicePermission(deviceId: string): Promise<boolean> {
     const deviceInfoPath = this.getDeviceInfoPath(deviceId);
+    const database = getDatabase(this.app);
+    const deviceInfoRef = ref(database, deviceInfoPath);
 
-    const hasPermission = await this.app
-      .database()
-      .ref(deviceInfoPath)
-      .once("value")
+    const hasPermission = await get(deviceInfoRef)
       .then(() => true)
       .catch(() => false);
 
@@ -526,20 +616,22 @@ export class FirebaseUser {
 
         const userId = this.user.uid;
 
-        const userExperimentsRef = this.app
-          .database()
-          .ref("experiments")
-          .orderByChild("userId")
-          .equalTo(userId)
-          .limitToFirst(100);
+        const database = getDatabase(this.app);
+        const userExperimentsRef = query(
+          ref(database, "experiments"),
+          orderByChild("userId"),
+          equalTo(userId),
+          limitToFirst(100)
+        );
 
         return fromEventPattern(
-          (handler) => userExperimentsRef.on("value", handler),
-          (handler) => userExperimentsRef.off("value", handler)
+          (handler) =>
+            onValue(userExperimentsRef, (snapshot: DataSnapshot) =>
+              handler(snapshot)
+            ),
+          (handler) => off(userExperimentsRef)
         ).pipe(
-          map(([snapshot]: [firebase.database.DataSnapshot]) =>
-            snapshot.val()
-          ),
+          map((snapshot: DataSnapshot) => snapshot.val()),
           // transform experiments map into sorted list
           map((experimentsMaps): Experiment[] => {
             return Object.entries(experimentsMaps ?? {})
@@ -566,15 +658,15 @@ export class FirebaseUser {
     }
 
     const removeExperiment = (experimentId: string) => {
-      return this.app
-        .database()
-        .ref("experiments")
-        .child(experimentId)
-        .remove();
+      const database = getDatabase(this.app);
+      const experimentRef = ref(database, `experiments/${experimentId}`);
+      return remove(experimentRef);
     };
 
     const removeRelations = (experimentId: string) => {
-      return this.app.functions().httpsCallable("removeRelations")({
+      const functions = getFunctions(this.app);
+      const removeRelationsFn = httpsCallable(functions, "removeRelations");
+      return removeRelationsFn({
         experimentId
       });
     };

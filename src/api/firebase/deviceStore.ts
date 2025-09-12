@@ -1,6 +1,18 @@
-import firebase from "firebase/app";
-
-const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
+import {
+  getDatabase,
+  ref,
+  child,
+  push,
+  set,
+  update,
+  remove,
+  onValue,
+  off,
+  get,
+  onDisconnect,
+  serverTimestamp,
+  DataSnapshot
+} from "firebase/database";
 
 export interface IDevice {
   info: any;
@@ -12,57 +24,58 @@ export interface IDevice {
 /**
  * @hidden
  */
-export const createDeviceStore = (
-  app,
-  deviceId,
-  subscriptionManager
-) => {
-  const deviceRef = app.database().ref(`devices/${deviceId}`);
-  const clientId = deviceRef.child("subscriptions").push().key;
-  const clientRef = deviceRef.child(`clients/${clientId}`);
+export const createDeviceStore = (app, deviceId, subscriptionManager) => {
+  const database = getDatabase(app);
+  const deviceRef = ref(database, `devices/${deviceId}`);
+  const subscriptionsRef = child(deviceRef, "subscriptions");
+  const clientId = push(subscriptionsRef).key;
+  const clientRef = child(deviceRef, `clients/${clientId}`);
   let listenersToRemove = [];
 
-  const set = (namespace, payload) => {
-    return deviceRef.child(namespace).set(payload);
+  const setData = (namespace, payload) => {
+    const namespaceRef = child(deviceRef, namespace);
+    return set(namespaceRef, payload);
   };
 
-  const push = (namespace, payload) => {
-    return deviceRef.child(namespace).push(payload);
+  const pushData = (namespace, payload) => {
+    const namespaceRef = child(deviceRef, namespace);
+    return push(namespaceRef, payload);
   };
 
-  const update = (namespace, payload) => {
-    return deviceRef.child(namespace).update(payload);
+  const updateData = (namespace, payload) => {
+    const namespaceRef = child(deviceRef, namespace);
+    return update(namespaceRef, payload);
   };
 
-  const on = (eventType: any = "value", namespace, callback) => {
-    const listener = deviceRef
-      .child(namespace)
-      .on(eventType, (snapshot) => {
-        callback(snapshot.val(), snapshot);
-      });
-
-    listenersToRemove.push(() => {
-      deviceRef.child(namespace).off(eventType, listener);
+  const onData = (eventType: any = "value", namespace, callback) => {
+    const namespaceRef = child(deviceRef, namespace);
+    const unsubscribe = onValue(namespaceRef, (snapshot) => {
+      callback(snapshot.val(), snapshot);
     });
 
-    return listener;
+    listenersToRemove.push(unsubscribe);
+
+    return unsubscribe;
   };
 
-  const off = (namespace, eventType, listener?) => {
+  const offData = (namespace, eventType, listener?) => {
+    const namespaceRef = child(deviceRef, namespace);
     if (listener) {
-      deviceRef.child(namespace).off(eventType, listener);
+      listener(); // listener is the unsubscribe function
     } else {
-      deviceRef.child(namespace).off(eventType);
+      off(namespaceRef);
     }
   };
 
-  const once = async (namespace, eventType = "value") => {
-    const snapshot = await deviceRef.child(namespace).once(eventType);
+  const onceData = async (namespace, eventType = "value") => {
+    const namespaceRef = child(deviceRef, namespace);
+    const snapshot = await get(namespaceRef);
     return snapshot.val();
   };
 
-  const remove = (namespace) => {
-    deviceRef.child(namespace).remove();
+  const removeData = (namespace) => {
+    const namespaceRef = child(deviceRef, namespace);
+    remove(namespaceRef);
   };
 
   const bindListener = (
@@ -71,9 +84,9 @@ export const createDeviceStore = (
     callback: (res: any) => void,
     overrideResponse?: any
   ) => {
-    on(eventType, namespace, (data) => {
+    onData(eventType, namespace, (data) => {
       if (data !== null) {
-        off(namespace, eventType);
+        offData(namespace, eventType);
         const response = overrideResponse ? overrideResponse : data;
         callback(response);
       }
@@ -81,80 +94,77 @@ export const createDeviceStore = (
   };
 
   const lastOfChildValue = async (namespace, key, value) => {
-    const snapshot = await deviceRef
-      .child(namespace)
-      .orderByChild(key)
-      .equalTo(value)
-      .limitToLast(1)
-      .once("value");
-    const results = snapshot.val();
-    const [match] = Object.values(results || {});
-    return match || null;
+    // Note: This needs to be implemented with query functions in modular SDK
+    // For now, we'll use a simpler approach that gets all data and filters locally
+    const namespaceRef = child(deviceRef, namespace);
+    const snapshot = await get(namespaceRef);
+    const results = snapshot.val() || {};
+
+    // Filter results locally to match the query
+    const filteredResults = Object.values(results).filter(
+      (item: any) => item?.[key] === value
+    );
+    return filteredResults.length > 0
+      ? filteredResults[filteredResults.length - 1]
+      : null;
   };
 
   // Add client connections and subscriptions to db and remove them when offline
-  const connectedListener = app
-    .database()
-    .ref(".info/connected")
-    .on("value", (snapshot) => {
-      if (!snapshot.val()) {
-        return;
-      }
+  const connectedRef = ref(database, ".info/connected");
+  const connectedListener = onValue(connectedRef, (snapshot) => {
+    if (!snapshot.val()) {
+      return;
+    }
 
-      clientRef
-        .onDisconnect()
-        .remove()
-        .then(() => {
-          clientRef.set(SERVER_TIMESTAMP);
+    const clientOnDisconnect = onDisconnect(clientRef);
+    clientOnDisconnect.remove().then(() => {
+      set(clientRef, serverTimestamp());
 
-          // NOTION-115: Re-subscribe when internet connection is lost and regained
-          update("subscriptions", subscriptionManager.get()).then(
-            () => {
-              subscriptionManager.toList().forEach((subscription) => {
-                const childPath = `subscriptions/${subscription.id}`;
-                deviceRef.child(childPath).onDisconnect().remove();
-              });
-            }
-          );
+      // NOTION-115: Re-subscribe when internet connection is lost and regained
+      updateData("subscriptions", subscriptionManager.get()).then(() => {
+        subscriptionManager.toList().forEach((subscription) => {
+          const childPath = `subscriptions/${subscription.id}`;
+          const subscriptionRef = child(deviceRef, childPath);
+          const subscriptionOnDisconnect = onDisconnect(subscriptionRef);
+          subscriptionOnDisconnect.remove();
         });
+      });
     });
+  });
 
   listenersToRemove.push(() => {
-    app
-      .database()
-      .ref(".info/connected")
-      .off("value", connectedListener);
+    connectedListener(); // Call the unsubscribe function
   });
 
   return {
-    set,
-    once,
-    update,
+    set: setData,
+    once: onceData,
+    update: updateData,
     lastOfChildValue,
     onNamespace: (namespace: string, callback: Function): Function => {
-      return on("value", namespace, (data: any) => {
+      return onData("value", namespace, (data: any) => {
         callback(data);
       });
     },
     offNamespace: (namespace: string, listener: Function): void => {
-      off(namespace, "value", listener);
+      offData(namespace, "value", listener);
     },
     dispatchAction: async (action) => {
-      const snapshot = await push("actions", action);
+      const snapshot = await pushData("actions", action);
       const actionId = snapshot.key;
       const actionPath = `actions/${actionId}`;
 
-      snapshot.onDisconnect().remove();
+      const actionRef = child(deviceRef, actionPath);
+      const actionOnDisconnect = onDisconnect(actionRef);
+      actionOnDisconnect.remove();
 
       if (action.responseRequired) {
         const responseTimeout = action.responseTimeout || 600000; // defaults to 10 minutes
         const timeout = new Promise((_, reject) => {
           const id = setTimeout(() => {
             clearTimeout(id);
-            snapshot.remove();
-            reject(
-              `Action response timed out in ${responseTimeout}ms.`
-            );
+            remove(actionRef);
+            reject(`Action response timed out in ${responseTimeout}ms.`);
           }, responseTimeout);
         });
 
@@ -171,45 +181,48 @@ export const createDeviceStore = (
       metricName: string,
       metricValue: { [label: string]: any }
     ) => {
-      set(`metrics/${metricName}`, metricValue);
+      setData(`metrics/${metricName}`, metricValue);
     },
     onMetric: (subscription, callback: Function) => {
       const { atomic, metric, labels } = subscription;
       const child = atomic
         ? `metrics/${metric}`
         : `metrics/${metric}/${labels[0]}`;
-      return on("value", child, (data) => {
+      return onData("value", child, (data) => {
         if (data !== null) {
           callback(data);
         }
       });
     },
     subscribeToMetric: (subscription) => {
-      const id = deviceRef.child("subscriptions").push().key;
+      const subscriptionsRef = child(deviceRef, "subscriptions");
+      const id = push(subscriptionsRef).key;
       const childPath = `subscriptions/${id}`;
       const subscriptionCreated = {
         id,
         clientId,
         ...subscription
       };
-      set(childPath, subscriptionCreated);
+      setData(childPath, subscriptionCreated);
 
-      deviceRef.child(childPath).onDisconnect().remove();
+      const subscriptionRef = child(deviceRef, childPath);
+      const subscriptionOnDisconnect = onDisconnect(subscriptionRef);
+      subscriptionOnDisconnect.remove();
 
       return subscriptionCreated;
     },
     unsubscribeFromMetric: (subscription) => {
-      remove(`subscriptions/${subscription.id}`);
+      removeData(`subscriptions/${subscription.id}`);
     },
     removeMetricListener(subscription, listener: Function) {
       const { atomic, metric, labels } = subscription;
       const child = atomic
         ? `metrics/${metric}`
         : `metrics/${metric}/${labels[0]}`;
-      off(child, "value", listener);
+      offData(child, "value", listener);
     },
     disconnect() {
-      clientRef.remove();
+      remove(clientRef);
       listenersToRemove.forEach((removeListener) => {
         removeListener();
       });
@@ -218,7 +231,8 @@ export const createDeviceStore = (
         .filter((subscription) => subscription.clientId === clientId)
         .forEach((subscription) => {
           const childPath = `subscriptions/${subscription.id}`;
-          deviceRef.child(childPath).remove();
+          const subscriptionRef = child(deviceRef, childPath);
+          remove(subscriptionRef);
         });
     }
   };

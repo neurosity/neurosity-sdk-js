@@ -20,8 +20,5 @@ export interface Metrics {
     callback: Function
   ): SubscriptionListener;
   subscribe(subscription: PendingSubscription): Subscription;
-  unsubscribe(
-    subscription: Subscription,
-    listener: SubscriptionListener
-  ): void;
+  unsubscribe(subscription: Subscription, listener: SubscriptionListener): void;
 }

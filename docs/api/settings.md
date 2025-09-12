@@ -7,7 +7,7 @@ title: Device Settings
 
 ```
 - settings(): => Observable<Settings>
-- changeSettings(settings: ChangeSettings): Promise<void>
+- changeSettings(settings: Settings): Promise<void>
 ```
 
 ```js

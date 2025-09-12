@@ -8,6 +8,6 @@ export type Epoch = {
   info?: {
     channelNames?: string[];
     samplingRate?: number;
-    marker?: Marker[];
+    markers?: Marker[];
   };
 };

@@ -371,7 +371,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
       }
 
       const dataview: DataView = await characteristic.readValue();
-      const arrayBuffer = dataview.buffer as Uint8Array;
+      const arrayBuffer = new Uint8Array(dataview.buffer);
       const decodedValue: string = this.textCodec.decode(arrayBuffer);
       const data = parse ? JSON.parse(decodedValue) : decodedValue;
 
@@ -404,7 +404,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
 
     const encoded = this.textCodec.encode(data);
 
-    await characteristic.writeValueWithResponse(encoded as Uint8Array);
+    await characteristic.writeValueWithResponse(encoded as any);
   }
 
   _addPendingAction(actionId: number): void {

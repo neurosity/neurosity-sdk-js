@@ -12,7 +12,12 @@ export type OAuthCredentials = {
   providerId: string;
 };
 
+export type ApiKeyCredentials = {
+  apiKey: string;
+};
+
 export type Credentials =
   | EmailAndPassword
   | OAuthCredentials
-  | CustomToken;
+  | CustomToken
+  | ApiKeyCredentials;

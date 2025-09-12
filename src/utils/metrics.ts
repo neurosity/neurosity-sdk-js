@@ -42,6 +42,7 @@ export function getCloudMetric(
     const subscriptionWithListeners = subscriptions.map((subscription) => ({
       subscription,
       listener: cloudClient.metrics.on(subscription, (...data: any) => {
+        // @ts-expect-error - data is not typed
         observer.next(...data);
       })
     }));

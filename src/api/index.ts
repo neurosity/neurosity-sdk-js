@@ -1,6 +1,6 @@
-import { Observable, ReplaySubject, EMPTY } from "rxjs";
+import { Observable, ReplaySubject, EMPTY, timer } from "rxjs";
 import { fromEventPattern, firstValueFrom } from "rxjs";
-import { filter, shareReplay, share, switchMap } from "rxjs/operators";
+import { filter, shareReplay, switchMap, map, takeUntil } from "rxjs/operators";
 
 import { FirebaseApp, FirebaseUser, FirebaseDevice } from "./firebase";
 import { UserWithMetadata } from "./firebase";
@@ -15,7 +15,7 @@ import { SDKOptions } from "../types/options";
 import { SkillsClient, DeviceSkill } from "../types/skill";
 import { Credentials, CustomToken } from "../types/credentials";
 import { EmailAndPassword } from "../types/credentials";
-import { ChangeSettings } from "../types/settings";
+import { Settings } from "../types/settings";
 import { Subscription } from "../types/subscriptions";
 import { DeviceStatus } from "../types/status";
 import { DeviceInfo, DeviceSelector, OSVersion } from "../types/deviceInfo";
@@ -23,13 +23,11 @@ import { UserClaims } from "../types/user";
 import { OAuthRemoveResponse } from "../types/oauth";
 import { Experiment } from "../types/experiment";
 import { TransferDeviceOptions } from "../utils/transferDevice";
-
-export {
-  credentialWithLink,
-  createUser,
-  SERVER_TIMESTAMP,
-  __firebase
-} from "./firebase";
+import {
+  ApiKeyRecord,
+  CreateApiKeyRequest,
+  RemoveApiKeyResponse
+} from "../types/apiKey";
 
 /**
  * @hidden
@@ -161,6 +159,20 @@ export class CloudClient implements Client {
     const auth = await this.firebaseUser.login(credentials);
     const selectedDevice = await this.setAutoSelectedDevice();
 
+    // We need guarantee that user claims are ready before finishing the
+    // login process as permission-based validation is dependent on the user claims
+    const userClaimsReady = await firstValueFrom(
+      this.firebaseUser.onUserClaimsChange().pipe(
+        filter((userClaims) => !!userClaims),
+        map((userClaims) => !!userClaims),
+        takeUntil(timer(1000))
+      )
+    );
+
+    if (!userClaimsReady) {
+      return Promise.reject(`Failed to get user claims.`);
+    }
+
     return {
       ...auth,
       selectedDevice
@@ -182,7 +194,9 @@ export class CloudClient implements Client {
           return null;
         }
 
-        const selectedDevice = this.didSelectDevice()
+        const didSelectDevice = await this.didSelectDevice();
+
+        const selectedDevice = didSelectDevice
           ? await this.getSelectedDevice()
           : await this.setAutoSelectedDevice();
 
@@ -361,6 +375,14 @@ export class CloudClient implements Client {
     return this.firebaseUser.createCustomToken();
   }
 
+  public createApiKey(data: CreateApiKeyRequest): Promise<ApiKeyRecord> {
+    return this.firebaseUser.createApiKey(data);
+  }
+
+  public removeApiKey(apiKeyId: string): Promise<RemoveApiKeyResponse> {
+    return this.firebaseUser.removeApiKey(apiKeyId);
+  }
+
   public removeOAuthAccess(): Promise<OAuthRemoveResponse> {
     return this.firebaseUser.removeOAuthAccess();
   }
@@ -389,7 +411,7 @@ export class CloudClient implements Client {
     return this.timesync.offset;
   }
 
-  public changeSettings(settings: ChangeSettings): Promise<void> {
+  public changeSettings(settings: Settings): Promise<void> {
     return this.firebaseDevice.changeSettings(settings);
   }
 
