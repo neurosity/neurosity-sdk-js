@@ -1,17 +1,66 @@
 {
   "compilerOptions": {
-    "target": "es2015",
-    "outDir": "dist/typings",
-    "lib": ["es2020", "dom"],
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "declaration": true,
-    "pretty": true,
-    "newLine": "lf",
-    "stripInternal": true,
-    "strict": false,
-    "sourceMap": false,
-    "allowSyntheticDefaultImports": true
+    /* Language and Environment */
+    "target": "ES2018" /* Target ES2018 for good compatibility across all environments */,
+    "lib": [
+      "ES2018",
+      "DOM",
+      "DOM.Iterable"
+    ] /* Include DOM types for browser compatibility */,
+    "moduleResolution": "node" /* Node module resolution strategy */,
+
+    /* Modules */
+    "module": "ESNext" /* Use latest module syntax, let Rollup handle output format */,
+    "allowSyntheticDefaultImports": true /* Allow default imports from modules with no default export */,
+    "esModuleInterop": true /* Emit additional JS to ease support for importing CommonJS */,
+    "resolveJsonModule": true /* Enable importing .json files */,
+
+    /* JavaScript Support */
+    "allowJs": false /* Don't allow JS files in TypeScript project */,
+    "checkJs": false /* Don't type-check JS files */,
+
+    /* Emit */
+    "declaration": true /* Generate .d.ts files */,
+    "declarationMap": true /* Generate sourcemap for .d.ts files */,
+    "sourceMap": true /* Generate sourcemap files */,
+    "outDir": "./dist" /* Output directory (Rollup will override this) */,
+    "removeComments": true /* Remove comments from output */,
+    "importHelpers": true /* Import emit helpers from tslib */,
+    "downlevelIteration": true /* Provide full support for iterables in for-of, spread, and destructuring */,
+
+    /* Interop Constraints */
+    "isolatedModules": true /* Ensure each file can be safely transpiled without relying on other imports */,
+    "forceConsistentCasingInFileNames": true /* Ensure consistent casing in file names */,
+
+    /* Type Checking */
+    // "strict": true /* Enable all strict type checking options */,
+    // "noImplicitAny": true /* Enable error reporting for expressions and declarations with an implied 'any' type */,
+    // "strictNullChecks": true /* When type checking, take into account 'null' and 'undefined' */,
+    // "strictFunctionTypes": true /* When assigning functions, check to ensure parameters and the return values are subtype-compatible */,
+    // "strictBindCallApply": true /* Check that the arguments for 'bind', 'call', and 'apply' methods match the original function */,
+    // "strictPropertyInitialization": true /* Check for class properties that are declared but not set in the constructor */,
+    // "noImplicitReturns": true /* Enable error reporting for codepaths that do not explicitly return in a function */,
+    // "noFallthroughCasesInSwitch": true /* Enable error reporting for fallthrough cases in switch statements */,
+    // "noUncheckedIndexedAccess": false /* Add 'undefined' to a type when accessed using an index */,
+    // "noImplicitOverride": true /* Ensure overriding members in derived classes are marked with an override modifier */,
+    // "noPropertyAccessFromIndexSignature": false /* Enforces using indexed accessors for keys declared using an indexed type */,
+
+    /* Completeness */
+    "skipLibCheck": true /* Skip type checking all .d.ts files */
   },
-  "exclude": ["node_modules", "dist", "examples"]
+  "include": ["src/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "examples",
+    "website",
+    "docs",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/__tests__/**/*",
+    "**/__mocks__/**/*"
+  ],
+  "ts-node": {
+    "esm": true
+  }
 }

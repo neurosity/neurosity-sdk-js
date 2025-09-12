@@ -19,6 +19,8 @@ export default [
         console: "readonly",
         setTimeout: "readonly",
         clearTimeout: "readonly",
+        setInterval: "readonly",
+        clearInterval: "readonly",
         // Browser globals
         window: "readonly",
         document: "readonly",

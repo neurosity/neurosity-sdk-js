@@ -1,21 +1,28 @@
-import firebase from "firebase/app";
-import "firebase/database";
-import "firebase/auth";
-import "firebase/functions";
-import "firebase/firestore";
+import {
+  initializeApp,
+  getApps,
+  FirebaseApp as FirebaseAppType,
+  deleteApp
+} from "firebase/app";
+import {
+  getDatabase,
+  connectDatabaseEmulator,
+  goOnline,
+  goOffline
+} from "firebase/database";
+import { getAuth, connectAuthEmulator } from "firebase/auth";
+import { getFunctions, connectFunctionsEmulator } from "firebase/functions";
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 
 import { config } from "./config";
 import { SDKOptions } from "../../types/options";
-
-export const SERVER_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
-export const __firebase = firebase;
 
 /**
  * @hidden
  */
 export class FirebaseApp {
   protected standalone: boolean;
-  public app: firebase.app.App;
+  public app: FirebaseAppType;
 
   constructor(options: SDKOptions) {
     this.app = this.getApp(options.deviceId);
@@ -27,12 +34,12 @@ export class FirebaseApp {
   }
 
   private getApp(deviceId?: string) {
-    const moduleApps = firebase.apps;
+    const moduleApps = getApps();
     const browserApps =
       typeof window !== "undefined" &&
       "firebase" in window &&
-      "apps" in window.firebase
-        ? window["firebase"]["apps"]
+      "apps" in (window as any).firebase
+        ? (window as any)["firebase"]["apps"]
         : [];
 
     const neurosityApp = [...moduleApps, ...(browserApps as any[])].find(
@@ -52,10 +59,10 @@ export class FirebaseApp {
       );
       return neurosityApp
         ? neurosityApp
-        : firebase.initializeApp(config, neurosityAppName);
+        : initializeApp(config, neurosityAppName);
     }
 
-    return firebase.initializeApp(config);
+    return initializeApp(config);
   }
 
   connectEmulators(options: SDKOptions) {
@@ -68,27 +75,30 @@ export class FirebaseApp {
       emulatorOptions
     } = options;
 
-    this.app.auth().useEmulator(`http://${emulatorHost}:${emulatorAuthPort}`);
-    this.app
-      .database()
-      .useEmulator(emulatorHost, emulatorDatabasePort, emulatorOptions);
-    this.app.functions().useEmulator(emulatorHost, emulatorFunctionsPort);
-    this.app
-      .firestore()
-      .useEmulator(emulatorHost, emulatorFirestorePort, emulatorOptions);
+    const auth = getAuth(this.app);
+    const database = getDatabase(this.app);
+    const functions = getFunctions(this.app);
+    const firestore = getFirestore(this.app);
+
+    connectAuthEmulator(auth, `http://${emulatorHost}:${emulatorAuthPort}`);
+    connectDatabaseEmulator(database, emulatorHost, emulatorDatabasePort);
+    connectFunctionsEmulator(functions, emulatorHost, emulatorFunctionsPort);
+    connectFirestoreEmulator(firestore, emulatorHost, emulatorFirestorePort);
   }
 
   goOnline() {
-    this.app.database().goOnline();
+    const database = getDatabase(this.app);
+    goOnline(database);
   }
 
   goOffline() {
-    this.app.database().goOffline();
+    const database = getDatabase(this.app);
+    goOffline(database);
   }
 
   public disconnect(): Promise<any> {
     if (this.standalone) {
-      return this.app.delete();
+      return deleteApp(this.app);
     }
     return Promise.resolve();
   }

@@ -2,15 +2,15 @@ import { combineLatest, Observable, of, throwError } from "rxjs";
 import { ReplaySubject, firstValueFrom } from "rxjs";
 import { map, startWith, switchMap } from "rxjs/operators";
 import { distinctUntilChanged } from "rxjs/operators";
+import { serverTimestamp } from "firebase/database";
 import isEqual from "fast-deep-equal";
-import { CloudClient, createUser } from "./api/index";
-import { credentialWithLink, SERVER_TIMESTAMP } from "./api/index";
+import { CloudClient } from "./api/index";
 import { SDKOptions } from "./types/options";
 import { STREAMING_MODE, STREAMING_TYPE } from "./types/streaming";
 import { Training } from "./types/training";
 import { Credentials, EmailAndPassword } from "./types/credentials";
 import { CustomToken } from "./types/credentials";
-import { Settings, ChangeSettings } from "./types/settings";
+import { Settings } from "./types/settings";
 import { SignalQuality } from "./types/signalQuality";
 import { Kinesis } from "./types/kinesis";
 import { Calm } from "./types/calm";
@@ -25,8 +25,8 @@ import { HapticEffects } from "./types/hapticEffects";
 import * as errors from "./utils/errors";
 import * as platform from "./utils/platform";
 import * as hapticEffects from "./utils/hapticEffects";
-import { validateOAuthScopeForFunctionName } from "./utils/oauth";
-import { validateOAuthScopeForAction } from "./utils/oauth";
+import { validateScopeBasedPermissionForFunctionName } from "./utils/permissions";
+import { validateScopeBasedPermissionForAction } from "./utils/permissions";
 import { createOAuthURL } from "./api/https/createOAuthURL";
 import { getOAuthToken } from "./api/https/getOAuthToken";
 import { OAuthConfig, OAuthQuery } from "./types/oauth";
@@ -38,6 +38,11 @@ import { Experiment } from "./types/experiment";
 import { TransferDeviceOptions } from "./utils/transferDevice";
 import { BluetoothClient, osHasBluetoothSupport } from "./api/bluetooth";
 import { BLUETOOTH_CONNECTION } from "./api/bluetooth/types";
+import {
+  ApiKeyRecord,
+  CreateApiKeyRequest,
+  RemoveApiKeyResponse
+} from "./types/apiKey";
 
 const defaultOptions = {
   timesync: false,
@@ -92,19 +97,9 @@ export class Neurosity {
    *
    * @hidden
    */
-  static credentialWithLink = credentialWithLink;
-
-  /**
-   *
-   * @hidden
-   */
-  static createUser = createUser;
-
-  /**
-   *
-   * @hidden
-   */
-  static SERVER_TIMESTAMP = SERVER_TIMESTAMP;
+  static get SERVER_TIMESTAMP() {
+    return serverTimestamp();
+  }
 
   /**
    * Creates new instance of the Neurosity SDK
@@ -411,14 +406,18 @@ export class Neurosity {
   }
 
   /**
-   * @internal
-   * Not user facing yet
+   * Add a device to the user's account
+   *
+   * ```typescript
+   * await neurosity.addDevice("[deviceId]");
+   * ```
    */
   public addDevice(deviceId: string): Promise<void> {
-    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
-      this.cloudClient.userClaims,
-      "addDevice"
-    );
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        "addDevice"
+      );
 
     if (hasOAuthError) {
       return Promise.reject(OAuthError);
@@ -428,14 +427,18 @@ export class Neurosity {
   }
 
   /**
-   * @internal
-   * Not user facing yet
+   * Remove a device from the user's account
+   *
+   * ```typescript
+   * await neurosity.removeDevice("[deviceId]");
+   * ```
    */
   public removeDevice(deviceId: string): Promise<void> {
-    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
-      this.cloudClient.userClaims,
-      "removeDevice"
-    );
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        "removeDevice"
+      );
 
     if (hasOAuthError) {
       return Promise.reject(OAuthError);
@@ -445,14 +448,21 @@ export class Neurosity {
   }
 
   /**
-   * @internal
-   * Not user facing yet
+   * Transfer a device to the user's account
+   *
+   * ```typescript
+   * await neurosity.transferDevice({
+   *   deviceId: "[deviceId]",
+   *   newOwnerEmail: "[newOwnerEmail]"
+   * });
+   * ```
    */
   public transferDevice(options: TransferDeviceOptions): Promise<void> {
-    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
-      this.cloudClient.userClaims,
-      "transferDevice"
-    );
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        "transferDevice"
+      );
 
     if (hasOAuthError) {
       return Promise.reject(OAuthError);
@@ -462,14 +472,20 @@ export class Neurosity {
   }
 
   /**
-   * @internal
-   * Not user facing yet
+   * Subscribe to user devices changes
+   *
+   * ```typescript
+   * neurosity.onUserDevicesChange().subscribe((devices) => {
+   *   console.log(devices);
+   * });
+   * ```
    */
   public onUserDevicesChange(): Observable<DeviceInfo[]> {
-    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
-      this.cloudClient.userClaims,
-      "onUserDevicesChange"
-    );
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        "onUserDevicesChange"
+      );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
@@ -479,8 +495,13 @@ export class Neurosity {
   }
 
   /**
-   * @internal
-   * Not user facing yet
+   * Subscribe to user claims changes
+   *
+   * ```typescript
+   * neurosity.onUserClaimsChange().subscribe((userClaims) => {
+   *   console.log(userClaims);
+   * });
+   * ```
    */
   public onUserClaimsChange(): Observable<UserClaims> {
     return this.cloudClient.onUserClaimsChange();
@@ -528,10 +549,11 @@ export class Neurosity {
   public async selectDevice(
     deviceSelector: (devices: DeviceInfo[]) => DeviceInfo
   ): Promise<DeviceInfo> {
-    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
-      this.cloudClient.userClaims,
-      "selectDevice"
-    );
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        "selectDevice"
+      );
 
     if (hasOAuthError) {
       return Promise.reject(OAuthError);
@@ -550,10 +572,11 @@ export class Neurosity {
    */
 
   public async getSelectedDevice(): Promise<DeviceInfo> {
-    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
-      this.cloudClient.userClaims,
-      "getSelectedDevice"
-    );
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        "getSelectedDevice"
+      );
 
     if (hasOAuthError) {
       return Promise.reject(OAuthError);
@@ -572,10 +595,11 @@ export class Neurosity {
       return Promise.reject(errors.mustSelectDevice);
     }
 
-    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
-      this.cloudClient.userClaims,
-      "getInfo"
-    );
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        "getInfo"
+      );
 
     if (hasOAuthError) {
       return Promise.reject(OAuthError);
@@ -597,10 +621,11 @@ export class Neurosity {
    * ```
    */
   public onDeviceChange(): Observable<DeviceInfo> {
-    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
-      this.cloudClient.userClaims,
-      "onDeviceChange"
-    );
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        "onDeviceChange"
+      );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
@@ -636,7 +661,7 @@ export class Neurosity {
       return Promise.reject(errors.mustSelectDevice);
     }
 
-    const [hasOAuthError, OAuthError] = validateOAuthScopeForAction(
+    const [hasOAuthError, OAuthError] = validateScopeBasedPermissionForAction(
       this.cloudClient.userClaims,
       action
     );
@@ -798,10 +823,11 @@ export class Neurosity {
   public accelerometer(): Observable<Accelerometer> {
     const metric = "accelerometer";
 
-    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
-      this.cloudClient.userClaims,
-      metric
-    );
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        metric
+      );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
@@ -877,10 +903,11 @@ export class Neurosity {
   public brainwaves(
     label: BrainwavesLabel
   ): Observable<Epoch | PowerByBand | PSD> {
-    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
-      this.cloudClient.userClaims,
-      "brainwaves"
-    );
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        "brainwaves"
+      );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
@@ -918,10 +945,11 @@ export class Neurosity {
    * @returns Observable of calm events - awareness/calm alias
    */
   public calm(): Observable<Calm> {
-    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
-      this.cloudClient.userClaims,
-      "calm"
-    );
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        "calm"
+      );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
@@ -958,10 +986,11 @@ export class Neurosity {
   public signalQuality(): Observable<SignalQuality> {
     const metric = "signalQuality";
 
-    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
-      this.cloudClient.userClaims,
-      metric
-    );
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        metric
+      );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
@@ -995,10 +1024,11 @@ export class Neurosity {
    * @returns Observable of `settings` metric events
    */
   public settings(): Observable<Settings> {
-    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
-      this.cloudClient.userClaims,
-      "settings"
-    );
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        "settings"
+      );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
@@ -1023,10 +1053,11 @@ export class Neurosity {
    * @returns Observable of `osVersion` events. e.g 16.0.0
    */
   public osVersion(): Observable<OSVersion> {
-    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
-      this.cloudClient.userClaims,
-      "osVersion"
-    );
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        "osVersion"
+      );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
@@ -1054,10 +1085,11 @@ export class Neurosity {
    * @returns Observable of focus events - awareness/focus alias
    */
   public focus(): Observable<Focus> {
-    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
-      this.cloudClient.userClaims,
-      "focus"
-    );
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        "focus"
+      );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
@@ -1083,10 +1115,11 @@ export class Neurosity {
   public kinesis(label: string): Observable<Kinesis> {
     const metric = "kinesis";
 
-    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
-      this.cloudClient.userClaims,
-      metric
-    );
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        metric
+      );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
@@ -1108,10 +1141,11 @@ export class Neurosity {
   public predictions(label: string): Observable<any> {
     const metric = "predictions";
 
-    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
-      this.cloudClient.userClaims,
-      metric
-    );
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        metric
+      );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
@@ -1141,10 +1175,11 @@ export class Neurosity {
    * @returns Observable of `status` metric events
    */
   public status(): Observable<DeviceStatus> {
-    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
-      this.cloudClient.userClaims,
-      "status"
-    );
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        "status"
+      );
 
     if (hasOAuthError) {
       return throwError(() => OAuthError);
@@ -1153,19 +1188,17 @@ export class Neurosity {
     return this._withStreamingModeObservable({
       wifi: () => this.cloudClient.status(),
       bluetooth: () => this.bluetoothClient.status()
-    });
+    }).pipe(distinctUntilChanged((a, b) => isEqual(a, b)));
   }
 
   /**
-   * @internal
-   * Not user facing yet
    *
    * <StreamingModes wifi={true} />
    *
    * Changes device settings programmatically. These settings can be
    * also changed from the developer console under device settings.
    *
-   * Available settings [[ChangeSettings]]
+   * Available settings [[Settings]]
    *
    * Example
    * ```typescript
@@ -1174,15 +1207,16 @@ export class Neurosity {
    * });
    * ```
    */
-  public async changeSettings(settings: ChangeSettings): Promise<void> {
+  public async changeSettings(settings: Settings): Promise<void> {
     if (!(await this.cloudClient.didSelectDevice())) {
       return Promise.reject(errors.mustSelectDevice);
     }
 
-    const [hasOAuthError, OAuthError] = validateOAuthScopeForFunctionName(
-      this.cloudClient.userClaims,
-      "changeSettings"
-    );
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        "changeSettings"
+      );
 
     if (hasOAuthError) {
       return Promise.reject(OAuthError);
@@ -1295,8 +1329,6 @@ export class Neurosity {
   }
 
   /**
-   * @internal
-   * Not user facing yet
    *
    * Creates user account and automatically signs in with same credentials
    *
@@ -1308,8 +1340,6 @@ export class Neurosity {
   }
 
   /**
-   * @internal
-   * Not user facing yet
    *
    * Removes all devices from an account and then deletes the account
    */
@@ -1338,7 +1368,56 @@ export class Neurosity {
    * @returns custom token
    */
   public createCustomToken(): Promise<CustomToken> {
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        "createCustomToken"
+      );
+
+    if (hasOAuthError) {
+      return Promise.reject(OAuthError);
+    }
+
     return this.cloudClient.createCustomToken();
+  }
+
+  /**
+   * Creates API key to use to login with `{ apiKey }`.
+   *
+   * @returns API key record
+   */
+  public createApiKey(data: CreateApiKeyRequest): Promise<ApiKeyRecord> {
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        "createApiKey"
+      );
+
+    if (hasOAuthError) {
+      return Promise.reject(OAuthError);
+    }
+
+    return this.cloudClient.createApiKey(data);
+  }
+
+  /**
+   * Removes API key
+   *
+   * @param data
+   * @returns void
+   */
+  public removeApiKey(apiKeyId: string): Promise<RemoveApiKeyResponse> {
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        "removeApiKey"
+      );
+
+    if (hasOAuthError) {
+      return Promise.reject(OAuthError);
+    }
+
+    return this.cloudClient.removeApiKey(apiKeyId);
   }
 
   /**
@@ -1361,7 +1440,7 @@ export class Neurosity {
   /**
    * Create OAuth URL
    * 💡 OAuth requires developers to register their apps with Neurosity
-   * [Read full OAuth guide](/docs/oauth)
+   * [Read full OAuth guide](/docs/api/oauth)
    *
    * Creates client-specific OAuth URL. This is the first step of the OAuth workflow. Use this function to create a URL you can use to redirect users to the Neurosity sign-in page.
    * 💡 This function is designed to only run on the server side for security reasons, as it requires your client secret.
@@ -1401,7 +1480,7 @@ export class Neurosity {
    * @returns custom token
    */
   public createOAuthURL(config: OAuthConfig): Promise<string> {
-    if (!isNode) {
+    if (!isNode()) {
       return Promise.reject(
         new Error(
           `${errors.prefix}the createOAuthURL method must be used on the server side (node.js) for security reasons.`
@@ -1415,7 +1494,7 @@ export class Neurosity {
   /**
    * Get OAuth Token
    * 💡 OAuth requires developers to register their apps with Neurosity
-   * [Read full OAuth guide](/docs/oauth)
+   * [Read full OAuth guide](/docs/api/oauth)
    *
    * Gets client-specific OAuth token for a given userId.
    *
@@ -1452,7 +1531,7 @@ export class Neurosity {
    * @returns custom token
    */
   public getOAuthToken(query: OAuthQuery): Promise<OAuthQueryResult> {
-    if (!isNode) {
+    if (!isNode()) {
       return Promise.reject(
         new Error(
           `${errors.prefix}the getOAuthToken method must be used on the server side (node.js) for security reasons.`
@@ -1466,7 +1545,7 @@ export class Neurosity {
   /**
    * Remove OAuth Access
    * 💡 OAuth requires developers to register their apps with Neurosity
-   * [Read full OAuth guide](/docs/oauth)
+   * [Read full OAuth guide](/docs/api/oauth)
    *
    * Removes client-specific OAuth token for a given userId. Requires SDK to be signed in with OAuth custom token.
    *
@@ -1526,22 +1605,3 @@ export class Neurosity {
     return this.cloudClient.deleteUserExperiment(experimentId);
   }
 }
-
-/**
- * @hidden
- * Deprecated class kept for backwards compatibility purposes.
- */
-export class Notion extends Neurosity {
-  constructor(options: SDKOptions = {}) {
-    super(options);
-    console.log(
-      `The Notion class is deprecated and will be removed in the next version of the SDK. Please use the Neurosity class instead. e.g. new Notion() => new Neurosity()`
-    );
-  }
-}
-
-/**
- * @hidden
- * Internal use only. Will be removed in next versions.
- */
-export { __firebase } from "./api/firebase";

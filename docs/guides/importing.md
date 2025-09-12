@@ -21,7 +21,7 @@ const { Neurosity } = require("@neurosity/sdk");
 
 ```html
 <script type="module">
-  import { Neurosity } from "./node_modules/neurosity/esm/neurosity.mjs";
+  import { Neurosity } from "./node_modules/@neurosity/sdk/index.mjs";
 </script>
-<script nomodule src="./node_modules/neurosity/browser/neurosity.js">
+<script nomodule src="./node_modules/@neurosity/sdk/neurosity.umd.js">
 ```

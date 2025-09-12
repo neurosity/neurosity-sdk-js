@@ -1,14 +1,7 @@
 export interface Settings {
-  lsl: boolean;
-  supportAccess: boolean;
-  activityLogging: boolean;
-}
-
-/**
- * @hidden
- */
-export interface ChangeSettings {
   lsl?: boolean;
+  osc?: boolean;
   supportAccess?: boolean;
   activityLogging?: boolean;
+  researchProgram?: boolean;
 }

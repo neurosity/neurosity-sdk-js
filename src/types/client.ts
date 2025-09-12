@@ -4,7 +4,7 @@ import { Actions } from "./actions";
 import { Metrics } from "./metrics";
 import { SkillsClient } from "./skill";
 import { Credentials } from "./credentials";
-import { ChangeSettings } from "./settings";
+import { Settings } from "./settings";
 
 /**
  * @hidden
@@ -19,5 +19,5 @@ export interface Client {
   metrics: Metrics;
   skills: SkillsClient;
   timestamp: number;
-  changeSettings(settings: ChangeSettings): Promise<void>;
+  changeSettings(settings: Settings): Promise<void>;
 }

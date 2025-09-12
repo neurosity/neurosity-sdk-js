@@ -62,7 +62,7 @@ NEUROSITY_OAUTH_CLIENT_REDIRECT_URI=http://localhost:3000
 
 ### First Cloud Function: createOAuthURL
 
-The first function wraps the [createOAuthURL](/reference/classes/neurosity#createOAuthURL) SDK method. This method creates client-specific OAuth URL. This is the first step of the OAuth workflow. Use this function to create a URL you can use to redirect users to the Neurosity sign-in page.
+The first function wraps the [createOAuthURL](/docs/reference/classes/Neurosity#createoauthurl) SDK method. This method creates client-specific OAuth URL. This is the first step of the OAuth workflow. Use this function to create a URL you can use to redirect users to the Neurosity sign-in page.
 
 The following cloud function example was designed to work with Netlify. Let's name this function `get-neurosity-oauth-url`.
 
@@ -101,7 +101,7 @@ exports.handler = async function (event) {
 
 ### Second Cloud Function: getOAuthToken
 
-The [getOAuthToken](/reference/classes/neurosity#getOAuthToken) method retreives the client-specific OAuth token for a given userId.
+The [getOAuthToken](/docs/reference/classes/Neurosity#getoauthtoken) method retreives the client-specific OAuth token for a given userId.
 
 Here's an example of a cloud function that receives a `userId` via query params and loads the client id and client secret securely via environment variables.
 
@@ -230,7 +230,7 @@ function useOAuthResult() {
 
 ### Removing Access
 
-After a user has granted your app access to their Neurosity account, it is good practice to give them the option to remove the access. For that, we'll use the SDK [removeOAuthAccess](/reference/classes/neurosity#removeOAuthAccess) method on the client or server side.
+After a user has granted your app access to their Neurosity account, it is good practice to give them the option to remove the access. For that, we'll use the SDK [removeOAuthAccess](/docs/reference/classes/Neurosity#removeoauthaccess) method on the client or server side.
 
 The following example removes client-specific OAuth token for a given `userId`. This method requires the SDK to be signed in with OAuth custom token.
 
