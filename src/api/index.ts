@@ -73,9 +73,13 @@ export class CloudClient implements Client {
       this.userClaims = userClaims;
     });
 
-    this.onDeviceChange().subscribe((device) => {
+    this.onDeviceChange().subscribe(async (device) => {
       if (this.firebaseDevice) {
-        this.firebaseDevice.disconnect();
+        try {
+          await this.firebaseDevice.disconnect();
+        } catch (error) {
+          console.error("Error disconnecting from device", error);
+        }
       }
 
       if (!device) {
@@ -144,6 +148,14 @@ export class CloudClient implements Client {
   }
 
   public async disconnect(): Promise<any> {
+    if (this.firebaseDevice) {
+      try {
+        await this.firebaseDevice.disconnect();
+      } catch (error) {
+        console.error("Error disconnecting from device", error);
+      }
+    }
+
     return this.firebaseApp.disconnect();
   }
 
@@ -181,7 +193,11 @@ export class CloudClient implements Client {
 
   public async logout(): Promise<any> {
     if (this.firebaseDevice) {
-      this.firebaseDevice.disconnect();
+      try {
+        await this.firebaseDevice.disconnect();
+      } catch (error) {
+        console.error("Error disconnecting from device", error);
+      }
     }
 
     return await this.firebaseUser.logout();

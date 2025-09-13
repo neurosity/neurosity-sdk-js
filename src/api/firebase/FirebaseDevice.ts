@@ -163,7 +163,7 @@ export class FirebaseDevice {
     return token;
   }
 
-  public disconnect() {
-    this.deviceStore.disconnect();
+  public async disconnect() {
+    await this.deviceStore.disconnect();
   }
 }

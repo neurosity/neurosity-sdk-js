@@ -221,19 +221,21 @@ export const createDeviceStore = (app, deviceId, subscriptionManager) => {
         : `metrics/${metric}/${labels[0]}`;
       offData(child, "value", listener);
     },
-    disconnect() {
-      remove(clientRef);
+    async disconnect() {
       listenersToRemove.forEach((removeListener) => {
         removeListener();
       });
-      subscriptionManager
-        .toList()
-        .filter((subscription) => subscription.clientId === clientId)
-        .forEach((subscription) => {
-          const childPath = `subscriptions/${subscription.id}`;
-          const subscriptionRef = child(deviceRef, childPath);
-          remove(subscriptionRef);
-        });
+      return await Promise.all([
+        remove(clientRef),
+        ...subscriptionManager
+          .toList()
+          .filter((subscription) => subscription.clientId === clientId)
+          .map((subscription) => {
+            const childPath = `subscriptions/${subscription.id}`;
+            const subscriptionRef = child(deviceRef, childPath);
+            return remove(subscriptionRef);
+          })
+      ]);
     }
   };
 };
