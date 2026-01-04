@@ -1,3 +1,8 @@
+# v7.1.0
+
+- FEAT: Added `signalQualityV2()` method with normalized 0-1 scores per channel and overall score
+- Updated `@neurosity/ipk` to v2.13.0
+
 # v5.0.0
 
 - FEAT: Auto & manual device selection via `neurosity.selectDevice(...)` method

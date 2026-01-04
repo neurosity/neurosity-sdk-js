@@ -17,6 +17,7 @@ export * from "./options";
 export * from "./sample";
 export * from "./settings";
 export * from "./signalQuality";
+export * from "./signalQualityV2";
 export * from "./status";
 export * from "./streaming";
 export * from "./subscriptions";
