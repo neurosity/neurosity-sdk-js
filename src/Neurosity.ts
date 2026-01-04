@@ -12,6 +12,7 @@ import { Credentials, EmailAndPassword } from "./types/credentials";
 import { CustomToken } from "./types/credentials";
 import { Settings } from "./types/settings";
 import { SignalQuality } from "./types/signalQuality";
+import { SignalQualityV2 } from "./types/signalQualityV2";
 import { Kinesis } from "./types/kinesis";
 import { Calm } from "./types/calm";
 import { Focus } from "./types/focus";
@@ -1004,6 +1005,47 @@ export class Neurosity {
           atomic: true
         }),
       bluetooth: () => this.bluetoothClient.signalQuality()
+    });
+  }
+
+  /**
+   * <StreamingModes wifi={true} bluetooth={true} />
+   *
+   * Observes signal quality with normalized scores (0-1) per channel
+   * and an overall score.
+   *
+   * ```typescript
+   * neurosity.signalQualityV2().subscribe(quality => {
+   *   console.log(quality.overall.score);  // 0-1
+   *   console.log(quality.byChannel.CP3.score);  // 0-1
+   * });
+   *
+   * // { timestamp: 1234567890, overall: { score: 0.85 }, byChannel: { CP3: { score: 0.9 }, ... } }
+   * ```
+   *
+   * @returns Observable of signalQualityV2 metric events
+   */
+  public signalQualityV2(): Observable<SignalQualityV2> {
+    const metric = "signalQualityV2";
+
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        "signalQuality" // Reuse same scope
+      );
+
+    if (hasOAuthError) {
+      return throwError(() => OAuthError);
+    }
+
+    return this._withStreamingModeObservable({
+      wifi: () =>
+        getCloudMetric(this._getCloudMetricDependencies(), {
+          metric,
+          labels: getLabels(metric),
+          atomic: true
+        }),
+      bluetooth: () => this.bluetoothClient.signalQualityV2()
     });
   }
 

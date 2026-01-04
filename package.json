@@ -1,6 +1,6 @@
 {
   "name": "@neurosity/sdk",
-  "version": "7.0.1",
+  "version": "7.1.0",
   "description": "Neurosity SDK",
   "type": "module",
   "main": "dist/index.js",
@@ -56,7 +56,7 @@
   },
   "homepage": "https://docs.neurosity.co",
   "dependencies": {
-    "@neurosity/ipk": "^2.12.0",
+    "@neurosity/ipk": "^2.13.0",
     "axios": "^1.6.2",
     "buffer": "^6.0.3",
     "fast-deep-equal": "^3.1.3",

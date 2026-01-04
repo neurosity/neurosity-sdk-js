@@ -42,6 +42,7 @@ export class BluetoothClient {
   _brainwavesPSD$: Observable<any>;
   _brainwavesPowerByBand$: Observable<any>;
   _signalQuality$: Observable<any>;
+  _signalQualityV2$: Observable<any>;
   _status$: Observable<any>;
   _settings$: Observable<any>;
   _wifiNearbyNetworks$: Observable<any>;
@@ -122,6 +123,7 @@ export class BluetoothClient {
     this._brainwavesPowerByBand$ =
       this._subscribeWhileAuthenticated("powerByBand");
     this._signalQuality$ = this._subscribeWhileAuthenticated("signalQuality");
+    this._signalQualityV2$ = this._subscribeWhileAuthenticated("signalQualityV2");
     this._status$ = this._subscribeWhileAuthenticated("status");
     this._settings$ = this._subscribeWhileAuthenticated("settings");
     this._wifiNearbyNetworks$ =
@@ -333,6 +335,10 @@ export class BluetoothClient {
 
   signalQuality() {
     return this._signalQuality$;
+  }
+
+  signalQualityV2() {
+    return this._signalQualityV2$;
   }
 
   async addMarker(label: string): Promise<void> {
