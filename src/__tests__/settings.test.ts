@@ -26,7 +26,7 @@ jest.mock("../api/index", () => {
     }),
     changeSettings: jest.fn(async (settings) => {
       // Validate settings
-      const validKeys = ["lsl", "bluetooth", "timesync", "deviceNickname"];
+      const validKeys = ["lsl", "bluetooth", "timesync", "deviceNickname", "supportAccess", "activityLogging"];
       const hasInvalidKey = Object.keys(settings).some(
         (key) => !validKeys.includes(key)
       );
@@ -81,8 +81,8 @@ describe("Settings", () => {
     it("should update settings", (done) => {
       const newSettings = {
         lsl: true,
-        bluetooth: true,
-        timesync: true
+        supportAccess: true,
+        activityLogging: true
       };
 
       neurosity
