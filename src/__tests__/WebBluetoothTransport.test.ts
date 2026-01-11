@@ -90,6 +90,10 @@ describe("WebBluetoothTransport", () => {
   });
 
   it("should handle connection state changes", (done) => {
+    // Set device before changing connection state to avoid unhandled error
+    // when _onDisconnected() tries to attach listener to device
+    transport.device = mockDevice;
+
     const states: BLUETOOTH_CONNECTION[] = [];
     transport.connection().subscribe((state) => {
       states.push(state);
@@ -203,6 +207,9 @@ describe("WebBluetoothTransport", () => {
   });
 
   it("should check connection status", () => {
+    // Set device before changing connection state to avoid unhandled error
+    transport.device = mockDevice;
+
     transport.connection$.next(BLUETOOTH_CONNECTION.CONNECTED);
     expect(transport.isConnected()).toBe(true);
 
@@ -212,12 +219,17 @@ describe("WebBluetoothTransport", () => {
 
   it("should add logs", (done) => {
     const testLog = "Test log message";
-    transport.logs$.subscribe((log) => {
-      expect(log).toBe(testLog);
-      done();
-    });
-
     transport.addLog(testLog);
+
+    // logs$ is a ReplaySubject, so we need to check if our log was added
+    const logs: string[] = [];
+    transport.logs$.subscribe((log) => {
+      logs.push(log);
+      if (log === testLog) {
+        expect(logs).toContain(testLog);
+        done();
+      }
+    });
   });
 
   it("should handle connection errors", async () => {
