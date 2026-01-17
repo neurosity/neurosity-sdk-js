@@ -16,6 +16,6 @@ export interface DeviceInfo {
 }
 
 type DeviceSelectorKeyValue = [string, string | number | string[]];
-type DeviceSelectorFunction = (devices: DeviceInfo[]) => DeviceInfo;
+export type DeviceSelectorFunction = (devices: DeviceInfo[]) => DeviceInfo;
 
 export type DeviceSelector = DeviceSelectorKeyValue | DeviceSelectorFunction;

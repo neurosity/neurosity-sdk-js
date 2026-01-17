@@ -18,7 +18,7 @@ import { EmailAndPassword } from "../types/credentials";
 import { Settings } from "../types/settings";
 import { Subscription } from "../types/subscriptions";
 import { DeviceStatus } from "../types/status";
-import { DeviceInfo, DeviceSelector, OSVersion } from "../types/deviceInfo";
+import { DeviceInfo, DeviceSelector, DeviceSelectorFunction, OSVersion } from "../types/deviceInfo";
 import { UserClaims } from "../types/user";
 import { OAuthRemoveResponse } from "../types/oauth";
 import { Experiment } from "../types/experiment";
@@ -280,6 +280,72 @@ export class CloudClient implements Client {
     return !!selectedDevice;
   }
 
+  private async finalizeDeviceSelection(device: DeviceInfo): Promise<DeviceInfo> {
+    const hasPermission = await this.firebaseUser.hasDevicePermission(
+      device.deviceId
+    );
+
+    if (!hasPermission) {
+      return Promise.reject(`Rejected device access due to permissions.`);
+    }
+
+    this._selectedDevice.next(device);
+
+    return device;
+  }
+
+  /**
+   * Selects a device from the list of available devices based on a key-value pair of the device information.
+   * 
+   * @template K The type of the key.
+   * @param {K} key The key to search for in the device information.
+   * @param {DeviceInfo[K]} value The value to match with the specified key.
+   * @returns {Promise<DeviceInfo>} A promise that resolves to the selected device information.
+   * @throws {Error} If no devices are found for the user or if no device is found with the specified key-value pair.
+   */
+  public async selectDeviceByKeyValue<K extends keyof DeviceInfo>(
+    key: K,
+    value: DeviceInfo[K]
+  ): Promise<DeviceInfo> {
+    const devices = await this.getDevices();
+    if (!devices.length) {
+      throw new Error("No devices found for this user.");
+    }
+
+    const selectedDevice = devices.find(device => JSON.stringify(device[key]) === JSON.stringify(value));
+    if (!selectedDevice) {
+      throw new Error("Device not found with specified key-value pair.");
+    }
+
+    return this.finalizeDeviceSelection(selectedDevice);
+  }
+
+  /**
+   * Selects a device based on the provided device selector function.
+   * 
+   * @param deviceSelector The device selector function used to select a device from the available devices.
+   * @returns A promise that resolves to the selected device information.
+   * @throws {Error} An error if no devices are found for the user or if the specified device is not found.
+   */
+  public async selectDeviceBySelector(
+    deviceSelector: DeviceSelectorFunction
+  ): Promise<DeviceInfo> {
+    const devices = await this.getDevices();
+    if (!devices.length) {
+      throw new Error("No devices found for this user.");
+    }
+
+    const selectedDevice = deviceSelector(devices);
+    if (!selectedDevice) {
+      throw new Error("Device not found with specified selector.");
+    }
+
+    return this.finalizeDeviceSelection(selectedDevice);
+  }
+
+  /**
+   * @deprecated Use `selectDeviceByKeyValue` or `selectDeviceBySelector` instead.
+   */
   public async selectDevice(
     deviceSelector: DeviceSelector
   ): Promise<DeviceInfo> {
