@@ -23,7 +23,12 @@ import { DeviceInfo, OSVersion } from "./types/deviceInfo";
 import { DeviceStatus, STATUS } from "./types/status";
 import { Action } from "./types/actions";
 import { HapticEffects } from "./types/hapticEffects";
-import { RecordingOptions, RecordingResult } from "./types/recording";
+import {
+  RecordingOptions,
+  RecordingResult,
+  StartRecordingOptions,
+  RecordingHandle
+} from "./types/recording";
 import * as errors from "./utils/errors";
 import * as platform from "./utils/platform";
 import * as hapticEffects from "./utils/hapticEffects";
@@ -1010,6 +1015,162 @@ export class Neurosity {
     });
 
     return response?.message ?? response;
+  }
+
+  /**
+   * <StreamingModes wifi={true} />
+   *
+   * Starts a variable-length brainwave recording and returns a handle
+   * for controlling it. Use this when you need UI control over the
+   * recording lifecycle (progress, cancel, stop-and-save).
+   *
+   * ```typescript
+   * const recording = await neurosity.startRecording({
+   *   label: "eyes-closed",
+   *   maxDuration: 120000 // 2 minute max
+   * });
+   *
+   * // Track progress
+   * recording.elapsed$.subscribe(ms => {
+   *   console.log(`Recording: ${(ms / 1000).toFixed(0)}s`);
+   * });
+   *
+   * // Stop and save after some time
+   * const result = await recording.stop();
+   * console.log(result.id);
+   *
+   * // Or cancel without saving
+   * await recording.cancel();
+   * ```
+   *
+   * @param options Recording options including label and maxDuration
+   * @returns Promise resolving to a RecordingHandle
+   */
+  public async startRecording(
+    options: StartRecordingOptions
+  ): Promise<RecordingHandle> {
+    if (!(await this.cloudClient.didSelectDevice())) {
+      return Promise.reject(errors.mustSelectDevice);
+    }
+
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForAction(this.cloudClient.userClaims, {
+        command: "brainwaves",
+        action: "startRecording",
+        message: options
+      });
+
+    if (hasOAuthError) {
+      return Promise.reject(OAuthError);
+    }
+
+    if (!options.label) {
+      return Promise.reject(
+        new Error(`${errors.prefix}A label is required for startRecording.`)
+      );
+    }
+
+    if (!options.maxDuration || options.maxDuration <= 0) {
+      return Promise.reject(
+        new Error(
+          `${errors.prefix}A positive maxDuration is required for startRecording.`
+        )
+      );
+    }
+
+    const MAX_DURATION = 30 * 60 * 1000;
+    if (options.maxDuration > MAX_DURATION) {
+      return Promise.reject(
+        new Error(
+          `${errors.prefix}Duration ${options.maxDuration}ms exceeds maximum of ${MAX_DURATION}ms (30 minutes).`
+        )
+      );
+    }
+
+    // Start the recording on the device
+    const response = await this.dispatchAction({
+      command: "brainwaves",
+      action: "startRecording",
+      message: {
+        name: options.name || options.label,
+        label: options.label,
+        maxDuration: options.maxDuration,
+        experimentId: options.experimentId || "sdk-recording"
+      },
+      responseRequired: true,
+      responseTimeout: options.maxDuration + 10000
+    });
+
+    const startResponse = response?.message ?? response;
+
+    if (!startResponse?.ok) {
+      return Promise.reject(
+        new Error(
+          `${errors.prefix}Failed to start recording: ${
+            startResponse?.error || "unknown error"
+          }`
+        )
+      );
+    }
+
+    const { cancel: cancelAction, complete: completeAction } = startResponse;
+    const startTime = Date.now();
+    let stopped = false;
+
+    // Result promise that resolves when stop() or cancel() is called
+    let resolveResult: (value: RecordingResult) => void;
+    const resultPromise = new Promise<RecordingResult>((resolve) => {
+      resolveResult = resolve;
+    });
+
+    // Elapsed timer observable (~1Hz), completes when recording stops
+    const elapsedSubscribers = new Set<any>();
+    const elapsed$ = new Observable<number>((subscriber) => {
+      elapsedSubscribers.add(subscriber);
+      const timer = setInterval(() => {
+        subscriber.next(Date.now() - startTime);
+      }, 1000);
+
+      return () => {
+        clearInterval(timer);
+        elapsedSubscribers.delete(subscriber);
+      };
+    });
+
+    const completeAllElapsed = () => {
+      for (const sub of elapsedSubscribers) {
+        sub.complete();
+      }
+    };
+
+    const stop = async (): Promise<RecordingResult> => {
+      if (stopped) return resultPromise;
+      stopped = true;
+      completeAllElapsed();
+
+      const stopResponse = await this.dispatchAction(completeAction);
+      const result: RecordingResult =
+        stopResponse?.message ?? stopResponse ?? { ok: true };
+
+      resolveResult(result);
+      return result;
+    };
+
+    const cancel = async (): Promise<void> => {
+      if (stopped) return;
+      stopped = true;
+      completeAllElapsed();
+
+      await this.dispatchAction(cancelAction);
+      resolveResult({ ok: false, error: "cancelled" });
+    };
+
+    return {
+      elapsed$,
+      stop,
+      cancel,
+      result: resultPromise
+    };
   }
 
   /**
