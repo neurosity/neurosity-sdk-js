@@ -23,6 +23,7 @@ import { DeviceInfo, OSVersion } from "./types/deviceInfo";
 import { DeviceStatus, STATUS } from "./types/status";
 import { Action } from "./types/actions";
 import { HapticEffects } from "./types/hapticEffects";
+import { RecordingOptions, RecordingResult } from "./types/recording";
 import * as errors from "./utils/errors";
 import * as platform from "./utils/platform";
 import * as hapticEffects from "./utils/hapticEffects";
@@ -925,6 +926,90 @@ export class Neurosity {
       // order function only support one label
       bluetooth: () => this.bluetoothClient.brainwaves(label)
     });
+  }
+
+  /**
+   * <StreamingModes wifi={true} />
+   *
+   * Records raw brainwave data for a specified duration and saves it
+   * as a dataset. The recording is stored in cloud storage and a
+   * metadata record is created in Firestore. If the network is
+   * unavailable, the recording is saved locally on the device and
+   * uploaded automatically when connectivity is restored.
+   *
+   * ```typescript
+   * const result = await neurosity.record({
+   *   label: "eyes-closed",
+   *   duration: 60000
+   * });
+   *
+   * console.log(result.id); // Firestore record ID
+   * ```
+   *
+   * With all options:
+   * ```typescript
+   * const result = await neurosity.record({
+   *   name: "Morning session",
+   *   label: "focus-training",
+   *   duration: 120000,
+   *   experimentId: "exp-001"
+   * });
+   * ```
+   *
+   * @param options Recording options including label and duration
+   * @returns Promise resolving to the recording result
+   */
+  public async record(options: RecordingOptions): Promise<RecordingResult> {
+    if (!(await this.cloudClient.didSelectDevice())) {
+      return Promise.reject(errors.mustSelectDevice);
+    }
+
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForAction(this.cloudClient.userClaims, {
+        command: "brainwaves",
+        action: "record",
+        message: options
+      });
+
+    if (hasOAuthError) {
+      return Promise.reject(OAuthError);
+    }
+
+    if (!options.label) {
+      return Promise.reject(
+        new Error(`${errors.prefix}A label is required for record.`)
+      );
+    }
+
+    if (!options.duration || options.duration <= 0) {
+      return Promise.reject(
+        new Error(`${errors.prefix}A positive duration is required for record.`)
+      );
+    }
+
+    const MAX_DURATION = 30 * 60 * 1000;
+    if (options.duration > MAX_DURATION) {
+      return Promise.reject(
+        new Error(
+          `${errors.prefix}Duration ${options.duration}ms exceeds maximum of ${MAX_DURATION}ms (30 minutes).`
+        )
+      );
+    }
+
+    const response = await this.dispatchAction({
+      command: "brainwaves",
+      action: "record",
+      message: {
+        name: options.name || options.label,
+        label: options.label,
+        duration: options.duration,
+        experimentId: options.experimentId || "sdk-recording"
+      },
+      responseRequired: true,
+      responseTimeout: options.duration + 90000
+    });
+
+    return response?.message ?? response;
   }
 
   /**

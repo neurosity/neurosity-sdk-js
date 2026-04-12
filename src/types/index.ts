@@ -16,6 +16,7 @@ export * from "./oauth";
 export * from "./options";
 export * from "./sample";
 export * from "./settings";
+export * from "./recording";
 export * from "./signalQuality";
 export * from "./signalQualityV2";
 export * from "./status";
