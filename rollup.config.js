@@ -2,8 +2,6 @@ import typescript from "@rollup/plugin-typescript";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import terser from "@rollup/plugin-terser";
-import dts from "rollup-plugin-dts";
-
 const isProduction = process.env.NODE_ENV === "production";
 
 // Common external dependencies
@@ -131,13 +129,4 @@ export default [
     ].filter(Boolean)
   },
 
-  // TypeScript declarations
-  {
-    input: "src/index.ts",
-    output: {
-      file: "dist/index.d.ts",
-      format: "es"
-    },
-    plugins: [dts()]
-  }
 ];
