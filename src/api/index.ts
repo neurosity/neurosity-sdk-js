@@ -74,39 +74,42 @@ export class CloudClient implements Client {
     });
 
     this.onDeviceChange().subscribe((device) => {
-      // Swap `this.firebaseDevice` SYNCHRONOUSLY so other subscribers delivered
-      // on the same emission (e.g. `observeNamespace(...)`'s switchMap inner,
-      // which reads `this.firebaseDevice` to wire up the listener) see the
-      // new device. Awaiting disconnect inline would yield back to the RxJS
-      // scheduler, letting those downstream subscribers read the stale device
-      // and register their listeners against a FirebaseDevice that's about to
-      // be torn down — the bug that made the status$/osVersion$ streams go
-      // silent on the first selectDevice() after a switch.
-      const previousDevice = this.firebaseDevice;
-
-      this.firebaseDevice = device
-        ? new FirebaseDevice({
-            deviceId: device.deviceId,
-            firebaseApp: this.firebaseApp,
-            dependencies: {
-              subscriptionManager: this.subscriptionManager
-            }
-          })
-        : undefined;
-
-      if (this.options.timesync && this.firebaseDevice) {
-        this.timesync = new Timesync({
-          status$: this.status(),
-          getTimesync: this.firebaseDevice.getTimesync.bind(this.firebaseDevice)
+      // Must stay synchronous. Subscribers delivered on the same
+      // `_selectedDevice` emission — e.g. `observeNamespace(...)`'s
+      // switchMap inner, which reads `this.firebaseDevice` to wire up
+      // the RTDB listener — run immediately after this callback. If we
+      // await disconnect() here the reassignment below moves to a later
+      // microtask and those downstream subscribers attach to the OLD
+      // FirebaseDevice (or a disconnecting one). That's the regression
+      // this commit walks back from v7; v6 was synchronous.
+      // See src/__tests__/cloudClient.observeNamespace.test.ts.
+      if (this.firebaseDevice) {
+        // Fire-and-forget; the prior device's teardown is background work
+        // and we must not yield before reassigning `this.firebaseDevice`.
+        // Errors are logged, not thrown — a failed disconnect on the old
+        // device can't be allowed to block setup for the new one.
+        this.firebaseDevice.disconnect().catch((error) => {
+          console.error("Error disconnecting from device", error);
         });
       }
 
-      // Tear down the prior device in the background. Errors are logged, not
-      // thrown — a failed disconnect on the old device must not prevent the
-      // new device from operating.
-      if (previousDevice) {
-        previousDevice.disconnect().catch((error) => {
-          console.error("Error disconnecting from device", error);
+      if (!device) {
+        this.firebaseDevice = undefined;
+        return;
+      }
+
+      this.firebaseDevice = new FirebaseDevice({
+        deviceId: device.deviceId,
+        firebaseApp: this.firebaseApp,
+        dependencies: {
+          subscriptionManager: this.subscriptionManager
+        }
+      });
+
+      if (this.options.timesync) {
+        this.timesync = new Timesync({
+          status$: this.status(),
+          getTimesync: this.firebaseDevice.getTimesync.bind(this.firebaseDevice)
         });
       }
     });
