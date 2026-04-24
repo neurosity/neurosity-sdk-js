@@ -1,3 +1,7 @@
+# v7.2.0
+
+- FIX: `selectDevice()` race — `observeNamespace(...)` subscribers (including `status()` and `osVersion()`) attached their RTDB listeners to the outgoing `FirebaseDevice` on every device switch. The v7 refactor had made the `onDeviceChange` subscriber async and awaited `disconnect()` before assigning `this.firebaseDevice = new FirebaseDevice(...)` — so subscribers delivered on the same emission read the stale device. Restores v6's synchronous swap; disconnect is now fire-and-forget with error logging.
+
 # v7.1.0
 
 - FEAT: Added `signalQualityV2()` method with normalized 0-1 scores per channel and overall score
