@@ -73,31 +73,40 @@ export class CloudClient implements Client {
       this.userClaims = userClaims;
     });
 
-    this.onDeviceChange().subscribe(async (device) => {
-      if (this.firebaseDevice) {
-        try {
-          await this.firebaseDevice.disconnect();
-        } catch (error) {
-          console.error("Error disconnecting from device", error);
-        }
-      }
+    this.onDeviceChange().subscribe((device) => {
+      // Swap `this.firebaseDevice` SYNCHRONOUSLY so other subscribers delivered
+      // on the same emission (e.g. `observeNamespace(...)`'s switchMap inner,
+      // which reads `this.firebaseDevice` to wire up the listener) see the
+      // new device. Awaiting disconnect inline would yield back to the RxJS
+      // scheduler, letting those downstream subscribers read the stale device
+      // and register their listeners against a FirebaseDevice that's about to
+      // be torn down — the bug that made the status$/osVersion$ streams go
+      // silent on the first selectDevice() after a switch.
+      const previousDevice = this.firebaseDevice;
 
-      if (!device) {
-        return;
-      }
+      this.firebaseDevice = device
+        ? new FirebaseDevice({
+            deviceId: device.deviceId,
+            firebaseApp: this.firebaseApp,
+            dependencies: {
+              subscriptionManager: this.subscriptionManager
+            }
+          })
+        : undefined;
 
-      this.firebaseDevice = new FirebaseDevice({
-        deviceId: device.deviceId,
-        firebaseApp: this.firebaseApp,
-        dependencies: {
-          subscriptionManager: this.subscriptionManager
-        }
-      });
-
-      if (this.options.timesync) {
+      if (this.options.timesync && this.firebaseDevice) {
         this.timesync = new Timesync({
           status$: this.status(),
           getTimesync: this.firebaseDevice.getTimesync.bind(this.firebaseDevice)
+        });
+      }
+
+      // Tear down the prior device in the background. Errors are logged, not
+      // thrown — a failed disconnect on the old device must not prevent the
+      // new device from operating.
+      if (previousDevice) {
+        previousDevice.disconnect().catch((error) => {
+          console.error("Error disconnecting from device", error);
         });
       }
     });
