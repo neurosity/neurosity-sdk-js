@@ -1,3 +1,7 @@
+# v7.2.1
+
+- FIX: `isMaybeWebWorkerContext()` now actually detects worker context. The helper read top-level `this` (which is `undefined` in ES modules — rollup warned about the rewrite on every build), so it returned a falsy value unconditionally. Reference `self` as a global via `typeof self` instead. The only consumer (`isWebBluetoothSupported`) short-circuited on `typeof window` first, so no visible runtime impact — but the primitive on its own was broken and the build noise is gone.
+
 # v7.2.0
 
 - FIX: `selectDevice()` race — `observeNamespace(...)` subscribers (including `status()` and `osVersion()`) attached their RTDB listeners to the outgoing `FirebaseDevice` on every device switch. The v7 refactor had made the `onDeviceChange` subscriber async and awaited `disconnect()` before assigning `this.firebaseDevice = new FirebaseDevice(...)` — so subscribers delivered on the same emission read the stale device. Restores v6's synchronous swap; disconnect is now fire-and-forget with error logging.
