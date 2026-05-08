@@ -1395,7 +1395,14 @@ export class Neurosity {
   }
 
   /**
-   * <StreamingModes wifi={true} />
+   * <StreamingModes wifi={true} bluetooth={true} />
+   *
+   * Observes kinesis classification events for the given label.
+   *
+   * When the active streaming transport is Wi-Fi, events are routed through
+   * the cloud (Firebase). When the active transport is Bluetooth, events are
+   * streamed directly from the device over the `kinesis` BLE characteristic,
+   * so clients can receive classifications without a cloud roundtrip.
    *
    * @param label Name of metric properties to filter by
    * @returns Observable of kinesis metric events
@@ -1413,10 +1420,14 @@ export class Neurosity {
       return throwError(() => OAuthError);
     }
 
-    return getCloudMetric(this._getCloudMetricDependencies(), {
-      metric,
-      labels: label ? [label] : [],
-      atomic: false
+    return this._withStreamingModeObservable({
+      wifi: () =>
+        getCloudMetric(this._getCloudMetricDependencies(), {
+          metric,
+          labels: label ? [label] : [],
+          atomic: false
+        }),
+      bluetooth: () => this.bluetoothClient.kinesis(label)
     });
   }
 

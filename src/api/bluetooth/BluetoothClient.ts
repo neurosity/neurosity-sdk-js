@@ -1,6 +1,12 @@
 import { defer, Observable, timer } from "rxjs";
 import { ReplaySubject, firstValueFrom, EMPTY } from "rxjs";
-import { switchMap, share, tap, distinctUntilChanged } from "rxjs/operators";
+import {
+  switchMap,
+  share,
+  tap,
+  distinctUntilChanged,
+  filter
+} from "rxjs/operators";
 
 import { WebBluetoothTransport } from "./web/WebBluetoothTransport";
 import { ReactNativeTransport } from "./react-native/ReactNativeTransport";
@@ -8,6 +14,7 @@ import { binaryBufferToEpoch } from "./utils/binaryBufferToEpoch";
 import { DeviceInfo } from "../../types/deviceInfo";
 import { Action } from "../../types/actions";
 import { Epoch } from "../../types/epoch";
+import { Kinesis } from "../../types/kinesis";
 import { BLUETOOTH_CONNECTION } from "./types";
 import { DeviceNicknameOrPeripheral } from "./BluetoothTransport";
 import { Peripheral } from "./react-native/types/BleManagerTypes";
@@ -36,6 +43,7 @@ export class BluetoothClient {
 
   _focus$: Observable<any>;
   _calm$: Observable<any>;
+  _kinesis$: Observable<any>;
   _accelerometer$: Observable<any>;
   _brainwavesRaw$: Observable<any>;
   _brainwavesRawUnfiltered$: Observable<any>;
@@ -110,6 +118,7 @@ export class BluetoothClient {
     // Multicast metrics (share)
     this._focus$ = this._subscribeWhileAuthenticated("focus");
     this._calm$ = this._subscribeWhileAuthenticated("calm");
+    this._kinesis$ = this._subscribeWhileAuthenticated("kinesis");
     this._accelerometer$ = this._subscribeWhileAuthenticated("accelerometer");
     this._brainwavesRaw$ = this._subscribeWhileAuthenticated(
       "raw",
@@ -302,6 +311,32 @@ export class BluetoothClient {
 
   calm() {
     return this._calm$;
+  }
+
+  /**
+   * Observes kinesis classification events streamed over BLE.
+   *
+   * The firmware emits JSON events of shape
+   * `{ metric: "kinesis", label: string, probability: number, timestamp: number }`
+   * on the `kinesis` characteristic. When a `label` is provided, the stream is
+   * filtered to only emit events matching that label, mirroring the cloud
+   * `kinesis(label)` semantics.
+   *
+   * @param label Optional kinesis label to filter by (e.g. `"leftHandPinch"`).
+   *              When omitted, all kinesis events are emitted.
+   * @returns Observable of `Kinesis` events.
+   */
+  kinesis(label?: string): Observable<Kinesis> {
+    if (!label) {
+      return this._kinesis$;
+    }
+
+    return this._kinesis$.pipe(
+      filter(
+        (event: Kinesis) =>
+          !!event && typeof event.label === "string" && event.label === label
+      )
+    );
   }
 
   accelerometer() {
