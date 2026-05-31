@@ -73,16 +73,28 @@ export class CloudClient implements Client {
       this.userClaims = userClaims;
     });
 
-    this.onDeviceChange().subscribe(async (device) => {
+    this.onDeviceChange().subscribe((device) => {
+      // Must stay synchronous. Subscribers delivered on the same
+      // `_selectedDevice` emission — e.g. `observeNamespace(...)`'s
+      // switchMap inner, which reads `this.firebaseDevice` to wire up
+      // the RTDB listener — run immediately after this callback. If we
+      // await disconnect() here the reassignment below moves to a later
+      // microtask and those downstream subscribers attach to the OLD
+      // FirebaseDevice (or a disconnecting one). That's the regression
+      // this commit walks back from v7; v6 was synchronous.
+      // See src/__tests__/cloudClient.observeNamespace.test.ts.
       if (this.firebaseDevice) {
-        try {
-          await this.firebaseDevice.disconnect();
-        } catch (error) {
+        // Fire-and-forget; the prior device's teardown is background work
+        // and we must not yield before reassigning `this.firebaseDevice`.
+        // Errors are logged, not thrown — a failed disconnect on the old
+        // device can't be allowed to block setup for the new one.
+        this.firebaseDevice.disconnect().catch((error) => {
           console.error("Error disconnecting from device", error);
-        }
+        });
       }
 
       if (!device) {
+        this.firebaseDevice = undefined;
         return;
       }
 
