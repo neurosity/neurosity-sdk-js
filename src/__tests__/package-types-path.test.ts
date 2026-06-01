@@ -99,4 +99,91 @@ describe("package.json types path", () => {
       );
     }
   });
+
+  it("the built types file re-exports the core Neurosity class", () => {
+    // The reason consumers install this package at all. If the dist
+    // types ever lose the Neurosity surface (e.g. a wrong rollup output
+    // root, a build that emits an empty index.d.ts) consumers turn into
+    // `any` again silently.
+    const pkg = readPackageJson();
+    const typesPath = resolve(SDK_ROOT, pkg.types as string);
+    if (!existsSync(typesPath)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[package-types-path.test] ${typesPath} not built; skipping core surface check.`
+      );
+      return;
+    }
+    const content = readFileSync(typesPath, "utf8");
+    expect(content).toMatch(/export\s+\*\s+from\s+['"]\.\/Neurosity['"]/);
+    expect(content).toMatch(/export\s+\*\s+from\s+['"]\.\/types['"]/);
+  });
+});
+
+describe("package.json exports conditions", () => {
+  it("`types` is listed FIRST in `exports['.']`", () => {
+    // TypeScript's exports-condition resolution is order-sensitive: the
+    // `types` key must come before `import`/`require`/`browser` or TS
+    // ignores it. https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-7.html#package.json-exports-imports-and-self-referencing
+    //
+    // Catch the foot-gun before the next regression: a perfectly valid-
+    // looking re-order during a refactor will silently strand all
+    // consumers using `node16` / `nodenext` / `bundler` module
+    // resolution.
+    const pkg = readPackageJson();
+    const dotExport = (pkg.exports?.["."] ?? {}) as Record<string, string>;
+    const keys = Object.keys(dotExport);
+    expect(keys[0]).toBe("types");
+  });
+
+  it("every condition in `exports['.']` points at an existing file (post-build)", () => {
+    const pkg = readPackageJson();
+    if (!existsSync(resolve(SDK_ROOT, "dist"))) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        "[package-types-path.test] dist/ not built; skipping conditions existence check."
+      );
+      return;
+    }
+    const dotExport = (pkg.exports?.["."] ?? {}) as Record<string, string>;
+    for (const [condition, relativePath] of Object.entries(dotExport)) {
+      const absolutePath = resolve(SDK_ROOT, relativePath);
+      expect({
+        condition,
+        relativePath,
+        exists: existsSync(absolutePath)
+      }).toEqual({ condition, relativePath, exists: true });
+    }
+  });
+
+  it("`main`, `module`, `browser`, `types` all point at existing files (post-build)", () => {
+    const pkg = readPackageJson();
+    if (!existsSync(resolve(SDK_ROOT, "dist"))) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        "[package-types-path.test] dist/ not built; skipping top-level entry-point check."
+      );
+      return;
+    }
+    for (const field of ["main", "module", "browser", "types"] as const) {
+      const relativePath = (pkg as Record<string, unknown>)[field] as
+        | string
+        | undefined;
+      expect(typeof relativePath).toBe("string");
+      const absolutePath = resolve(SDK_ROOT, relativePath as string);
+      expect({ field, relativePath, exists: existsSync(absolutePath) }).toEqual(
+        { field, relativePath, exists: true }
+      );
+    }
+  });
+
+  it("`files` array includes the directory the dist entries live in", () => {
+    // `files` is what actually gets shipped on npm publish. If someone
+    // narrows it (`files: ["dist/cjs"]`) the types and ESM build silently
+    // disappear from the tarball even though local builds keep working.
+    const pkg = readPackageJson() as PackageJson & { files?: string[] };
+    expect(Array.isArray(pkg.files)).toBe(true);
+    const distRoot = (pkg.types as string).split("/")[0]; // "dist"
+    expect(pkg.files).toContain(distRoot);
+  });
 });
