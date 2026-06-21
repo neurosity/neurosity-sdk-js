@@ -190,3 +190,84 @@ describe("saveExperimentPrediction", () => {
     });
   });
 });
+
+describe("createUserExperiment — session kinds", () => {
+  it("defaults a training experiment with protocol kinesis and no recording fields", async () => {
+    await makeUser("u1").createUserExperiment({ deviceId: "d1", kind: "training" });
+    const p = set.mock.calls[0][1];
+    expect(p.kind).toBe("training");
+    expect(p.protocol).toBe("kinesis");
+    expect(p.recordingState).toBeUndefined();
+    expect(p.durationMs).toBeUndefined();
+  });
+
+  it("creates a recording experiment with durationMs + recordingState idle, no protocol", async () => {
+    await makeUser("u1").createUserExperiment({ deviceId: "d1", kind: "recording" });
+    const p = set.mock.calls[0][1];
+    expect(p.kind).toBe("recording");
+    expect(p.recordingState).toBe("idle");
+    expect(p.durationMs).toBe(5 * 60 * 1000);
+    expect(p.protocol).toBeUndefined();
+  });
+
+  it("respects explicit durationMs + notes", async () => {
+    await makeUser("u1").createUserExperiment({
+      deviceId: "d1",
+      kind: "recording",
+      durationMs: 1000,
+      notes: "session A"
+    });
+    const p = set.mock.calls[0][1];
+    expect(p.durationMs).toBe(1000);
+    expect(p.notes).toBe("session A");
+  });
+
+  it("defaults kind to training when omitted", async () => {
+    await makeUser("u1").createUserExperiment({ deviceId: "d1" });
+    expect(set.mock.calls[0][1].kind).toBe("training");
+  });
+});
+
+describe("onExperimentMarkers", () => {
+  it("maps the markers map to a list sorted by timestamp, each with its id", async () => {
+    (database.onValue as jest.Mock).mockImplementation((_r: unknown, cb: any) => {
+      cb({
+        val: () => ({
+          b: { label: "lift", timestamp: 20 },
+          a: { label: "drop", timestamp: 10 }
+        })
+      });
+      return () => undefined;
+    });
+    const markers = await new Promise<any[]>((resolve) => {
+      const sub = makeUser("u1")
+        .onExperimentMarkers("e1")
+        .subscribe((m) => {
+          resolve(m);
+          setTimeout(() => sub.unsubscribe(), 0);
+        });
+    });
+    expect(ref).toHaveBeenCalledWith(expect.anything(), "experiments/e1/markers");
+    expect(markers.map((m) => m.id)).toEqual(["a", "b"]);
+    expect(markers[0]).toMatchObject({ id: "a", label: "drop", timestamp: 10 });
+  });
+});
+
+describe("setEmulatorStatus", () => {
+  it("rejects without a deviceId", async () => {
+    await expect(
+      makeUser("u1").setEmulatorStatus("", { state: "online" })
+    ).rejects.toMatch(/deviceId/);
+  });
+
+  it("updates devices/$id/status with the state patch", async () => {
+    await makeUser("u1").setEmulatorStatus("dev1", { state: "online" });
+    expect(ref).toHaveBeenCalledWith(expect.anything(), "devices/dev1/status");
+    expect(update).toHaveBeenCalledWith(expect.anything(), { state: "online" });
+  });
+
+  it("can toggle charging", async () => {
+    await makeUser("u1").setEmulatorStatus("dev1", { charging: true });
+    expect(update).toHaveBeenCalledWith(expect.anything(), { charging: true });
+  });
+});

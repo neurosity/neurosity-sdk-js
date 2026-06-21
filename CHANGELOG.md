@@ -1,3 +1,7 @@
+# v7.5.0
+
+- FEAT: Complete the experiment API so the console can drop client-side RTDB entirely. (1) `Experiment` and `CreateExperimentOptions` now model the full session shape — `kind` (`training`/`recording`), `protocol`, `notes`, `durationMs`, `recordingState`, `recordingStartedAt`, `recordingId` — and `createUserExperiment` applies the training/recording defaults. (2) Added `onExperimentMarkers(experimentId)` — the live read counterpart to `addExperimentMarker`. (3) Added `setEmulatorStatus(deviceId, { state?, charging? })` for emulator/dev tooling that simulates device status. New exported types: `SessionKind`, `TrainingProtocol`, `RecordingState`, `EmulatorStatusPatch`.
+
 # v7.4.0
 
 - FEAT: Experiment write methods, so apps no longer touch RTDB directly for Studio data. Added `createUserExperiment(options)`, `updateUserExperiment(id, patch)`, `addExperimentMarker(id, marker)`, `saveExperimentTrial(id, trial)`, and `saveExperimentPrediction(id, prediction)` — siblings of the existing `onUserExperiments()` / `deleteUserExperiment()`. New exported types: `CreateExperimentOptions`, `ExperimentMarker`, `ExperimentTrial`, `ExperimentPrediction`. Full unit coverage of RTDB paths + payloads.

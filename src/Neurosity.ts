@@ -46,7 +46,8 @@ import {
   CreateExperimentOptions,
   ExperimentMarker,
   ExperimentTrial,
-  ExperimentPrediction
+  ExperimentPrediction,
+  EmulatorStatusPatch
 } from "./types/experiment";
 import { TransferDeviceOptions } from "./utils/transferDevice";
 import { BluetoothClient, osHasBluetoothSupport } from "./api/bluetooth";
@@ -2019,5 +2020,49 @@ export class Neurosity {
     prediction: ExperimentPrediction
   ): Promise<string> {
     return this.cloudClient.saveExperimentPrediction(experimentId, prediction);
+  }
+
+  /**
+   * <StreamingModes wifi={true} />
+   *
+   * Observes the markers dropped during an experiment recording, sorted by
+   * timestamp. Each marker includes its `id`.
+   *
+   * ```typescript
+   * neurosity.onExperimentMarkers(experimentId).subscribe((markers) => {
+   *   console.log(markers);
+   * });
+   * ```
+   *
+   * @param experimentId The ID of the experiment
+   * @returns Observable of the experiment's markers
+   */
+  public onExperimentMarkers(
+    experimentId: string
+  ): Observable<ExperimentMarker[]> {
+    return this.cloudClient.onExperimentMarkers(experimentId);
+  }
+
+  /**
+   * <StreamingModes wifi={true} />
+   *
+   * Sets simulated status fields on an **emulator** device (e.g. toggling
+   * `state` or `charging`). Intended for emulator/dev tooling — on real
+   * hardware the device owns its status.
+   *
+   * ```typescript
+   * await neurosity.setEmulatorStatus(deviceId, { state: "online" });
+   * await neurosity.setEmulatorStatus(deviceId, { charging: true });
+   * ```
+   *
+   * @param deviceId The emulator device's ID
+   * @param patch Status fields to set (`state` and/or `charging`)
+   * @returns void
+   */
+  public setEmulatorStatus(
+    deviceId: string,
+    patch: EmulatorStatusPatch
+  ): Promise<void> {
+    return this.cloudClient.setEmulatorStatus(deviceId, patch);
   }
 }

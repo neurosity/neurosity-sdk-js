@@ -26,7 +26,8 @@ import {
   CreateExperimentOptions,
   ExperimentMarker,
   ExperimentTrial,
-  ExperimentPrediction
+  ExperimentPrediction,
+  EmulatorStatusPatch
 } from "../types/experiment";
 import { TransferDeviceOptions } from "../utils/transferDevice";
 import {
@@ -461,6 +462,19 @@ export class CloudClient implements Client {
     prediction: ExperimentPrediction
   ): Promise<string> {
     return this.firebaseUser.saveExperimentPrediction(experimentId, prediction);
+  }
+
+  public onExperimentMarkers(
+    experimentId: string
+  ): Observable<ExperimentMarker[]> {
+    return this.firebaseUser.onExperimentMarkers(experimentId);
+  }
+
+  public setEmulatorStatus(
+    deviceId: string,
+    patch: EmulatorStatusPatch
+  ): Promise<void> {
+    return this.firebaseUser.setEmulatorStatus(deviceId, patch);
   }
 
   public get skills(): SkillsClient {

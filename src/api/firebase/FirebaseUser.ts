@@ -45,7 +45,9 @@ import {
   CreateExperimentOptions,
   ExperimentMarker,
   ExperimentTrial,
-  ExperimentPrediction
+  ExperimentPrediction,
+  EmulatorStatusPatch,
+  SessionKind
 } from "../../types/experiment";
 import { TransferDeviceOptions } from "../../utils/transferDevice";
 import {
@@ -696,15 +698,30 @@ export class FirebaseUser {
       return Promise.reject(`createUserExperiment: please provide a deviceId`);
     }
 
+    const kind: SessionKind = options.kind ?? "training";
+    const defaultName =
+      kind === "recording"
+        ? `Recording ${new Date().toLocaleString()}`
+        : `Experiment ${new Date().toLocaleString()}`;
+
     const database = getDatabase(this.app);
     const experimentRef = push(ref(database, "experiments"));
     await set(experimentRef, {
       userId,
       deviceId: options.deviceId,
-      name: options.name ?? `Experiment ${new Date().toLocaleString()}`,
+      name: options.name ?? defaultName,
+      notes: options.notes ?? "",
       labels: options.labels ?? [],
       totalTrials: 0,
-      timestamp: serverTimestamp()
+      timestamp: serverTimestamp(),
+      kind,
+      ...(kind === "training" && {
+        protocol: options.protocol ?? "kinesis"
+      }),
+      ...(kind === "recording" && {
+        durationMs: options.durationMs ?? 5 * 60 * 1000,
+        recordingState: "idle"
+      })
     });
     return experimentRef.key as string;
   }
@@ -776,5 +793,36 @@ export class FirebaseUser {
       timestamp: prediction.timestamp ?? serverTimestamp()
     });
     return predictionRef.key as string;
+  }
+
+  onExperimentMarkers(experimentId: string): Observable<ExperimentMarker[]> {
+    if (!experimentId) {
+      return EMPTY;
+    }
+    const database = getDatabase(this.app);
+    const markersRef = ref(database, `experiments/${experimentId}/markers`);
+    return fromEventPattern(
+      (handler) =>
+        onValue(markersRef, (snapshot: DataSnapshot) => handler(snapshot)),
+      () => off(markersRef)
+    ).pipe(
+      map((snapshot: DataSnapshot) => snapshot.val()),
+      map((markersMap): ExperimentMarker[] =>
+        Object.entries(markersMap ?? {})
+          .map(([id, value]: any) => ({ id, ...value }) as ExperimentMarker)
+          .sort((a, b) => (a.timestamp ?? 0) - (b.timestamp ?? 0))
+      )
+    );
+  }
+
+  async setEmulatorStatus(
+    deviceId: string,
+    patch: EmulatorStatusPatch
+  ): Promise<void> {
+    if (!deviceId) {
+      return Promise.reject(`setEmulatorStatus: please provide a deviceId`);
+    }
+    const database = getDatabase(this.app);
+    await update(ref(database, `devices/${deviceId}/status`), patch);
   }
 }
