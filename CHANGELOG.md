@@ -1,3 +1,15 @@
+# v7.6.0
+
+- FEAT: Crown Community Ensembles (R1 + R2 SDK surface). Additive over the existing `kinesis(label)` API — no behavior change for users without an ensemble. New methods on `Neurosity`:
+  - `deviceHealth()` — Observable host-side telemetry (per-core CPU load, free memory, SoC temperature, thermal-throttle flag) backing the Studio device-health strip and the analytics container's adaptive refit throttle.
+  - `kinesisEnsemble(opts)` — requests an ensemble-backed Kinesis stream for a label. Writes the resolver override to `users/{uid}/ensembleSessions/{label}` before subscribing; emits Kinesis events on the same transport as `kinesis(label)`.
+  - `kinesisEnsembleStatus()` — Observable engine health (donor count, SML personalization score, current refit cadence, `lastRefitAt`).
+  - `contributeClassifier({ classifierId, share })` — opts a classifier into (or revokes from) the community donor pool via the `onClassifierShared` callable.
+  - `myClassifiers()` — Firestore live read of the user's own classifier docs (sharing state, gate score, fleet stats).
+  - `listEnsembles({ label })` — hardware-filtered listing of system- and user-curated ensembles. The cloud query filters by label and visibility; the SDK enforces `hardware.modelId === device.modelName` locally so a device never sees an incompatible bundle.
+- BEHAVIORAL NOTE: `kinesis(label)` is transparently STIG-backed when the firmware resolver has selected an ensemble for that label — no migration required for existing apps. Apps that want explicit control over the bundle, refit cadence, or spectral-learning toggle use `kinesisEnsemble(...)`.
+- New exported types: `DeviceHealth`, `KinesisEnsembleOptions`, `EnsembleStatus`, `MyClassifier`, `EnsembleSummary`.
+
 # v7.5.0
 
 - FEAT: Complete the experiment API so the console can drop client-side RTDB entirely. (1) `Experiment` and `CreateExperimentOptions` now model the full session shape — `kind` (`training`/`recording`), `protocol`, `notes`, `durationMs`, `recordingState`, `recordingStartedAt`, `recordingId` — and `createUserExperiment` applies the training/recording defaults. (2) Added `onExperimentMarkers(experimentId)` — the live read counterpart to `addExperimentMarker`. (3) Added `setEmulatorStatus(deviceId, { state?, charging? })` for emulator/dev tooling that simulates device status. New exported types: `SessionKind`, `TrainingProtocol`, `RecordingState`, `EmulatorStatusPatch`.

@@ -5,6 +5,8 @@ export * from "./brainwaves";
 export * from "./calm";
 export * from "./client";
 export * from "./credentials";
+export * from "./deviceHealth";
+export * from "./ensemble";
 export * from "./deviceInfo";
 export * from "./experiment";
 export * from "./focus";

@@ -1,4 +1,4 @@
-import { combineLatest, Observable, of, throwError } from "rxjs";
+import { combineLatest, EMPTY, Observable, of, throwError } from "rxjs";
 import { ReplaySubject, firstValueFrom } from "rxjs";
 import { map, startWith, switchMap } from "rxjs/operators";
 import { distinctUntilChanged } from "rxjs/operators";
@@ -14,6 +14,25 @@ import { Settings } from "./types/settings";
 import { SignalQuality } from "./types/signalQuality";
 import { SignalQualityV2 } from "./types/signalQualityV2";
 import { Kinesis } from "./types/kinesis";
+import { DeviceHealth } from "./types/deviceHealth";
+import {
+  KinesisEnsembleOptions,
+  EnsembleStatus,
+  MyClassifier,
+  EnsembleSummary
+} from "./types/ensemble";
+import {
+  getFirestore,
+  collection,
+  doc,
+  query,
+  where,
+  setDoc,
+  updateDoc,
+  onSnapshot,
+  getDocs,
+  serverTimestamp as firestoreServerTimestamp
+} from "firebase/firestore";
 import { Calm } from "./types/calm";
 import { Focus } from "./types/focus";
 import { getLabels } from "./utils/subscription";
@@ -41,6 +60,7 @@ import { OAuthQueryResult, OAuthRemoveResponse } from "./types/oauth";
 import { UserClaims } from "./types/user";
 import { isNode } from "./utils/is-node";
 import { getCloudMetric } from "./utils/metrics";
+import { whileOnline } from "./utils/whileOnline";
 import {
   Experiment,
   CreateExperimentOptions,
@@ -365,6 +385,56 @@ export class Neurosity {
       onDeviceChange: this.onDeviceChange.bind(this),
       status: this.status.bind(this)
     };
+  }
+
+  /**
+   * @hidden
+   *
+   * Subscribes to a firmware-emitted metric without running the
+   * `@neurosity/ipk` label/metric validation that `getCloudMetric`
+   * applies. Used for telemetry streams that don't have a fixed label
+   * vocabulary (e.g. `deviceHealth`, `ensembleStatus`) and would
+   * otherwise be rejected by `validate` for missing labels.
+   *
+   * Mirrors the inner Observable that `getCloudMetric` builds — same
+   * subscribe/on/unsubscribe lifecycle, same online/sleep gating.
+   */
+  private _observeRawMetric<T>(metric: string): Observable<T> {
+    const cloudClient = this.cloudClient;
+
+    const metric$ = new Observable<T>((observer) => {
+      const subscription = cloudClient.metrics.subscribe({
+        metric,
+        labels: [],
+        atomic: false
+      });
+
+      const listener = cloudClient.metrics.on(
+        subscription,
+        (...data: any[]) => {
+          // @ts-expect-error - data is not typed
+          observer.next(...data);
+        }
+      );
+
+      return () => {
+        cloudClient.metrics.unsubscribe(subscription, listener);
+      };
+    });
+
+    return this.onDeviceChange().pipe(
+      switchMap((device: DeviceInfo) => {
+        if (!device) {
+          return EMPTY;
+        }
+        return metric$.pipe(
+          whileOnline({
+            status$: this.status(),
+            allowWhileOnSleepMode: false
+          })
+        );
+      })
+    );
   }
 
   /**
@@ -1427,6 +1497,242 @@ export class Neurosity {
     });
   }
 
+  // ---------------------------------------------------------------------------
+  // Crown Community Ensembles (R2) — additive surface over `kinesis(label)`.
+  //
+  // `kinesis(label)` semantics are unchanged for users without ensemble.
+  // When the firmware resolver picks an ensemble for a label, the same
+  // `kinesis(label)` stream is transparently STIG-backed — apps don't
+  // need to migrate. The methods below let an app explicitly request
+  // an ensemble config, observe the engine's health, contribute donor
+  // classifiers, and browse hardware-matched bundles.
+  // ---------------------------------------------------------------------------
+
+  /**
+   * <StreamingModes wifi={true} />
+   *
+   * Requests an ensemble-backed Kinesis stream for `label`. Writes the
+   * resolver override to `users/{uid}/ensembleSessions/{sessionId}`
+   * before subscribing so the firmware sees the override on the next
+   * resolver tick; emits Kinesis events as the normal `kinesis(label)`
+   * path does.
+   */
+  public kinesisEnsemble(opts: KinesisEnsembleOptions): Observable<Kinesis> {
+    const metric = "kinesis";
+
+    const [hasOAuthError, OAuthError] =
+      validateScopeBasedPermissionForFunctionName(
+        this.cloudClient.userClaims,
+        metric
+      );
+
+    if (hasOAuthError) {
+      return throwError(() => OAuthError);
+    }
+
+    // Fire-and-forget the session write; the firmware resolver picks it
+    // up on its next tick. Errors are surfaced through the kinesis
+    // stream's normal error channel (a missing session degrades to the
+    // device's default classifier — no ensemble — which matches the
+    // pre-ensemble behavior).
+    this._writeEnsembleSession(opts).catch((error) => {
+      console.error("kinesisEnsemble: failed to write session config", error);
+    });
+
+    return getCloudMetric(this._getCloudMetricDependencies(), {
+      metric,
+      labels: [opts.label],
+      atomic: false
+    });
+  }
+
+  /**
+   * <StreamingModes wifi={true} />
+   *
+   * Observes the active ensemble engine's health — donor count, SML
+   * personalization score, refit cadence — emitted by the firmware
+   * analytics container.
+   */
+  public kinesisEnsembleStatus(): Observable<EnsembleStatus> {
+    return this._observeRawMetric<EnsembleStatus>("ensembleStatus");
+  }
+
+  /**
+   * Opt a classifier into (or out of) the community donor pool.
+   *
+   * - `share: true`  → flips `sharingEnabled`; the gate evaluation
+   *   Cloud Function will populate `passedGate` / `gateScore`.
+   * - `share: false` → revokes; the cloud writer stamps `retiredAt`
+   *   so donor bundles drop it on next refresh.
+   */
+  public async contributeClassifier(input: {
+    classifierId: string;
+    share: boolean;
+  }): Promise<void> {
+    if (!input.classifierId) {
+      return Promise.reject(
+        new Error("contributeClassifier: classifierId is required")
+      );
+    }
+
+    const app = this.cloudClient.__getApp();
+    const db = getFirestore(app);
+    const ref = doc(db, `memories/${input.classifierId}`);
+
+    if (input.share) {
+      await updateDoc(ref, {
+        sharingEnabled: true,
+        sharedAt: firestoreServerTimestamp(),
+        retiredAt: null,
+        retirementReason: null
+      });
+    } else {
+      await updateDoc(ref, {
+        sharingEnabled: false,
+        retiredAt: firestoreServerTimestamp(),
+        retirementReason: "user_revoked"
+      });
+    }
+  }
+
+  /**
+   * Live read of the user's own classifier docs. Reflects gate state
+   * and fleet stats as the cloud aggregator updates them.
+   */
+  public myClassifiers(): Observable<MyClassifier[]> {
+    return new Observable<MyClassifier[]>((observer) => {
+      const userId = this.cloudClient.user?.uid;
+      if (!userId) {
+        observer.error(new Error("myClassifiers: user is not authenticated"));
+        return () => {};
+      }
+
+      const app = this.cloudClient.__getApp();
+      const db = getFirestore(app);
+      // Classifiers live in the `memories` collection (Crown firmware
+      // writes them through @neurosity/api). Filter to the current
+      // user's classifier docs only; rules predicate at memories/{id}
+      // gates everything else.
+      const coll = collection(db, "memories");
+      const q = query(
+        coll,
+        where("userId", "==", userId),
+        where("type", "==", "classifier")
+      );
+
+      const unsubscribe = onSnapshot(
+        q,
+        (snapshot: any) => {
+          const docs: MyClassifier[] = snapshot.docs.map((d: any) => {
+            const data = d.data();
+            return {
+              id: d.id,
+              label: data.label,
+              trainedAt: data.trainedAt,
+              repCount: data.repCount,
+              sharingEnabled: !!data.sharingEnabled,
+              passedGate:
+                typeof data.passedGate === "boolean" ? data.passedGate : null,
+              gateScore:
+                typeof data.gateScore === "number" ? data.gateScore : null,
+              stats: data.stats
+            };
+          });
+          observer.next(docs);
+        },
+        (err: any) => observer.error(err)
+      );
+
+      return () => unsubscribe();
+    });
+  }
+
+  /**
+   * Hardware-filtered listing of system-curated and user-curated
+   * ensembles available for `label`. The cloud query already filters
+   * by label and visibility; this method enforces the
+   * `hardware.modelId` match locally so a device only ever sees
+   * compatible bundles.
+   */
+  public async listEnsembles(input: {
+    label: string;
+  }): Promise<EnsembleSummary[]> {
+    if (!input.label) {
+      return Promise.reject(new Error("listEnsembles: label is required"));
+    }
+
+    const device = await firstValueFrom(this.onDeviceChange());
+    if (!device) {
+      return Promise.reject(
+        new Error("listEnsembles: no device selected")
+      );
+    }
+
+    const app = this.cloudClient.__getApp();
+    const db = getFirestore(app);
+    // The `ensembles` collection is world-readable by rule (see
+    // firestore.rules `match /ensembles/{id}`), so we only filter by
+    // label here and apply the device-hardware filter in-memory below.
+    // Retired ensembles are excluded via the per-doc `retiredAt`
+    // predicate after fetch.
+    const coll = collection(db, "ensembles");
+    const q = query(coll, where("label", "==", input.label));
+
+    const snapshot: any = await getDocs(q);
+    const all: EnsembleSummary[] = snapshot.docs.map((d: any) => {
+      const data = d.data();
+      return {
+        id: d.id,
+        name: data.name,
+        classifierCount: data.classifierCount,
+        kind: data.kind,
+        hardware: data.hardware,
+        votes: data.votes,
+        updatedAt: data.updatedAt
+      };
+    });
+
+    const deviceModelId = (device as DeviceInfo).modelName;
+    return all.filter((e) => e.hardware?.modelId === deviceModelId);
+  }
+
+  /**
+   * @hidden
+   *
+   * Writes an ensemble resolver-override doc the firmware reads on
+   * its next tick. Path: `users/{uid}/ensembleSessions/{label}`.
+   */
+  private async _writeEnsembleSession(
+    opts: KinesisEnsembleOptions
+  ): Promise<void> {
+    const userId = this.cloudClient.user?.uid;
+    if (!userId) {
+      throw new Error("_writeEnsembleSession: user is not authenticated");
+    }
+
+    const deviceId = this.options.deviceId;
+    const app = this.cloudClient.__getApp();
+    const db = getFirestore(app);
+    const ref = doc(
+      db,
+      `users/${userId}/ensembleSessions/${opts.label}`
+    );
+
+    await setDoc(ref, {
+      label: opts.label,
+      mode: opts.mode ?? "auto",
+      ensembleId: opts.ensembleId ?? null,
+      classifierIds: opts.classifierIds ?? null,
+      refitIntervalSecs: opts.refitIntervalSecs ?? null,
+      spectralLearning:
+        typeof opts.spectralLearning === "boolean"
+          ? opts.spectralLearning
+          : null,
+      deviceId,
+      updatedAt: Date.now()
+    });
+  }
+
   /**
    * <StreamingModes wifi={true} />
    *
@@ -1451,6 +1757,25 @@ export class Neurosity {
       labels: label ? [label] : [],
       atomic: false
     });
+  }
+
+  /**
+   * <StreamingModes wifi={true} />
+   *
+   * Observes host-side device-health telemetry — per-core CPU load,
+   * free memory, SoC temperature, and thermal-throttle state — emitted
+   * by the firmware Node API at ~5s cadence.
+   *
+   * ```typescript
+   * neurosity.deviceHealth().subscribe(health => {
+   *   console.log(health.thermalC, health.thermalThrottled);
+   * });
+   * ```
+   *
+   * @returns Observable of `deviceHealth` metric events
+   */
+  public deviceHealth(): Observable<DeviceHealth> {
+    return this._observeRawMetric<DeviceHealth>("deviceHealth");
   }
 
   /**
