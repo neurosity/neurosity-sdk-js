@@ -41,7 +41,13 @@ import { OAuthQueryResult, OAuthRemoveResponse } from "./types/oauth";
 import { UserClaims } from "./types/user";
 import { isNode } from "./utils/is-node";
 import { getCloudMetric } from "./utils/metrics";
-import { Experiment } from "./types/experiment";
+import {
+  Experiment,
+  CreateExperimentOptions,
+  ExperimentMarker,
+  ExperimentTrial,
+  ExperimentPrediction
+} from "./types/experiment";
 import { TransferDeviceOptions } from "./utils/transferDevice";
 import { BluetoothClient, osHasBluetoothSupport } from "./api/bluetooth";
 import { BLUETOOTH_CONNECTION } from "./api/bluetooth/types";
@@ -1891,5 +1897,127 @@ export class Neurosity {
    */
   public deleteUserExperiment(experimentId: string): Promise<void> {
     return this.cloudClient.deleteUserExperiment(experimentId);
+  }
+
+  /**
+   * <StreamingModes wifi={true} />
+   *
+   * Creates a new experiment owned by the authenticated user and returns its
+   * generated ID. Pair with {@link Neurosity.onUserExperiments} to observe it,
+   * and {@link Neurosity.updateUserExperiment} to fill in details as the user
+   * works.
+   *
+   * ```typescript
+   * const experimentId = await neurosity.createUserExperiment({
+   *   deviceId: device.deviceId,
+   *   name: "Left hand pinch",
+   *   labels: ["leftHandPinch"]
+   * });
+   * ```
+   *
+   * @param options Experiment options (`deviceId` required; `name`/`labels` optional)
+   * @returns The new experiment's ID
+   */
+  public createUserExperiment(
+    options: CreateExperimentOptions
+  ): Promise<string> {
+    return this.cloudClient.createUserExperiment(options);
+  }
+
+  /**
+   * <StreamingModes wifi={true} />
+   *
+   * Updates fields on an existing experiment (e.g. name, notes, labels,
+   * totalTrials).
+   *
+   * ```typescript
+   * await neurosity.updateUserExperiment(experimentId, {
+   *   name: "Renamed experiment",
+   *   labels: ["leftHandPinch", "rightHandPinch"]
+   * });
+   * ```
+   *
+   * @param experimentId The ID of the experiment
+   * @param patch Partial experiment fields to merge (`id`/`userId` cannot be changed)
+   * @returns void
+   */
+  public updateUserExperiment(
+    experimentId: string,
+    patch: Partial<Omit<Experiment, "id" | "userId">>
+  ): Promise<void> {
+    return this.cloudClient.updateUserExperiment(experimentId, patch);
+  }
+
+  /**
+   * <StreamingModes wifi={true} />
+   *
+   * Adds a marker to an experiment recording and returns the marker's ID.
+   *
+   * ```typescript
+   * await neurosity.addExperimentMarker(experimentId, {
+   *   label: "drop",
+   *   timestamp: Date.now()
+   * });
+   * ```
+   *
+   * @param experimentId The ID of the experiment
+   * @param marker The marker to add (`label` and `timestamp` required)
+   * @returns The new marker's ID
+   */
+  public addExperimentMarker(
+    experimentId: string,
+    marker: ExperimentMarker
+  ): Promise<string> {
+    return this.cloudClient.addExperimentMarker(experimentId, marker);
+  }
+
+  /**
+   * <StreamingModes wifi={true} />
+   *
+   * Saves a training trial result for an experiment and returns the trial's ID.
+   * `timestamp` defaults to a server timestamp when omitted.
+   *
+   * ```typescript
+   * await neurosity.saveExperimentTrial(experimentId, {
+   *   label: "leftHandPinch",
+   *   baseline: false
+   * });
+   * ```
+   *
+   * @param experimentId The ID of the experiment
+   * @param trial The trial payload
+   * @returns The new trial's ID
+   */
+  public saveExperimentTrial(
+    experimentId: string,
+    trial: ExperimentTrial
+  ): Promise<string> {
+    return this.cloudClient.saveExperimentTrial(experimentId, trial);
+  }
+
+  /**
+   * <StreamingModes wifi={true} />
+   *
+   * Saves a model prediction for an experiment and returns the prediction's ID.
+   * `timestamp` defaults to a server timestamp when omitted.
+   *
+   * ```typescript
+   * await neurosity.saveExperimentPrediction(experimentId, {
+   *   trial: 0,
+   *   label: "leftHandPinch",
+   *   probability: 0.92,
+   *   metric: "kinesis"
+   * });
+   * ```
+   *
+   * @param experimentId The ID of the experiment
+   * @param prediction The prediction payload
+   * @returns The new prediction's ID
+   */
+  public saveExperimentPrediction(
+    experimentId: string,
+    prediction: ExperimentPrediction
+  ): Promise<string> {
+    return this.cloudClient.saveExperimentPrediction(experimentId, prediction);
   }
 }
