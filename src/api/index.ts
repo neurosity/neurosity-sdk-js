@@ -21,7 +21,13 @@ import { DeviceStatus } from "../types/status";
 import { DeviceInfo, DeviceSelector, OSVersion } from "../types/deviceInfo";
 import { UserClaims } from "../types/user";
 import { OAuthRemoveResponse } from "../types/oauth";
-import { Experiment } from "../types/experiment";
+import {
+  Experiment,
+  CreateExperimentOptions,
+  ExperimentMarker,
+  ExperimentTrial,
+  ExperimentPrediction
+} from "../types/experiment";
 import { TransferDeviceOptions } from "../utils/transferDevice";
 import {
   ApiKeyRecord,
@@ -421,6 +427,40 @@ export class CloudClient implements Client {
 
   public deleteUserExperiment(experimentId: string): Promise<void> {
     return this.firebaseUser.deleteUserExperiment(experimentId);
+  }
+
+  public createUserExperiment(
+    options: CreateExperimentOptions
+  ): Promise<string> {
+    return this.firebaseUser.createUserExperiment(options);
+  }
+
+  public updateUserExperiment(
+    experimentId: string,
+    patch: Partial<Omit<Experiment, "id" | "userId">>
+  ): Promise<void> {
+    return this.firebaseUser.updateUserExperiment(experimentId, patch);
+  }
+
+  public addExperimentMarker(
+    experimentId: string,
+    marker: ExperimentMarker
+  ): Promise<string> {
+    return this.firebaseUser.addExperimentMarker(experimentId, marker);
+  }
+
+  public saveExperimentTrial(
+    experimentId: string,
+    trial: ExperimentTrial
+  ): Promise<string> {
+    return this.firebaseUser.saveExperimentTrial(experimentId, trial);
+  }
+
+  public saveExperimentPrediction(
+    experimentId: string,
+    prediction: ExperimentPrediction
+  ): Promise<string> {
+    return this.firebaseUser.saveExperimentPrediction(experimentId, prediction);
   }
 
   public get skills(): SkillsClient {

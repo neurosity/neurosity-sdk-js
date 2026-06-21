@@ -15,6 +15,8 @@ import {
 import {
   getDatabase,
   ref,
+  push,
+  set,
   update,
   remove,
   get,
@@ -38,7 +40,13 @@ import {
 import { UserDevices, UserClaims } from "../../types/user";
 import { DeviceInfo } from "../../types/deviceInfo";
 import { OAuthRemoveResponse } from "../../types/oauth";
-import { Experiment } from "../../types/experiment";
+import {
+  Experiment,
+  CreateExperimentOptions,
+  ExperimentMarker,
+  ExperimentTrial,
+  ExperimentPrediction
+} from "../../types/experiment";
 import { TransferDeviceOptions } from "../../utils/transferDevice";
 import {
   ApiKeyRecord,
@@ -675,5 +683,98 @@ export class FirebaseUser {
       removeExperiment(experimentId),
       removeRelations(experimentId)
     ]).catch(() => {});
+  }
+
+  async createUserExperiment(
+    options: CreateExperimentOptions
+  ): Promise<string> {
+    const userId = this.user?.uid;
+    if (!userId) {
+      return Promise.reject(`createUserExperiment: not authenticated`);
+    }
+    if (!options?.deviceId) {
+      return Promise.reject(`createUserExperiment: please provide a deviceId`);
+    }
+
+    const database = getDatabase(this.app);
+    const experimentRef = push(ref(database, "experiments"));
+    await set(experimentRef, {
+      userId,
+      deviceId: options.deviceId,
+      name: options.name ?? `Experiment ${new Date().toLocaleString()}`,
+      labels: options.labels ?? [],
+      totalTrials: 0,
+      timestamp: serverTimestamp()
+    });
+    return experimentRef.key as string;
+  }
+
+  async updateUserExperiment(
+    experimentId: string,
+    patch: Partial<Omit<Experiment, "id" | "userId">>
+  ): Promise<void> {
+    if (!experimentId) {
+      return Promise.reject(
+        `updateUserExperiment: please provide an experiment id`
+      );
+    }
+    const database = getDatabase(this.app);
+    await update(ref(database, `experiments/${experimentId}`), patch);
+  }
+
+  async addExperimentMarker(
+    experimentId: string,
+    marker: ExperimentMarker
+  ): Promise<string> {
+    if (!experimentId) {
+      return Promise.reject(
+        `addExperimentMarker: please provide an experiment id`
+      );
+    }
+    if (!marker?.label) {
+      return Promise.reject(`addExperimentMarker: please provide a marker label`);
+    }
+    const database = getDatabase(this.app);
+    const markerRef = push(
+      ref(database, `experiments/${experimentId}/markers`)
+    );
+    await set(markerRef, marker);
+    return markerRef.key as string;
+  }
+
+  async saveExperimentTrial(
+    experimentId: string,
+    trial: ExperimentTrial
+  ): Promise<string> {
+    if (!experimentId) {
+      return Promise.reject(
+        `saveExperimentTrial: please provide an experiment id`
+      );
+    }
+    const database = getDatabase(this.app);
+    const trialRef = push(ref(database, `trials/${experimentId}`));
+    await set(trialRef, {
+      ...trial,
+      timestamp: trial.timestamp ?? serverTimestamp()
+    });
+    return trialRef.key as string;
+  }
+
+  async saveExperimentPrediction(
+    experimentId: string,
+    prediction: ExperimentPrediction
+  ): Promise<string> {
+    if (!experimentId) {
+      return Promise.reject(
+        `saveExperimentPrediction: please provide an experiment id`
+      );
+    }
+    const database = getDatabase(this.app);
+    const predictionRef = push(ref(database, `predictions/${experimentId}`));
+    await set(predictionRef, {
+      ...prediction,
+      timestamp: prediction.timestamp ?? serverTimestamp()
+    });
+    return predictionRef.key as string;
   }
 }

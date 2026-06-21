@@ -1,3 +1,7 @@
+# v7.4.0
+
+- FEAT: Experiment write methods, so apps no longer touch RTDB directly for Studio data. Added `createUserExperiment(options)`, `updateUserExperiment(id, patch)`, `addExperimentMarker(id, marker)`, `saveExperimentTrial(id, trial)`, and `saveExperimentPrediction(id, prediction)` — siblings of the existing `onUserExperiments()` / `deleteUserExperiment()`. New exported types: `CreateExperimentOptions`, `ExperimentMarker`, `ExperimentTrial`, `ExperimentPrediction`. Full unit coverage of RTDB paths + payloads.
+
 # v7.2.1
 
 - FIX: `isMaybeWebWorkerContext()` now actually detects worker context. The helper read top-level `this` (which is `undefined` in ES modules — rollup warned about the rewrite on every build), so it returned a falsy value unconditionally. Reference `self` as a global via `typeof self` instead. The only consumer (`isWebBluetoothSupported`) short-circuited on `typeof window` first, so no visible runtime impact — but the primitive on its own was broken and the build noise is gone.
