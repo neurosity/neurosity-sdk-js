@@ -61,6 +61,14 @@ export type EmulatorStatusPatch = {
   state?: string;
   /** Simulated charging flag. */
   charging?: boolean;
+  /**
+   * Derived from `charging` by `setEmulatorStatus` — not set directly by
+   * callers. Mirrors the device-emulator's own `getChargingStatus` so the
+   * written status stays consistent.
+   */
+  sleepMode?: boolean;
+  /** Derived alongside `sleepMode`; `"charging"` while charging, else `null`. */
+  sleepModeReason?: string | null;
 };
 
 /**

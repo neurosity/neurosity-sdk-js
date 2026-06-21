@@ -823,6 +823,16 @@ export class FirebaseUser {
       return Promise.reject(`setEmulatorStatus: please provide a deviceId`);
     }
     const database = getDatabase(this.app);
-    await update(ref(database, `devices/${deviceId}/status`), patch);
+    // Mirror the device-emulator's own charging derivation: when `charging`
+    // changes, `sleepMode`/`sleepModeReason` are derived from it so the status
+    // we write matches exactly what the emulator process would write itself.
+    // Without this, the charging flag would land but `sleepMode` would go
+    // stale.
+    const status: EmulatorStatusPatch = { ...patch };
+    if (typeof patch.charging === "boolean") {
+      status.sleepMode = patch.charging;
+      status.sleepModeReason = patch.charging ? "charging" : null;
+    }
+    await update(ref(database, `devices/${deviceId}/status`), status);
   }
 }

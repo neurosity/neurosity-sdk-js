@@ -266,8 +266,28 @@ describe("setEmulatorStatus", () => {
     expect(update).toHaveBeenCalledWith(expect.anything(), { state: "online" });
   });
 
-  it("can toggle charging", async () => {
+  it("derives sleepMode when charging is turned on", async () => {
     await makeUser("u1").setEmulatorStatus("dev1", { charging: true });
-    expect(update).toHaveBeenCalledWith(expect.anything(), { charging: true });
+    expect(update).toHaveBeenCalledWith(expect.anything(), {
+      charging: true,
+      sleepMode: true,
+      sleepModeReason: "charging"
+    });
+  });
+
+  it("clears sleepMode/sleepModeReason when charging is turned off", async () => {
+    await makeUser("u1").setEmulatorStatus("dev1", { charging: false });
+    expect(update).toHaveBeenCalledWith(expect.anything(), {
+      charging: false,
+      sleepMode: false,
+      sleepModeReason: null
+    });
+  });
+
+  it("does not derive sleepMode for a state-only patch", async () => {
+    await makeUser("u1").setEmulatorStatus("dev1", { state: "offline" });
+    expect(update).toHaveBeenCalledWith(expect.anything(), {
+      state: "offline"
+    });
   });
 });
