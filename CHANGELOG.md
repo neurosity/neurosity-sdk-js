@@ -1,14 +1,35 @@
-# v7.6.0
+# v8.0.0
 
-- FEAT: Crown Community Ensembles (R1 + R2 SDK surface). Additive over the existing `kinesis(label)` API — no behavior change for users without an ensemble. New methods on `Neurosity`:
-  - `deviceHealth()` — Observable host-side telemetry (per-core CPU load, free memory, SoC temperature, thermal-throttle flag) backing the Studio device-health strip and the analytics container's adaptive refit throttle.
-  - `kinesisEnsemble(opts)` — requests an ensemble-backed Kinesis stream for a label. Writes the resolver override to `users/{uid}/ensembleSessions/{label}` before subscribing; emits Kinesis events on the same transport as `kinesis(label)`.
-  - `kinesisEnsembleStatus()` — Observable engine health (donor count, SML personalization score, current refit cadence, `lastRefitAt`).
-  - `contributeClassifier({ classifierId, share })` — opts a classifier into (or revokes from) the community donor pool via the `onClassifierShared` callable.
-  - `myClassifiers()` — Firestore live read of the user's own classifier docs (sharing state, gate score, fleet stats).
-  - `listEnsembles({ label })` — hardware-filtered listing of system- and user-curated ensembles. The cloud query filters by label and visibility; the SDK enforces `hardware.modelId === device.modelName` locally so a device never sees an incompatible bundle.
-- BEHAVIORAL NOTE: `kinesis(label)` is transparently STIG-backed when the firmware resolver has selected an ensemble for that label — no migration required for existing apps. Apps that want explicit control over the bundle, refit cadence, or spectral-learning toggle use `kinesisEnsemble(...)`.
-- New exported types: `DeviceHealth`, `KinesisEnsembleOptions`, `EnsembleStatus`, `MyClassifier`, `EnsembleSummary`.
+The Crown Community Ensembles release. Closes the 7.x line with a security
+sweep and bumps the dev-tooling baseline. The new public methods listed
+below are **additive** — `kinesis(label)` semantics are unchanged for
+existing apps, and become transparently STIG-backed when the firmware
+resolver picks an ensemble for the active label.
+
+The major bump is a courtesy signal for the dev-baseline jump (jest 30,
+audited dependency tree) and the new community-ensembles era. No
+breaking changes to the public TypeScript surface.
+
+## Crown Community Ensembles (R1 + R2 SDK surface)
+
+New methods on `Neurosity`:
+
+- `deviceHealth()` — Observable host-side telemetry (per-core CPU load, free memory, SoC temperature, thermal-throttle flag) backing the Studio device-health strip and the analytics container's adaptive refit throttle.
+- `kinesisEnsemble(opts)` — requests an ensemble-backed Kinesis stream for a label. Writes the resolver override to `users/{uid}/ensembleSessions/{label}` before subscribing; emits Kinesis events on the same transport as `kinesis(label)`.
+- `kinesisEnsembleStatus()` — Observable engine health (donor count, SML personalization score, current refit cadence, `lastRefitAt`).
+- `contributeClassifier({ classifierId, share })` — opts a classifier into (or revokes from) the community donor pool. Writes directly to the `memories/{classifierId}` doc; the `onClassifierSharingEnabled` Firestore trigger handles HMAC contributor-id minting and gate enqueue.
+- `myClassifiers()` — Firestore live read of the user's own classifier docs (sharing state, gate score, fleet stats). Queries `memories` filtered by `userId + type==="classifier"`.
+- `listEnsembles({ label })` — hardware-filtered listing of system- and user-curated ensembles. The cloud query filters by label (rules world-read); the SDK enforces `hardware.modelId === device.modelName` locally so a device never sees an incompatible bundle.
+
+Behavioral note: `kinesis(label)` is transparently STIG-backed when the firmware resolver has selected an ensemble for that label — no migration required. Apps wanting explicit control over the bundle, refit cadence, or spectral-learning toggle use `kinesisEnsemble(...)`.
+
+New exported types: `DeviceHealth`, `KinesisEnsembleOptions`, `EnsembleStatus`, `MyClassifier`, `EnsembleSummary`.
+
+## Security & dependency cleanup
+
+- SEC: Resolved all 5 high-severity vulnerabilities via `npm audit fix` (axios CVE chain + 4 firebase transitives: `@grpc/grpc-js`, `protobufjs`, `fast-uri`, `form-data`). 0 critical / 0 high remain.
+- DEV: Bumped jest 29 → 30 (+ `@types/jest@^30`). Closes 3 of the moderate transitives; remaining 18 are dev-only DoS bugs in `babel-plugin-istanbul` / `js-yaml` transitives pinned by `ts-jest@29.4` (no `ts-jest@30` published as of writing). Documented for the next sweep.
+- Audit tree: 27 → 18 vulns (0 critical, 0 high, 18 moderate dev-only, 0 low).
 
 # v7.5.0
 
